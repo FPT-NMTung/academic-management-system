@@ -8,7 +8,7 @@ on:
     branches:
       - release-back-end
   pull_request:
-    types: [opened, synchronize, reopened, closed]
+    types: [opened, synchronize]
     branches:
       - release-back-end
   
