@@ -1,3 +1,18 @@
 {
-  "welcome": "Welcome to the API"
+  "welcome": "Welcome to the API",
+
+  "login_title": "Login",
+  "login_email": "Email",
+  "login_password": "Password",
+  "login_button": "Login",
+  "login_forgot": "Forgot your password?",
+  "login_error": "Invalid email or password, please try again.",
+  
+  "forgot_title": "Forgot Password",
+  "forgot_email": "Email",
+  "forgot_content": "Enter your email address and we'll send you a link to reset your password.",
+  "forgot_button": "Send email",
+  "forgot_back": "Back to login",
+  "forgot_success": "We've sent you an email with a link to reset your password.",
+  "forgot_error": "We couldn't find a user with that email address."
 }
