@@ -6,8 +6,11 @@ name: Build and deploy ASP.Net Core app to Azure Web App - apms-api
 on:
   push:
     branches:
-      - main
-  workflow_dispatch:
+      - release-back-end
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - release-back-end
   
 defaults:
   run:
