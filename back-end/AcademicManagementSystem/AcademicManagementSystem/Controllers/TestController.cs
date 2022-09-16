@@ -7,7 +7,7 @@ namespace AcademicManagementSystem.Controllers;
 public class TestController : ControllerBase
 {
     [HttpPost]
-    [Route("api/test/read-file-excel")]
+    [Route("api/test/create-file-excel")]
     public IActionResult Test()
     {
         // get location of file Template1.xlsx
@@ -20,6 +20,20 @@ public class TestController : ControllerBase
             workbook.SaveAs("GeneratedExcel\\HelloWorld.xlsx");
         }
         return Ok("Hello World");
+    }
+    
+    [HttpGet]
+    [Route("api/test/read-file-excel")]
+    public IActionResult Test2()
+    {
+        // get location of file Template1.xlsx
+        var path = Path.Combine(Directory.GetCurrentDirectory(), "GeneratedExcel\\HelloWorld.xlsx");
+        using (var workbook = new XLWorkbook(path))
+        {
+            var worksheet = workbook.Worksheets.Worksheet(1);
+            var value = worksheet.Cell("B2").Value;
+            return Ok(value);
+        }
     }
     
     [HttpGet]
