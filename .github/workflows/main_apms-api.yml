@@ -4,9 +4,6 @@
 name: Build and deploy ASP.Net Core app to Azure Web App - apms-api
 
 on:
-  push:
-    branches:
-      - release-back-end
   pull_request:
     types: [opened, synchronize]
     branches:
