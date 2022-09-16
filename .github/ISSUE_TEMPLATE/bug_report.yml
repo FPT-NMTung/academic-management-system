@@ -26,6 +26,8 @@ body:
       label: URL of website
       description: Which website or app were you using when the bug happened?
       placeholder: https://ams.nmtung.dev/...
+    validations:
+      required: true
   - type: textarea
     id: videoimage
     attributes:
