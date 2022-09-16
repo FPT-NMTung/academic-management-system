@@ -11,7 +11,7 @@ on:
   
 defaults:
   run:
-    working-directory: ./back-end
+    working-directory: ./back-end/AcademicManagementSystem
 
 jobs:
   build:
