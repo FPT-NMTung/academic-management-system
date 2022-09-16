@@ -8,6 +8,10 @@ on:
     branches:
       - main
   workflow_dispatch:
+  
+defaults:
+  run:
+    working-directory: ./back-end
 
 jobs:
   build:
