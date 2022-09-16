@@ -1,6 +1,9 @@
-const LoginScreen = () => {
+import { useEffect } from "react"
+import Login from "../components/Login/Login"
+
+const LoginScreen = ({title}) => {
   return (
-    <p>Login</p>
+    <Login/>
   )
 }
 
