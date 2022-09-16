@@ -1,3 +1,4 @@
+using AcademicManagementSystem.Context;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AcademicManagementSystem.Controllers;
@@ -7,10 +8,18 @@ namespace AcademicManagementSystem.Controllers;
 [ApiController]
 public class UptimeRobotController : ControllerBase
 {
+    private readonly AmsContext _context;
+
+    public UptimeRobotController(AmsContext context)
+    {
+        _context = context;
+    }
+
     [HttpGet]
     [Route("api/uptime-robot")]
     public IActionResult Get()
     {
-        return Ok();
+        var temp = _context.ExampleModels.ToList();
+        return Ok(temp);
     }
 }
