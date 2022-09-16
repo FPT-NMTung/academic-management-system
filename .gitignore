@@ -2,3 +2,7 @@
 back-end/AcademicManagementSystem/AcademicManagementSystem/appsettings.Development.json
 
 back-end/AcademicManagementSystem/AcademicManagementSystem/appsettings.json
+
+back-end/AcademicManagementSystem/AcademicManagementSystem/GeneratedExcel/*
+
+!back-end/AcademicManagementSystem/AcademicManagementSystem/GeneratedExcel/.gitkeep
