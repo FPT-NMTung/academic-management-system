@@ -19,7 +19,6 @@ public class UptimeRobotController : ControllerBase
     [Route("api/uptime-robot")]
     public IActionResult Get()
     {
-        var temp = _context.ExampleModels.ToList();
-        return Ok(temp);
+        return Ok("Welcome to Academic Management System");
     }
 }

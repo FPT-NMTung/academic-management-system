@@ -9,6 +9,4 @@ public class AmsContext : DbContext
     {
         
     }
-    
-    public DbSet<ExampleModel> ExampleModels { get; set; }
 }
