@@ -21,4 +21,24 @@ public class TestController : ControllerBase
         }
         return Ok("Hello World");
     }
+    
+    [HttpGet]
+    [Route("api/test/download-file-excel")]
+    public IActionResult DownloadFileExcel()
+    {
+        // get location of file Template1.xlsx
+        var path = Path.Combine(Directory.GetCurrentDirectory(), "TemplateExcel\\Template1.xlsx");
+        using (var workbook = new XLWorkbook(path))
+        {
+            var worksheet = workbook.Worksheets.Worksheet(1);
+            worksheet.Cell("B1").Value = "Hello World!";
+            worksheet.Cell("B2").Value = "Hello World";
+            using (var stream = new MemoryStream())
+            {
+                workbook.SaveAs(stream);
+                var content = stream.ToArray();
+                return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "HelloWorld.xlsx");
+            }
+        }
+    }
 }
