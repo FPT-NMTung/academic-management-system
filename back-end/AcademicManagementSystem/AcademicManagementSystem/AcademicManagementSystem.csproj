@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+        <PackageReference Include="ClosedXML" Version="0.96.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.9" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="6.0.9" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="6.0.9" />
@@ -22,7 +23,12 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="sib_api_v3_sdk" Version="3.3.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="GeneratedExcel" />
+      <Folder Include="TemplateExcel" />
     </ItemGroup>
 
 </Project>
