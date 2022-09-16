@@ -27,8 +27,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="GeneratedExcel" CopyToPublishDirectory="Always"/>
-      <Folder Include="TemplateExcel" CopyToPublishDirectory="Always"/>
+      <Folder Include="GeneratedExcel" />
+      <Folder Include="TemplateExcel" />
     </ItemGroup>
 
 </Project>
