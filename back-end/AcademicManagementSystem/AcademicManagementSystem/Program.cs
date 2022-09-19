@@ -1,4 +1,5 @@
 using AcademicManagementSystem.Context;
+using Azure.Communication.Email;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

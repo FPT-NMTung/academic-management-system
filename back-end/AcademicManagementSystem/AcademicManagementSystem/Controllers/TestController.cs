@@ -1,3 +1,5 @@
+using Azure.Communication.Email;
+using Azure.Communication.Email.Models;
 using ClosedXML.Excel;
 using Microsoft.AspNetCore.Mvc;
 
@@ -54,5 +56,29 @@ public class TestController : ControllerBase
                 return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "HelloWorld.xlsx");
             }
         }
+    }
+
+    [HttpPost]
+    [Route("api/test/send-email")]
+    public IActionResult TestSendEmail()
+    {
+        IConfigurationRoot configuration = new ConfigurationBuilder()
+            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        string connectionString = configuration.GetConnectionString("AzureEmailConnectionString");
+        EmailClient emailClient = new EmailClient(connectionString);
+        
+        //Replace with your domain and modify the content, recipient details as required
+        
+        EmailContent emailContent = new EmailContent("Welcome to Azure Communication Service Email APIs.");
+        emailContent.PlainText = "This email message is sent from Azure Communication Service Email using .NET SDK.";
+        List<EmailAddress> emailAddresses = new List<EmailAddress> { new EmailAddress("admin@nmtung.dev") { DisplayName = "Nguyen Manh Tung" }};
+        EmailRecipients emailRecipients = new EmailRecipients(emailAddresses);
+        EmailMessage emailMessage = new EmailMessage("ams-no-reply@nmtung.dev", emailContent, emailRecipients);
+        SendEmailResult emailResult = emailClient.Send(emailMessage,CancellationToken.None);
+
+        return Ok(emailResult);
     }
 }
