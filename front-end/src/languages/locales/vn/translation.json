@@ -1,3 +1,18 @@
 {
-  "welcome": "Chào mừng đến với trang web của tôi"
+  "welcome": "Chào mừng đến với trang web của tôi",
+  
+  "login_title": "Đăng nhập",
+  "login_email": "Email",
+  "login_password": "Mật khẩu",
+  "login_button": "Đăng nhập",
+  "login_forgot": "Quên mật khẩu?",
+  "login_error": "Email hoặc mật khẩu không đúng",
+  
+  "forgot_title": "Quên mật khẩu",
+  "forgot_email": "Email",
+  "forgot_content": "Nhập email của bạn để lấy lại mật khẩu, chúng tôi sẽ gửi cho bạn một email với hướng dẫn để lấy lại mật khẩu",
+  "forgot_button": "Gửi",
+  "forgot_back": "Quay lại đăng nhập",
+  "forgot_success": "Chúng tôi đã gửi cho bạn một email với hướng dẫn để lấy lại mật khẩu",
+  "forgot_error": "Email không tồn tại"
 }
