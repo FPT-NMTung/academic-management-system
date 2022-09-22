@@ -19,5 +19,30 @@ h4,
 h5,
 h6,
 p {
-  margin: 0 !important;
+  margin        : 0 !important;
+  letter-spacing: 0px !important;
+}
+
+
+::-webkit-scrollbar {
+  width : 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background   : rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background   : rgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: rgba(0, 0, 0, .5);
 }
