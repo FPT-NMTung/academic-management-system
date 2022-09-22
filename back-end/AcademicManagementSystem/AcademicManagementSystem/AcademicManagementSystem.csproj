@@ -10,6 +10,8 @@
         <PackageReference Include="Azure.Communication.Email" Version="1.0.0-beta.1" />
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
         <PackageReference Include="ClosedXML" Version="0.96.0" />
+        <PackageReference Include="Google.Apis.Auth" Version="1.57.0" />
+        <PackageReference Include="jose-jwt" Version="4.0.1" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.9" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="6.0.9" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="6.0.9" />
