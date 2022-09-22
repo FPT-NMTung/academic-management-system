@@ -4,6 +4,8 @@ import NoRequireAuth from './authRoute/NoRequireAuth';
 import RequireAuth from './authRoute/RequireAuth';
 import LoginScreen from './screens/LoginScreen';
 import NotFoundScreen from './screens/NotFoundScreen/NotFoundScreen';
+import FirstLayout from './components/Layout/FirstLayout/FirstLayout';
+import Schedule from './screens/Student/ScheduleScreen/ScheduleScreen';
 
 const App = () => {
   return (
@@ -11,9 +13,11 @@ const App = () => {
       <Route path={'/login'} element={<NoRequireAuth><LoginScreen/></NoRequireAuth>} />
       <Route path={'/'} element={<RequireAuth />}/>
       {/* Routers for role student */}
-      <Route path={'/student'} element={<RequireAuth role={'student'}/>}>
-        <Route index element={<Navigate to="/student/first-page" replace />} />
-        <Route path='/student/first-page' element={<p></p>} />
+      <Route path={'/student'} element={<FirstLayout><RequireAuth role={'student'}/></FirstLayout>}>
+        <Route index element={<Navigate to="/student/schedule" replace />} />
+        <Route path='/student/schedule' element={<Schedule/>} />
+        <Route path='/student/attendance' element={<p>attendance</p>} />
+        <Route path='/student/grade' element={<p>grade</p>}/>
       </Route>
 
       {/* Routers for role teacher */}
