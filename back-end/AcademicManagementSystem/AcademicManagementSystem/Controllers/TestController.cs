@@ -1,4 +1,8 @@
+using AcademicManagementSystem.Models;
+using Azure.Communication.Email;
+using Azure.Communication.Email.Models;
 using ClosedXML.Excel;
+using Google.Apis.Auth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AcademicManagementSystem.Controllers;
@@ -54,5 +58,51 @@ public class TestController : ControllerBase
                 return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "HelloWorld.xlsx");
             }
         }
+    }
+
+    [HttpPost]
+    [Route("api/test/send-email")]
+    public IActionResult TestSendEmail()
+    {
+        IConfigurationRoot configuration = new ConfigurationBuilder()
+            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        string connectionString = configuration.GetConnectionString("AzureEmailConnectionString");
+        EmailClient emailClient = new EmailClient(connectionString);
+        
+        //Replace with your domain and modify the content, recipient details as required
+        
+        EmailContent emailContent = new EmailContent("Welcome to Azure Communication Service Email APIs.");
+        emailContent.PlainText = "This email message is sent from Azure Communication Service Email using .NET SDK.";
+        List<EmailAddress> emailAddresses = new List<EmailAddress> { new EmailAddress("admin@nmtung.dev") { DisplayName = "Nguyen Manh Tung" }};
+        EmailRecipients emailRecipients = new EmailRecipients(emailAddresses);
+        EmailMessage emailMessage = new EmailMessage("ams-no-reply@nmtung.dev", emailContent, emailRecipients);
+        SendEmailResult emailResult = emailClient.Send(emailMessage,CancellationToken.None);
+
+        return Ok(emailResult);
+    }
+    
+    [HttpPost]
+    [Route("api/test/login")]
+    public IActionResult Login([FromBody] LoginRequest request)
+    {
+        var listEmail = new List<string> { "nmtung.temp@gmail.com", "nmtungofficial@gmail.com" };
+        
+        // verify token from client google
+        var payload = GoogleJsonWebSignature.ValidateAsync(request.Token,
+            new GoogleJsonWebSignature.ValidationSettings()
+            {
+                Audience = new[] { "518989199582-9ul4cerv67mgmg777fpl0jl4lb4nsnji.apps.googleusercontent.com" }
+            }).Result.Email;
+        
+        // check email in list email
+        if (listEmail.Contains(payload))
+        {
+            return Ok("Login success");
+        }
+        
+        return BadRequest("Login failed");
     }
 }
