@@ -66,9 +66,8 @@ public class User
     [StringLength(255)]
     public string CitizenIdentityCardNo { get; set; }
     
-    [Column("citizen_identity_card_published_date")]
-    [StringLength(255)]
-    public string CitizenIdentityCardPublishedDate { get; set; }
+    [Column("citizen_identity_card_published_date", TypeName = "date")]
+    public DateTime CitizenIdentityCardPublishedDate { get; set; }
     
     [Column("citizen_identity_card_published_place")]
     [StringLength(255)]
