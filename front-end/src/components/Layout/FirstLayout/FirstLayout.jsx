@@ -37,21 +37,6 @@ const navItem = [
   },
 ];
 
-const routes = [
-  {
-    path: 'index',
-    breadcrumbName: 'First-level Menu',
-  },
-  {
-    path: 'first',
-    breadcrumbName: 'Second-level Menu',
-  },
-  {
-    path: 'second',
-    breadcrumbName: 'Third-level Menu',
-  },
-];
-
 const FirstLayout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
