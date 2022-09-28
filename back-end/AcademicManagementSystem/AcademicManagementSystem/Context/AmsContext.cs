@@ -17,11 +17,21 @@ public class AmsContext : DbContext
             relationship.DeleteBehavior = DeleteBehavior.ClientNoAction;
         }
         
+        // Indexes User model
         modelBuilder.Entity<User>()
-            .HasIndex(u => new {u.Email, u.MobilePhone, u.EmailCompany, u.CitizenIdentityCardNo})
+            .HasIndex(u => u.Email)
+            .IsUnique();
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.MobilePhone)
+            .IsUnique();
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.EmailOrganization)
+            .IsUnique();
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.CitizenIdentityCardNo)
             .IsUnique();
     }
-
+    
     public DbSet<Province> Provinces { get; set; }
     public DbSet<District> Districts { get; set; }
     public DbSet<Ward> Wards { get; set; }

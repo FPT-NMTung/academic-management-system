@@ -4,6 +4,7 @@ using AcademicManagementSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    partial class AmsContextModelSnapshot : ModelSnapshot
+    [Migration("20220928174104_Update User Table")]
+    partial class UpdateUserTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -333,11 +335,11 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("email");
 
-                    b.Property<string>("EmailOrganization")
+                    b.Property<string>("EmailCompany")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
-                        .HasColumnName("email_organization");
+                        .HasColumnName("email_company");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -381,27 +383,18 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasIndex("CenterId");
 
-                    b.HasIndex("CitizenIdentityCardNo")
-                        .IsUnique();
-
                     b.HasIndex("DistrictId");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.HasIndex("EmailOrganization")
-                        .IsUnique();
-
                     b.HasIndex("GenderId");
-
-                    b.HasIndex("MobilePhone")
-                        .IsUnique();
 
                     b.HasIndex("ProvinceId");
 
                     b.HasIndex("RoleId");
 
                     b.HasIndex("WardId");
+
+                    b.HasIndex("Email", "MobilePhone", "EmailCompany", "CitizenIdentityCardNo")
+                        .IsUnique();
 
                     b.ToTable("user");
                 });
