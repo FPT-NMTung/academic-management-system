@@ -4,7 +4,7 @@
 
 namespace AcademicManagementSystem.Migrations
 {
-    public partial class AddTableAddress : Migration
+    public partial class AddAddressTable : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -39,8 +39,7 @@ namespace AcademicManagementSystem.Migrations
                         name: "FK_district_province_province_id",
                         column: x => x.province_id,
                         principalTable: "province",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -61,14 +60,12 @@ namespace AcademicManagementSystem.Migrations
                         name: "FK_ward_district_district_id",
                         column: x => x.district_id,
                         principalTable: "district",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                     table.ForeignKey(
                         name: "FK_ward_province_province_id",
                         column: x => x.province_id,
                         principalTable: "province",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateIndex(

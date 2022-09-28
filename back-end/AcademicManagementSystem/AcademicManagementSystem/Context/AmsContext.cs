@@ -7,6 +7,15 @@ public class AmsContext : DbContext
 {
     public AmsContext(DbContextOptions options) : base(options)
     {
+        
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+        {
+            relationship.DeleteBehavior = DeleteBehavior.ClientNoAction;
+        }
     }
 
     public DbSet<Province> Provinces { get; set; }
