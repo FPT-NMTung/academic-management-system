@@ -88,21 +88,21 @@ public class TestController : ControllerBase
     [Route("api/test/login")]
     public IActionResult Login([FromBody] LoginRequest request)
     {
-        var listEmail = new List<string> { "nmtung.temp@gmail.com", "nmtungofficial@gmail.com" };
-        
-        // verify token from client google
-        var payload = GoogleJsonWebSignature.ValidateAsync(request.Token,
-            new GoogleJsonWebSignature.ValidationSettings()
-            {
-                Audience = new[] { "518989199582-9ul4cerv67mgmg777fpl0jl4lb4nsnji.apps.googleusercontent.com" }
-            }).Result.Email;
-        
-        // check email in list email
-        if (listEmail.Contains(payload))
-        {
-            return Ok("Login success");
-        }
-        
+        // var listEmail = new List<string> { "nmtung.temp@gmail.com", "nmtungofficial@gmail.com" };
+        //
+        // // verify token from client google
+        // var payload = GoogleJsonWebSignature.ValidateAsync(request.Token,
+        //     new GoogleJsonWebSignature.ValidationSettings()
+        //     {
+        //         Audience = new[] { "518989199582-9ul4cerv67mgmg777fpl0jl4lb4nsnji.apps.googleusercontent.com" }
+        //     }).Result.Email;
+        //
+        // // check email in list email
+        // if (listEmail.Contains(payload))
+        // {
+        //     return Ok("Login success");
+        // }
+        //
         return BadRequest("Login failed");
     }
 }
