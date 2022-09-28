@@ -55,9 +55,9 @@ public class User
     [StringLength(255)]
     public string Email { get; set; }
     
-    [Column("email_company")]
+    [Column("email_organization")]
     [StringLength(255)]
-    public string EmailCompany { get; set; }
+    public string EmailOrganization { get; set; }
     
     [Column("birthday", TypeName = "date")]
     public DateTime Birthday { get; set; }
