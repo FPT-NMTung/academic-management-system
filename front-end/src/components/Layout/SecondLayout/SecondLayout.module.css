@@ -1,0 +1,27 @@
+.containterLogo {
+  display        : flex;
+  flex-direction : column;
+  align-items    : center;
+  justify-content: center;
+  height         : 70px;
+}
+
+.logoMain {
+  width: 50%;
+}
+
+.sider {
+  overflow: 'auto';
+  height  : '100vh';
+  position: 'fixed';
+  left    : 0;
+  top     : 0;
+  bottom  : 0;
+}
+
+.content {
+  min-height: 100vh;
+  width     : 100%;
+
+  background-color: antiquewhite;
+}
