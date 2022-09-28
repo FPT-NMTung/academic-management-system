@@ -32,4 +32,5 @@ public class Center
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; }
     
+    public ICollection<Room> Rooms { get; set; }
 }

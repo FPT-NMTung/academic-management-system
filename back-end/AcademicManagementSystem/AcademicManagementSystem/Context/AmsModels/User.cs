@@ -81,4 +81,5 @@ public class User
     public DateTime UpdatedAt { get; set; }
     
     public ICollection<ActiveRefreshToken> ActiveRefreshTokens { get; set; }
+    
 }
