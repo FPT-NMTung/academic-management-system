@@ -3,12 +3,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AcademicManagementSystem.Context.AmsModels;
 
-public class ExampleModel
+[Table("room_type")]
+public class RoomType
 {
     [Key]
     [Column("id")]
     public int Id { get; set; }
 
-    [Column("name"), MinLength(20), MaxLength(50)]
-    public string Name { get; set; } = null!;
+    [Column("value")]
+    [StringLength(100)]
+    public string Value { get; set; }
+    
+    public ICollection<Room> Rooms { get; set; }
 }
