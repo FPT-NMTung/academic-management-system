@@ -4,6 +4,7 @@ using AcademicManagementSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    partial class AmsContextModelSnapshot : ModelSnapshot
+    [Migration("20220928153347_Add Sro and Admin")]
+    partial class AddSroandAdmin
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -209,59 +211,6 @@ namespace AcademicManagementSystem.Migrations
                     b.ToTable("role");
                 });
 
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Room", b =>
-                {
-                    b.Property<string>("RoomCode")
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("room_code");
-
-                    b.Property<int>("Capacity")
-                        .HasColumnType("int")
-                        .HasColumnName("capacity");
-
-                    b.Property<int>("CenterId")
-                        .HasColumnType("int")
-                        .HasColumnName("center_id");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("name");
-
-                    b.Property<int>("RoomTypeId")
-                        .HasColumnType("int")
-                        .HasColumnName("room_type_id");
-
-                    b.HasKey("RoomCode");
-
-                    b.HasIndex("CenterId");
-
-                    b.HasIndex("RoomTypeId");
-
-                    b.ToTable("room");
-                });
-
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.RoomType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("value");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("room_type");
-                });
-
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Sro", b =>
                 {
                     b.Property<int>("UserId")
@@ -309,8 +258,10 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("citizen_identity_card_no");
 
-                    b.Property<DateTime>("CitizenIdentityCardPublishedDate")
-                        .HasColumnType("date")
+                    b.Property<string>("CitizenIdentityCardPublishedDate")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("citizen_identity_card_published_date");
 
                     b.Property<string>("CitizenIdentityCardPublishedPlace")
@@ -333,11 +284,11 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("email");
 
-                    b.Property<string>("EmailOrganization")
+                    b.Property<string>("EmailCompany")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
-                        .HasColumnName("email_organization");
+                        .HasColumnName("email_company");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -381,27 +332,18 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasIndex("CenterId");
 
-                    b.HasIndex("CitizenIdentityCardNo")
-                        .IsUnique();
-
                     b.HasIndex("DistrictId");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.HasIndex("EmailOrganization")
-                        .IsUnique();
-
                     b.HasIndex("GenderId");
-
-                    b.HasIndex("MobilePhone")
-                        .IsUnique();
 
                     b.HasIndex("ProvinceId");
 
                     b.HasIndex("RoleId");
 
                     b.HasIndex("WardId");
+
+                    b.HasIndex("Email", "MobilePhone", "EmailCompany", "CitizenIdentityCardNo")
+                        .IsUnique();
 
                     b.ToTable("user");
                 });
@@ -502,25 +444,6 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("Province");
                 });
 
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Room", b =>
-                {
-                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Center", "Center")
-                        .WithMany("Rooms")
-                        .HasForeignKey("CenterId")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
-
-                    b.HasOne("AcademicManagementSystem.Context.AmsModels.RoomType", "RoomType")
-                        .WithMany("Rooms")
-                        .HasForeignKey("RoomTypeId")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
-
-                    b.Navigation("Center");
-
-                    b.Navigation("RoomType");
-                });
-
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Sro", b =>
                 {
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.User", "User")
@@ -602,11 +525,6 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("Province");
                 });
 
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Center", b =>
-                {
-                    b.Navigation("Rooms");
-                });
-
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.District", b =>
                 {
                     b.Navigation("Wards");
@@ -617,11 +535,6 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("Districts");
 
                     b.Navigation("Wards");
-                });
-
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.RoomType", b =>
-                {
-                    b.Navigation("Rooms");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.User", b =>
