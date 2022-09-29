@@ -19,5 +19,14 @@ h4,
 h5,
 h6,
 p {
-  margin: 0 !important;
+  margin        : 0 !important;
+  letter-spacing: 0px !important;
+}
+
+.ant-menu-title-content {
+  font-size: 12px !important;
+}
+
+.ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal) .ant-menu-item-selected {
+  background-color: #0a579f !important;
 }
