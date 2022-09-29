@@ -56,6 +56,6 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'apms-api'
-          slot-name: 'Production Back-end'
+          slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9071DE8742534D9FB0C5C7D88D2A0CB3 }}
           package: .
