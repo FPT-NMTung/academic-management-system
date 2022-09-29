@@ -8,6 +8,9 @@ public class Admin
 {
     [Key]
     [Column("user_id")]
+    [ForeignKey("User")]
     public int UserId { get; set; }
-    public User User { get; set; }
+    
+    // relationships
+    public virtual User User { get; set; }
 }
