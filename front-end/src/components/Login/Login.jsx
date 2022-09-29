@@ -146,7 +146,7 @@ const Login = () => {
                   onClick={() => {
                     localStorage.setItem('access_token', '123456');
                     localStorage.setItem('refresh_token', '123456');
-                    localStorage.setItem('role', 'student');
+                    localStorage.setItem('role', 'admin');
                     navigate('/');
                   }}
                 >
