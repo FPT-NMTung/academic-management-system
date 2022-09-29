@@ -16,9 +16,9 @@ public class RoomController : ControllerBase
         _context = context;
     }
 
-    //GET: api/rooms/{roomTypeId}
+    //GET: api/rooms/center/{roomTypeId}
     //get all rooms by roomType Id
-    [HttpGet("{centerId}")]
+    [HttpGet("center/{centerId}")]
     public IActionResult GetRoomsByCenterId(int centerId)
     {
         var rooms = _context.Rooms.ToList()
@@ -38,9 +38,9 @@ public class RoomController : ControllerBase
         return Ok(CustomResponse.Ok("Get all rooms by room type id success", rooms));
     }
 
-    //GET: api/rooms/{roomTypeId}
+    //GET: api/rooms/room-type/{roomTypeId}
     //get all rooms by roomType Id
-    [HttpGet("{roomTypeId}")]
+    [HttpGet("room-type/{roomTypeId}")]
     public IActionResult GetRoomsByRoomTypeId(int roomTypeId)
     {
         var rooms = _context.Rooms.ToList()
