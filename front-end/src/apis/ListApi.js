@@ -1,7 +1,7 @@
-export const UserApis = {
+export const AuthApis = {
   login: {
-    url: '',
-    method: '',
+    url: 'api/auth/login',
+    method: 'POST',
     contextType: 'application/json',
   },
 };
