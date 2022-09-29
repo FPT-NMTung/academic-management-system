@@ -5,6 +5,14 @@ namespace AcademicManagementSystem.Context.AmsModels;
 [Table("province")]
 public class Province
 {
+    public Province()
+    {
+        this.Districts = new HashSet<District>();
+        this.Wards = new HashSet<Ward>();
+        this.Users = new HashSet<User>();
+        this.Centers = new HashSet<Center>();
+    }
+
     [Key]
     [Column("id")]
     public int Id { get; set; }
@@ -15,6 +23,9 @@ public class Province
     [Column("name")]
     public string Name { get; set; }
     
-    public ICollection<District> Districts { get; set; }
-    public ICollection<Ward> Wards { get; set; }
+    // relationships
+    public virtual ICollection<District> Districts { get; set; }
+    public virtual ICollection<Ward> Wards { get; set; }
+    public virtual ICollection<User> Users { get; set; }
+    public virtual ICollection<Center> Centers { get; set; }
 }

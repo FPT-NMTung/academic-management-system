@@ -9,11 +9,9 @@ public class Room
     [Key]
     [Column("room_code")]
     public string RoomCode { get; set; }
-    public RoomType RoomType { get; set; }
     
     [Column("center_id")]
     public int CenterId { get; set; }
-    public Center Center { get; set; }
     
     [Column("room_type_id")]
     public int RoomTypeId { get; set; }
@@ -24,4 +22,8 @@ public class Room
     
     [Column("capacity")]
     public int Capacity { get; set; }
+    
+    // relationships
+    public virtual RoomType RoomType { get; set; }
+    public virtual Center Center { get; set; }
 }

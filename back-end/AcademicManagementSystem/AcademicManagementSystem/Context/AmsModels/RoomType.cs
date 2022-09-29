@@ -6,6 +6,11 @@ namespace AcademicManagementSystem.Context.AmsModels;
 [Table("room_type")]
 public class RoomType
 {
+    public RoomType()
+    {
+        this.Rooms = new HashSet<Room>();
+    }
+
     [Key]
     [Column("id")]
     public int Id { get; set; }
@@ -14,5 +19,6 @@ public class RoomType
     [StringLength(100)]
     public string Value { get; set; }
     
-    public ICollection<Room> Rooms { get; set; }
+    // relationships
+    public virtual ICollection<Room> Rooms { get; set; }
 }
