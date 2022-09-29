@@ -4,6 +4,6 @@ namespace AcademicManagementSystem.Models;
 
 public class LoginRequest
 {
-    [JsonPropertyName("token")]
-    public string Token { get; set; }
+    [JsonPropertyName("token_google")]
+    public string TokenGoogle { get; set; }
 }
