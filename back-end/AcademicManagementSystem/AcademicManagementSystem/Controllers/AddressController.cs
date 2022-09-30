@@ -17,9 +17,9 @@ public class AddressController : ControllerBase
         _context = context;
     }
     
-    //get list province
-    [HttpGet("province")]
-    public IActionResult GetProvince()
+    //get list provinces
+    [HttpGet("provinces")]
+    public IActionResult GetProvinces()
     {
         var listProvince = _context.Provinces.ToList()
             .Select(p => new ProvinceResponse() { Id = p.Id, Code = p.Code, Name = p.Name });
@@ -31,9 +31,9 @@ public class AddressController : ControllerBase
         return Ok(CustomResponse.Ok("Get list province success", listProvince));
     }
     
-    // get list district by provinceId
-    [HttpGet("district/{provinceId:int}")]
-    public IActionResult GetDistrict(int provinceId)
+    // get list districts by provinceId
+    [HttpGet("provinces/{provinceId:int}/districts")]
+    public IActionResult GetDistricts(int provinceId)
     {
         var listDistrict = _context.Districts.ToList()
             .Where(d => d.ProvinceId == provinceId)
@@ -51,22 +51,18 @@ public class AddressController : ControllerBase
         return Ok(CustomResponse.Ok("Get list district success", listDistrict));
     }
     
-    // get list ward by districtId
-    [HttpGet("ward/{districtId:int}")]
-    public IActionResult GetWard(int districtId)
+    // get list wards by provinceId and districtId
+    [HttpGet("provinces/{provinceId:int}/districts/{districtId:int}/wards")]
+    public IActionResult GetWards(int provinceId, int districtId)
     {
         var listWard = _context.Wards.ToList()
-            .Where(w => w.DistrictId == districtId)
-            .Select(w =>
-                new WardResponse()
-                {
-                    WardId = w.Id, Name = w.Name, Prefix = w.Prefix
-                });
+            .Where(w => w.ProvinceId == provinceId && w.DistrictId == districtId)
+            .Select(w => new WardResponse() { WardId = w.Id, Name = w.Name, Prefix = w.Prefix });
         // empty list
         if (!listWard.Any())
         {
             return BadRequest(CustomResponse
-                .BadRequest("Ward with districtId not found", "address-error-000003"));
+                .BadRequest("Ward with provinceId and districtId not found", "address-error-000003"));
         }
         return Ok(CustomResponse.Ok("Get list ward success", listWard));
     }
