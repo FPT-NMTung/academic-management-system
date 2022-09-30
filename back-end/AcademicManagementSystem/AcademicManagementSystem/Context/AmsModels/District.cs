@@ -6,13 +6,19 @@ namespace AcademicManagementSystem.Context.AmsModels;
 [Table("district")]
 public class District
 {
+    public District()
+    {
+        this.Wards = new HashSet<Ward>();
+        this.Users = new HashSet<User>();
+        this.Centers = new HashSet<Center>();
+    }
+
     [Key]
     [Column("id")]
     public int Id { get; set; }
     
     [Column("province_id")]
     public int ProvinceId { get; set; }
-    public Province Province { get; set; }
     
     [Column("name")]
     public string Name { get; set; }
@@ -20,5 +26,9 @@ public class District
     [Column("prefix")]
     public string Prefix { get; set; }
     
-    public ICollection<Ward> Wards { get; set; }
+    // relationships
+    public virtual Province Province { get; set; }
+    public virtual ICollection<Ward> Wards { get; set; }
+    public virtual ICollection<User> Users { get; set; }
+    public virtual ICollection<Center> Centers { get; set; }
 }

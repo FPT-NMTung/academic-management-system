@@ -3,11 +3,13 @@
   flex-direction : column;
   align-items    : center;
   justify-content: center;
-  height         : 70px;
+  height         : 60px;
+
+  position: sticky;
 }
 
 .logoMain {
-  width: 50%;
+  width: 35%;
 }
 
 .sider {
@@ -19,9 +21,30 @@
   bottom  : 0;
 }
 
+.header {
+  position        : sticky;
+  top             : 0;
+  background-color: #001529;
+
+  height: 60px;
+
+  display        : flex;
+  align-items    : center;
+  justify-content: space-between;
+
+  padding: 0 20px;
+}
+
 .content {
-  min-height: 100vh;
+  min-height: calc(100vh - 60px);
   width     : 100%;
 
-  background-color: antiquewhite;
+  background-color: #f0f2f5;
+  padding         : 20px;
+}
+
+.menuItemLayout {
+  display       : flex;
+  align-items   : center;
+  flex-direction: row;
 }

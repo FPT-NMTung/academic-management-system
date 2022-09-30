@@ -16,9 +16,9 @@ public class RoomController : ControllerBase
         _context = context;
     }
 
-    //GET: api/rooms/center/{roomTypeId}
-    //get all rooms by roomType Id
-    [HttpGet("center/{centerId}")]
+    //GET: api/rooms/center/{centerId}
+    [HttpGet]
+    [Route("center/{centerId:int}")]
     public IActionResult GetRoomsByCenterId(int centerId)
     {
         var rooms = _context.Rooms.ToList()
@@ -40,10 +40,11 @@ public class RoomController : ControllerBase
 
     //GET: api/rooms/room-type/{roomTypeId}
     //get all rooms by roomType Id
-    [HttpGet("room-type/{roomTypeId}")]
+    [HttpGet("room-type/{roomTypeId:int}")]
     public IActionResult GetRoomsByRoomTypeId(int roomTypeId)
     {
-        var rooms = _context.Rooms.ToList()
+        var list = _context.Rooms.ToList();
+        var rooms = list
             .Where(r => r.RoomTypeId == roomTypeId)
             .Select(r => new RoomResponse()
             {
@@ -54,7 +55,7 @@ public class RoomController : ControllerBase
 
         if (!rooms.Any())
         {
-            return BadRequest(CustomResponse.BadRequest("No rooms found", "room-error-000002"));
+            return BadRequest(CustomResponse.BadRequest("No room found", "room-error-000002"));
         }
 
         return Ok(CustomResponse.Ok("Get all rooms by room type id success", rooms));
@@ -79,8 +80,29 @@ public class RoomController : ControllerBase
         {
             return BadRequest(CustomResponse.BadRequest("Room code already exists", "room-error-000003"));
         }
+
+        if (!IsCenterExists(roomRequest.CenterId))
+        {
+            return BadRequest(CustomResponse.BadRequest("Center not found", "room-error-000004"));
+        }
+        
+        if(!IsRoomTypeExists(roomRequest.RoomTypeId))
+        {
+            return BadRequest(CustomResponse.BadRequest("Room type not found", "room-error-000005"));
+        }
+        
+        if(roomRequest.Capacity <= 0)
+        {
+            return BadRequest(CustomResponse.BadRequest("Capacity must be greater than 0", "room-error-000006"));
+        }
+        
+        if(string.IsNullOrWhiteSpace(roomRequest.Name))
+        {
+            return BadRequest(CustomResponse.BadRequest("Name cannot be empty", "room-error-000007"));
+        }
+        
         _context.SaveChanges();
-        return Ok(CustomResponse.Ok("Create room success", room));
+        return Ok(CustomResponse.Ok("Create room success", roomRequest));
     }
 
     //PUT: api/rooms/roomCode
@@ -92,7 +114,17 @@ public class RoomController : ControllerBase
         if (roomToUpdate == null)
         {
             return BadRequest(
-                CustomResponse.BadRequest("Room with code " + roomCode + " not found", "room-error-000004"));
+                CustomResponse.BadRequest("Room with code " + roomCode + " not found", "room-error-000008"));
+        }
+        
+        if(string. IsNullOrWhiteSpace(room.Name))
+        {
+            return BadRequest(CustomResponse.BadRequest("Name cannot be empty", "room-error-000009"));
+        }
+        
+        if(room.Capacity <= 0)
+        {
+            return BadRequest(CustomResponse.BadRequest("Capacity must be greater than 0", "room-error-000010"));
         }
 
         roomToUpdate.Name = room.Name;
@@ -103,7 +135,6 @@ public class RoomController : ControllerBase
     }
 
     //DELETE: api/rooms/roomCode
-    //Delete room
     [HttpDelete("{roomCode}")]
     public IActionResult DeleteRoom(string roomCode)
     {
@@ -111,7 +142,7 @@ public class RoomController : ControllerBase
         if (roomToDelete == null)
         {
             return BadRequest(
-                CustomResponse.BadRequest("Room with code " + roomCode + " not found", "room-error-000005"));
+                CustomResponse.BadRequest("Room with code " + roomCode + " not found", "room-error-0000011"));
         }
 
         _context.Rooms.Remove(roomToDelete);
@@ -122,5 +153,15 @@ public class RoomController : ControllerBase
     private bool IsRoomExists(string roomCode)
     {
         return _context.Rooms.Any(e => e.RoomCode == roomCode);
+    }
+    
+    private bool IsRoomTypeExists(int roomTypeId)
+    {
+        return _context.RoomTypes.Any(e => e.Id == roomTypeId);
+    }
+    
+    private bool IsCenterExists(int centerId)
+    {
+        return _context.Centers.Any(e => e.Id == centerId);
     }
 }

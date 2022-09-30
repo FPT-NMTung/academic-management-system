@@ -14,7 +14,7 @@ public class AuthController : ControllerBase
 {
     private readonly AmsContext _context;
     private readonly IConfigurationRoot _configuration;
-
+    
     public AuthController(AmsContext context)
     {
         _configuration = new ConfigurationBuilder()
@@ -62,9 +62,11 @@ public class AuthController : ControllerBase
             ExpDate = dateExpireRefreshToken.DateTime
         });
         _context.SaveChanges();
-
+    
         return Ok(CustomResponse.Ok("Create token success", new LoginResponse()
         {
+            UserId = selectUser.Id,
+            RoleId = selectUser.RoleId,
             AccessToken = accessToken,
             RefreshToken = refreshToken
         }));
@@ -91,7 +93,9 @@ public class AuthController : ControllerBase
         var refreshToken = GenerateRefreshToken(selectUser.Id, dateCreateToken.ToUnixTimeSeconds(), dateExpireRefreshToken.ToUnixTimeSeconds());
         
         // Update refresh token in database
-        _context.ActiveRefreshTokens.Remove( selectRefreshToken );
+        var listExpiredRefreshToken = _context.ActiveRefreshTokens.Where(x => x.UserId == selectUser.Id && x.ExpDate < DateTime.Now).ToList();
+        _context.ActiveRefreshTokens.RemoveRange(listExpiredRefreshToken);
+        _context.ActiveRefreshTokens.Remove(selectRefreshToken);
         _context.ActiveRefreshTokens.Add(new ActiveRefreshToken()
         {
             UserId = selectUser.Id,
@@ -102,6 +106,8 @@ public class AuthController : ControllerBase
     
         return Ok(CustomResponse.Ok("Refresh token success", new LoginResponse()
         {
+            UserId = selectUser.Id,
+            RoleId = selectUser.RoleId,
             AccessToken = accessToken,
             RefreshToken = refreshToken
         }));
@@ -111,9 +117,9 @@ public class AuthController : ControllerBase
     {
         Jwk keyToken =
             new Jwk(Encoding.ASCII.GetBytes(_configuration.GetChildren().First(x => x.Key == "SecretKeyAccessToken").Value!));
-
+    
         Console.Out.WriteLine("Key: " + keyToken);
-
+    
         string token = Jose.JWT.Encode(new Dictionary<string, object>()
         {
             { "uid", userId },
@@ -121,24 +127,24 @@ public class AuthController : ControllerBase
             { "exp", expireTime },
             { "role", userRole }
         }, keyToken, JwsAlgorithm.HS256);
-
+    
         return token;
     }
-
+    
     private string GenerateRefreshToken(int userId, long createTime, long expireTime)
     {
         Jwk keyRefreshToken =
             new Jwk(Encoding.ASCII.GetBytes(_configuration.GetChildren().First(x => x.Key == "SecretKeyRefreshToken").Value!));
-
+    
         Console.Out.WriteLine("SecretKeyRefreshToken: " + _configuration.GetChildren().First(x => x.Key == "SecretKeyRefreshToken").Value!);
-
+    
         string refreshToken = Jose.JWT.Encode(new Dictionary<string, object>()
         {
             { "uid", userId },
             { "iat", createTime },
             { "exp", expireTime }
         }, keyRefreshToken, JwsAlgorithm.HS256);
-
+    
         return refreshToken;
     }
 }
