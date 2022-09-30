@@ -7,33 +7,32 @@ namespace AcademicManagementSystem.Context.AmsModels;
 [Table("user")]
 public class User
 {
+    public User()
+    {
+        this.ActiveRefreshTokens = new HashSet<ActiveRefreshToken>();
+    }
+
     [Key]
     [Column("id")]
     public int Id { get; set; }
     
     [Column("province_id")]
     public int ProvinceId { get; set; }
-    public Province Province { get; set; }
     
     [Column("district_id")]
     public int DistrictId { get; set; }
-    public District District { get; set; }
     
     [Column("ward_id")]
     public int WardId { get; set; }
-    public Ward Ward { get; set; }
     
     [Column("center_id")]
     public int CenterId { get; set; }
-    public Center Center { get; set; }
 
     [Column("gender_id")] 
     public int GenderId { get; set; }
-    public Gender Gender { get; set; }
 
     [Column("role_id")]
     public int RoleId { get; set; }
-    public Role Role { get; set; }
     
     [Column("first_name")]
     [StringLength(255)]
@@ -79,6 +78,15 @@ public class User
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; }
     
-    public ICollection<ActiveRefreshToken> ActiveRefreshTokens { get; set; }
+    // relationships
+    public virtual Province Province { get; set; }
+    public virtual District District { get; set; }
+    public virtual Ward Ward { get; set; }
+    public virtual Center Center { get; set; }
+    public virtual Gender Gender { get; set; }
+    public virtual Role Role { get; set; }
+    public virtual Admin Admin { get; set; }
+    public virtual Sro Sro { get; set; }
+    public virtual ICollection<ActiveRefreshToken> ActiveRefreshTokens { get; set; }
     
 }

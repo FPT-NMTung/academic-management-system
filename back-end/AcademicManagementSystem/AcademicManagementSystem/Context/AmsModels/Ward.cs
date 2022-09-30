@@ -12,15 +12,17 @@ public class Ward
     
     [Column("province_id")]
     public int ProvinceId { get; set; }
-    public Province Province{ get; set; }
     
     [Column("district_id")]    
     public int DistrictId { get; set; }
-    public District District { get; set; }
     
     [Column("name")]
     public string Name { get; set; }
     
     [Column("prefix")]
     public string Prefix { get; set; }
+    
+    // relationships
+    public virtual Province Province{ get; set; }
+    public virtual District District { get; set; }
 }

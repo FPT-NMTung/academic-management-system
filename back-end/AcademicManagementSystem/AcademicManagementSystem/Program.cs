@@ -5,6 +5,14 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("AmsConnection");
 
+var devCorsPolicy = "devCorsPolicy";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(devCorsPolicy, builder => {
+        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+    });
+});
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -28,6 +36,8 @@ app.UseExceptionHandler(app.Environment.IsDevelopment() ? "/error-development" :
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseCors(devCorsPolicy);
 
 app.MapControllers();
 

@@ -54,18 +54,10 @@ namespace AcademicManagementSystem.Migrations
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Admin", b =>
                 {
                     b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("user_id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"), 1L, 1);
-
-                    b.Property<int>("UserId1")
-                        .HasColumnType("int");
-
                     b.HasKey("UserId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("admin");
                 });
@@ -265,18 +257,10 @@ namespace AcademicManagementSystem.Migrations
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Sro", b =>
                 {
                     b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("user_id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"), 1L, 1);
-
-                    b.Property<int>("UserId1")
-                        .HasColumnType("int");
-
                     b.HasKey("UserId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("sro");
                 });
@@ -456,8 +440,8 @@ namespace AcademicManagementSystem.Migrations
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Admin", b =>
                 {
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId1")
+                        .WithOne("Admin")
+                        .HasForeignKey("AcademicManagementSystem.Context.AmsModels.Admin", "UserId")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
@@ -467,13 +451,13 @@ namespace AcademicManagementSystem.Migrations
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Center", b =>
                 {
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.District", "District")
-                        .WithMany()
+                        .WithMany("Centers")
                         .HasForeignKey("DistrictId")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Province", "Province")
-                        .WithMany()
+                        .WithMany("Centers")
                         .HasForeignKey("ProvinceId")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
@@ -524,8 +508,8 @@ namespace AcademicManagementSystem.Migrations
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Sro", b =>
                 {
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId1")
+                        .WithOne("Sro")
+                        .HasForeignKey("AcademicManagementSystem.Context.AmsModels.Sro", "UserId")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
@@ -535,31 +519,31 @@ namespace AcademicManagementSystem.Migrations
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.User", b =>
                 {
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Center", "Center")
-                        .WithMany()
+                        .WithMany("Users")
                         .HasForeignKey("CenterId")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.District", "District")
-                        .WithMany()
+                        .WithMany("Users")
                         .HasForeignKey("DistrictId")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Gender", "Gender")
-                        .WithMany()
+                        .WithMany("Users")
                         .HasForeignKey("GenderId")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Province", "Province")
-                        .WithMany()
+                        .WithMany("Users")
                         .HasForeignKey("ProvinceId")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Role", "Role")
-                        .WithMany()
+                        .WithMany("Users")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
@@ -605,18 +589,38 @@ namespace AcademicManagementSystem.Migrations
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Center", b =>
                 {
                     b.Navigation("Rooms");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.District", b =>
                 {
+                    b.Navigation("Centers");
+
+                    b.Navigation("Users");
+
                     b.Navigation("Wards");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Gender", b =>
+                {
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Province", b =>
                 {
+                    b.Navigation("Centers");
+
                     b.Navigation("Districts");
 
+                    b.Navigation("Users");
+
                     b.Navigation("Wards");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Role", b =>
+                {
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.RoomType", b =>
@@ -627,6 +631,12 @@ namespace AcademicManagementSystem.Migrations
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.User", b =>
                 {
                     b.Navigation("ActiveRefreshTokens");
+
+                    b.Navigation("Admin")
+                        .IsRequired();
+
+                    b.Navigation("Sro")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

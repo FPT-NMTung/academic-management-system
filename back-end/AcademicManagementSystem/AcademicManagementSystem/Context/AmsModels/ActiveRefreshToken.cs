@@ -12,12 +12,13 @@ public class ActiveRefreshToken
     
     [Column("user_id")]
     public int UserId { get; set; }
-    public User User { get; set; }
     
     [Column("refresh_token")]
     public string RefreshToken { get; set; }
-    
+
     [Column("exp_date")]
     public DateTime ExpDate { get; set; }
     
+    // relationships
+    public virtual User User { get; set; }
 }
