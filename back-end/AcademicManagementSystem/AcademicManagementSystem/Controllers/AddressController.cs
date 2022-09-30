@@ -28,7 +28,7 @@ public class AddressController : ControllerBase
         {
             return BadRequest(CustomResponse.BadRequest("Province not found", "address-error-000001"));
         }
-        return Ok(CustomResponse.Ok("Get list province success", listProvince));
+        return Ok(CustomResponse.Ok("Get list provinces success", listProvince));
     }
     
     // get list districts by provinceId
@@ -46,9 +46,9 @@ public class AddressController : ControllerBase
         if (!listDistrict.Any())
         {
             return BadRequest(CustomResponse
-                .BadRequest("District with provinceId not found", "address-error-000002"));
+                .BadRequest("Districts with provinceId not found", "address-error-000002"));
         }
-        return Ok(CustomResponse.Ok("Get list district success", listDistrict));
+        return Ok(CustomResponse.Ok("Get list districts success", listDistrict));
     }
     
     // get list wards by provinceId and districtId
@@ -62,8 +62,8 @@ public class AddressController : ControllerBase
         if (!listWard.Any())
         {
             return BadRequest(CustomResponse
-                .BadRequest("Ward with provinceId and districtId not found", "address-error-000003"));
+                .BadRequest("Wards with provinceId and districtId not found", "address-error-000003"));
         }
-        return Ok(CustomResponse.Ok("Get list ward success", listWard));
+        return Ok(CustomResponse.Ok("Get list wards success", listWard));
     }
 }
