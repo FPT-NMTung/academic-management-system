@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AcademicManagementSystem.Controllers;
 
+[Route("api/address")]
 [ApiController]
 public class AddressController : ControllerBase
 {
@@ -17,8 +18,7 @@ public class AddressController : ControllerBase
     }
     
     //get list province
-    [HttpGet]
-    [Route("api/address/province")]
+    [HttpGet("province")]
     public IActionResult GetProvince()
     {
         var listProvince = _context.Provinces.ToList()
@@ -31,13 +31,12 @@ public class AddressController : ControllerBase
         return Ok(CustomResponse.Ok("Get list province success", listProvince));
     }
     
-    // get list district by province id
-    [HttpGet]
-    [Route("api/address/district/{province_id}")]
-    public IActionResult GetDistrict(int province_id)
+    // get list district by provinceId
+    [HttpGet("district/{provinceId:int}")]
+    public IActionResult GetDistrict(int provinceId)
     {
         var listDistrict = _context.Districts.ToList()
-            .Where(d => d.ProvinceId == province_id)
+            .Where(d => d.ProvinceId == provinceId)
             .Select(d =>
                 new DistrictResponse()
                 {
@@ -47,18 +46,17 @@ public class AddressController : ControllerBase
         if (!listDistrict.Any())
         {
             return BadRequest(CustomResponse
-                .BadRequest("District with this province_id not found", "address-error-000002"));
+                .BadRequest("District with provinceId not found", "address-error-000002"));
         }
         return Ok(CustomResponse.Ok("Get list district success", listDistrict));
     }
     
-    // get list ward by district id
-    [HttpGet]
-    [Route("api/address/ward/{district_id}")]
-    public IActionResult GetWard(int district_id)
+    // get list ward by districtId
+    [HttpGet("ward/{districtId:int}")]
+    public IActionResult GetWard(int districtId)
     {
         var listWard = _context.Wards.ToList()
-            .Where(w => w.DistrictId == district_id)
+            .Where(w => w.DistrictId == districtId)
             .Select(w =>
                 new WardResponse()
                 {
@@ -66,11 +64,10 @@ public class AddressController : ControllerBase
                 });
         // empty list
         if (!listWard.Any())
-        { 
+        {
             return BadRequest(CustomResponse
-                .BadRequest("Ward with this district_id not found", "address-error-000003"));
+                .BadRequest("Ward with districtId not found", "address-error-000003"));
         }
-        
         return Ok(CustomResponse.Ok("Get list ward success", listWard));
     }
 }
