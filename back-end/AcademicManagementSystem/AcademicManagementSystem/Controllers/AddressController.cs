@@ -40,7 +40,7 @@ public class AddressController : ControllerBase
             .Select(d =>
                 new DistrictResponse()
                 {
-                    DistrictId = d.Id, Name = d.Name, Prefix = d.Prefix
+                    Id = d.Id, Name = d.Name, Prefix = d.Prefix
                 });
         // empty list
         if (!listDistrict.Any())
@@ -57,7 +57,7 @@ public class AddressController : ControllerBase
     {
         var listWard = _context.Wards.ToList()
             .Where(w => w.ProvinceId == provinceId && w.DistrictId == districtId)
-            .Select(w => new WardResponse() { WardId = w.Id, Name = w.Name, Prefix = w.Prefix });
+            .Select(w => new WardResponse() { Id = w.Id, Name = w.Name, Prefix = w.Prefix });
         // empty list
         if (!listWard.Any())
         {

@@ -4,8 +4,8 @@ namespace AcademicManagementSystem.Models.AddressController.DistrictModel;
 
 public class DistrictResponse
 {
-    [JsonProperty("district_id")]
-    public int DistrictId { get; set; }
+    [JsonProperty("id")]
+    public int Id { get; set; }
     
     [JsonProperty("name")]
     public string Name { get; set; }
