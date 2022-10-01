@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using AcademicManagementSystem.Context;
 using AcademicManagementSystem.Context.AmsModels;
+using AcademicManagementSystem.Extension;
 using AcademicManagementSystem.Models.RoomController.RoomModel;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,9 +24,11 @@ public class RoomController : ControllerBase
     [Route("api/center/{centerId:int}/rooms")]
     public IActionResult GetRoomsByCenterId(int centerId)
     {
+
         if (!IsCenterExists(centerId))
         {
-            return BadRequest(CustomResponse.BadRequest("Center not found", "room-error-000004"));
+            var error = ErrorDescription.Error["E0001"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         var rooms = _context.Rooms.ToList()
@@ -43,10 +46,11 @@ public class RoomController : ControllerBase
 
         if (!rooms.Any())
         {
-            return BadRequest(CustomResponse.BadRequest("Room Not Found", "room-error-000001"));
+            var error = ErrorDescription.Error["E0002"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        return Ok(CustomResponse.Ok("Get all rooms by room type id success", rooms));
+        return Ok(CustomResponse.Ok("Get all rooms by centerId successfully", rooms));
     }
 
     //create new room
@@ -64,37 +68,43 @@ public class RoomController : ControllerBase
 
         if (IsRoomExists(roomRequest))
         {
-            return BadRequest(CustomResponse.BadRequest("This room already exists", "room-error-000003"));
+            var error = ErrorDescription.Error["E0003"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         if (!IsCenterExists(roomRequest.CenterId))
         {
-            return BadRequest(CustomResponse.BadRequest("Center not found", "room-error-000004"));
+            var error = ErrorDescription.Error["E0004"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         if (!IsRoomTypeExists(roomRequest.RoomTypeId))
         {
-            return BadRequest(CustomResponse.BadRequest("Room type not found", "room-error-000005"));
+            var error = ErrorDescription.Error["E0005"];
+            return BadRequest(CustomResponse.BadRequest( error.Message, error.Type));
         }
 
         if (roomRequest.Capacity < 20 || roomRequest.Capacity > 100)
         {
-            return BadRequest(CustomResponse.BadRequest("Capacity must be between 20 and 100", "room-error-000006"));
+            var error = ErrorDescription.Error["E0006"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         if (string.IsNullOrWhiteSpace(roomRequest.Name))
         {
-            return BadRequest(CustomResponse.BadRequest("Name cannot be empty", "room-error-000007"));
+            var error = ErrorDescription.Error["E0007"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         if (!Regex.IsMatch(room.Name, RegexRoomName))
         {
-            return BadRequest(CustomResponse.BadRequest("Name must match format", "room-error-000010"));
+            var error = ErrorDescription.Error["E0008"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         _context.Rooms.Add(room);
         _context.SaveChanges();
-        return Ok(CustomResponse.Ok("Create room success", roomRequest));
+        return Ok(CustomResponse.Ok("Create room successfully", roomRequest));
     }
 
     //Update room
@@ -104,33 +114,39 @@ public class RoomController : ControllerBase
         var roomToUpdate = _context.Rooms.FirstOrDefault(r => r.Id == roomId);
         if (roomToUpdate == null)
         {
+            var error = ErrorDescription.Error["E0009"];
             return BadRequest(
-                CustomResponse.BadRequest("Room with this id not found", "room-error-000008"));
+                CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         if (string.IsNullOrWhiteSpace(roomRequest.Name))
         {
-            return BadRequest(CustomResponse.BadRequest("Name cannot be empty", "room-error-000009"));
+            var error = ErrorDescription.Error["E0010"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         if (!Regex.IsMatch(roomRequest.Name, RegexRoomName))
         {
-            return BadRequest(CustomResponse.BadRequest("Name must match format", "room-error-000010"));
+            var error = ErrorDescription.Error["E0011"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         if (!IsCenterExists(roomRequest.CenterId))
         {
-            return BadRequest(CustomResponse.BadRequest("Center not found", "room-error-000004"));
+            var error = ErrorDescription.Error["E0012"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         if (!IsRoomTypeExists(roomRequest.RoomTypeId))
         {
-            return BadRequest(CustomResponse.BadRequest("Room type not found", "room-error-000005"));
+            var error = ErrorDescription.Error["E0013"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         if (roomRequest.Capacity < 20 || roomRequest.Capacity > 100)
         {
-            return BadRequest(CustomResponse.BadRequest("Capacity must be between 20 and 100", "room-error-000006"));
+            var error = ErrorDescription.Error["E0014"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         roomToUpdate.RoomTypeId = roomRequest.RoomTypeId;
@@ -138,7 +154,7 @@ public class RoomController : ControllerBase
         roomToUpdate.Capacity = roomRequest.Capacity;
 
         _context.SaveChanges();
-        return Ok(CustomResponse.Ok("Room updated successfully", roomToUpdate));
+        return Ok(CustomResponse.Ok("Update room successfully", roomToUpdate));
     }
 
     private bool IsRoomExists(RoomRequest roomRequest)
