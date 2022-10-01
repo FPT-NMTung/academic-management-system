@@ -7,6 +7,7 @@ import NotFoundScreen from './screens/NotFoundScreen/NotFoundScreen';
 import FirstLayout from './components/Layout/FirstLayout/FirstLayout';
 import Schedule from './screens/Student/ScheduleScreen/ScheduleScreen';
 import SecondLayout from './components/Layout/SecondLayout/SecondLayout';
+import CenterScreen from './screens/Admin/Center/CenterScreen';
 
 const App = () => {
   return (
@@ -35,7 +36,7 @@ const App = () => {
       {/* Routers for role admin */}
       <Route path={'/admin'} element={<SecondLayout><RequireAuth role={'admin'} /></SecondLayout>} >
         <Route index element={<p>Trang chủ</p>} />
-        <Route path='/admin/center' element={<p>Quản lý cơ sở</p>}/>
+        <Route path='/admin/center' element={<CenterScreen/>}/>
         <Route path='/admin/account/sro' element={<p>Quản lý SRO</p>}/>
         <Route path='/admin/account/sro/:id' element={<p>Quản lý SRO detail</p>}/>
       </Route>
