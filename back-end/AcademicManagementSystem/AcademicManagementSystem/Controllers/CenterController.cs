@@ -1,5 +1,8 @@
 ﻿using AcademicManagementSystem.Context;
 using AcademicManagementSystem.Models.AddressController;
+using AcademicManagementSystem.Models.AddressController.DistrictModel;
+using AcademicManagementSystem.Models.AddressController.ProvinceModel;
+using AcademicManagementSystem.Models.AddressController.WardModel;
 using AcademicManagementSystem.Models.CenterController;
 using Microsoft.AspNetCore.Mvc;
 
@@ -51,9 +54,9 @@ public class CenterController : ControllerBase
         }
         var centerAddress = new AddressResponse()
         {
-            Province = province.Name, 
-            District = $"{district.Prefix} {district.Name}",
-            Ward = $"{ward.Prefix} {ward.Name}"
+            Province = new ProvinceResponse() { Id = province.Id, Code = province.Code, Name = province.Name },
+            District = new DistrictResponse() { Id = district.Id, Name = district.Name, Prefix = district.Prefix },
+            Ward = new WardResponse() { Id = ward.Id, Name = ward.Name, Prefix = ward.Prefix }
         };
         return Ok(CustomResponse.Ok("Get address success", centerAddress));
     }
