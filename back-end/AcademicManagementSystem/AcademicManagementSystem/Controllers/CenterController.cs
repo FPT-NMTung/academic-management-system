@@ -1,9 +1,6 @@
-﻿using System.Text.RegularExpressions;
-using AcademicManagementSystem.Context;
-using AcademicManagementSystem.Context.AmsModels;
+﻿using AcademicManagementSystem.Context;
+using AcademicManagementSystem.Models.AddressController;
 using AcademicManagementSystem.Models.CenterController;
-using AcademicManagementSystem.Models.RoomController.RoomModel;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AcademicManagementSystem.Controllers;
@@ -36,28 +33,26 @@ public class CenterController : ControllerBase
     }
     
     // get address by center id
-    /*[HttpGet]
+    [HttpGet]
     [Route("api/centers/{id:int}/address")]
     public IActionResult GetAddressByCenterId(int id)
     {
         var center = _context.Centers.FirstOrDefault(c => c.Id == id);
-        var province = _context.Provinces.FirstOrDefault(p => p.Id == center.ProvinceId);
-        var district = _context.Districts.FirstOrDefault(d => d.Id == center.DistrictId);
-        var ward = _context.Wards.FirstOrDefault(w => w.Id == center.WardId);
-        
-        if (center == null || province == null || district == null || ward == null) {}
+        if (center == null)
         {
             return BadRequest(CustomResponse.BadRequest("Center not found", "center-error-000002"));
         }
-        var address = _context.Addresses.FirstOrDefault(a => a.Id == center.AddressId);
-        if (address == null)
-            return BadRequest(CustomResponse.BadRequest("Address not found", "center-error-000002"));
-        var addressResponse = new AddressResponse()
+        var province = _context.Provinces.FirstOrDefault(p => p.Id == center.ProvinceId);
+        var district = _context.Districts.FirstOrDefault(d => d.Id == center.DistrictId);
+        var ward = _context.Wards.FirstOrDefault(w => w.Id == center.WardId);
+        if (province == null || district == null || ward == null)
         {
-            Id = address.Id, ProvinceId = address.ProvinceId, DistrictId = address.DistrictId,
-            WardId = address.WardId, Address = address.Address, CreatedAt = address.CreatedAt,
-            UpdatedAt = address.UpdatedAt
+            return BadRequest(CustomResponse.BadRequest("Center address not found", "center-error-000003"));
+        }
+        var centerAddress = new AddressResponse()
+        {
+            Province = province.Name, District = district.Name, Ward = ward.Name
         };
-        return Ok(CustomResponse.Ok("Get address by center id success", addressResponse));
-    }*/
+        return Ok(CustomResponse.Ok("Get address success", centerAddress));
+    }
 }
