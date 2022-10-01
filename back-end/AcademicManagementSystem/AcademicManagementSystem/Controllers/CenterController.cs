@@ -74,30 +74,57 @@ public class CenterController : ControllerBase
     [Authorize(Roles = "admin")]
     public IActionResult CreateCenter([FromBody] CreateCenterRequest request)
     {
-        var center = new Center()
-        {
-            ProvinceId = request.ProvinceId, DistrictId = request.DistrictId, WardId = request.WardId,
-            Name = request.Name!.Trim(), CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now
-        };
-
         if (IsCenterExists(request))
         {
             var error = ErrorDescription.Error["E0015"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        // vietnamese name regex pattern
 
-        if (string.IsNullOrWhiteSpace(request.Name.Trim()) 
+        if (string.IsNullOrWhiteSpace(request.Name?.Trim()) 
             || request.Name.Trim().Length > 100
             || !Regex.IsMatch(request.Name.Trim(), StringConstant.RegexVietNameseName))
         {
             var error = ErrorDescription.Error["E0016"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-
+        
+        var center = new Center()
+        {
+            ProvinceId = request.ProvinceId, DistrictId = request.DistrictId, WardId = request.WardId,
+            Name = request.Name!.Trim(), CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now
+        };
         _context.Centers.Add(center);
         _context.SaveChanges();
         return Ok(CustomResponse.Ok("Create center success", request));
+    }
+    
+    // update center
+    [HttpPut]
+    [Route("api/center/{id:int}")]
+    [Authorize(Roles = "admin")]
+    public IActionResult UpdateCenter(int id, [FromBody] UpdateCenterRequest request)
+    {
+        var center = _context.Centers.FirstOrDefault(c => c.Id == id);
+        if (center == null)
+        {
+            var error = ErrorDescription.Error["E0018"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        if (string.IsNullOrWhiteSpace(request.Name?.Trim()) 
+            || request.Name.Trim().Length > 100
+            || !Regex.IsMatch(request.Name.Trim(), StringConstant.RegexVietNameseName))
+        {
+            var error = ErrorDescription.Error["E0016"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        center.ProvinceId = request.ProvinceId;
+        center.DistrictId = request.DistrictId;
+        center.WardId = request.WardId;
+        center.Name = request.Name!.Trim();
+        center.UpdatedAt = DateTime.Now;
+        _context.Centers.Update(center);
+        _context.SaveChanges();
+        return Ok(CustomResponse.Ok("Update center success", request));
     }
     
     // is center exists
