@@ -51,7 +51,9 @@ public class CenterController : ControllerBase
         }
         var centerAddress = new AddressResponse()
         {
-            Province = province.Name, District = district.Name, Ward = ward.Name
+            Province = province.Name, 
+            District = $"{district.Prefix} {district.Name}",
+            Ward = $"{ward.Prefix} {ward.Name}"
         };
         return Ok(CustomResponse.Ok("Get address success", centerAddress));
     }
