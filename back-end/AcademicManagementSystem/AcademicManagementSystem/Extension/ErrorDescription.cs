@@ -18,6 +18,13 @@ public static class ErrorDescription
         { "E0012", new ErrorModel() { Message = "centerId for UPDATE room not found", Type = "room-error-0012" } },
         { "E0013", new ErrorModel() { Message = "roomTypeId for UPDATE room not found", Type = "room-error-0013" } },
         { "E0014", new ErrorModel() { Message = "Capacity for UPDATE room must be between 20 and 100", Type = "room-error-0014" } },
+        
+        { "E0015", new ErrorModel() { Message = "This center already exists", Type = "center-error-0001" } },
+        { "E0016", new ErrorModel() { Message = "Center name cannot be empty", Type = "center-error-0002" } },
+        { "E0017", new ErrorModel() { Message = "Center name do not match with format", Type = "center-error-0003" } },
+        { "E0018", new ErrorModel() { Message = "Center not found", Type = "center-error-0004" } },
+        { "E0019", new ErrorModel() { Message = "Center Address not found", Type = "center-error-0005" } },
+        { "E0019", new ErrorModel() { Message = "There is no center", Type = "center-error-0006" } },
     };
 }
 

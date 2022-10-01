@@ -17,7 +17,7 @@ public class CenterResponse
     public int WardId { get; set; }
 
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
     
     [JsonPropertyName("created_at")]
     public DateTime CreatedAt { get; set; }

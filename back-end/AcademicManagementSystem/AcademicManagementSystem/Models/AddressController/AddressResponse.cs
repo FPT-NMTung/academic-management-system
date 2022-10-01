@@ -8,11 +8,11 @@ namespace AcademicManagementSystem.Models.AddressController;
 public class AddressResponse
 {
     [JsonPropertyName("province")]
-    public ProvinceResponse Province { get; set; }
+    public ProvinceResponse? Province { get; set; }
     
     [JsonPropertyName("district")]
-    public DistrictResponse District { get; set; }
+    public DistrictResponse? District { get; set; }
     
     [JsonPropertyName("ward")]
-    public WardResponse Ward { get; set; }
+    public WardResponse? Ward { get; set; }
 }
