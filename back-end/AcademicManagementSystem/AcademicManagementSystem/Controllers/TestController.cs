@@ -1,8 +1,11 @@
 using AcademicManagementSystem.Models;
+using AcademicManagementSystem.Services;
 using Azure.Communication.Email;
 using Azure.Communication.Email.Models;
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Google.Apis.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AcademicManagementSystem.Controllers;
@@ -10,6 +13,13 @@ namespace AcademicManagementSystem.Controllers;
 [ApiController]
 public class TestController : ControllerBase
 {
+    private readonly IUserService _userService;
+
+    public TestController(IUserService userService)
+    {
+        _userService = userService;
+    }
+
     [HttpPost]
     [Route("api/test/create-file-excel")]
     public IActionResult Test()
@@ -104,5 +114,14 @@ public class TestController : ControllerBase
         // }
         //
         return BadRequest("Login failed");
+    }
+
+    [HttpPost]
+    [Route("api/test/auth")]
+    [Authorize( Roles = "admin")]
+    public IActionResult Auth()
+    {
+        var temp = _userService.GetUserId();
+        return Ok(temp);
     }
 }
