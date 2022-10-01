@@ -7,6 +7,7 @@ using AcademicManagementSystem.Models.AddressController.DistrictModel;
 using AcademicManagementSystem.Models.AddressController.ProvinceModel;
 using AcademicManagementSystem.Models.AddressController.WardModel;
 using AcademicManagementSystem.Models.CenterController;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AcademicManagementSystem.Controllers;
@@ -69,7 +70,8 @@ public class CenterController : ControllerBase
     
     // create center
     [HttpPost]
-    [Route("api/centers")]
+    [Route("api/center")]
+    [Authorize(Roles = "admin")]
     public IActionResult CreateCenter([FromBody] CreateCenterRequest request)
     {
         var center = new Center()
@@ -83,22 +85,19 @@ public class CenterController : ControllerBase
             var error = ErrorDescription.Error["E0015"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
-        if (string.IsNullOrWhiteSpace(request.Name.Trim()))
+        // vietnamese name regex pattern
+
+        if (string.IsNullOrWhiteSpace(request.Name.Trim()) 
+            || request.Name.Trim().Length > 100
+            || !Regex.IsMatch(request.Name.Trim(), StringConstant.RegexVietNameseName))
         {
             var error = ErrorDescription.Error["E0016"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
-        // if (!Regex.IsMatch(request.Name, StringConstant.RegexCenterName))
-        // {
-        //     var error = ErrorDescription.Error["E0017"];
-        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        // }
-        
+
         _context.Centers.Add(center);
         _context.SaveChanges();
-        return Ok(CustomResponse.Ok("Create center success", center));
+        return Ok(CustomResponse.Ok("Create center success", request));
     }
     
     // is center exists
