@@ -203,9 +203,12 @@ namespace AcademicManagementSystem.Migrations
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Room", b =>
                 {
-                    b.Property<string>("RoomCode")
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("room_code");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int>("Capacity")
                         .HasColumnType("int")
@@ -225,7 +228,7 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnType("int")
                         .HasColumnName("room_type_id");
 
-                    b.HasKey("RoomCode");
+                    b.HasKey("Id");
 
                     b.HasIndex("CenterId");
 
