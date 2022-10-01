@@ -1,16 +1,16 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace AcademicManagementSystem.Models.AddressController.DistrictModel;
 
 public class DistrictResponse
 {
-    [JsonProperty("district_id")]
-    public int DistrictId { get; set; }
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
     
-    [JsonProperty("name")]
+    [JsonPropertyName("name")]
     public string Name { get; set; }
     
-    [JsonProperty("prefix")]
+    [JsonPropertyName("prefix")]
     public string Prefix { get; set; }
     
     // [JsonProperty("province_id")]
