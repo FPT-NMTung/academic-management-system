@@ -12,6 +12,11 @@ export const CenterApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  createCenter: {
+    url: 'api/center',
+    method: 'POST',
+    contextType: 'application/json',
+  },
 };
 
 export const AddressApis = {
