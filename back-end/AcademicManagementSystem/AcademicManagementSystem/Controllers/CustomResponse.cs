@@ -39,7 +39,7 @@ public static class CustomResponse
     {
         return new ResponseCustom()
         {
-            StatusCode = HttpStatusCode.Unauthorized,
+            StatusCode = HttpStatusCode.NotFound,
             Message = message
         };
     }
