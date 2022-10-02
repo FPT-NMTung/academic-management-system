@@ -34,6 +34,15 @@ public static class CustomResponse
             Message = message
         };
     }
+    
+    public static object NotFound(string message)
+    {
+        return new ResponseCustom()
+        {
+            StatusCode = HttpStatusCode.Unauthorized,
+            Message = message
+        };
+    }
 }
 
 class ResponseCustom

@@ -24,11 +24,6 @@ public class AddressController : ControllerBase
     {
         var listProvince = _context.Provinces.ToList()
             .Select(p => new ProvinceResponse() { Id = p.Id, Code = p.Code, Name = p.Name });
-        // empty list
-        if (!listProvince.Any())
-        {
-            return BadRequest(CustomResponse.BadRequest("Province not found", "address-error-000001"));
-        }
         return Ok(CustomResponse.Ok("Get list provinces success", listProvince));
     }
     
@@ -46,8 +41,7 @@ public class AddressController : ControllerBase
         // empty list
         if (!listDistrict.Any())
         {
-            return BadRequest(CustomResponse
-                .BadRequest("Districts with provinceId not found", "address-error-000002"));
+            return NotFound(CustomResponse.NotFound("Not found districts"));
         }
         return Ok(CustomResponse.Ok("Get list districts success", listDistrict));
     }
@@ -62,8 +56,7 @@ public class AddressController : ControllerBase
         // empty list
         if (!listWard.Any())
         {
-            return BadRequest(CustomResponse
-                .BadRequest("Wards with provinceId and districtId not found", "address-error-000003"));
+            return NotFound(CustomResponse.NotFound("Not found wards"));
         }
         return Ok(CustomResponse.Ok("Get list wards success", listWard));
     }
@@ -78,15 +71,15 @@ public class AddressController : ControllerBase
         // not found
         if (province == null || district == null || ward == null)
         {
-            return BadRequest(CustomResponse.BadRequest("Address not found", "address-error-000004"));
+            return NotFound(CustomResponse.NotFound("Not found address"));
         }
+        
         var address = new AddressResponse()
         {
             Province = new ProvinceResponse() { Id = province.Id, Code = province.Code, Name = province.Name },
             District = new DistrictResponse() { Id = district.Id, Name = district.Name, Prefix = district.Prefix },
             Ward = new WardResponse() { Id = ward.Id, Name = ward.Name, Prefix = ward.Prefix }
         };
-        
         return Ok(CustomResponse.Ok("Get address success", address));
     }
 }
