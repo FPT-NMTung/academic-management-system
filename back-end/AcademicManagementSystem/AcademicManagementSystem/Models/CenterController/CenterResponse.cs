@@ -1,4 +1,7 @@
 using System.Text.Json.Serialization;
+using AcademicManagementSystem.Models.AddressController.DistrictModel;
+using AcademicManagementSystem.Models.AddressController.ProvinceModel;
+using AcademicManagementSystem.Models.AddressController.WardModel;
 
 namespace AcademicManagementSystem.Models.CenterController;
 
@@ -7,14 +10,14 @@ public class CenterResponse
     [JsonPropertyName("id")]
     public int Id { get; set; }
     
-    [JsonPropertyName("province_id")]
-    public int ProvinceId { get; set; }
+    [JsonPropertyName("province")]
+    public ProvinceResponse Province { get; set; }
     
-    [JsonPropertyName("district_id")]
-    public int DistrictId { get; set; }
+    [JsonPropertyName("district")]
+    public DistrictResponse District { get; set; }
     
-    [JsonPropertyName("ward_id")]
-    public int WardId { get; set; }
+    [JsonPropertyName("ward")]
+    public WardResponse Ward { get; set; }
 
     [JsonPropertyName("name")]
     public string? Name { get; set; }

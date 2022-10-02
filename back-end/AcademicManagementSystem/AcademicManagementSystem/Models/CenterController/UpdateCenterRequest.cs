@@ -5,7 +5,7 @@ namespace AcademicManagementSystem.Models.CenterController;
 public class UpdateCenterRequest
 {
     [JsonPropertyName("name")]
-    public string? Name { get; set; }
+    public string Name { get; set; }
     
     [JsonPropertyName("province_id")]
     public int ProvinceId { get; set; }
@@ -15,7 +15,4 @@ public class UpdateCenterRequest
     
     [JsonPropertyName("ward_id")]
     public int WardId { get; set; }
-
-    [JsonPropertyName("updated_at")]
-    public DateTime UpdatedAt { get; set; }
 }

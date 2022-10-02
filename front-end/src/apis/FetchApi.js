@@ -1,5 +1,5 @@
-const endpoint = "https://apms-api.azurewebsites.net/";
-// const endpoint = "https://localhost:7142/";
+// const endpoint = "https://apms-api.azurewebsites.net/";
+const endpoint = "https://localhost:7142/";
 
 /**
  * Fetches data from the API and returns a promise.
@@ -39,7 +39,12 @@ const FetchApi = async (api, bodyObject, params, pathValiable) => {
     });
   }
 
-  let response = await fetch(`${endpoint}${newUrl}${paramString}`, options);
+  let response
+  try {
+    response = await fetch(`${endpoint}${newUrl}${paramString}`, options);
+  } catch (error) {
+    console.log(error.status);
+  }
 
   if (response.status === 401) {
     const dataRefresh = await refreshToken();
