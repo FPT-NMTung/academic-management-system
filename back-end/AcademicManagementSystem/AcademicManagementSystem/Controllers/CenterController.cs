@@ -16,12 +16,12 @@ namespace AcademicManagementSystem.Controllers;
 public class CenterController : ControllerBase
 {
     private readonly AmsContext _context;
-    
+
     public CenterController(AmsContext context)
     {
         _context = context;
     }
-    
+
     [HttpGet]
     [Route("api/centers")]
     public IActionResult GetCenters()
@@ -32,14 +32,9 @@ public class CenterController : ControllerBase
                 Id = c.Id, ProvinceId = c.ProvinceId, DistrictId = c.DistrictId, WardId = c.WardId,
                 Name = c.Name, CreatedAt = c.CreatedAt, UpdatedAt = c.UpdatedAt
             });
-        if (!centers.Any())
-        {
-            var error = ErrorDescription.Error["E0020"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
         return Ok(CustomResponse.Ok("Get all centers success", centers));
     }
-    
+
     // get address by center id
     [HttpGet]
     [Route("api/centers/{id:int}/address")]
@@ -51,6 +46,7 @@ public class CenterController : ControllerBase
             var error = ErrorDescription.Error["E0018"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
+
         var province = _context.Provinces.FirstOrDefault(p => p.Id == center.ProvinceId);
         var district = _context.Districts.FirstOrDefault(d => d.Id == center.DistrictId);
         var ward = _context.Wards.FirstOrDefault(w => w.Id == center.WardId);
@@ -59,6 +55,7 @@ public class CenterController : ControllerBase
             var error = ErrorDescription.Error["E0019"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
+
         var centerAddress = new AddressResponse()
         {
             Province = new ProvinceResponse() { Id = province.Id, Code = province.Code, Name = province.Name },
@@ -67,7 +64,7 @@ public class CenterController : ControllerBase
         };
         return Ok(CustomResponse.Ok("Get address success", centerAddress));
     }
-    
+
     // create center
     [HttpPost]
     [Route("api/center")]
@@ -80,14 +77,14 @@ public class CenterController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (string.IsNullOrWhiteSpace(request.Name?.Trim()) 
+        if (string.IsNullOrWhiteSpace(request.Name?.Trim())
             || request.Name.Trim().Length > 100
             || !Regex.IsMatch(request.Name.Trim(), StringConstant.RegexVietNameseName))
         {
             var error = ErrorDescription.Error["E0016"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         var center = new Center()
         {
             ProvinceId = request.ProvinceId, DistrictId = request.DistrictId, WardId = request.WardId,
@@ -97,7 +94,7 @@ public class CenterController : ControllerBase
         _context.SaveChanges();
         return Ok(CustomResponse.Ok("Create center success", request));
     }
-    
+
     // update center
     [HttpPut]
     [Route("api/center/{id:int}")]
@@ -110,13 +107,15 @@ public class CenterController : ControllerBase
             var error = ErrorDescription.Error["E0018"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        if (string.IsNullOrWhiteSpace(request.Name?.Trim()) 
+
+        if (string.IsNullOrWhiteSpace(request.Name?.Trim())
             || request.Name.Trim().Length > 100
             || !Regex.IsMatch(request.Name.Trim(), StringConstant.RegexVietNameseName))
         {
             var error = ErrorDescription.Error["E0016"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
+
         center.ProvinceId = request.ProvinceId;
         center.DistrictId = request.DistrictId;
         center.WardId = request.WardId;
@@ -126,13 +125,13 @@ public class CenterController : ControllerBase
         _context.SaveChanges();
         return Ok(CustomResponse.Ok("Update center success", request));
     }
-    
+
     // is center exists
     private bool IsCenterExists(CreateCenterRequest request)
     {
-        return _context.Centers.Any(c => c.ProvinceId == request.ProvinceId 
-                                         && c.DistrictId == request.DistrictId 
-                                         && c.WardId == request.WardId 
+        return _context.Centers.Any(c => c.ProvinceId == request.ProvinceId
+                                         && c.DistrictId == request.DistrictId
+                                         && c.WardId == request.WardId
                                          && c.Name == request.Name);
     }
 }
