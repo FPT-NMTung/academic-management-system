@@ -3,6 +3,7 @@ using AcademicManagementSystem.Context;
 using AcademicManagementSystem.Context.AmsModels;
 using AcademicManagementSystem.Extension;
 using AcademicManagementSystem.Models.RoomController.RoomModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AcademicManagementSystem.Controllers;
@@ -12,8 +13,7 @@ public class RoomController : ControllerBase
 {
     private readonly AmsContext _context;
 
-    private const string RegexRoomName =
-        "^[a-zA-Z0-9](?!.*--)(?!.*  )(?!.*__)(?!.*-_)(?!.*_-)(?!.* _)(?!.*_ )(?!.*- )(?!.* -)[a-zA-Z0-9-_ ]*[a-zA-Z0-9]$";
+    private const string RegexRoomName = StringConstant.RegexVietNameseNameWithDashUnderscoreSpaces;
 
     public RoomController(AmsContext context)
     {
@@ -22,9 +22,9 @@ public class RoomController : ControllerBase
 
     [HttpGet]
     [Route("api/center/{centerId:int}/rooms")]
+    [Authorize(Roles = "admin")]
     public IActionResult GetRoomsByCenterId(int centerId)
     {
-
         if (!IsCenterExists(centerId))
         {
             var error = ErrorDescription.Error["E0001"];
@@ -46,8 +46,8 @@ public class RoomController : ControllerBase
 
         if (!rooms.Any())
         {
-            var error = ErrorDescription.Error["E0002"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            var notFound = ErrorDescription.Error["E0002"];
+            return Ok(CustomResponse.Ok(notFound.Message, rooms));
         }
 
         return Ok(CustomResponse.Ok("Get all rooms by centerId successfully", rooms));
@@ -56,13 +56,15 @@ public class RoomController : ControllerBase
     //create new room
     [HttpPost]
     [Route("api/room/create")]
+    [Authorize(Roles = "admin")]
     public IActionResult CreateRoom([FromBody] RoomRequest roomRequest)
     {
         var room = new Room()
         {
             CenterId = roomRequest.CenterId,
             RoomTypeId = roomRequest.RoomTypeId,
-            Name = roomRequest.Name,
+            // Name = Regex.Replace(roomRequest.Name.Trim(), StringConstant.RegexWhiteSpaces, " "),
+            Name = roomRequest.Name.Trim(),
             Capacity = roomRequest.Capacity
         };
 
@@ -81,7 +83,7 @@ public class RoomController : ControllerBase
         if (!IsRoomTypeExists(roomRequest.RoomTypeId))
         {
             var error = ErrorDescription.Error["E0005"];
-            return BadRequest(CustomResponse.BadRequest( error.Message, error.Type));
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         if (roomRequest.Capacity < 20 || roomRequest.Capacity > 100)
@@ -102,13 +104,27 @@ public class RoomController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        room.Name = Regex.Replace(room.Name, StringConstant.RegexWhiteSpaces, " ");
+
         _context.Rooms.Add(room);
         _context.SaveChanges();
-        return Ok(CustomResponse.Ok("Create room successfully", roomRequest));
+
+        var roomResponse = new RoomResponse()
+        {
+            Id = room.Id,
+            CenterId = room.CenterId,
+            CenterName = _context.Centers.FirstOrDefault(c => c.Id == room.CenterId)!.Name,
+            RoomTypeId = room.RoomTypeId,
+            RoomTypeValue = _context.RoomTypes.FirstOrDefault(rt => rt.Id == room.RoomTypeId)!.Value,
+            Name = room.Name,
+            Capacity = room.Capacity
+        };
+        return Ok(CustomResponse.Ok("Create room successfully", roomResponse));
     }
 
     //Update room
     [HttpPut("api/room/update/{roomId:int}")]
+    [Authorize(Roles = "admin")]
     public IActionResult UpdateRoom(int roomId, [FromBody] RoomRequest roomRequest)
     {
         var roomToUpdate = _context.Rooms.FirstOrDefault(r => r.Id == roomId);
@@ -125,7 +141,7 @@ public class RoomController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (!Regex.IsMatch(roomRequest.Name, RegexRoomName))
+        if (!Regex.IsMatch(roomRequest.Name.Trim(), RegexRoomName))
         {
             var error = ErrorDescription.Error["E0011"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -150,11 +166,22 @@ public class RoomController : ControllerBase
         }
 
         roomToUpdate.RoomTypeId = roomRequest.RoomTypeId;
-        roomToUpdate.Name = roomRequest.Name;
+        roomToUpdate.Name = Regex.Replace(roomRequest.Name.Trim(), StringConstant.RegexWhiteSpaces, " ");
         roomToUpdate.Capacity = roomRequest.Capacity;
 
         _context.SaveChanges();
-        return Ok(CustomResponse.Ok("Update room successfully", roomToUpdate));
+
+        var roomResponse = new RoomResponse()
+        {
+            Id = roomId,
+            CenterId = roomToUpdate.CenterId,
+            CenterName = _context.Centers.FirstOrDefault(c => c.Id == roomToUpdate.CenterId)!.Name,
+            RoomTypeId = roomToUpdate.RoomTypeId,
+            RoomTypeValue = _context.RoomTypes.FirstOrDefault(rt => rt.Id == roomToUpdate.RoomTypeId)!.Value,
+            Name = roomToUpdate.Name,
+            Capacity = roomToUpdate.Capacity
+        };
+        return Ok(CustomResponse.Ok("Update room successfully", roomResponse));
     }
 
     private bool IsRoomExists(RoomRequest roomRequest)

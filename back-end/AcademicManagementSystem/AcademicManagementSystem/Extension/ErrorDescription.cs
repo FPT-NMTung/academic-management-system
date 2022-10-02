@@ -6,7 +6,7 @@ public static class ErrorDescription
     {
         { "E0001", new ErrorModel() { Message = "centerId for GET rooms not found", Type = "room-error-0001" } },
         { "E0002", new ErrorModel() { Message = "Not found any room in this center", Type = "room-error-0002" } },
-        { "E0003", new ErrorModel() { Message = "This room already exists for create", Type = "room-error-0003" } },
+        { "E0003", new ErrorModel() { Message = "This room already exists for CREATE", Type = "room-error-0003" } },
         { "E0004", new ErrorModel() { Message = "centerId for CREATE room not found", Type = "room-error-0004" } },
         { "E0005", new ErrorModel() { Message = "roomTypeId for CREATE room not found", Type = "room-error-0005" } },
         { "E0006", new ErrorModel() { Message = "Capacity for CREATE room must be between 20 and 100", Type = "room-error-0006" } },
@@ -25,6 +25,7 @@ public static class ErrorDescription
         { "E0018", new ErrorModel() { Message = "Center not found", Type = "center-error-0004" } },
         { "E0019", new ErrorModel() { Message = "Center Address not found", Type = "center-error-0005" } },
         { "E0019", new ErrorModel() { Message = "There is no center", Type = "center-error-0006" } },
+        { "E0020", new ErrorModel() { Message = "This room already exists for UPDATE", Type = "center-error-0007" } },
     };
 }
 
