@@ -4,7 +4,6 @@ import Logo from '../../../images/logo_1.webp';
 import classes from './SecondLayout.module.css';
 import { FaPowerOff } from 'react-icons/fa';
 import { BsPersonFill } from 'react-icons/bs';
-import { Fragment } from 'react';
 import { useNavigate, useLocation, useMatch } from 'react-router-dom';
 import MenuLayout from '../MenuLayout/MenuLayout';
 const { Sider } = Layout;
