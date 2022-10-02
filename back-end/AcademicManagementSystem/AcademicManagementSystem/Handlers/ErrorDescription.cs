@@ -1,4 +1,4 @@
-﻿namespace AcademicManagementSystem.Extension;
+﻿namespace AcademicManagementSystem.Handlers;
 
 public static class ErrorDescription
 {
@@ -21,10 +21,9 @@ public static class ErrorDescription
         
         { "E0015", new ErrorModel() { Message = "This center already exists", Type = "center-error-0001" } },
         { "E0016", new ErrorModel() { Message = "Center name is not match with format", Type = "center-error-0002" } },
-        // { "E0017", new ErrorModel() { Message = "Center name do not match with format", Type = "center-error-0003" } },
+        { "E0017", new ErrorModel() { Message = "There is no center", Type = "center-error-0006" } },
         { "E0018", new ErrorModel() { Message = "Center not found", Type = "center-error-0004" } },
         { "E0019", new ErrorModel() { Message = "Center Address not found", Type = "center-error-0005" } },
-        { "E0019", new ErrorModel() { Message = "There is no center", Type = "center-error-0006" } },
         { "E0020", new ErrorModel() { Message = "This room already exists for UPDATE", Type = "center-error-0007" } },
     };
 }
