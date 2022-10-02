@@ -2,6 +2,7 @@
 using AcademicManagementSystem.Context.AmsModels;
 using AcademicManagementSystem.Models.RoomController.RoomModel;
 using AcademicManagementSystem.Models.RoomController.RoomTypeModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AcademicManagementSystem.Controllers;
@@ -19,6 +20,7 @@ public class RoomTypeController : ControllerBase
     //get all room types
     [HttpGet]
     [Route("api/room-types")]
+    [Authorize(Roles = "admin")]
     public IActionResult GetRoomTypes()
     {
         var roomTypes = _context.RoomTypes.ToList().Select(rt => new RoomTypeResponse()

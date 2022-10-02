@@ -7,8 +7,8 @@ namespace AcademicManagementSystem.Context.AmsModels;
 public class Room
 {
     [Key]
-    [Column("room_code")]
-    public string RoomCode { get; set; }
+    [Column("id")]
+    public int Id { get; set; }
     
     [Column("center_id")]
     public int CenterId { get; set; }
