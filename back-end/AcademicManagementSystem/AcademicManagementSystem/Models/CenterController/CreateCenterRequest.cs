@@ -15,10 +15,4 @@ public class CreateCenterRequest
     
     [JsonPropertyName("ward_id")]
     public int WardId { get; set; }
-    
-    [JsonPropertyName("create_at")]
-    public DateTime CreateAt { get; set; }
-    
-    [JsonPropertyName("updated_at")]
-    public DateTime UpdatedAt { get; set; }
 }

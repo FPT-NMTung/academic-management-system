@@ -13,7 +13,7 @@ var token = builder.Configuration.GetSection("SecretKeyAccessToken").Value;
 var devCorsPolicy = "devCorsPolicy";
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(devCorsPolicy, builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); });
+    options.AddPolicy(devCorsPolicy, build => { build.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); });
 });
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddHttpContextAccessor();

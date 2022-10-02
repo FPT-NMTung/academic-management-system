@@ -9,6 +9,7 @@ using AcademicManagementSystem.Models.AddressController.WardModel;
 using AcademicManagementSystem.Models.CenterController;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AcademicManagementSystem.Controllers;
 
@@ -26,11 +27,32 @@ public class CenterController : ControllerBase
     [Route("api/centers")]
     public IActionResult GetCenters()
     {
-        var centers = _context.Centers.ToList()
+        var centers = _context.Centers.Include(e => e.Province)
+            .Include(e => e.District)
+            .Include(e => e.Ward)
+            .ToList()
             .Select(c => new CenterResponse()
             {
-                Id = c.Id, ProvinceId = c.ProvinceId, DistrictId = c.DistrictId, WardId = c.WardId,
-                Name = c.Name, CreatedAt = c.CreatedAt, UpdatedAt = c.UpdatedAt
+                Id = c.Id,
+                Name = c.Name, CreatedAt = c.CreatedAt, UpdatedAt = c.UpdatedAt,
+                Province = new ProvinceResponse()
+                {
+                    Id = c.Province.Id,
+                    Name = c.Province.Name,
+                    Code = c.Province.Code
+                },
+                District = new DistrictResponse()
+                {
+                    Id = c.District.Id,
+                    Name = c.District.Name,
+                    Prefix = c.District.Prefix,
+                },
+                Ward = new WardResponse()
+                {
+                    Id = c.Ward.Id,
+                    Name = c.Ward.Name,
+                    Prefix = c.Ward.Prefix,
+                }
             });
         return Ok(CustomResponse.Ok("Get all centers success", centers));
     }
