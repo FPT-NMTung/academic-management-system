@@ -1,5 +1,117 @@
-import { Card, Grid, Text, Table } from '@nextui-org/react';
-import { Form, Select, Input, Divider, Button } from 'antd';
+import { Card, Grid, Text } from '@nextui-org/react';
+import { Form, Select, Input, Divider, Button, Table } from 'antd';
+import classes from './CenterScreen.module.css';
+
+const dataSource = [
+  {
+    key: '1',
+    name: 'Mike',
+    age: 32,
+    address: '10 Downing Street',
+  },
+  {
+    key: '2',
+    name: 'John',
+    age: 42,
+    address: '10 Downing Street',
+  },
+  {
+    key: '3',
+    name: 'John',
+    age: 42,
+    address: '10 Downing Street',
+  },
+  {
+    key: '4',
+    name: 'John',
+    age: 42,
+    address: '10 Downing Street',
+  },
+  {
+    key: '5',
+    name: 'John',
+    age: 42,
+    address: '10 Downing Street',
+  },
+  {
+    key: '6',
+    name: 'John',
+    age: 42,
+    address: '10 Downing Street',
+  },
+  {
+    key: '7',
+    name: 'John',
+    age: 42,
+    address: '10 Downing Street',
+  },
+  {
+    key: '8',
+    name: 'John',
+    age: 42,
+    address: '10 Downing Street',
+  },
+  {
+    key: '9',
+    name: 'John',
+    age: 42,
+    address: '10 Downing Street',
+  },
+  {
+    key: '10',
+    name: 'John',
+    age: 42,
+    address: '10 Downing Street',
+  },
+  {
+    key: '11',
+    name: 'John',
+    age: 42,
+    address: '10 Downing Street',
+  },
+  {
+    key: '12',
+    name: 'John',
+    age: 42,
+    address: '10 Downing Street',
+  },
+  {
+    key: '13',
+    name: 'John',
+    age: 42,
+    address: '10 Downing Street',
+  },
+  {
+    key: '14',
+    name: 'John',
+    age: 42,
+    address: '10 Downing Street',
+  },
+  {
+    key: '15',
+    name: 'John',
+    age: 42,
+    address: '10 Downing Street',
+  },
+];
+
+const columns = [
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    key: 'name',
+  },
+  {
+    title: 'Age',
+    dataIndex: 'age',
+    key: 'age',
+  },
+  {
+    title: 'Address',
+    dataIndex: 'address',
+    key: 'address',
+  },
+];
 
 const CenterScreen = () => {
   return (
@@ -13,48 +125,17 @@ const CenterScreen = () => {
             }}
           >
             <Card.Header>
-              <Text size={14}>Danh sách các cơ sở</Text>
+              <div className={classes.headerTable}>
+                <Text size={14}>Danh sách các cơ sở</Text>
+                <Button type="primary">Thêm cơ sở</Button>
+              </div>
             </Card.Header>
             <Card.Divider />
             <Table
-              aria-label="Example static collection table"
-              css={{
-                height: 'auto',
-                minWidth: '100%',
-              }}
-              selectionMode="single"
-              lined
-              headerLined
-              shadow={false}
-            >
-              <Table.Header>
-                <Table.Column>ID</Table.Column>
-                <Table.Column>Tên cơ sở</Table.Column>
-                <Table.Column>Địa chỉ</Table.Column>
-              </Table.Header>
-              <Table.Body>
-                <Table.Row key="1">
-                  <Table.Cell>1</Table.Cell>
-                  <Table.Cell>Hà Nội 1</Table.Cell>
-                  <Table.Cell>Active</Table.Cell>
-                </Table.Row>
-                <Table.Row key="2">
-                  <Table.Cell>2</Table.Cell>
-                  <Table.Cell>Hà Nội 2</Table.Cell>
-                  <Table.Cell>Paused</Table.Cell>
-                </Table.Row>
-                <Table.Row key="3">
-                  <Table.Cell>3</Table.Cell>
-                  <Table.Cell>Hà Nội 3</Table.Cell>
-                  <Table.Cell>Active</Table.Cell>
-                </Table.Row>
-                <Table.Row key="4">
-                  <Table.Cell>4</Table.Cell>
-                  <Table.Cell>Hà Nội 4</Table.Cell>
-                  <Table.Cell>Vacation</Table.Cell>
-                </Table.Row>
-              </Table.Body>
-            </Table>
+              pagination={{ position: ['bottomCenter'] }}
+              dataSource={dataSource}
+              columns={columns}
+            />
           </Card>
         </Grid>
         <Grid xs={4}>
@@ -80,9 +161,7 @@ const CenterScreen = () => {
                   label="Tên cơ sở"
                   name="disabled"
                   valuePropName="checked"
-                  rules={[
-                    { required: true, message: 'Hãy nhập tên cơ sở' },
-                  ]}
+                  rules={[{ required: true, message: 'Hãy nhập tên cơ sở' }]}
                 >
                   <Input placeholder="" />
                 </Form.Item>
