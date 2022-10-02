@@ -1,165 +1,202 @@
-﻿using AcademicManagementSystem.Context;
+﻿using System.Text.RegularExpressions;
+using AcademicManagementSystem.Context;
 using AcademicManagementSystem.Context.AmsModels;
+using AcademicManagementSystem.Extension;
 using AcademicManagementSystem.Models.RoomController.RoomModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AcademicManagementSystem.Controllers;
 
-[Route("api/rooms")]
 [ApiController]
 public class RoomController : ControllerBase
 {
     private readonly AmsContext _context;
+
+    private const string RegexRoomName = StringConstant.RegexVietNameseNameWithDashUnderscoreSpaces;
 
     public RoomController(AmsContext context)
     {
         _context = context;
     }
 
-    //GET: api/rooms/center/{centerId}
     [HttpGet]
-    [Route("center/{centerId:int}")]
+    [Route("api/center/{centerId:int}/rooms")]
+    [Authorize(Roles = "admin")]
     public IActionResult GetRoomsByCenterId(int centerId)
     {
+        if (!IsCenterExists(centerId))
+        {
+            var error = ErrorDescription.Error["E0001"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         var rooms = _context.Rooms.ToList()
             .Where(r => r.CenterId == centerId)
             .Select(r => new RoomResponse()
             {
-                RoomCode = r.RoomCode,
+                Id = r.Id,
+                CenterId = r.CenterId,
+                CenterName = _context.Centers.FirstOrDefault(c => c.Id == r.CenterId)!.Name,
+                RoomTypeId = r.RoomTypeId,
+                RoomTypeValue = _context.RoomTypes.FirstOrDefault(rt => rt.Id == r.RoomTypeId)!.Value,
                 Name = r.Name,
                 Capacity = r.Capacity
             });
 
         if (!rooms.Any())
         {
-            return BadRequest(CustomResponse.BadRequest("No rooms found", "room-error-000001"));
+            var notFound = ErrorDescription.Error["E0002"];
+            return Ok(CustomResponse.Ok(notFound.Message, rooms));
         }
 
-        return Ok(CustomResponse.Ok("Get all rooms by room type id success", rooms));
+        return Ok(CustomResponse.Ok("Get all rooms by centerId successfully", rooms));
     }
 
-    //GET: api/rooms/room-type/{roomTypeId}
-    //get all rooms by roomType Id
-    [HttpGet("room-type/{roomTypeId:int}")]
-    public IActionResult GetRoomsByRoomTypeId(int roomTypeId)
-    {
-        var list = _context.Rooms.ToList();
-        var rooms = list
-            .Where(r => r.RoomTypeId == roomTypeId)
-            .Select(r => new RoomResponse()
-            {
-                RoomCode = r.RoomCode,
-                Name = r.Name,
-                Capacity = r.Capacity
-            });
-
-        if (!rooms.Any())
-        {
-            return BadRequest(CustomResponse.BadRequest("No room found", "room-error-000002"));
-        }
-
-        return Ok(CustomResponse.Ok("Get all rooms by room type id success", rooms));
-    }
-
-    //POST: api/rooms
     //create new room
     [HttpPost]
+    [Route("api/room/create")]
+    [Authorize(Roles = "admin")]
     public IActionResult CreateRoom([FromBody] RoomRequest roomRequest)
     {
         var room = new Room()
         {
-            RoomCode = roomRequest.RoomCode,
             CenterId = roomRequest.CenterId,
             RoomTypeId = roomRequest.RoomTypeId,
-            Name = roomRequest.Name,
+            // Name = Regex.Replace(roomRequest.Name.Trim(), StringConstant.RegexWhiteSpaces, " "),
+            Name = roomRequest.Name.Trim(),
             Capacity = roomRequest.Capacity
         };
-        _context.Rooms.Add(room);
 
-        if (IsRoomExists(roomRequest.RoomCode))
+        if (IsRoomExists(roomRequest))
         {
-            return BadRequest(CustomResponse.BadRequest("Room code already exists", "room-error-000003"));
+            var error = ErrorDescription.Error["E0003"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         if (!IsCenterExists(roomRequest.CenterId))
         {
-            return BadRequest(CustomResponse.BadRequest("Center not found", "room-error-000004"));
+            var error = ErrorDescription.Error["E0004"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
-        if(!IsRoomTypeExists(roomRequest.RoomTypeId))
+
+        if (!IsRoomTypeExists(roomRequest.RoomTypeId))
         {
-            return BadRequest(CustomResponse.BadRequest("Room type not found", "room-error-000005"));
+            var error = ErrorDescription.Error["E0005"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
-        if(roomRequest.Capacity <= 0)
+
+        if (roomRequest.Capacity < 20 || roomRequest.Capacity > 100)
         {
-            return BadRequest(CustomResponse.BadRequest("Capacity must be greater than 0", "room-error-000006"));
+            var error = ErrorDescription.Error["E0006"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
-        if(string.IsNullOrWhiteSpace(roomRequest.Name))
+
+        if (string.IsNullOrWhiteSpace(roomRequest.Name))
         {
-            return BadRequest(CustomResponse.BadRequest("Name cannot be empty", "room-error-000007"));
+            var error = ErrorDescription.Error["E0007"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
+        if (!Regex.IsMatch(room.Name, RegexRoomName))
+        {
+            var error = ErrorDescription.Error["E0008"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        room.Name = Regex.Replace(room.Name, StringConstant.RegexWhiteSpaces, " ");
+
+        _context.Rooms.Add(room);
         _context.SaveChanges();
-        return Ok(CustomResponse.Ok("Create room success", roomRequest));
+
+        var roomResponse = new RoomResponse()
+        {
+            Id = room.Id,
+            CenterId = room.CenterId,
+            CenterName = _context.Centers.FirstOrDefault(c => c.Id == room.CenterId)!.Name,
+            RoomTypeId = room.RoomTypeId,
+            RoomTypeValue = _context.RoomTypes.FirstOrDefault(rt => rt.Id == room.RoomTypeId)!.Value,
+            Name = room.Name,
+            Capacity = room.Capacity
+        };
+        return Ok(CustomResponse.Ok("Create room successfully", roomResponse));
     }
 
-    //PUT: api/rooms/roomCode
     //Update room
-    [HttpPut("{roomCode}")]
-    public IActionResult UpdateRoom(string roomCode, [FromBody] RoomRequest room)
+    [HttpPut("api/room/update/{roomId:int}")]
+    [Authorize(Roles = "admin")]
+    public IActionResult UpdateRoom(int roomId, [FromBody] RoomRequest roomRequest)
     {
-        var roomToUpdate = _context.Rooms.FirstOrDefault(r => r.RoomCode == roomCode);
+        var roomToUpdate = _context.Rooms.FirstOrDefault(r => r.Id == roomId);
         if (roomToUpdate == null)
         {
+            var error = ErrorDescription.Error["E0009"];
             return BadRequest(
-                CustomResponse.BadRequest("Room with code " + roomCode + " not found", "room-error-000008"));
-        }
-        
-        if(string. IsNullOrWhiteSpace(room.Name))
-        {
-            return BadRequest(CustomResponse.BadRequest("Name cannot be empty", "room-error-000009"));
-        }
-        
-        if(room.Capacity <= 0)
-        {
-            return BadRequest(CustomResponse.BadRequest("Capacity must be greater than 0", "room-error-000010"));
+                CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        roomToUpdate.Name = room.Name;
-        roomToUpdate.Capacity = room.Capacity;
+        if (string.IsNullOrWhiteSpace(roomRequest.Name))
+        {
+            var error = ErrorDescription.Error["E0010"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!Regex.IsMatch(roomRequest.Name.Trim(), RegexRoomName))
+        {
+            var error = ErrorDescription.Error["E0011"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsCenterExists(roomRequest.CenterId))
+        {
+            var error = ErrorDescription.Error["E0012"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsRoomTypeExists(roomRequest.RoomTypeId))
+        {
+            var error = ErrorDescription.Error["E0013"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (roomRequest.Capacity < 20 || roomRequest.Capacity > 100)
+        {
+            var error = ErrorDescription.Error["E0014"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        roomToUpdate.RoomTypeId = roomRequest.RoomTypeId;
+        roomToUpdate.Name = Regex.Replace(roomRequest.Name.Trim(), StringConstant.RegexWhiteSpaces, " ");
+        roomToUpdate.Capacity = roomRequest.Capacity;
 
         _context.SaveChanges();
-        return Ok(CustomResponse.Ok("Room updated successfully", roomToUpdate));
-    }
 
-    //DELETE: api/rooms/roomCode
-    [HttpDelete("{roomCode}")]
-    public IActionResult DeleteRoom(string roomCode)
-    {
-        var roomToDelete = _context.Rooms.FirstOrDefault(r => r.RoomCode == roomCode);
-        if (roomToDelete == null)
+        var roomResponse = new RoomResponse()
         {
-            return BadRequest(
-                CustomResponse.BadRequest("Room with code " + roomCode + " not found", "room-error-0000011"));
-        }
+            Id = roomId,
+            CenterId = roomToUpdate.CenterId,
+            CenterName = _context.Centers.FirstOrDefault(c => c.Id == roomToUpdate.CenterId)!.Name,
+            RoomTypeId = roomToUpdate.RoomTypeId,
+            RoomTypeValue = _context.RoomTypes.FirstOrDefault(rt => rt.Id == roomToUpdate.RoomTypeId)!.Value,
+            Name = roomToUpdate.Name,
+            Capacity = roomToUpdate.Capacity
+        };
+        return Ok(CustomResponse.Ok("Update room successfully", roomResponse));
+    }
 
-        _context.Rooms.Remove(roomToDelete);
-        _context.SaveChanges();
-        return Ok(CustomResponse.Ok("Room deleted successfully", roomToDelete));
-    }
-    
-    private bool IsRoomExists(string roomCode)
+    private bool IsRoomExists(RoomRequest roomRequest)
     {
-        return _context.Rooms.Any(e => e.RoomCode == roomCode);
+        return _context.Rooms.Any(r =>
+            r.CenterId == roomRequest.CenterId &&
+            r.RoomTypeId == roomRequest.RoomTypeId &&
+            r.Name == roomRequest.Name);
     }
-    
+
     private bool IsRoomTypeExists(int roomTypeId)
     {
         return _context.RoomTypes.Any(e => e.Id == roomTypeId);
     }
-    
+
     private bool IsCenterExists(int centerId)
     {
         return _context.Centers.Any(e => e.Id == centerId);

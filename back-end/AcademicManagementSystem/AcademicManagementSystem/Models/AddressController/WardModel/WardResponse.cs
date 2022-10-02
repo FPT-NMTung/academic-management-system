@@ -4,8 +4,8 @@ namespace AcademicManagementSystem.Models.AddressController.WardModel;
 
 public class WardResponse
 {
-    [JsonPropertyName("ward_id")]
-    public int WardId { get; set; }
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
         
     [JsonPropertyName("name")]
     public string Name { get; set; }
