@@ -59,7 +59,7 @@ public class CenterController : ControllerBase
 
     //get center by id
     [HttpGet]
-    [Route("api/centers/{id:int}")]
+    [Route("api/center/{id:int}")]
     public IActionResult GetCenterById(int id)
     {
         var center = _context.Centers.Include(e => e.Province)
