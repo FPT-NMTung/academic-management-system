@@ -63,7 +63,7 @@ public class RoomController : ControllerBase
 
     //create new room
     [HttpPost]
-    [Route("api/center/room/create")]
+    [Route("api/room")]
     [Authorize(Roles = "admin")]
     public IActionResult CreateRoom([FromBody] CreateRoomRequest createRoomRequest)
     {
@@ -71,7 +71,7 @@ public class RoomController : ControllerBase
         {
             CenterId = createRoomRequest.CenterId,
             RoomTypeId = createRoomRequest.RoomTypeId,
-            Name = createRoomRequest.Name.Trim(),
+            Name = createRoomRequest.Name!.Trim(),
             Capacity = createRoomRequest.Capacity
         };
 
@@ -115,31 +115,14 @@ public class RoomController : ControllerBase
 
         _context.Rooms.Add(roomCreate);
         _context.SaveChanges();
-
-        // var roomResponse =  _context.Rooms
-        //     .Include(r => r.Center)
-        //     .Include(r => r.RoomType)
-        //     .Where(r => r.Id == roomCreate.Id)
-        //     .Select(r => new RoomResponse()
-        //     {
-        //         Id = r.Id,
-        //         CenterId = r.CenterId,
-        //         CenterName = r.Center.Name,
-        //         Room = new RoomTypeResponse()
-        //         {
-        //             Id = r.RoomTypeId,
-        //             Value = r.RoomType.Value
-        //         },
-        //         Name = r.Name,
-        //         Capacity = r.Capacity
-        //     });
+        
         var roomResponse = GetRoomResponse(roomCreate.Id);
 
         return Ok(CustomResponse.Ok("Create room successfully", roomResponse));
     }
 
     //Update room
-    [HttpPut("api/room/update/{roomId:int}")]
+    [HttpPut("api/room/{roomId:int}")]
     [Authorize(Roles = "admin")]
     public IActionResult UpdateRoom(int roomId, [FromBody] UpdateRoomRequest updateRoomRequest)
     {

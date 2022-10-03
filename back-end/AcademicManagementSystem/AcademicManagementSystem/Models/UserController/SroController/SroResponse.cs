@@ -59,7 +59,7 @@ public class SroResponse
     public string? CitizenIdentityCardNo { get; set; }
     
     [JsonPropertyName("citizen_identity_card_published_date")]
-    public DateTime CitizenIdentityCardPublishedDate { get; set; }
+    public string? CitizenIdentityCardPublishedDate { get; set; }
     
     [JsonPropertyName("citizen_identity_card_published_place")]
     public string? CitizenIdentityCardPublishedPlace { get; set; }

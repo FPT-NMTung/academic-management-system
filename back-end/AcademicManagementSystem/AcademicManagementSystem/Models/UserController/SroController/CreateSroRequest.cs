@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel;
+using System.Text.Json.Serialization;
 using AcademicManagementSystem.Models.AddressController.DistrictModel;
 using AcademicManagementSystem.Models.AddressController.ProvinceModel;
 using AcademicManagementSystem.Models.AddressController.WardModel;
@@ -7,13 +8,8 @@ using AcademicManagementSystem.Models.RoleController;
 
 namespace AcademicManagementSystem.Models.UserController.SroController;
 
-public class SroRequest
+public class CreateSroRequest
 {
-    [JsonPropertyName("id")]
-    public int Id { get; set; }
-    
-    [JsonPropertyName("role_id")]
-    public int RoleId { get; set; }
 
     [JsonPropertyName("first_name")]
     public string? FirstName { get; set; }
@@ -31,6 +27,7 @@ public class SroRequest
     public string? EmailOrganization { get; set; }
     
     [JsonPropertyName("avatar")]
+    [DefaultValue(null)]
     public string? Avatar { get; set; }
     
     [JsonPropertyName("province_id")]
@@ -46,7 +43,7 @@ public class SroRequest
     public int GenderId { get; set; }
     
     [JsonPropertyName("birthday")]
-    public DateTime Birthday { get; set; }
+    public string? Birthday { get; set; }
 
     [JsonPropertyName("center_id")]
     public int CenterId { get; set; }
@@ -55,7 +52,7 @@ public class SroRequest
     public string? CitizenIdentityCardNo { get; set; }
     
     [JsonPropertyName("citizen_identity_card_published_date")]
-    public DateTime CitizenIdentityCardPublishedDate { get; set; }
+    public string? CitizenIdentityCardPublishedDate { get; set; }
     
     [JsonPropertyName("citizen_identity_card_published_place")]
     public string? CitizenIdentityCardPublishedPlace { get; set; }
