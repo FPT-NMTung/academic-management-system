@@ -2,7 +2,7 @@
 
 namespace AcademicManagementSystem.Models.RoomController.RoomModel;
 
-public class RoomRequest
+public class CreateRoomRequest
 {
 
     [JsonPropertyName("center_id")]

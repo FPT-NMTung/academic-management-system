@@ -1,4 +1,4 @@
-namespace AcademicManagementSystem.Extension;
+namespace AcademicManagementSystem.Handlers;
 
 public struct StringConstant
 {
