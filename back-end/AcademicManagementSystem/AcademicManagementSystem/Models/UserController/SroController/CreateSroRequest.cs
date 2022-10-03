@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.AddressController.DistrictModel;
 using AcademicManagementSystem.Models.AddressController.ProvinceModel;
 using AcademicManagementSystem.Models.AddressController.WardModel;
@@ -8,13 +7,13 @@ using AcademicManagementSystem.Models.RoleController;
 
 namespace AcademicManagementSystem.Models.UserController.SroController;
 
-public class SroResponse
+public class SroRequest
 {
     [JsonPropertyName("id")]
     public int Id { get; set; }
     
-    [JsonPropertyName("role")]
-    public RoleResponse Role { get; set; }
+    [JsonPropertyName("role_id")]
+    public int RoleId { get; set; }
 
     [JsonPropertyName("first_name")]
     public string? FirstName { get; set; }
@@ -34,27 +33,24 @@ public class SroResponse
     [JsonPropertyName("avatar")]
     public string? Avatar { get; set; }
     
-    [JsonPropertyName("province")]
-    public ProvinceResponse Province { get; set; }
- 
-    [JsonPropertyName("district")]
-    public DistrictResponse District { get; set; }
+    [JsonPropertyName("province_id")]
+    public int ProvinceId { get; set; }
     
-    [JsonPropertyName("ward")]
-    public WardResponse Ward { get; set; }
+    [JsonPropertyName("district_id")]
+    public int DistrictId { get; set; }
     
-    [JsonPropertyName("gender")]
-    public GenderResponse Gender { get; set; }
-
+    [JsonPropertyName("ward_id")]
+    public int WardId { get; set; }
+    
+    [JsonPropertyName("gender_id")]
+    public int GenderId { get; set; }
+    
     [JsonPropertyName("birthday")]
-    public string Birthday { get; set; }
+    public DateTime Birthday { get; set; }
 
     [JsonPropertyName("center_id")]
     public int CenterId { get; set; }
-    
-    [JsonPropertyName("center_name")]
-    public string? CenterName { get; set; }
-    
+
     [JsonPropertyName("citizen_identity_card_no")]
     public string? CitizenIdentityCardNo { get; set; }
     
