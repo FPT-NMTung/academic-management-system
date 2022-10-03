@@ -55,44 +55,44 @@ public class RoomController : ControllerBase
 
     //create new room
     [HttpPost]
-    [Route("api/room/create")]
+    [Route("api/center/room/create")]
     [Authorize(Roles = "admin")]
-    public IActionResult CreateRoom([FromBody] RoomRequest roomRequest)
+    public IActionResult CreateRoom([FromBody] CreateRoomRequest createRoomRequest)
     {
         var room = new Room()
         {
-            CenterId = roomRequest.CenterId,
-            RoomTypeId = roomRequest.RoomTypeId,
+            CenterId = createRoomRequest.CenterId,
+            RoomTypeId = createRoomRequest.RoomTypeId,
             // Name = Regex.Replace(roomRequest.Name.Trim(), StringConstant.RegexWhiteSpaces, " "),
-            Name = roomRequest.Name.Trim(),
-            Capacity = roomRequest.Capacity
+            Name = createRoomRequest.Name.Trim(),
+            Capacity = createRoomRequest.Capacity
         };
 
-        if (IsRoomExists(roomRequest))
+        if (IsRoomExists(createRoomRequest))
         {
             var error = ErrorDescription.Error["E0003"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (!IsCenterExists(roomRequest.CenterId))
+        if (!IsCenterExists(createRoomRequest.CenterId))
         {
             var error = ErrorDescription.Error["E0004"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (!IsRoomTypeExists(roomRequest.RoomTypeId))
+        if (!IsRoomTypeExists(createRoomRequest.RoomTypeId))
         {
             var error = ErrorDescription.Error["E0005"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (roomRequest.Capacity < 20 || roomRequest.Capacity > 100)
+        if (createRoomRequest.Capacity < 20 || createRoomRequest.Capacity > 100)
         {
             var error = ErrorDescription.Error["E0006"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (string.IsNullOrWhiteSpace(roomRequest.Name))
+        if (string.IsNullOrWhiteSpace(createRoomRequest.Name))
         {
             var error = ErrorDescription.Error["E0007"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -125,7 +125,7 @@ public class RoomController : ControllerBase
     //Update room
     [HttpPut("api/room/update/{roomId:int}")]
     [Authorize(Roles = "admin")]
-    public IActionResult UpdateRoom(int roomId, [FromBody] RoomRequest roomRequest)
+    public IActionResult UpdateRoom(int roomId, [FromBody] UpdateRoomRequest updateRoomRequest)
     {
         var roomToUpdate = _context.Rooms.FirstOrDefault(r => r.Id == roomId);
         if (roomToUpdate == null)
@@ -135,39 +135,39 @@ public class RoomController : ControllerBase
                 CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (string.IsNullOrWhiteSpace(roomRequest.Name))
+        if (string.IsNullOrWhiteSpace(updateRoomRequest.Name))
         {
             var error = ErrorDescription.Error["E0010"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (!Regex.IsMatch(roomRequest.Name.Trim(), RegexRoomName))
+        if (!Regex.IsMatch(updateRoomRequest.Name.Trim(), RegexRoomName))
         {
             var error = ErrorDescription.Error["E0011"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (!IsCenterExists(roomRequest.CenterId))
-        {
-            var error = ErrorDescription.Error["E0012"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
+        // if (!IsCenterExists(updateRoomRequest.CenterId))
+        // {
+        //     var error = ErrorDescription.Error["E0012"];
+        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        // }
 
-        if (!IsRoomTypeExists(roomRequest.RoomTypeId))
+        if (!IsRoomTypeExists(updateRoomRequest.RoomTypeId))
         {
             var error = ErrorDescription.Error["E0013"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (roomRequest.Capacity < 20 || roomRequest.Capacity > 100)
+        if (updateRoomRequest.Capacity < 20 || updateRoomRequest.Capacity > 100)
         {
             var error = ErrorDescription.Error["E0014"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        roomToUpdate.RoomTypeId = roomRequest.RoomTypeId;
-        roomToUpdate.Name = Regex.Replace(roomRequest.Name.Trim(), StringConstant.RegexWhiteSpaces, " ");
-        roomToUpdate.Capacity = roomRequest.Capacity;
+        roomToUpdate.RoomTypeId = updateRoomRequest.RoomTypeId;
+        roomToUpdate.Name = Regex.Replace(updateRoomRequest.Name.Trim(), StringConstant.RegexWhiteSpaces, " ");
+        roomToUpdate.Capacity = updateRoomRequest.Capacity;
 
         _context.SaveChanges();
 
@@ -184,12 +184,12 @@ public class RoomController : ControllerBase
         return Ok(CustomResponse.Ok("Update room successfully", roomResponse));
     }
 
-    private bool IsRoomExists(RoomRequest roomRequest)
+    private bool IsRoomExists(CreateRoomRequest createRoomRequest)
     {
         return _context.Rooms.Any(r =>
-            r.CenterId == roomRequest.CenterId &&
-            r.RoomTypeId == roomRequest.RoomTypeId &&
-            r.Name == roomRequest.Name);
+            r.CenterId == createRoomRequest.CenterId &&
+            r.RoomTypeId == createRoomRequest.RoomTypeId &&
+            r.Name == createRoomRequest.Name);
     }
 
     private bool IsRoomTypeExists(int roomTypeId)
