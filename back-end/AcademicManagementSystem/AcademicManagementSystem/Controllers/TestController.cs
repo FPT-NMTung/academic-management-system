@@ -1,8 +1,11 @@
 using AcademicManagementSystem.Models;
+using AcademicManagementSystem.Services;
 using Azure.Communication.Email;
 using Azure.Communication.Email.Models;
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Google.Apis.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AcademicManagementSystem.Controllers;
@@ -10,6 +13,13 @@ namespace AcademicManagementSystem.Controllers;
 [ApiController]
 public class TestController : ControllerBase
 {
+    private readonly IUserService _userService;
+
+    public TestController(IUserService userService)
+    {
+        _userService = userService;
+    }
+
     [HttpPost]
     [Route("api/test/create-file-excel")]
     public IActionResult Test()
@@ -88,21 +98,30 @@ public class TestController : ControllerBase
     [Route("api/test/login")]
     public IActionResult Login([FromBody] LoginRequest request)
     {
-        var listEmail = new List<string> { "nmtung.temp@gmail.com", "nmtungofficial@gmail.com" };
-        
-        // verify token from client google
-        var payload = GoogleJsonWebSignature.ValidateAsync(request.Token,
-            new GoogleJsonWebSignature.ValidationSettings()
-            {
-                Audience = new[] { "518989199582-9ul4cerv67mgmg777fpl0jl4lb4nsnji.apps.googleusercontent.com" }
-            }).Result.Email;
-        
-        // check email in list email
-        if (listEmail.Contains(payload))
-        {
-            return Ok("Login success");
-        }
-        
+        // var listEmail = new List<string> { "nmtung.temp@gmail.com", "nmtungofficial@gmail.com" };
+        //
+        // // verify token from client google
+        // var payload = GoogleJsonWebSignature.ValidateAsync(request.Token,
+        //     new GoogleJsonWebSignature.ValidationSettings()
+        //     {
+        //         Audience = new[] { "518989199582-9ul4cerv67mgmg777fpl0jl4lb4nsnji.apps.googleusercontent.com" }
+        //     }).Result.Email;
+        //
+        // // check email in list email
+        // if (listEmail.Contains(payload))
+        // {
+        //     return Ok("Login success");
+        // }
+        //
         return BadRequest("Login failed");
+    }
+
+    [HttpPost]
+    [Route("api/test/auth")]
+    [Authorize( Roles = "admin")]
+    public IActionResult Auth()
+    {
+        var temp = _userService.GetUserId();
+        return Ok(temp);
     }
 }

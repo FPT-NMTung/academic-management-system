@@ -1,6 +1,5 @@
-const endpoint = "https://ncmsystem.azurewebsites.net";
-// const endpoint = "https://localhost:44305";
-// const endpoint = 'https://test-ncm-system.azurewebsites.net';
+// const endpoint = "https://apms-api.azurewebsites.net/";
+const endpoint = "https://localhost:7142/";
 
 /**
  * Fetches data from the API and returns a promise.
@@ -40,13 +39,19 @@ const FetchApi = async (api, bodyObject, params, pathValiable) => {
     });
   }
 
-  let response = await fetch(`${endpoint}${newUrl}${paramString}`, options);
+  let response
+  try {
+    response = await fetch(`${endpoint}${newUrl}${paramString}`, options);
+  } catch (error) {
+    console.log(error.status);
+  }
 
   if (response.status === 401) {
     const dataRefresh = await refreshToken();
     if (dataRefresh) {
       localStorage.setItem('access_token', dataRefresh.data.access_token);
       localStorage.setItem('refresh_token', dataRefresh.data.refresh_token);
+      localStorage.setItem('role', dataRefresh.data.role);
       let optionsR = {
         method: api.method,
         headers: {
@@ -78,6 +83,7 @@ const refreshToken = async () => {
   if (!localStorage.getItem('refresh_token')) {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
+    localStorage.removeItem('role');
     window.location.href = '/';
     return null;
   }
@@ -100,6 +106,7 @@ const refreshToken = async () => {
   if (!responseRefresh.ok) {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
+    localStorage.removeItem('role');
     window.location.href = '/';
     return null;
   }
