@@ -31,7 +31,9 @@ public static class ErrorDescription
         // sro
         { "E0016", new ErrorModel() { Message = "centerId for GET SROs not found", Type = "sro-error-0001" } },
         { "E0017", new ErrorModel() { Message = "SRO not found", Type = "sro-error-0002" } },
-
+        
+        //Address
+        { "E1006", new ErrorModel() { Message = "Do not exist provinceId, DistrictId or WardId", Type = "Address-error-0001" } },
     };
 }
 
