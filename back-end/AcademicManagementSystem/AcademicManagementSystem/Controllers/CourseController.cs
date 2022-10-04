@@ -1,4 +1,7 @@
+using System.Text.RegularExpressions;
 using AcademicManagementSystem.Context;
+using AcademicManagementSystem.Context.AmsModels;
+using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.CourseController;
 using AcademicManagementSystem.Models.CourseFamilyController;
 using Microsoft.AspNetCore.Authorization;
@@ -65,5 +68,92 @@ public class CourseController : ControllerBase
             }
         };
         return Ok(courseResponse);
+    }
+
+    // create course
+    [HttpPost]
+    [Route("api/courses")]
+    [Authorize(Roles = "admin,sro")]
+    public IActionResult CreateCourse([FromBody] CreateCourseRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Name.Trim()) || string.IsNullOrWhiteSpace(request.Code.ToUpper().Trim()))
+        {
+            var error = ErrorDescription.Error["E1007"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check existed
+        var course = _context.Courses
+            .FirstOrDefault(c => c.Code == request.Code.ToUpper().Trim());
+        if (course != null)
+        {
+            var error = ErrorDescription.Error["E1014"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var courseFamilyCode =
+            _context.CourseFamilies.FirstOrDefault(cf => cf.Code == request.CourseFamilyCode.ToUpper().Trim());
+        if (courseFamilyCode == null)
+        {
+            var error = ErrorDescription.Error["E1015"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // name format
+        if (Regex.IsMatch(request.Name.Trim(), StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        {
+            var error = ErrorDescription.Error["E1016"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.Name.Trim().Length > 255)
+        {
+            var error = ErrorDescription.Error["E1017"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // code format
+        if (Regex.IsMatch(request.Code.ToUpper().Trim(), StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        {
+            var error = ErrorDescription.Error["E1018"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.Code.ToUpper().Trim().Length > 100)
+        {
+            var error = ErrorDescription.Error["E1019"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.SemesterCount is < 1 or > 10)
+        {
+            var error = ErrorDescription.Error["E1020"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        course = new Course()
+        {
+            Code = request.Code.ToUpper().Trim(), CourseFamilyCode = request.CourseFamilyCode.ToUpper().Trim(),
+            Name = request.Name.Trim(),
+            SemesterCount = request.SemesterCount, IsActive = request.IsActive, CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now
+        };
+
+        _context.Courses.Add(course);
+        _context.SaveChanges();
+
+        var courseResponse = new CourseResponse()
+        {
+            Code = course.Code, CourseFamilyCode = course.CourseFamilyCode, Name = course.Name,
+            SemesterCount = course.SemesterCount, IsActive = course.IsActive, CreatedAt = course.CreatedAt,
+            UpdatedAt = course.UpdatedAt,
+            CourseFamily = new CourseFamilyResponse()
+            {
+                Code = course.CourseFamily.Code, Name = course.CourseFamily.Name,
+                PublishedYear = course.CourseFamily.PublishedYear, IsActive = course.CourseFamily.IsActive,
+                CreatedAt = course.CourseFamily.CreatedAt, UpdatedAt = course.CourseFamily.UpdatedAt
+            }
+        };
+        return Ok(CustomResponse.Ok("Course Created Successfully", courseResponse));
     }
 }

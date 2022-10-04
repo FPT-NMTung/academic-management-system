@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using AcademicManagementSystem.Models.CourseController;
 
 namespace AcademicManagementSystem.Models.CourseFamilyController;
 
@@ -21,7 +22,4 @@ public class CourseFamilyResponse
     
     [JsonPropertyName("updated_at")]
     public DateTime UpdatedAt { get; set; }
-    
-    // [JsonPropertyName("courses")]
-    // public List<CourseResponse> Courses { get; set; }
 }

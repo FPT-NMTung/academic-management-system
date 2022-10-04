@@ -5,6 +5,7 @@ using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.CourseFamilyController;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AcademicManagementSystem.Controllers;
 
@@ -24,7 +25,7 @@ public class CourseFamilyController : ControllerBase
     [Authorize(Roles = "admin,sro")]
     public IActionResult GetCourseFamilies()
     {
-        var courseFamilies = _context.CourseFamilies.ToList()
+        var courseFamilies = _context.CourseFamilies.Include(cf => cf.Courses).ToList()
             .Select(cf => new CourseFamilyResponse()
             {
                 Code = cf.Code, Name = cf.Name, PublishedYear = cf.PublishedYear, IsActive = cf.IsActive,
@@ -33,23 +34,24 @@ public class CourseFamilyController : ControllerBase
         return Ok(CustomResponse.Ok("Get course families success", courseFamilies));
     }
 
-    // get family by code
+    // get course family by code
     [HttpGet]
     [Route("api/course-families/{code}")]
     [Authorize(Roles = "admin,sro")]
     public IActionResult GetCourseFamilyByCode(string code)
     {
-        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.Trim());
+        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.ToUpper().Trim());
         if (courseFamily == null)
         {
             return NotFound(CustomResponse.NotFound("Course family not found"));
         }
 
-        return Ok(CustomResponse.Ok("Get course family success", new CourseFamilyResponse()
+        var courseFamilyResponse = new CourseFamilyResponse()
         {
             Code = courseFamily.Code, Name = courseFamily.Name, PublishedYear = courseFamily.PublishedYear,
             IsActive = courseFamily.IsActive, CreatedAt = courseFamily.CreatedAt, UpdatedAt = courseFamily.UpdatedAt
-        }));
+        };
+        return Ok(CustomResponse.Ok("Get course family success", courseFamilyResponse));
     }
 
     // create course family
@@ -111,7 +113,12 @@ public class CourseFamilyController : ControllerBase
         _context.CourseFamilies.Add(courseFamily);
         _context.SaveChanges();
         
-        return Ok(CustomResponse.Ok("Create course family success", courseFamily));
+        var courseFamilyResponse = new CourseFamilyResponse()
+        {
+            Code = courseFamily.Code, Name = courseFamily.Name, PublishedYear = courseFamily.PublishedYear,
+            IsActive = courseFamily.IsActive, CreatedAt = courseFamily.CreatedAt, UpdatedAt = courseFamily.UpdatedAt
+        };
+        return Ok(CustomResponse.Ok("Create course family success", courseFamilyResponse));
     }
     
     // update course family
@@ -150,23 +157,28 @@ public class CourseFamilyController : ControllerBase
             var error = ErrorDescription.Error["E1012"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         courseFamily.Name = request.Name.Trim();
         courseFamily.PublishedYear = request.PublishedYear;
         courseFamily.IsActive = request.IsActive;
         courseFamily.UpdatedAt = DateTime.Now;
         _context.SaveChanges();
-        
-        return Ok(CustomResponse.Ok("Update course family success", courseFamily));
+
+        var courseFamilyResponse = new CourseFamilyResponse()
+        {
+            Code = courseFamily.Code, Name = courseFamily.Name, PublishedYear = courseFamily.PublishedYear,
+            IsActive = courseFamily.IsActive, CreatedAt = courseFamily.CreatedAt, UpdatedAt = courseFamily.UpdatedAt
+        };
+        return Ok(CustomResponse.Ok("Update course family success", courseFamilyResponse));
     }
-    
+
     // delete course family
     [HttpDelete]
     [Route("api/course-families/{code}")]
     [Authorize(Roles = "admin,sro")]
     public IActionResult DeleteCourseFamily(string code)
     {
-        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.Trim());
+        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.ToUpper().Trim());
         if (courseFamily == null)
         {
             return NotFound(CustomResponse.NotFound("Course family not found"));
@@ -174,10 +186,15 @@ public class CourseFamilyController : ControllerBase
 
         _context.CourseFamilies.Remove(courseFamily);
         _context.SaveChanges();
-        
-        return Ok(CustomResponse.Ok("Delete course family success", courseFamily));
+
+        var courseFamilyResponse = new CourseFamilyResponse()
+        {
+            Code = courseFamily.Code, Name = courseFamily.Name, PublishedYear = courseFamily.PublishedYear,
+            IsActive = courseFamily.IsActive, CreatedAt = courseFamily.CreatedAt, UpdatedAt = courseFamily.UpdatedAt
+        };
+        return Ok(CustomResponse.Ok("Delete course family success", courseFamilyResponse));
     }
-    
+
     // is course family exist
     private bool IsCourseFamilyExists(CreateCourseFamilyRequest request)
     {
