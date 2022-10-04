@@ -3,9 +3,8 @@ using System.Text.Json.Serialization;
 
 namespace AcademicManagementSystem.Models.UserController.SroController;
 
-public class CreateSroRequest
+public class UpdateSroRequest
 {
-
     [JsonPropertyName("first_name")]
     public string? FirstName { get; set; }
     

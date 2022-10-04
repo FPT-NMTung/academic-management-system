@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AcademicManagementSystem.Controllers;
 
 [ApiController]
+[Authorize(Roles = "admin")]
 public class CenterController : ControllerBase
 {
     private readonly AmsContext _context;
@@ -59,7 +60,7 @@ public class CenterController : ControllerBase
 
     //get center by id
     [HttpGet]
-    [Route("api/center/{id:int}")]
+    [Route("api/centers/{id:int}")]
     public IActionResult GetCenterById(int id)
     {
         var center = _context.Centers.Include(e => e.Province)
@@ -102,8 +103,7 @@ public class CenterController : ControllerBase
 
     // create center
     [HttpPost]
-    [Route("api/center")]
-    [Authorize(Roles = "admin")]
+    [Route("api/centers")]
     public IActionResult CreateCenter([FromBody] CreateCenterRequest request)
     {
         // is null or white space input
@@ -112,9 +112,9 @@ public class CenterController : ControllerBase
             var error = ErrorDescription.Error["E1002"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         // name format
-        if (!Regex.IsMatch(request.Name.Trim(), StringConstant.RegexVietNameseNameWithDashUnderscoreSpaces))
+        if (Regex.IsMatch(request.Name.Trim(), StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
         {
             var error = ErrorDescription.Error["E1003"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -125,13 +125,20 @@ public class CenterController : ControllerBase
             var error = ErrorDescription.Error["E1004"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
+        if (request.ProvinceId is < 0 or > 63 || request.DistrictId is < 0 or > 709 ||
+            request.WardId is < 0 or > 11283)
+        {
+            var error = ErrorDescription.Error["E1006"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         if (IsCenterExists(request))
         {
             var error = ErrorDescription.Error["E1005"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         var center = new Center()
         {
             ProvinceId = request.ProvinceId, DistrictId = request.DistrictId, WardId = request.WardId,
@@ -145,8 +152,7 @@ public class CenterController : ControllerBase
 
     // update center
     [HttpPut]
-    [Route("api/center/{id:int}")]
-    [Authorize(Roles = "admin")]
+    [Route("api/centers/{id:int}")]
     public IActionResult UpdateCenter(int id, [FromBody] UpdateCenterRequest request)
     {
         var center = _context.Centers.FirstOrDefault(c => c.Id == id);
@@ -157,13 +163,13 @@ public class CenterController : ControllerBase
         }
 
         // name format
-        if (string.IsNullOrWhiteSpace(request.Name?.Trim()))
+        if (string.IsNullOrWhiteSpace(request.Name.Trim()))
         {
             var error = ErrorDescription.Error["E1002"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
-        if (!Regex.IsMatch(request.Name.Trim(), StringConstant.RegexVietNameseNameWithDashUnderscoreSpaces))
+
+        if (Regex.IsMatch(request.Name.Trim(), StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
         {
             var error = ErrorDescription.Error["E1003"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -175,6 +181,13 @@ public class CenterController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        if (request.ProvinceId is < 0 or > 63 || request.DistrictId is < 0 or > 709 ||
+            request.WardId is < 0 or > 11283)
+        {
+            var error = ErrorDescription.Error["E1006"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         center.ProvinceId = request.ProvinceId;
         center.DistrictId = request.DistrictId;
         center.WardId = request.WardId;
@@ -182,7 +195,8 @@ public class CenterController : ControllerBase
         center.UpdatedAt = DateTime.Now;
         _context.Centers.Update(center);
         _context.SaveChanges();
-        return Ok(CustomResponse.Ok("Update center success", request));
+        
+        return Ok(CustomResponse.Ok("Update center success", center));
     }
 
     // is center exists

@@ -1,5 +1,5 @@
-const endpoint = "https://apms-api.azurewebsites.net/";
-// const endpoint = "https://localhost:7142/";
+// const endpoint = 'https://apms-api.azurewebsites.net/';
+const endpoint = "https://localhost:7142/";
 
 /**
  * Fetches data from the API and returns a promise.
@@ -10,6 +10,7 @@ const endpoint = "https://apms-api.azurewebsites.net/";
  * @returns {Promise<any>} - A promise that resolves to the response.
  */
 const FetchApi = async (api, bodyObject, params, pathValiable) => {
+  // add no-cors
   let options = {
     method: api.method,
     headers: {
@@ -18,10 +19,15 @@ const FetchApi = async (api, bodyObject, params, pathValiable) => {
         ? 'Bearer ' + localStorage.getItem('access_token')
         : '',
     },
-    body: api.contextType === "multipart/form-data" ? bodyObject : bodyObject ? JSON.stringify(bodyObject) : null,
+    body:
+      api.contextType === 'multipart/form-data'
+        ? bodyObject
+        : bodyObject
+        ? JSON.stringify(bodyObject)
+        : null,
   };
 
-  if (api.contextType === "multipart/form-data") {
+  if (api.contextType === 'multipart/form-data') {
     delete options.headers['Content-Type'];
   }
 
@@ -32,26 +38,39 @@ const FetchApi = async (api, bodyObject, params, pathValiable) => {
     }
   }
 
-  let newUrl = api.url
+  let newUrl = api.url;
   if (pathValiable != undefined && pathValiable.length > 0) {
     pathValiable.forEach((element, index) => {
       newUrl = newUrl.replace(`{${index}}`, element);
     });
   }
 
-  let response
-  try {
-    response = await fetch(`${endpoint}${newUrl}${paramString}`, options);
-  } catch (error) {
-    console.log(error.status);
-  }
+  let response = await fetch(`${endpoint}${newUrl}${paramString}`, options);
 
   if (response.status === 401) {
     const dataRefresh = await refreshToken();
     if (dataRefresh) {
       localStorage.setItem('access_token', dataRefresh.data.access_token);
       localStorage.setItem('refresh_token', dataRefresh.data.refresh_token);
-      localStorage.setItem('role', dataRefresh.data.role);
+      const role = dataRefresh.data.role;
+      switch (role) {
+        case 1:
+          localStorage.setItem('role', 'admin');
+          break;
+        case 2:
+          localStorage.setItem('role', 'sro');
+          break;
+        case 3:
+          localStorage.setItem('role', 'teacher');
+          break;
+        case 4:
+          localStorage.setItem('role', 'student');
+          break;
+
+        default:
+          break;
+      }
+
       let optionsR = {
         method: api.method,
         headers: {
@@ -99,7 +118,7 @@ const refreshToken = async () => {
   };
 
   const responseRefresh = await fetch(
-    `${endpoint}/api/auth/refresh-token`,
+    `${endpoint}api/auth/refresh-token`,
     optionsRefresh
   );
 
