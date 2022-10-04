@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AcademicManagementSystem.Controllers;
 
 [ApiController]
+[Authorize(Roles = "admin")]
 public class CenterController : ControllerBase
 {
     private readonly AmsContext _context;
@@ -59,7 +60,7 @@ public class CenterController : ControllerBase
 
     //get center by id
     [HttpGet]
-    [Route("api/center/{id:int}")]
+    [Route("api/centers/{id:int}")]
     public IActionResult GetCenterById(int id)
     {
         var center = _context.Centers.Include(e => e.Province)
@@ -102,8 +103,7 @@ public class CenterController : ControllerBase
 
     // create center
     [HttpPost]
-    [Route("api/center")]
-    [Authorize(Roles = "admin")]
+    [Route("api/centers")]
     public IActionResult CreateCenter([FromBody] CreateCenterRequest request)
     {
         // is null or white space input
@@ -114,7 +114,7 @@ public class CenterController : ControllerBase
         }
 
         // name format
-        if (!Regex.IsMatch(request.Name.Trim(), StringConstant.RegexVietNameseNameWithDashUnderscoreSpaces))
+        if (Regex.IsMatch(request.Name.Trim(), StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
         {
             var error = ErrorDescription.Error["E1003"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -158,8 +158,7 @@ public class CenterController : ControllerBase
 
     // update center
     [HttpPut]
-    [Route("api/center/{id:int}")]
-    [Authorize(Roles = "admin")]
+    [Route("api/centers/{id:int}")]
     public IActionResult UpdateCenter(int id, [FromBody] UpdateCenterRequest request)
     {
         var center = _context.Centers.FirstOrDefault(c => c.Id == id);
@@ -176,7 +175,7 @@ public class CenterController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (!Regex.IsMatch(request.Name.Trim(), StringConstant.RegexVietNameseNameWithDashUnderscoreSpaces))
+        if (Regex.IsMatch(request.Name.Trim(), StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
         {
             var error = ErrorDescription.Error["E1003"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -187,7 +186,7 @@ public class CenterController : ControllerBase
             var error = ErrorDescription.Error["E1004"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         if (request.ProvinceId is <= 0 or > 63 || request.DistrictId is < 0 or > 709 ||
             request.WardId is < 0 or < 11283)
         {

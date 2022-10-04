@@ -1,5 +1,7 @@
+using System.Text.RegularExpressions;
 using AcademicManagementSystem.Context;
 using AcademicManagementSystem.Context.AmsModels;
+using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.CourseFamilyController;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,5 +30,66 @@ public class CourseFamilyController : ControllerBase
                 CreatedAt = cf.CreatedAt, UpdatedAt = cf.UpdatedAt
             });
         return Ok(CustomResponse.Ok("Get course families success", courseFamilies));
+    }
+
+    // create course family
+    [HttpPost]
+    [Route("api/course-families")]
+    [Authorize(Roles = "admin,sro")]
+    public IActionResult CreateCourseFamily([FromBody] CreateCourseFamilyRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Name.Trim()) || string.IsNullOrWhiteSpace(request.Code.Trim()))
+        {
+            var error = ErrorDescription.Error["E1007"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // name format
+        if (Regex.IsMatch(request.Name.Trim(), StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        {
+            var error = ErrorDescription.Error["E1008"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.Name.Trim().Length > 255)
+        {
+            var error = ErrorDescription.Error["E1009"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (Regex.IsMatch(request.Code.Trim(), StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        {
+            var error = ErrorDescription.Error["E1010"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.Code.Trim().Length > 100)
+        {
+            var error = ErrorDescription.Error["E1011"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.PublishedYear < 0)
+        {
+            var error = ErrorDescription.Error["E1012"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var courseFamily = new CourseFamily()
+        {
+            Code = request.Code.Trim(), Name = request.Name.Trim(), PublishedYear = request.PublishedYear,
+            IsActive = request.IsActive,
+            CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now
+        };
+        _context.CourseFamilies.Add(courseFamily);
+        _context.SaveChanges();
+
+        // check
+        var requestResponse = new CreateCourseFamilyRequest()
+        {
+            Code = courseFamily.Code.Trim(), Name = courseFamily.Name.Trim(),
+            PublishedYear = courseFamily.PublishedYear, IsActive = courseFamily.IsActive
+        };
+        return Ok(CustomResponse.Ok("Create course family success", requestResponse));
     }
 }
