@@ -2,17 +2,35 @@ import { Card, Grid, Text } from '@nextui-org/react';
 import { Form, Select, Input, Button } from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
-import { AddressApis, CenterApis } from '../../apis/ListApi';
-import mergeCourseFamilyres from '../../screens/Admin/Course Family/CourseFamily';
+import { CourseFamilyApis} from '../../apis/ListApi';
 
-const CouseFamilyCreate = () => {
+
+const CouseFamilyCreate = ({onCreateSuccess}) => {
 
 
     const [isCreating, setIsCreating] = useState(false);
     const [isFailed, setIsFailed] = useState(false);
     const [form] = Form.useForm();
     const handleSubmitForm = (e) => {
-       
+        setIsCreating(true);
+        FetchApi(
+            CourseFamilyApis.createCourseFamily ,
+          {
+            name: e.coursefamilyname,
+            code: e.coursefamilycode,
+            published_year: e.year,
+            
+          },
+          null,
+          null
+        )
+          .then(() => {
+            onCreateSuccess();
+          })
+          .catch(() => {
+            setIsCreating(false);
+            setIsFailed(true);
+          });
       };
     return (
         <Grid xs={4}>
@@ -33,7 +51,7 @@ const CouseFamilyCreate = () => {
                 <Card.Divider />
                 <Card.Body>
                     <Form
-                     
+                        
                         // labelCol={{ span: 6 }}
                         // wrapperCol={{ span: 14 }}
                         layout="horizontal"                      
@@ -41,7 +59,7 @@ const CouseFamilyCreate = () => {
                         labelAlign="left"
                         labelWrap
                        
-                    //   onFinish={handleSubmitForm}
+                      onFinish={handleSubmitForm}
                       form={form}
                     >
                         <Form.Item 

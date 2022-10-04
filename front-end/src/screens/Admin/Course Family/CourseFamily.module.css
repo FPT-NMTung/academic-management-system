@@ -10,3 +10,8 @@
   .editIcon {
     cursor: pointer;
   }
+  .rowDisable {
+    background-color: #f5f5f5;
+    pointer-events: none;
+   
+  }

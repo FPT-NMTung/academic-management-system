@@ -36,3 +36,20 @@ export const AddressApis = {
     contextType: 'application/json',
   },
 };
+export const CourseFamilyApis = {
+  getAllCourseFamily: {
+    url: 'api/course-families',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getAllCourseFamilybycode: {
+    url: 'api/course-families/{0}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  createCourseFamily: {
+    url: 'api/course-families',
+    method: 'POST',
+    contextType: 'application/json',
+  },
+};
