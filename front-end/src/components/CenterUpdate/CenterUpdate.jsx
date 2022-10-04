@@ -1,22 +1,29 @@
 import { Card, Grid, Text } from '@nextui-org/react';
-import { Form, Select, Input, Button } from 'antd';
+import { Form, Select, Input, Button, Spin } from 'antd';
+import { Fragment } from 'react';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
 import { AddressApis, CenterApis } from '../../apis/ListApi';
+import classes from './CenterUpdate.module.css';
 
-const CenterCreate = ({onCreateSuccess}) => {
+const CenterUpdate = ({ data, onUpdateSuccess }) => {
   const [listProvince, setListProvince] = useState([]);
   const [listDistrict, setListDistrict] = useState([]);
   const [listWard, setListWard] = useState([]);
 
-  const [isCreating, setIsCreating] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
+
+  const [isLoadingProvince, setIsLoadingProvince] = useState(true);
+  const [isLoadingDistrict, setIsLoadingDistrict] = useState(true);
+  const [isLoadingWard, setIsLoadingWard] = useState(true);
 
   const [form] = Form.useForm();
 
   const getListProvince = () => {
     FetchApi(AddressApis.getListProvince).then((res) => {
       setListProvince(res.data);
+      setIsLoadingProvince(false);
     });
     setListDistrict([]);
     setListWard([]);
@@ -31,7 +38,7 @@ const CenterCreate = ({onCreateSuccess}) => {
       }
     );
     setListWard([]);
-    form.resetFields(['district', 'ward']);
+    form.setFieldsValue({ district: null, ward: null });
   };
 
   const getListWard = () => {
@@ -45,69 +52,81 @@ const CenterCreate = ({onCreateSuccess}) => {
       setListWard(res.data);
     });
 
-    form.resetFields(['ward']);
+    form.setFieldsValue({ ward: null });
   };
 
   useEffect(() => {
     getListProvince();
+    FetchApi(AddressApis.getListDistrict, null, null, [
+      `${data?.province.id}`,
+    ]).then((res) => {
+      setListDistrict(res.data);
+      setIsLoadingDistrict(false);
+    });
+    FetchApi(AddressApis.getListWard, null, null, [
+      `${data?.province.id}`,
+      `${data?.district.id}`,
+    ]).then((res) => {
+      setListWard(res.data);
+      setIsLoadingWard(false);
+    });
   }, []);
 
   const handleSubmitForm = (e) => {
-    setIsCreating(true);
-    FetchApi(
-      CenterApis.createCenter,
-      {
-        name: e.name.trim(),
-        province_id: e.province,
-        district_id: e.district,
-        ward_id: e.ward,
-      },
-      null,
-      null
-    )
-      .then(() => {
-        onCreateSuccess();
+    setIsUpdating(true);
+
+    const body = {
+      name: e.name.trim(),
+      province_id: e.province,
+      district_id: e.district,
+      ward_id: e.ward,
+    };
+
+    FetchApi(CenterApis.updateCenter, body, null, [`${data.id}`])
+      .then((res) => {
+        onUpdateSuccess();
       })
-      .catch(() => {
-        setIsCreating(false);
+      .catch((err) => {
+        setIsUpdating(false);
         setIsFailed(true);
       });
   };
 
   return (
-    <Grid xs={4}>
-      <Card
-        css={{
-          width: '100%',
-          height: 'fit-content',
-        }}
-      >
-        <Card.Header>
-          <Text size={14}>
-            Thông tin cơ sở: <b></b>
-          </Text>
-        </Card.Header>
-        <Card.Divider />
-        <Card.Body>
-          <Form
-            labelCol={{ span: 6 }}
-            wrapperCol={{ span: 14 }}
-            layout="horizontal"
-            onFinish={handleSubmitForm}
-            form={form}
+    <Fragment>
+      {(isLoadingDistrict || isLoadingProvince || isLoadingWard) && (
+        <div className={classes.loading}>
+          <Spin/>
+        </div>
+      )}
+      {!isLoadingDistrict && !isLoadingProvince && !isLoadingWard && (
+        <Form
+          labelCol={{ span: 7 }}
+          wrapperCol={{ span: 16 }}
+          layout="horizontal"
+          onFinish={handleSubmitForm}
+          form={form}
+          initialValues={{
+            name: data?.name,
+            province: data?.province.id,
+            district: data?.district.id,
+            ward: data?.ward.id,
+          }}
+        >
+          <Form.Item
+            name={'name'}
+            label={'Tên cơ sở'}
+            rules={[
+              {
+                required: true,
+                message: 'Hãy nhập tên cơ sở',
+              },
+            ]}
           >
-            <Form.Item
-              name={'name'}
-              label={'Tên cơ sở'}
-              rules={[
-                {
-                  required: true,
-                  message: 'Hãy nhập tên cơ sở',
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
+            <Input />
+          </Form.Item>
+
+          <Fragment>
             <Form.Item
               name={'province'}
               label={'Tỉnh/Thành phố'}
@@ -124,6 +143,7 @@ const CenterCreate = ({onCreateSuccess}) => {
                 placeholder="Chọn tỉnh/thành phố"
                 optionFilterProp="children"
                 onChange={getListDistrict}
+                dropdownStyle={{ zIndex: 9999 }}
               >
                 {listProvince.map((e) => (
                   <Select.Option key={e.id} value={e.id}>
@@ -149,6 +169,7 @@ const CenterCreate = ({onCreateSuccess}) => {
                 placeholder="Chọn quận/huyện"
                 optionFilterProp="children"
                 onChange={getListWard}
+                dropdownStyle={{ zIndex: 9999 }}
               >
                 {listDistrict.map((e) => (
                   <Select.Option key={e.id} value={e.id}>
@@ -172,6 +193,7 @@ const CenterCreate = ({onCreateSuccess}) => {
                 disabled={listWard.length === 0}
                 placeholder="Chọn phường/xã"
                 optionFilterProp="children"
+                dropdownStyle={{ zIndex: 9999 }}
               >
                 {listWard.map((e) => (
                   <Select.Option key={e.id} value={e.id}>
@@ -180,27 +202,37 @@ const CenterCreate = ({onCreateSuccess}) => {
                 ))}
               </Select>
             </Form.Item>
-            <Form.Item wrapperCol={{ offset: 6, span: 10 }}>
-              <Button type="primary" htmlType="submit" loading={isCreating}>
-                Tạo mới
-              </Button>
-            </Form.Item>
-          </Form>
-          {!isCreating && isFailed && (
-            <Text
-              size={14}
-              css={{
-                color: 'red',
-                textAlign: 'center',
-              }}
+          </Fragment>
+
+          <Form.Item wrapperCol={{ offset: 7, span: 99 }}>
+            <Button type="primary" htmlType="submit" loading={isUpdating}>
+              Cập nhật
+            </Button>
+            <Button
+              style={{ marginLeft: 10 }}
+              type="primary"
+              htmlType="button"
+              danger
+              disabled
             >
-              Tạo cơ sở thuất bại, kiểm tra lại thông tin và thử lại
-            </Text>
-          )}
-        </Card.Body>
-      </Card>
-    </Grid>
+              Xoá
+            </Button>
+          </Form.Item>
+        </Form>
+      )}
+      {!isUpdating && isFailed && (
+        <Text
+          size={14}
+          css={{
+            color: 'red',
+            textAlign: 'center',
+          }}
+        >
+          Cập nhật thất bại, vui lòng thử lại
+        </Text>
+      )}
+    </Fragment>
   );
 };
 
-export default CenterCreate;
+export default CenterUpdate;

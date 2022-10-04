@@ -125,8 +125,8 @@ public class CenterController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (request.ProvinceId is <= 0 or > 63 || request.DistrictId is < 0 or > 709 ||
-            request.WardId is < 0 or < 11283)
+        if (request.ProvinceId is < 0 or > 63 || request.DistrictId is < 0 or > 709 ||
+            request.WardId is < 0 or > 11283)
         {
             var error = ErrorDescription.Error["E1006"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -180,8 +180,8 @@ public class CenterController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (request.ProvinceId is <= 0 or > 63 || request.DistrictId is < 0 or > 709 ||
-            request.WardId is < 0 or < 11283)
+        if (request.ProvinceId is < 0 or > 63 || request.DistrictId is < 0 or > 709 ||
+            request.WardId is < 0 or > 11283)
         {
             var error = ErrorDescription.Error["E1006"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));

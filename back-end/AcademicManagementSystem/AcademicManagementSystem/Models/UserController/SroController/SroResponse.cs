@@ -47,7 +47,7 @@ public class SroResponse
     public GenderResponse Gender { get; set; }
 
     [JsonPropertyName("birthday")]
-    public string Birthday { get; set; }
+    public DateTime Birthday { get; set; }
 
     [JsonPropertyName("center_id")]
     public int CenterId { get; set; }
@@ -63,4 +63,11 @@ public class SroResponse
     
     [JsonPropertyName("citizen_identity_card_published_place")]
     public string? CitizenIdentityCardPublishedPlace { get; set; }
+    
+    [JsonPropertyName("create_at")]
+    public DateTime CreatedAt { get; set; }
+    
+    [JsonPropertyName("update_at")]
+    public DateTime UpdatedAt { get; set; }
+    
 }
