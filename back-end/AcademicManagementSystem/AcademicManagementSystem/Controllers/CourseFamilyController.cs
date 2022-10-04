@@ -39,7 +39,7 @@ public class CourseFamilyController : ControllerBase
     [Authorize(Roles = "admin,sro")]
     public IActionResult GetCourseFamilyByCode(string code)
     {
-        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code);
+        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.Trim());
         if (courseFamily == null)
         {
             return NotFound(CustomResponse.NotFound("Course family not found"));
@@ -120,7 +120,7 @@ public class CourseFamilyController : ControllerBase
     [Authorize(Roles = "admin,sro")]
     public IActionResult UpdateCourseFamily(string code, [FromBody] UpdateCourseFamilyRequest request)
     {
-        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code);
+        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.Trim());
         if (courseFamily == null)
         {
             return NotFound(CustomResponse.NotFound("Course family not found"));
@@ -158,6 +158,24 @@ public class CourseFamilyController : ControllerBase
         _context.SaveChanges();
         
         return Ok(CustomResponse.Ok("Update course family success", courseFamily));
+    }
+    
+    // delete course family
+    [HttpDelete]
+    [Route("api/course-families/{code}")]
+    [Authorize(Roles = "admin,sro")]
+    public IActionResult DeleteCourseFamily(string code)
+    {
+        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.Trim());
+        if (courseFamily == null)
+        {
+            return NotFound(CustomResponse.NotFound("Course family not found"));
+        }
+
+        _context.CourseFamilies.Remove(courseFamily);
+        _context.SaveChanges();
+        
+        return Ok(CustomResponse.Ok("Delete course family success", courseFamily));
     }
     
     // is course family exist
