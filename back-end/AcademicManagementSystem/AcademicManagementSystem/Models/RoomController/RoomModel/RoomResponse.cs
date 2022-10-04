@@ -12,13 +12,13 @@ public class RoomResponse
     public int CenterId { get; set; }
     
     [JsonPropertyName("center_name")]
-    public string CenterName { get; set; }
+    public string? CenterName { get; set; }
     
     [JsonPropertyName("room_type")]
-    public RoomTypeResponse Room { get; set; }
+    public RoomTypeResponse? Room { get; set; }
 
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
     
     [JsonPropertyName("capacity")]
     public int Capacity { get; set; }
