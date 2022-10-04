@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AcademicManagementSystem.Controllers;
 
 [ApiController]
+[Authorize]
 public class CenterController : ControllerBase
 {
     private readonly AmsContext _context;
