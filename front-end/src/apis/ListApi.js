@@ -13,12 +13,12 @@ export const CenterApis = {
     contextType: 'application/json',
   },
   createCenter: {
-    url: 'api/center',
+    url: 'api/centers',
     method: 'POST',
     contextType: 'application/json',
   },
   updateCenter: {
-    url: 'api/center',
+    url: 'api/centers/{0}',
     method: 'PUT',
     contextType: 'application/json',
   },

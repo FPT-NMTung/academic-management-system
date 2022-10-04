@@ -36,6 +36,11 @@ const CenterScreen = () => {
     getData();
   };
 
+  const handleUpdateSuccess = () => {
+    setSelectedCenterId(null);
+    getData();
+  };
+
   useEffect(() => {
     getData();
   }, []);
@@ -107,7 +112,7 @@ const CenterScreen = () => {
           </Text>
         </Modal.Header>
         <Modal.Body>
-          <CenterUpdate data={listCenter.find((e) => e.id === selectedCenterId)} />
+          <CenterUpdate data={listCenter.find((e) => e.id === selectedCenterId)} onUpdateSuccess={handleUpdateSuccess}/>
         </Modal.Body>
       </Modal>
     </div>
