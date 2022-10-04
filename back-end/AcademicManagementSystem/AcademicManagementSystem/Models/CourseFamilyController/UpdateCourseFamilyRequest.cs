@@ -4,9 +4,6 @@ namespace AcademicManagementSystem.Models.CourseFamilyController;
 
 public class UpdateCourseFamilyRequest
 {
-    [JsonPropertyName("code")]
-    public string Code { get; set; }
-    
     [JsonPropertyName("name")]
     public string Name { get; set; }
     

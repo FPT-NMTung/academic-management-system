@@ -77,6 +77,13 @@ public class CourseFamilyController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        // code format
+        if (IsCourseFamilyExists(request))
+        {
+            var error = ErrorDescription.Error["E1013"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
         if (Regex.IsMatch(request.Code.Trim(), StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
         {
             var error = ErrorDescription.Error["E1010"];
@@ -89,15 +96,9 @@ public class CourseFamilyController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (request.PublishedYear < 0)
+        if (request.PublishedYear <= 0)
         {
             var error = ErrorDescription.Error["E1012"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (IsCourseFamilyExists(request))
-        {
-            var error = ErrorDescription.Error["E1013"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -125,7 +126,7 @@ public class CourseFamilyController : ControllerBase
             return NotFound(CustomResponse.NotFound("Course family not found"));
         }
 
-        if (string.IsNullOrWhiteSpace(request.Name.Trim()) || string.IsNullOrWhiteSpace(request.Code.Trim()))
+        if (string.IsNullOrWhiteSpace(request.Name.Trim()))
         {
             var error = ErrorDescription.Error["E1007"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -144,25 +145,12 @@ public class CourseFamilyController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (Regex.IsMatch(request.Code.Trim(), StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
-        {
-            var error = ErrorDescription.Error["E1010"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (request.Code.Trim().Length > 100)
-        {
-            var error = ErrorDescription.Error["E1011"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (request.PublishedYear < 0)
+        if (request.PublishedYear <= 0)
         {
             var error = ErrorDescription.Error["E1012"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-
-        courseFamily.Code = request.Code.Trim();
+        
         courseFamily.Name = request.Name.Trim();
         courseFamily.PublishedYear = request.PublishedYear;
         courseFamily.IsActive = request.IsActive;
