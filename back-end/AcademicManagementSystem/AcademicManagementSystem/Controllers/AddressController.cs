@@ -3,12 +3,14 @@ using AcademicManagementSystem.Models.AddressController;
 using AcademicManagementSystem.Models.AddressController.DistrictModel;
 using AcademicManagementSystem.Models.AddressController.ProvinceModel;
 using AcademicManagementSystem.Models.AddressController.WardModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AcademicManagementSystem.Controllers;
 
 [Route("api/address")]
 [ApiController]
+[Authorize]
 public class AddressController : ControllerBase
 {
     private readonly AmsContext _context;
