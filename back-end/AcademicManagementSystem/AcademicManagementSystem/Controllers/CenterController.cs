@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using AcademicManagementSystem.Context;
 using AcademicManagementSystem.Context.AmsModels;
-using AcademicManagementSystem.Extension;
+using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.AddressController;
 using AcademicManagementSystem.Models.AddressController.DistrictModel;
 using AcademicManagementSystem.Models.AddressController.ProvinceModel;
@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AcademicManagementSystem.Controllers;
 
 [ApiController]
+[Authorize]
 public class CenterController : ControllerBase
 {
     private readonly AmsContext _context;
@@ -57,34 +58,47 @@ public class CenterController : ControllerBase
         return Ok(CustomResponse.Ok("Get all centers success", centers));
     }
 
-    // get address by center id
+    //get center by id
     [HttpGet]
-    [Route("api/centers/{id:int}/address")]
-    public IActionResult GetAddressByCenterId(int id)
+    [Route("api/center/{id:int}")]
+    public IActionResult GetCenterById(int id)
     {
-        var center = _context.Centers.FirstOrDefault(c => c.Id == id);
+        var center = _context.Centers.Include(e => e.Province)
+            .Include(e => e.District)
+            .Include(e => e.Ward)
+            .FirstOrDefault(c => c.Id == id);
         if (center == null)
         {
-            var error = ErrorDescription.Error["E0018"];
+            var error = ErrorDescription.Error["E1001"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var province = _context.Provinces.FirstOrDefault(p => p.Id == center.ProvinceId);
-        var district = _context.Districts.FirstOrDefault(d => d.Id == center.DistrictId);
-        var ward = _context.Wards.FirstOrDefault(w => w.Id == center.WardId);
-        if (province == null || district == null || ward == null)
+        var centerResponse = new CenterResponse()
         {
-            var error = ErrorDescription.Error["E0019"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        var centerAddress = new AddressResponse()
-        {
-            Province = new ProvinceResponse() { Id = province.Id, Code = province.Code, Name = province.Name },
-            District = new DistrictResponse() { Id = district.Id, Name = district.Name, Prefix = district.Prefix },
-            Ward = new WardResponse() { Id = ward.Id, Name = ward.Name, Prefix = ward.Prefix }
+            Id = center.Id,
+            Name = center.Name,
+            CreatedAt = center.CreatedAt,
+            UpdatedAt = center.UpdatedAt,
+            Province = new ProvinceResponse()
+            {
+                Id = center.Province.Id,
+                Name = center.Province.Name,
+                Code = center.Province.Code
+            },
+            District = new DistrictResponse()
+            {
+                Id = center.District.Id,
+                Name = center.District.Name,
+                Prefix = center.District.Prefix,
+            },
+            Ward = new WardResponse()
+            {
+                Id = center.Ward.Id,
+                Name = center.Ward.Name,
+                Prefix = center.Ward.Prefix,
+            }
         };
-        return Ok(CustomResponse.Ok("Get address success", centerAddress));
+        return Ok(CustomResponse.Ok("Get center by id success", centerResponse));
     }
 
     // create center
@@ -93,28 +107,41 @@ public class CenterController : ControllerBase
     [Authorize(Roles = "admin")]
     public IActionResult CreateCenter([FromBody] CreateCenterRequest request)
     {
+        // is null or white space input
+        if (string.IsNullOrWhiteSpace(request.Name?.Trim()))
+        {
+            var error = ErrorDescription.Error["E1002"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
+        // name format
+        if (!Regex.IsMatch(request.Name.Trim(), StringConstant.RegexVietNameseNameWithDashUnderscoreSpaces))
+        {
+            var error = ErrorDescription.Error["E1003"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.Name.Trim().Length > 100)
+        {
+            var error = ErrorDescription.Error["E1004"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
         if (IsCenterExists(request))
         {
-            var error = ErrorDescription.Error["E0015"];
+            var error = ErrorDescription.Error["E1005"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-
-        if (string.IsNullOrWhiteSpace(request.Name?.Trim())
-            || request.Name.Trim().Length > 100
-            || !Regex.IsMatch(request.Name.Trim(), StringConstant.RegexVietNameseName))
-        {
-            var error = ErrorDescription.Error["E0016"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
+        
         var center = new Center()
         {
             ProvinceId = request.ProvinceId, DistrictId = request.DistrictId, WardId = request.WardId,
-            Name = request.Name!.Trim(), CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now
+            Name = request.Name.Trim(), CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now
         };
         _context.Centers.Add(center);
         _context.SaveChanges();
-        return Ok(CustomResponse.Ok("Create center success", request));
+        
+        return Ok(CustomResponse.Ok("Create center success", center));
     }
 
     // update center
@@ -126,22 +153,33 @@ public class CenterController : ControllerBase
         var center = _context.Centers.FirstOrDefault(c => c.Id == id);
         if (center == null)
         {
-            var error = ErrorDescription.Error["E0018"];
+            var error = ErrorDescription.Error["E1001"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (string.IsNullOrWhiteSpace(request.Name?.Trim())
-            || request.Name.Trim().Length > 100
-            || !Regex.IsMatch(request.Name.Trim(), StringConstant.RegexVietNameseName))
+        // name format
+        if (string.IsNullOrWhiteSpace(request.Name?.Trim()))
         {
-            var error = ErrorDescription.Error["E0016"];
+            var error = ErrorDescription.Error["E1002"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
+        if (!Regex.IsMatch(request.Name.Trim(), StringConstant.RegexVietNameseNameWithDashUnderscoreSpaces))
+        {
+            var error = ErrorDescription.Error["E1003"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.Name.Trim().Length > 100)
+        {
+            var error = ErrorDescription.Error["E1004"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         center.ProvinceId = request.ProvinceId;
         center.DistrictId = request.DistrictId;
         center.WardId = request.WardId;
-        center.Name = request.Name!.Trim();
+        center.Name = request.Name.Trim();
         center.UpdatedAt = DateTime.Now;
         _context.Centers.Update(center);
         _context.SaveChanges();
@@ -154,6 +192,6 @@ public class CenterController : ControllerBase
         return _context.Centers.Any(c => c.ProvinceId == request.ProvinceId
                                          && c.DistrictId == request.DistrictId
                                          && c.WardId == request.WardId
-                                         && c.Name == request.Name);
+                                         && c.Name == request.Name!.Trim());
     }
 }
