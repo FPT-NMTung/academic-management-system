@@ -1,4 +1,4 @@
-import { Card, Grid, Text } from '@nextui-org/react';
+import { Card, Grid, Text, Modal } from '@nextui-org/react';
 import { Form, Select, Input, Divider, Button, Table } from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../../apis/FetchApi';
@@ -6,15 +6,16 @@ import { AddressApis, CenterApis } from '../../../apis/ListApi';
 import classes from './CenterScreen.module.css';
 import { MdEdit } from 'react-icons/md';
 import CenterCreate from '../../../components/CenterCreate/CenterCreate';
+import CenterUpdate from '../../../components/CenterUpdate/CenterUpdate';
 
 const CenterScreen = () => {
   const [listCenter, setListCenter] = useState([]);
   const [selectedCenterId, setSelectedCenterId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [isCreate, setIsCreate] = useState(false);
 
-  const [listProvince, setListProvince] = useState([]);
-
-  useEffect(() => {
+  const getData = () => {
+    setIsLoading(true);
     const apiCanter = CenterApis.getAllCenter;
     FetchApi(apiCanter).then((res) => {
       const data = res.data;
@@ -26,7 +27,22 @@ const CenterScreen = () => {
         };
       });
       setListCenter(mergeAddressRes);
+      setIsLoading(false);
     });
+  };
+
+  const handleAddSuccess = () => {
+    setIsCreate(false);
+    getData();
+  };
+
+  const handleUpdateSuccess = () => {
+    setSelectedCenterId(null);
+    getData();
+  };
+
+  useEffect(() => {
+    getData();
   }, []);
 
   return (
@@ -56,6 +72,7 @@ const CenterScreen = () => {
             <Table
               pagination={{ position: ['bottomCenter'] }}
               dataSource={listCenter}
+              loading={isLoading}
             >
               <Table.Column title="Tên" dataIndex="name" key="name" />
               <Table.Column title="Địa chỉ" dataIndex="address" key="address" />
@@ -65,17 +82,39 @@ const CenterScreen = () => {
                 key="action"
                 render={(_, data) => {
                   return (
-                    <MdEdit className={classes.editIcon} onClick={() => {}} />
+                    <MdEdit
+                      className={classes.editIcon}
+                      onClick={() => {
+                        setSelectedCenterId(data.key);
+                      }}
+                    />
                   );
                 }}
               />
             </Table>
           </Card>
         </Grid>
-        {isCreate && (
-          <CenterCreate/>
-        )}
+        {isCreate && <CenterCreate onCreateSuccess={handleAddSuccess} />}
       </Grid.Container>
+      <Modal
+        closeButton
+        aria-labelledby="modal-title"
+        open={selectedCenterId !== null}
+        onClose={() => {
+          setSelectedCenterId(null);
+        }}
+        blur
+        width="500px"
+      >
+        <Modal.Header>
+          <Text size={16} b>
+            Cập nhật thông tin cơ sở
+          </Text>
+        </Modal.Header>
+        <Modal.Body>
+          <CenterUpdate data={listCenter.find((e) => e.id === selectedCenterId)} onUpdateSuccess={handleUpdateSuccess}/>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };

@@ -50,11 +50,11 @@ app.UseExceptionHandler(app.Environment.IsDevelopment() ? "/error-development" :
 
 app.UseHttpsRedirection();
 
+app.UseCors(devCorsPolicy);
+
 app.UseAuthentication();
 
 app.UseAuthorization();
-
-app.UseCors(devCorsPolicy);
 
 app.MapControllers();
 

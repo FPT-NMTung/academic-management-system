@@ -118,7 +118,7 @@ const refreshToken = async () => {
   };
 
   const responseRefresh = await fetch(
-    `${endpoint}/api/auth/refresh-token`,
+    `${endpoint}api/auth/refresh-token`,
     optionsRefresh
   );
 
