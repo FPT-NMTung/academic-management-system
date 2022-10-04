@@ -95,6 +95,12 @@ public class CourseFamilyController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        if (IsCourseFamilyExists(request))
+        {
+            var error = ErrorDescription.Error["E1013"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         var courseFamily = new CourseFamily()
         {
             Code = request.Code.Trim(), Name = request.Name.Trim(), PublishedYear = request.PublishedYear,
@@ -164,5 +170,11 @@ public class CourseFamilyController : ControllerBase
         _context.SaveChanges();
         
         return Ok(CustomResponse.Ok("Update course family success", courseFamily));
+    }
+    
+    // is course family exist
+    private bool IsCourseFamilyExists(CreateCourseFamilyRequest request)
+    {
+        return _context.CourseFamilies.Any(cf => cf.Code == request.Code.Trim());
     }
 }

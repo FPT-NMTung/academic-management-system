@@ -42,6 +42,7 @@ public static class ErrorDescription
         { "E1010", new ErrorModel() { Message = "Course family code not match with format", Type = "course-error-0005" } },
         { "E1011", new ErrorModel() { Message = "Course family code must be less or equal than 100 characters", Type = "course-error-0006" } },
         { "E1012", new ErrorModel() { Message = "Course family published year must be larger than 0", Type = "course-error-0007" } },
+        { "E1013", new ErrorModel() { Message = "Course family existed", Type = "course-error-0007" } },
     };
 }
 
