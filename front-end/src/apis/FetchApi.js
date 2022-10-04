@@ -46,7 +46,6 @@ const FetchApi = async (api, bodyObject, params, pathValiable) => {
   }
 
   let response = await fetch(`${endpoint}${newUrl}${paramString}`, options);
-  debugger
 
   if (response.status === 401) {
     const dataRefresh = await refreshToken();

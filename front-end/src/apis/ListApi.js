@@ -17,6 +17,11 @@ export const CenterApis = {
     method: 'POST',
     contextType: 'application/json',
   },
+  updateCenter: {
+    url: 'api/center',
+    method: 'PUT',
+    contextType: 'application/json',
+  },
 };
 
 export const AddressApis = {

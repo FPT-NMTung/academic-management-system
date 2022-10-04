@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
 import { AddressApis, CenterApis } from '../../apis/ListApi';
 
-const CenterCreate = () => {
+const CenterCreate = ({onCreateSuccess}) => {
   const [listProvince, setListProvince] = useState([]);
   const [listDistrict, setListDistrict] = useState([]);
   const [listWard, setListWard] = useState([]);
@@ -57,7 +57,7 @@ const CenterCreate = () => {
     FetchApi(
       CenterApis.createCenter,
       {
-        name: e.name,
+        name: e.name.trim(),
         province_id: e.province,
         district_id: e.district,
         ward_id: e.ward,
@@ -66,8 +66,7 @@ const CenterCreate = () => {
       null
     )
       .then(() => {
-        setIsCreating(false);
-        setIsFailed(false);
+        onCreateSuccess();
       })
       .catch(() => {
         setIsCreating(false);
@@ -187,7 +186,7 @@ const CenterCreate = () => {
               </Button>
             </Form.Item>
           </Form>
-          {isCreating && isFailed && (
+          {!isCreating && isFailed && (
             <Text
               size={14}
               css={{
