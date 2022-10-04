@@ -21,7 +21,6 @@ const itemsAdmin = [
   getItem('Quản lý tài khoản', 'main3', <MdManageAccounts />, [
     getItem('Người quản lý lớp (SRO)', 'main3-sub1', undefined, undefined, '/admin/account/sro/*', '/admin/account/sro'),
     getItem('Giáo viên', 'main3-sub2', undefined, undefined, '/admin/account/teacher/*', '/admin/account/teacher'),
-    getItem('Học sinh', 'main3-sub3', undefined, undefined, '/admin/account/student/*', '/admin/account/student'),
   ]),
   getItem('Quản lý khoá học', 'main4', <ImBooks />, [
     getItem('Chương trình học gốc', 'main4-sub1', undefined, undefined, '/admin/manage-course/course-family/*', '/admin/manage-course/course-family'),

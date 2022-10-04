@@ -1,20 +1,35 @@
+using System.Text;
 using AcademicManagementSystem.Context;
+using AcademicManagementSystem.Services;
 using Azure.Communication.Email;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("AmsConnection");
+var token = builder.Configuration.GetSection("SecretKeyAccessToken").Value;
 
 var devCorsPolicy = "devCorsPolicy";
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(devCorsPolicy, builder => {
-        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
-    });
+    options.AddPolicy(devCorsPolicy, build => { build.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); });
 });
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(token))
+        };
+    });
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -35,9 +50,11 @@ app.UseExceptionHandler(app.Environment.IsDevelopment() ? "/error-development" :
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
-
 app.UseCors(devCorsPolicy);
+
+app.UseAuthentication();
+
+app.UseAuthorization();
 
 app.MapControllers();
 
