@@ -8,10 +8,10 @@ public class WardResponse
     public int Id { get; set; }
         
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
         
     [JsonPropertyName("prefix")]
-    public string Prefix { get; set; }
+    public string? Prefix { get; set; }
     
     // [JsonPropertyName("districtId")]
     // public int DistrictId { get; set; }
