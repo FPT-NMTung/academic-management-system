@@ -103,13 +103,66 @@ public class CourseFamilyController : ControllerBase
         };
         _context.CourseFamilies.Add(courseFamily);
         _context.SaveChanges();
-
-        // check
-        var requestResponse = new CreateCourseFamilyRequest()
+        
+        return Ok(CustomResponse.Ok("Create course family success", courseFamily));
+    }
+    
+    // update course family
+    [HttpPut]
+    [Route("api/course-families/{code}")]
+    [Authorize(Roles = "admin,sro")]
+    public IActionResult UpdateCourseFamily(string code, [FromBody] UpdateCourseFamilyRequest request)
+    {
+        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code);
+        if (courseFamily == null)
         {
-            Code = courseFamily.Code.Trim(), Name = courseFamily.Name.Trim(),
-            PublishedYear = courseFamily.PublishedYear, IsActive = courseFamily.IsActive
-        };
-        return Ok(CustomResponse.Ok("Create course family success", requestResponse));
+            return NotFound(CustomResponse.NotFound("Course family not found"));
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Name.Trim()) || string.IsNullOrWhiteSpace(request.Code.Trim()))
+        {
+            var error = ErrorDescription.Error["E1007"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // name format
+        if (Regex.IsMatch(request.Name.Trim(), StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        {
+            var error = ErrorDescription.Error["E1008"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.Name.Trim().Length > 255)
+        {
+            var error = ErrorDescription.Error["E1009"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (Regex.IsMatch(request.Code.Trim(), StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        {
+            var error = ErrorDescription.Error["E1010"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.Code.Trim().Length > 100)
+        {
+            var error = ErrorDescription.Error["E1011"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.PublishedYear < 0)
+        {
+            var error = ErrorDescription.Error["E1012"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        courseFamily.Code = request.Code.Trim();
+        courseFamily.Name = request.Name.Trim();
+        courseFamily.PublishedYear = request.PublishedYear;
+        courseFamily.IsActive = request.IsActive;
+        courseFamily.UpdatedAt = DateTime.Now;
+        _context.SaveChanges();
+        
+        return Ok(CustomResponse.Ok("Update course family success", courseFamily));
     }
 }

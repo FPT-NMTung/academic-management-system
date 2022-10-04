@@ -146,14 +146,8 @@ public class CenterController : ControllerBase
         };
         _context.Centers.Add(center);
         _context.SaveChanges();
-
-        var requestResponse = new Center()
-        {
-            ProvinceId = center.ProvinceId, DistrictId = center.DistrictId, WardId = center.WardId,
-            Name = center.Name.Trim(), CreatedAt = center.CreatedAt, UpdatedAt = center.UpdatedAt
-        };
-
-        return Ok(CustomResponse.Ok("Create center success", requestResponse));
+        
+        return Ok(CustomResponse.Ok("Create center success", center));
     }
 
     // update center
@@ -201,14 +195,8 @@ public class CenterController : ControllerBase
         center.UpdatedAt = DateTime.Now;
         _context.Centers.Update(center);
         _context.SaveChanges();
-
-        var requestResponse = new Center()
-        {
-            ProvinceId = center.ProvinceId, DistrictId = center.DistrictId, WardId = center.WardId,
-            Name = center.Name.Trim(), CreatedAt = center.CreatedAt, UpdatedAt = center.UpdatedAt
-        };
-
-        return Ok(CustomResponse.Ok("Update center success", requestResponse));
+        
+        return Ok(CustomResponse.Ok("Update center success", center));
     }
 
     // is center exists

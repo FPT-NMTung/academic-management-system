@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace AcademicManagementSystem.Models.CourseFamilyController;
 
-public class CourseFamilyResponse
+public class UpdateCourseFamilyRequest
 {
     [JsonPropertyName("code")]
     public string Code { get; set; }
@@ -15,13 +15,4 @@ public class CourseFamilyResponse
     
     [JsonPropertyName("is_active")]
     public bool IsActive { get; set; }
-    
-    [JsonPropertyName("created_at")]
-    public DateTime CreatedAt { get; set; }
-    
-    [JsonPropertyName("updated_at")]
-    public DateTime UpdatedAt { get; set; }
-    
-    // [JsonPropertyName("courses")]
-    // public List<CourseResponse> Courses { get; set; }
 }
