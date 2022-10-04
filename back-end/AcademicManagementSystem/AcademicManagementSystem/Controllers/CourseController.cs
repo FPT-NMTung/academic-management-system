@@ -1,6 +1,7 @@
 using AcademicManagementSystem.Context;
 using AcademicManagementSystem.Models.CourseController;
 using AcademicManagementSystem.Models.CourseFamilyController;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,7 @@ public class CourseController : ControllerBase
     // get all courses
     [HttpGet]
     [Route("api/courses")]
+    [Authorize(Roles = "admin,sro")]
     public IActionResult GetCourses()
     {
         var courses = _context.Courses.Include(c => c.CourseFamily)
@@ -35,5 +37,33 @@ public class CourseController : ControllerBase
                 }
             });
         return Ok(courses);
+    }
+
+    // get course by code
+    [HttpGet]
+    [Route("api/courses/{code}")]
+    [Authorize(Roles = "admin,sro")]
+    public IActionResult GetCourseByCode(string code)
+    {
+        var course = _context.Courses.Include(c => c.CourseFamily)
+            .FirstOrDefault(c => c.Code == code.Trim());
+        if (course == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Course"));
+        }
+
+        var courseResponse = new CourseResponse()
+        {
+            Code = course.Code, CourseFamilyCode = course.CourseFamilyCode, Name = course.Name,
+            SemesterCount = course.SemesterCount, IsActive = course.IsActive, CreatedAt = course.CreatedAt,
+            UpdatedAt = course.UpdatedAt,
+            CourseFamily = new CourseFamilyResponse()
+            {
+                Code = course.CourseFamily.Code, Name = course.CourseFamily.Name,
+                PublishedYear = course.CourseFamily.PublishedYear, IsActive = course.CourseFamily.IsActive,
+                CreatedAt = course.CourseFamily.CreatedAt, UpdatedAt = course.CourseFamily.UpdatedAt
+            }
+        };
+        return Ok(courseResponse);
     }
 }

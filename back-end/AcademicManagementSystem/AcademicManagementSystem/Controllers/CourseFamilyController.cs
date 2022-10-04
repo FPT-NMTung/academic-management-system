@@ -58,7 +58,7 @@ public class CourseFamilyController : ControllerBase
     [Authorize(Roles = "admin,sro")]
     public IActionResult CreateCourseFamily([FromBody] CreateCourseFamilyRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.Name.Trim()) || string.IsNullOrWhiteSpace(request.Code.Trim()))
+        if (string.IsNullOrWhiteSpace(request.Name.Trim()) || string.IsNullOrWhiteSpace(request.Code.ToUpper().Trim()))
         {
             var error = ErrorDescription.Error["E1007"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -84,13 +84,13 @@ public class CourseFamilyController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
         
-        if (Regex.IsMatch(request.Code.Trim(), StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        if (Regex.IsMatch(request.Code.ToUpper().Trim(), StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
         {
             var error = ErrorDescription.Error["E1010"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (request.Code.Trim().Length > 100)
+        if (request.Code.ToUpper().Trim().Length > 100)
         {
             var error = ErrorDescription.Error["E1011"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -104,7 +104,7 @@ public class CourseFamilyController : ControllerBase
 
         var courseFamily = new CourseFamily()
         {
-            Code = request.Code.Trim(), Name = request.Name.Trim(), PublishedYear = request.PublishedYear,
+            Code = request.Code.ToUpper().Trim(), Name = request.Name.Trim(), PublishedYear = request.PublishedYear,
             IsActive = request.IsActive,
             CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now
         };
@@ -120,7 +120,7 @@ public class CourseFamilyController : ControllerBase
     [Authorize(Roles = "admin,sro")]
     public IActionResult UpdateCourseFamily(string code, [FromBody] UpdateCourseFamilyRequest request)
     {
-        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.Trim());
+        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.ToUpper().Trim());
         if (courseFamily == null)
         {
             return NotFound(CustomResponse.NotFound("Course family not found"));
