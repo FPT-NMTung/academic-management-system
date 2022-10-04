@@ -23,11 +23,11 @@ public class RoomController : ControllerBase
     }
 
     [HttpGet]
-    [Route("api/center/{centerId:int}/rooms")]
+    [Route("api/rooms")]
     [Authorize(Roles = "admin")]
-    public IActionResult GetRoomsByCenterId(int centerId)
+    public IActionResult GetRoomsByCenterId([FromQuery] int? centerId)
     {
-        if (!IsCenterExists(centerId))
+        if (centerId != null && !IsCenterExists(centerId))
         {
             var error = ErrorDescription.Error["E0001"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -36,34 +36,33 @@ public class RoomController : ControllerBase
         var roomsResponses = _context.Rooms
             .Include(r => r.Center)
             .Include(r => r.RoomType)
-            .ToList()
-            .Where(r => r.CenterId == centerId)
-            .Select(r => new RoomResponse()
-            {
-                Id = r.Id,
-                CenterId = r.CenterId,
-                CenterName = r.Center.Name,
-                Room = new RoomTypeResponse()
-                {
-                    Id = r.RoomTypeId,
-                    Value = r.RoomType.Value
-                },
-                Name = r.Name,
-                Capacity = r.Capacity
-            });
+            .ToList();
 
-        if (!roomsResponses.Any())
+        if (centerId != null)
         {
-            var notFound = ErrorDescription.Error["E0002"];
-            return Ok(CustomResponse.Ok(notFound.Message, roomsResponses));
+            roomsResponses = roomsResponses.Where(r => r.CenterId == centerId).ToList();
         }
 
-        return Ok(CustomResponse.Ok("Get all rooms by centerId successfully", roomsResponses));
+        var responses = roomsResponses.Select(r => new RoomResponse()
+        {
+            Id = r.Id,
+            CenterId = r.CenterId,
+            CenterName = r.Center.Name,
+            Room = new RoomTypeResponse()
+            {
+                Id = r.RoomTypeId,
+                Value = r.RoomType.Value
+            },
+            Name = r.Name,
+            Capacity = r.Capacity
+        });
+
+        return Ok(CustomResponse.Ok("Get all rooms by centerId successfully", responses));
     }
 
     //create new room
     [HttpPost]
-    [Route("api/center/room/create")]
+    [Route("api/rooms")]
     [Authorize(Roles = "admin")]
     public IActionResult CreateRoom([FromBody] CreateRoomRequest createRoomRequest)
     {
@@ -71,7 +70,7 @@ public class RoomController : ControllerBase
         {
             CenterId = createRoomRequest.CenterId,
             RoomTypeId = createRoomRequest.RoomTypeId,
-            Name = createRoomRequest.Name.Trim(),
+            Name = createRoomRequest.Name!.Trim(),
             Capacity = createRoomRequest.Capacity
         };
 
@@ -116,30 +115,13 @@ public class RoomController : ControllerBase
         _context.Rooms.Add(roomCreate);
         _context.SaveChanges();
 
-        // var roomResponse =  _context.Rooms
-        //     .Include(r => r.Center)
-        //     .Include(r => r.RoomType)
-        //     .Where(r => r.Id == roomCreate.Id)
-        //     .Select(r => new RoomResponse()
-        //     {
-        //         Id = r.Id,
-        //         CenterId = r.CenterId,
-        //         CenterName = r.Center.Name,
-        //         Room = new RoomTypeResponse()
-        //         {
-        //             Id = r.RoomTypeId,
-        //             Value = r.RoomType.Value
-        //         },
-        //         Name = r.Name,
-        //         Capacity = r.Capacity
-        //     });
         var roomResponse = GetRoomResponse(roomCreate.Id);
 
         return Ok(CustomResponse.Ok("Create room successfully", roomResponse));
     }
 
     //Update room
-    [HttpPut("api/room/update/{roomId:int}")]
+    [HttpPut("api/rooms/{roomId:int}")]
     [Authorize(Roles = "admin")]
     public IActionResult UpdateRoom(int roomId, [FromBody] UpdateRoomRequest updateRoomRequest)
     {
@@ -177,7 +159,7 @@ public class RoomController : ControllerBase
         roomToUpdate.RoomTypeId = updateRoomRequest.RoomTypeId;
         roomToUpdate.Name = Regex.Replace(updateRoomRequest.Name.Trim(), StringConstant.RegexWhiteSpaces, " ");
         roomToUpdate.Capacity = updateRoomRequest.Capacity;
-        
+
         if (IsRoomExists(roomToUpdate))
         {
             var error = ErrorDescription.Error["E0015"];
@@ -203,7 +185,7 @@ public class RoomController : ControllerBase
         return _context.RoomTypes.Any(e => e.Id == roomTypeId);
     }
 
-    private bool IsCenterExists(int centerId)
+    private bool IsCenterExists(int? centerId)
     {
         return _context.Centers.Any(e => e.Id == centerId);
     }
