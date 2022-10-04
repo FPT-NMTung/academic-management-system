@@ -18,6 +18,7 @@ public class CourseFamilyController : ControllerBase
         _context = context;
     }
 
+    // get all families
     [HttpGet]
     [Route("api/course-families")]
     [Authorize(Roles = "admin,sro")]
@@ -30,6 +31,25 @@ public class CourseFamilyController : ControllerBase
                 CreatedAt = cf.CreatedAt, UpdatedAt = cf.UpdatedAt
             });
         return Ok(CustomResponse.Ok("Get course families success", courseFamilies));
+    }
+
+    // get family by code
+    [HttpGet]
+    [Route("api/course-families/{code}")]
+    [Authorize(Roles = "admin,sro")]
+    public IActionResult GetCourseFamilyByCode(string code)
+    {
+        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code);
+        if (courseFamily == null)
+        {
+            return NotFound(CustomResponse.NotFound("Course family not found"));
+        }
+
+        return Ok(CustomResponse.Ok("Get course family success", new CourseFamilyResponse()
+        {
+            Code = courseFamily.Code, Name = courseFamily.Name, PublishedYear = courseFamily.PublishedYear,
+            IsActive = courseFamily.IsActive, CreatedAt = courseFamily.CreatedAt, UpdatedAt = courseFamily.UpdatedAt
+        }));
     }
 
     // create course family
