@@ -12,15 +12,13 @@ import './i18n';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <NextUIProvider>
-      <ConfigProvider locale={viVN}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </ConfigProvider>
-    </NextUIProvider>
-  </React.StrictMode>
+  <NextUIProvider>
+    <ConfigProvider locale={viVN}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </ConfigProvider>
+  </NextUIProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

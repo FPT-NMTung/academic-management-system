@@ -88,8 +88,9 @@ public class AuthController : ControllerBase
         // Update refresh token in database
         var listExpiredRefreshToken = _context.ActiveRefreshTokens
             .Where(x => x.UserId == selectUser.Id && x.ExpDate < DateTime.Now).ToList();
-        _context.ActiveRefreshTokens.RemoveRange(listExpiredRefreshToken);
+        listExpiredRefreshToken.ForEach(x => _context.ActiveRefreshTokens.Remove(x));
         _context.ActiveRefreshTokens.Remove(selectRefreshToken);
+        _context.SaveChanges();
         _context.ActiveRefreshTokens.Add(new ActiveRefreshToken()
         {
             UserId = selectUser.Id,
