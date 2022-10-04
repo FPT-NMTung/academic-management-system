@@ -90,6 +90,7 @@ public class AuthController : ControllerBase
             .Where(x => x.UserId == selectUser.Id && x.ExpDate < DateTime.Now).ToList();
         listExpiredRefreshToken.ForEach(x => _context.ActiveRefreshTokens.Remove(x));
         _context.ActiveRefreshTokens.Remove(selectRefreshToken);
+        _context.SaveChanges();
         _context.ActiveRefreshTokens.Add(new ActiveRefreshToken()
         {
             UserId = selectUser.Id,
