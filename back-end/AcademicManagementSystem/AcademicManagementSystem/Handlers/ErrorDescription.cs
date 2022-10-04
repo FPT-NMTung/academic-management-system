@@ -31,6 +31,27 @@ public static class ErrorDescription
         // sro
         { "E0016", new ErrorModel() { Message = "centerId for GET SROs not found", Type = "sro-error-0001" } },
         { "E0017", new ErrorModel() { Message = "SRO not found", Type = "sro-error-0002" } },
+        { "E0018", new ErrorModel() { Message = "centerId for CREATE/UPDATE SRO not found", Type = "sro-error-0003" } },
+        { "E0019", new ErrorModel() { Message = "RoleId for CREATE/UPDATE SRO not found", Type = "sro-error-0004" } },
+        { "E0020", new ErrorModel() { Message = "Duplicated MobilePhone for CREATE/UPDATE SRO", Type = "sro-error-0005" } },
+        { "E0021", new ErrorModel() { Message = "Duplicated Email for CREATE/UPDATE SRO ", Type = "user-error-0006" } },
+        { "E0022", new ErrorModel() { Message = "Duplicated EmailOrganization for CREATE/UPDATE SRO", Type = "sro-error-0007" } },
+        { "E0023", new ErrorModel() { Message = "ProvinceId not found for CREATE/UPDATE SRO", Type = "sro-error-0008" } },
+        { "E0024", new ErrorModel() { Message = "DistrictId not found for CREATE/UPDATE SRO", Type = "sro-error-0009" } },
+        { "E0025", new ErrorModel() { Message = "WardId not found for CREATE/UPDATE SRO", Type = "sro-error-0010" } },
+        { "E0026", new ErrorModel() { Message = "GenderId not found for CREATE/UPDATE SRO", Type = "sro-error-0011" } },
+        { "E0027", new ErrorModel() { Message = "Duplicated citizenIdentityCardNo for CREATE/UPDATE SRO", Type = "sro-error-0012" } },
+        { "E0028", new ErrorModel() { Message = "Birthday must match format yyyy/MM/dd for CREATE/UPDATE SRO", Type = "sro-error-0013" } },
+        { "E0029", new ErrorModel() { Message = "CitizenIdentityCardPublishedDate must match format yyyy/MM/dd for CREATE/UPDATE SRO", Type = "sro-error-0014" } },
+      
+        { "E0030", new ErrorModel() { Message = "MobilePhone 10 digits and starting with 0", Type = "sro-error-0015" } },
+        { "E0031", new ErrorModel() { Message = "Email must match with format", Type = "sro-error-0016" } },
+        { "E0032", new ErrorModel() { Message = "EmailOrganization must match with format", Type = "sro-error-0017" } },
+        { "E0033", new ErrorModel() { Message = "CitizenIdCardNo must be 9 or 12 digits", Type = "sro-error-0018" } },
+        { "E0034", new ErrorModel() { Message = "FirstName must match with format", Type = "sro-error-0019" } },
+        { "E0035", new ErrorModel() { Message = "FirstName must match with format", Type = "sro-error-0020" } },
+        { "E0036", new ErrorModel() { Message = "User Not found", Type = "sro-error-0021" } },
+
         
         // address
         { "E1006", new ErrorModel() { Message = "Do not exist provinceId, DistrictId or WardId", Type = "address-error-0001" } },
@@ -42,7 +63,16 @@ public static class ErrorDescription
         { "E1010", new ErrorModel() { Message = "Course family code not match with format", Type = "course-error-0005" } },
         { "E1011", new ErrorModel() { Message = "Course family code must be less or equal than 100 characters", Type = "course-error-0006" } },
         { "E1012", new ErrorModel() { Message = "Course family published year must be larger than 0", Type = "course-error-0007" } },
-        { "E1013", new ErrorModel() { Message = "Course family existed", Type = "course-error-0007" } },
+        { "E1013", new ErrorModel() { Message = "Course family code existed", Type = "course-error-0008" } },
+        
+        // course
+        { "E1014", new ErrorModel() { Message = "Course code existed", Type = "course-error-0009" } },
+        { "E1015", new ErrorModel() { Message = "Course family not found", Type = "course-error-0010" } },
+        { "E1016", new ErrorModel() { Message = "Course name not match with format", Type = "course-error-0011" } },
+        { "E1017", new ErrorModel() { Message = "Course name must be less or equal than 255 characters", Type = "course-error-0012" } },
+        { "E1018", new ErrorModel() { Message = "Course code not match with format", Type = "course-error-0013" } },
+        { "E1019", new ErrorModel() { Message = "Course code must be less or equal than 100 characters", Type = "course-error-0014" } },
+        { "E1020", new ErrorModel() { Message = "Semester count mus be between 1-10", Type = "course-error-0014" } },
     };
 }
 
