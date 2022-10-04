@@ -47,7 +47,7 @@ public static class ErrorDescription
         // course
         { "E1014", new ErrorModel() { Message = "Course code existed", Type = "course-error-0009" } },
         { "E1015", new ErrorModel() { Message = "Course family not found", Type = "course-error-0010" } },
-        { "E1016", new ErrorModel() { Message = "Course name not match with name format", Type = "course-error-0011" } },
+        { "E1016", new ErrorModel() { Message = "Course name not match with format", Type = "course-error-0011" } },
         { "E1017", new ErrorModel() { Message = "Course name must be less or equal than 255 characters", Type = "course-error-0012" } },
         { "E1018", new ErrorModel() { Message = "Course code not match with format", Type = "course-error-0013" } },
         { "E1019", new ErrorModel() { Message = "Course code must be less or equal than 100 characters", Type = "course-error-0014" } },
