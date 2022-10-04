@@ -109,7 +109,7 @@ const CouseFamilyCreate = ({onCreateSuccess}) => {
                             </Button>
                         </Form.Item>
                     </Form>
-                    {isCreating && isFailed && (
+                    {!isCreating && isFailed && (
                         <Text
                             size={14}
                             css={{
