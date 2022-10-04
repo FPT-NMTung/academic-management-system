@@ -5,7 +5,7 @@ namespace AcademicManagementSystem.Models.CenterController;
 public class CreateCenterRequest
 {
     [JsonPropertyName("name")]
-    public string? Name { get; set; }
+    public string Name { get; set; }
     
     [JsonPropertyName("province_id")]
     public int ProvinceId { get; set; }

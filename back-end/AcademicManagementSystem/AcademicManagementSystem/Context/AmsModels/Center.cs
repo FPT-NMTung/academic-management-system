@@ -10,6 +10,7 @@ public class Center
     {
         this.Rooms = new HashSet<Room>();
         this.Users = new HashSet<User>();
+        this.Modules = new HashSet<Module>();
     }
 
     [Key]
@@ -41,4 +42,5 @@ public class Center
     public virtual Province Province { get; set; }
     public virtual ICollection<Room> Rooms { get; set; }
     public virtual ICollection<User> Users { get; set; }
+    public virtual ICollection<Module> Modules { get; set; }
 }
