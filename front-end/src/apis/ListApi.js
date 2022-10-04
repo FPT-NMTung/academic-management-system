@@ -41,3 +41,21 @@ export const AddressApis = {
     contextType: 'application/json',
   },
 };
+
+export const RoomApis = {
+  getAllRoom: {
+    url: 'api/rooms',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  createRoom: {
+    url: 'api/rooms',
+    method: 'POST',
+    contextType: 'application/json',
+  },
+  updateRoom: {
+    url: 'api/rooms/{0}',
+    method: 'PUT',
+    contextType: 'application/json',
+  },
+};
