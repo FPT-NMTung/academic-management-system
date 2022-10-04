@@ -23,7 +23,7 @@ public class RoomController : ControllerBase
     }
 
     [HttpGet]
-    [Route("api/center/{centerId:int}/rooms")]
+    [Route("api/centers/{centerId:int}/rooms")]
     [Authorize(Roles = "admin")]
     public IActionResult GetRoomsByCenterId(int centerId)
     {
@@ -63,7 +63,7 @@ public class RoomController : ControllerBase
 
     //create new room
     [HttpPost]
-    [Route("api/room")]
+    [Route("api/rooms")]
     [Authorize(Roles = "admin")]
     public IActionResult CreateRoom([FromBody] CreateRoomRequest createRoomRequest)
     {
@@ -122,7 +122,7 @@ public class RoomController : ControllerBase
     }
 
     //Update room
-    [HttpPut("api/room/{roomId:int}")]
+    [HttpPut("api/rooms/{roomId:int}")]
     [Authorize(Roles = "admin")]
     public IActionResult UpdateRoom(int roomId, [FromBody] UpdateRoomRequest updateRoomRequest)
     {
