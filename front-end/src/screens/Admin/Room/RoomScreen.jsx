@@ -50,6 +50,7 @@ const RoomScreen = () => {
             loading={isFetching}
             dataSource={listRooms}
             pagination={{ position: ['bottomCenter'] }}
+            size={'middle'}
           >
             <Table.Column title="Tên" dataIndex="name" />
             <Table.Column title="Cơ sở" dataIndex="center_name" />
