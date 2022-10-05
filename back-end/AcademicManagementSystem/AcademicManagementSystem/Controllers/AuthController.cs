@@ -53,7 +53,7 @@ public class AuthController : ControllerBase
         {
             UserId = selectUser.Id,
             RefreshToken = refreshToken,
-            ExpDate = DateTime.Now.AddDays(1)
+            ExpDate = DateTime.Now.AddHours(1)
         });
         _context.SaveChanges();
 
@@ -94,16 +94,16 @@ public class AuthController : ControllerBase
             _context.ActiveRefreshTokens.Remove(selectRefreshToken);
             _context.SaveChanges();
         }
-        catch (Exception e)
+        catch (Exception)
         {
             // Row already deleted
         }
         
-        _context.ActiveRefreshTokens.Add(new ActiveRefreshToken()
+        _context.ActiveRefreshTokens.Add(new ActiveRefreshToken
         {
             UserId = selectUser.Id,
             RefreshToken = refreshToken,
-            ExpDate = DateTime.Now.AddDays(1)
+            ExpDate = DateTime.Now.AddHours(1)
         });
         _context.SaveChanges();
 
@@ -130,7 +130,7 @@ public class AuthController : ControllerBase
 
         var token = new JwtSecurityToken(
             claims: claims,
-            expires: DateTime.Now.AddMinutes(10),
+            expires: DateTime.Now.AddMinutes(2),
             signingCredentials: creds
         );
 

@@ -1,5 +1,5 @@
 import { Card, Grid, Spacer, Text } from '@nextui-org/react';
-import { Spin } from 'antd';
+import { Spin, Table } from 'antd';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import FetchApi from '../../../apis/FetchApi';
@@ -20,7 +20,15 @@ const RoomScreen = () => {
 
     setIsFetching(true);
     FetchApi(RoomApis.getAllRoom, null, params, null).then((res) => {
-      setListRooms(res.data);
+      const data = res.data.map((e) => {
+        return {
+          key: e.id,
+          ...e,
+          roome_name_type: e.room_type.value,
+          status_room: 'Đang hoạt động',
+        };
+      })
+      setListRooms(data);
       setIsFetching(false);
     });
   };
@@ -32,30 +40,28 @@ const RoomScreen = () => {
   return (
     <Grid.Container justify="center">
       <Grid xs={8}>
-        {!isFetching && (
-          <Grid.Container gap={2}>
-            {listRooms.map((item) => {
-              return (
-                <Grid xs={3} key={item.id}>
-                  <Card>
-                    <Card.Body>
-                      <Text size={14}><b>Tên: </b>{item.name}</Text>
-                      <Text size={14}><b>Cơ sở: </b>{item.center_name}</Text>
-                      <Text size={14}><b>Loại phòng: </b>{item.room_type.value}</Text>
-                      <Spacer y={1} />
-                      <Text size={14}><b>Giá: </b>{item.price}</Text>
-                    </Card.Body>
-                  </Card>
-                </Grid>
-              );
-            })}
-          </Grid.Container>
-        )}
-        {isFetching && (
-          <div className={classes.loading}>
-            <Spin />
-          </div>
-        )}
+        <Card>
+          <Card.Header>
+            <Text size={14} b css={{ textAlign: 'center', width: '100%' }}>
+              Danh sách các phòng
+            </Text>
+          </Card.Header>
+          <Table
+            loading={isFetching}
+            dataSource={listRooms}
+            pagination={{ position: ['bottomCenter'] }}
+            size={'middle'}
+          >
+            <Table.Column title="Tên" dataIndex="name" />
+            <Table.Column title="Cơ sở" dataIndex="center_name" />
+            <Table.Column title="Loại phòng" dataIndex="roome_name_type" />
+            <Table.Column title="Sức chứa" dataIndex="capacity" />
+            <Table.Column title="Trạng thái" dataIndex="status_room" />
+            <Table.Column title="" dataIndex="control" render={() => {
+              return <p>asdad</p>
+            }}/>
+          </Table>
+        </Card>
       </Grid>
     </Grid.Container>
   );
