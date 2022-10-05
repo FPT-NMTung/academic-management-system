@@ -50,7 +50,7 @@ public static class ErrorDescription
         { "E0033", new ErrorModel() { Message = "CitizenIdCardNo must be 9 or 12 digits", Type = "sro-error-0018" } },
         { "E0034", new ErrorModel() { Message = "FirstName must match with format", Type = "sro-error-0019" } },
         { "E0035", new ErrorModel() { Message = "LastName must match with format", Type = "sro-error-0020" } },
-        { "E0036", new ErrorModel() { Message = "User Not found", Type = "sro-error-0021" } },
+        { "E0036", new ErrorModel() { Message = "User role SRO Not found", Type = "sro-error-0021" } },
         { "E0037", new ErrorModel() { Message = "Invalid Data", Type = "sro-error-0022" } },
     };
 }

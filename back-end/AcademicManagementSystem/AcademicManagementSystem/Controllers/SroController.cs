@@ -1,6 +1,4 @@
-﻿using System.Data.Common;
-using System.Linq.Expressions;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 using AcademicManagementSystem.Context;
 using AcademicManagementSystem.Context.AmsModels;
@@ -42,6 +40,7 @@ public class SroController : ControllerBase
             .Include(u => u.Role)
             .Include(u => u.Gender)
             .Include(u => u.Center)
+            .Include(u => u.Sro)
             .Where(u => u.RoleId == SroRoleId)
             .ToList()
             .Select(s => new SroResponse()
@@ -111,6 +110,7 @@ public class SroController : ControllerBase
             .Include(u => u.Role)
             .Include(u => u.Gender)
             .Include(u => u.Center)
+            .Include(u => u.Sro)
             .Where(u => u.RoleId == SroRoleId && u.CenterId == centerId)
             .ToList()
             .Where(s => s.CenterId == centerId)
@@ -181,6 +181,96 @@ public class SroController : ControllerBase
         return Ok(CustomResponse.Ok("Get sro by Id successfully", sro));
     }
 
+    // search sro by firstName, lastName, mobilePhone, email, emailOrganization
+    [HttpGet]
+    [Route("api/sros/search")]
+    [Authorize(Roles = "admin")]
+    public IActionResult SearchSro([FromQuery] string? firstName = "", [FromQuery] string? lastName = "",
+        [FromQuery] string? mobilePhone = "", [FromQuery] string? email = "",
+        [FromQuery] string? emailOrganization = "")
+    {
+        var sFirstName = RemoveDiacritics(firstName!.Trim().ToLower());
+        var sLastName = RemoveDiacritics(lastName!.Trim().ToLower());
+        var sMobilePhone = RemoveDiacritics(mobilePhone!.Trim().ToLower());
+        var sEmail = RemoveDiacritics(email!.Trim().ToLower());
+        var sEmailOrganization = RemoveDiacritics(emailOrganization!.Trim().ToLower());
+
+        var listSro = _context.Users
+            .Include(u => u.Province)
+            .Include(u => u.District)
+            .Include(u => u.Ward)
+            .Include(u => u.Role)
+            .Include(u => u.Gender)
+            .Include(u => u.Center)
+            .Include(u => u.Sro)
+            .Where(u => u.RoleId == SroRoleId)
+            .ToList()
+            .Select(s => new SroResponse()
+            {
+                Id = s.Id,
+                Role = new RoleResponse()
+                {
+                    RoleId = s.Role.Id,
+                    RoleValue = s.Role.Value
+                },
+                FirstName = s.FirstName,
+                LastName = s.LastName,
+                MobilePhone = s.MobilePhone,
+                Email = s.Email,
+                EmailOrganization = s.EmailOrganization,
+                Avatar = s.Avatar,
+                Province = new ProvinceResponse()
+                {
+                    Id = s.Province.Id,
+                    Code = s.Province.Code,
+                    Name = s.Province.Name
+                },
+                District = new DistrictResponse()
+                {
+                    Id = s.District.Id,
+                    Name = s.District.Name,
+                    Prefix = s.District.Prefix
+                },
+                Ward = new WardResponse()
+                {
+                    Id = s.Ward.Id,
+                    Name = s.Ward.Name,
+                    Prefix = s.Ward.Prefix
+                },
+                Gender = new GenderResponse()
+                {
+                    Id = s.Gender.Id,
+                    Value = s.Gender.Value
+                },
+                Birthday = s.Birthday,
+                CenterId = s.CenterId,
+                CenterName = s.Center.Name,
+                CitizenIdentityCardNo = s.CitizenIdentityCardNo,
+                CitizenIdentityCardPublishedDate = s.CitizenIdentityCardPublishedDate,
+                CitizenIdentityCardPublishedPlace = s.CitizenIdentityCardPublishedPlace
+            });
+
+        var sroResponse = new List<SroResponse>();
+        foreach (var s in listSro)
+        {
+            var s1 = RemoveDiacritics(s.FirstName!.ToLower());
+            var s2 = RemoveDiacritics(s.LastName!.ToLower());
+            var s3 = RemoveDiacritics(s.MobilePhone!.ToLower());
+            var s4 = RemoveDiacritics(s.Email!.ToLower());
+            var s5 = RemoveDiacritics(s.EmailOrganization!.ToLower());
+
+            if (s1.Contains(sFirstName)
+                && s2.Contains(sLastName)
+                && s3.Contains(sMobilePhone)
+                && s4.Contains(sEmail)
+                && s5.Contains(sEmailOrganization))
+            {
+                sroResponse.Add(s);
+            }
+        }
+
+        return Ok(CustomResponse.Ok("Search SRO successfully", sroResponse));
+    }
 
     // create sro
     [HttpPost]
@@ -205,12 +295,6 @@ public class SroController : ControllerBase
             var error = ErrorDescription.Error["E0035"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-
-        // if (!IsCenterExists(request.CenterId))
-        // {
-        //     var error = ErrorDescription.Error["E0018"];
-        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        // }
 
         if (IsMobilePhoneExists(request.MobilePhone, false, 0))
         {
@@ -242,37 +326,12 @@ public class SroController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // if (!Regex.IsMatch(request.Email!, StringConstant.RegexEmail))
+        // if (!Regex.IsMatch(request.EmailOrganization!, StringConstant.RegexEmail))
         // {
         //     var error = ErrorDescription.Error["E0032"];
         //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         // }
-        
-/*
-        if (!IsProvinceExists(request.ProvinceId))
-        {
-            var error = ErrorDescription.Error["E0023"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
 
-        if (!IsDistrictExists(request.DistrictId))
-        {
-            var error = ErrorDescription.Error["E0024"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (!IsWardExists(request.WardId))
-        {
-            var error = ErrorDescription.Error["E0025"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (!IsGenderExists(request.GenderId))
-        {
-            var error = ErrorDescription.Error["E0026"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-*/
         if (IsCitizenIdentityCardNoExists(request.CitizenIdentityCardNo, false, 0))
         {
             var error = ErrorDescription.Error["E0027"];
@@ -312,10 +371,11 @@ public class SroController : ControllerBase
         {
             _context.SaveChanges();
         }
-        catch (DbUpdateException e)
+        catch (DbUpdateException)
         {
             var error = ErrorDescription.Error["E0037"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));        }
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         var sro = new Sro()
         {
@@ -330,7 +390,8 @@ public class SroController : ControllerBase
         catch (Exception e)
         {
             var error = ErrorDescription.Error["E0037"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));        }
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         var sroResponse = GetSroResponse(sro.UserId);
         return Ok(CustomResponse.Ok("Create SRO successfully", sroResponse));
@@ -359,12 +420,6 @@ public class SroController : ControllerBase
             var error = ErrorDescription.Error["E0035"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-
-        // if (!IsCenterExists(request.CenterId))
-        // {
-        //     var error = ErrorDescription.Error["E0018"];
-        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        // }
 
         if (IsMobilePhoneExists(request.MobilePhone, true, id))
         {
@@ -396,42 +451,12 @@ public class SroController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // if (!Regex.IsMatch(request.Email!, StringConstant.RegexEmail))
+        // if (!Regex.IsMatch(request.EmailOrganization!, StringConstant.RegexEmail))
         // {
         //     var error = ErrorDescription.Error["E0032"];
         //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         // }
-/*
-        if (!IsProvinceExists(request.ProvinceId))
-        {
-            var error = ErrorDescription.Error["E0023"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
 
-        if (!IsDistrictExists(request.DistrictId))
-        {
-            var error = ErrorDescription.Error["E0024"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (!IsWardExists(request.WardId))
-        {
-            var error = ErrorDescription.Error["E0025"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (!IsGenderExists(request.GenderId))
-        {
-            var error = ErrorDescription.Error["E0026"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (IsCitizenIdentityCardNoExists(request.CitizenIdentityCardNo, true, id))
-        {
-            var error = ErrorDescription.Error["E0027"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-*/
         if (!Regex.IsMatch(request.CitizenIdentityCardNo!, StringConstant.RegexCitizenIdCardNo))
         {
             var error = ErrorDescription.Error["E0033"];
@@ -484,99 +509,6 @@ public class SroController : ControllerBase
         return Ok(CustomResponse.Ok("Update SRO successfully", sroResponse));
     }
 
-    // search sro by firstName, lastName, mobilePhone, email, emailOrganization
-    [HttpGet("api/sros/search")]
-    public IActionResult SearchSro([FromQuery] string? firstName = "", [FromQuery] string? lastName = "",
-        [FromQuery] string? mobilePhone = "", [FromQuery] string? email = "",
-        [FromQuery] string? emailOrganization = "")
-    {
-        var sFirstName = RemoveDiacritics(firstName!.Trim().ToLower());
-        var sLastName = RemoveDiacritics(lastName!.Trim().ToLower());
-        var sMobilePhone = RemoveDiacritics(mobilePhone!.Trim().ToLower());
-        var sEmail = RemoveDiacritics(email!.Trim().ToLower());
-        var sEmailOrganization = RemoveDiacritics(emailOrganization!.Trim().ToLower());
-
-        var allSro = _context.Users
-            .Include(u => u.Province)
-            .Include(u => u.District)
-            .Include(u => u.Ward)
-            .Include(u => u.Role)
-            .Include(u => u.Gender)
-            .Include(u => u.Center)
-            .Where(u => u.RoleId == SroRoleId)
-            // && u.FirstName.ToLower().Contains(sFirstName)
-            // && u.LastName.ToLower().Contains(sLastName)
-            // && u.MobilePhone.ToLower().Contains(sMobilePhone)
-            // && u.Email.ToLower().Contains(sEmail)
-            // && u.EmailOrganization.ToLower().Contains(sEmailOrganization))
-            .ToList()
-            .Select(s => new SroResponse()
-            {
-                Id = s.Id,
-                Role = new RoleResponse()
-                {
-                    RoleId = s.Role.Id,
-                    RoleValue = s.Role.Value
-                },
-                FirstName = s.FirstName,
-                LastName = s.LastName,
-                MobilePhone = s.MobilePhone,
-                Email = s.Email,
-                EmailOrganization = s.EmailOrganization,
-                Avatar = s.Avatar,
-                Province = new ProvinceResponse()
-                {
-                    Id = s.Province.Id,
-                    Code = s.Province.Code,
-                    Name = s.Province.Name
-                },
-                District = new DistrictResponse()
-                {
-                    Id = s.District.Id,
-                    Name = s.District.Name,
-                    Prefix = s.District.Prefix
-                },
-                Ward = new WardResponse()
-                {
-                    Id = s.Ward.Id,
-                    Name = s.Ward.Name,
-                    Prefix = s.Ward.Prefix
-                },
-                Gender = new GenderResponse()
-                {
-                    Id = s.Gender.Id,
-                    Value = s.Gender.Value
-                },
-                Birthday = s.Birthday,
-                CenterId = s.CenterId,
-                CenterName = s.Center.Name,
-                CitizenIdentityCardNo = s.CitizenIdentityCardNo,
-                CitizenIdentityCardPublishedDate = s.CitizenIdentityCardPublishedDate,
-                CitizenIdentityCardPublishedPlace = s.CitizenIdentityCardPublishedPlace
-            });
-
-        var sroResponse = new List<SroResponse>();
-        foreach (var s in allSro)
-        {
-            var s1 = RemoveDiacritics(s.FirstName!.ToLower());
-            var s2 = RemoveDiacritics(s.LastName!.ToLower());
-            var s3 = RemoveDiacritics(s.MobilePhone!.ToLower());
-            var s4 = RemoveDiacritics(s.Email!.ToLower());
-            var s5 = RemoveDiacritics(s.EmailOrganization!.ToLower());
-
-            if (s1.Contains(sFirstName)
-                && s2.Contains(sLastName)
-                && s3.Contains(sMobilePhone)
-                && s4.Contains(sEmail)
-                && s5.Contains(sEmailOrganization))
-            {
-                sroResponse.Add(s);
-            }
-        }
-
-        return Ok(CustomResponse.Ok("Search SRO successfully", sroResponse));
-    }
-
     private bool IsCenterExists(int centerId)
     {
         return _context.Centers.Any(e => e.Id == centerId);
@@ -607,26 +539,6 @@ public class SroController : ControllerBase
         return isUpdate
             ? _context.Users.Any(e => e.EmailOrganization == emailOrganization && e.Id != userId)
             : _context.Users.Any(e => e.EmailOrganization == emailOrganization && e.RoleId == SroRoleId);
-    }
-
-    private bool IsProvinceExists(int provinceId)
-    {
-        return _context.Provinces.Any(e => e.Id == provinceId);
-    }
-
-    private bool IsDistrictExists(int districtId)
-    {
-        return _context.Districts.Any(e => e.Id == districtId);
-    }
-
-    private bool IsWardExists(int wardId)
-    {
-        return _context.Wards.Any(e => e.Id == wardId);
-    }
-
-    private bool IsGenderExists(int genderId)
-    {
-        return _context.Genders.Any(g => g.Id == genderId);
     }
 
     private bool IsCitizenIdentityCardNoExists(string? citizenIdentityCardNo, bool isUpdate, int userId)
