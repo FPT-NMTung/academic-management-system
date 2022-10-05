@@ -82,13 +82,13 @@ public class CourseFamilyController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (Regex.IsMatch(request.Code.ToUpper().Trim(), StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        if (Regex.IsMatch(request.Code.Trim(), StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
         {
             var error = ErrorDescription.Error["E1010"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (request.Code.ToUpper().Trim().Length > 100)
+        if (request.Code.Trim().Length > 100)
         {
             var error = ErrorDescription.Error["E1011"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));

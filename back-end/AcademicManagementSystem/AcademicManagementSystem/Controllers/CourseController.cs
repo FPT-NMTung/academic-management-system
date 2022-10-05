@@ -66,7 +66,7 @@ public class CourseController : ControllerBase
     public IActionResult CreateCourse([FromBody] CreateCourseRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Name.Trim()) ||
-            string.IsNullOrWhiteSpace(request.Code.ToUpper().Trim()) ||
+            string.IsNullOrWhiteSpace(request.Code.Trim()) ||
             string.IsNullOrWhiteSpace(request.CourseFamilyCode.Trim()))
         {
             var error = ErrorDescription.Error["E1007"];
@@ -150,7 +150,7 @@ public class CourseController : ControllerBase
         }
 
         if (string.IsNullOrWhiteSpace(request.Name.Trim()) ||
-            string.IsNullOrWhiteSpace(request.CourseFamilyCode.ToUpper().Trim()))
+            string.IsNullOrWhiteSpace(request.CourseFamilyCode.Trim()))
         {
             var error = ErrorDescription.Error["E1007"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
