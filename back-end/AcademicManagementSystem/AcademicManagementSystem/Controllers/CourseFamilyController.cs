@@ -46,11 +46,7 @@ public class CourseFamilyController : ControllerBase
             return NotFound(CustomResponse.NotFound("Course family not found"));
         }
 
-        var courseFamilyResponse = new CourseFamilyResponse()
-        {
-            Code = courseFamily.Code, Name = courseFamily.Name, PublishedYear = courseFamily.PublishedYear,
-            IsActive = courseFamily.IsActive, CreatedAt = courseFamily.CreatedAt, UpdatedAt = courseFamily.UpdatedAt
-        };
+        var courseFamilyResponse = GetCourseFamilyResponse(courseFamily);
         return Ok(CustomResponse.Ok("Get course family success", courseFamilyResponse));
     }
 
@@ -85,7 +81,7 @@ public class CourseFamilyController : ControllerBase
             var error = ErrorDescription.Error["E1013"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         if (Regex.IsMatch(request.Code.ToUpper().Trim(), StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
         {
             var error = ErrorDescription.Error["E1010"];
@@ -112,15 +108,11 @@ public class CourseFamilyController : ControllerBase
         };
         _context.CourseFamilies.Add(courseFamily);
         _context.SaveChanges();
-        
-        var courseFamilyResponse = new CourseFamilyResponse()
-        {
-            Code = courseFamily.Code, Name = courseFamily.Name, PublishedYear = courseFamily.PublishedYear,
-            IsActive = courseFamily.IsActive, CreatedAt = courseFamily.CreatedAt, UpdatedAt = courseFamily.UpdatedAt
-        };
+
+        var courseFamilyResponse = GetCourseFamilyResponse(courseFamily);
         return Ok(CustomResponse.Ok("Create course family success", courseFamilyResponse));
     }
-    
+
     // update course family
     [HttpPut]
     [Route("api/course-families/{code}")]
@@ -164,11 +156,7 @@ public class CourseFamilyController : ControllerBase
         courseFamily.UpdatedAt = DateTime.Now;
         _context.SaveChanges();
 
-        var courseFamilyResponse = new CourseFamilyResponse()
-        {
-            Code = courseFamily.Code, Name = courseFamily.Name, PublishedYear = courseFamily.PublishedYear,
-            IsActive = courseFamily.IsActive, CreatedAt = courseFamily.CreatedAt, UpdatedAt = courseFamily.UpdatedAt
-        };
+        var courseFamilyResponse = GetCourseFamilyResponse(courseFamily);
         return Ok(CustomResponse.Ok("Update course family success", courseFamilyResponse));
     }
 
@@ -187,15 +175,20 @@ public class CourseFamilyController : ControllerBase
         _context.CourseFamilies.Remove(courseFamily);
         _context.SaveChanges();
 
+        return Ok(CustomResponse.Ok("Delete course family success", null!));
+    }
+
+    private static CourseFamilyResponse GetCourseFamilyResponse(CourseFamily courseFamily)
+    {
         var courseFamilyResponse = new CourseFamilyResponse()
         {
             Code = courseFamily.Code, Name = courseFamily.Name, PublishedYear = courseFamily.PublishedYear,
             IsActive = courseFamily.IsActive, CreatedAt = courseFamily.CreatedAt, UpdatedAt = courseFamily.UpdatedAt
         };
-        return Ok(CustomResponse.Ok("Delete course family success", courseFamilyResponse));
+        return courseFamilyResponse;
     }
 
-    // is course family exist
+    // is course family exists
     private bool IsCourseFamilyExists(CreateCourseFamilyRequest request)
     {
         return _context.CourseFamilies.Any(cf => cf.Code == request.Code.Trim());

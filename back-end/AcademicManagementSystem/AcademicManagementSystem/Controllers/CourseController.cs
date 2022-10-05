@@ -55,18 +55,7 @@ public class CourseController : ControllerBase
             return NotFound(CustomResponse.NotFound("Not Found Course"));
         }
 
-        var courseResponse = new CourseResponse()
-        {
-            Code = course.Code, CourseFamilyCode = course.CourseFamilyCode, Name = course.Name,
-            SemesterCount = course.SemesterCount, IsActive = course.IsActive, CreatedAt = course.CreatedAt,
-            UpdatedAt = course.UpdatedAt,
-            CourseFamily = new CourseFamilyResponse()
-            {
-                Code = course.CourseFamily.Code, Name = course.CourseFamily.Name,
-                PublishedYear = course.CourseFamily.PublishedYear, IsActive = course.CourseFamily.IsActive,
-                CreatedAt = course.CourseFamily.CreatedAt, UpdatedAt = course.CourseFamily.UpdatedAt
-            }
-        };
+        var courseResponse = GetCourseResponse(course);
         return Ok(courseResponse);
     }
 
@@ -144,18 +133,7 @@ public class CourseController : ControllerBase
         _context.Courses.Add(course);
         _context.SaveChanges();
 
-        var courseResponse = new CourseResponse()
-        {
-            Code = course.Code, CourseFamilyCode = course.CourseFamilyCode, Name = course.Name,
-            SemesterCount = course.SemesterCount, IsActive = course.IsActive, CreatedAt = course.CreatedAt,
-            UpdatedAt = course.UpdatedAt,
-            CourseFamily = new CourseFamilyResponse()
-            {
-                Code = course.CourseFamily.Code, Name = course.CourseFamily.Name,
-                PublishedYear = course.CourseFamily.PublishedYear, IsActive = course.CourseFamily.IsActive,
-                CreatedAt = course.CourseFamily.CreatedAt, UpdatedAt = course.CourseFamily.UpdatedAt
-            }
-        };
+        var courseResponse = GetCourseResponse(course);
         return Ok(CustomResponse.Ok("Course Created Successfully", courseResponse));
     }
 
@@ -166,11 +144,11 @@ public class CourseController : ControllerBase
     public IActionResult UpdateCourse(string code, [FromBody] UpdateCourseRequest request)
     {
         var course = _context.Courses.FirstOrDefault(c => c.Code == code.Trim());
-        if(course == null)
+        if (course == null)
         {
             return NotFound(CustomResponse.NotFound("Not Found Course"));
         }
-        
+
         if (string.IsNullOrWhiteSpace(request.Name.Trim()) ||
             string.IsNullOrWhiteSpace(request.CourseFamilyCode.ToUpper().Trim()))
         {
@@ -213,21 +191,10 @@ public class CourseController : ControllerBase
 
         _context.SaveChanges();
 
-        var courseResponse = new CourseResponse()
-        {
-            Code = course.Code, CourseFamilyCode = course.CourseFamilyCode, Name = course.Name,
-            SemesterCount = course.SemesterCount, IsActive = course.IsActive, CreatedAt = course.CreatedAt,
-            UpdatedAt = course.UpdatedAt,
-            CourseFamily = new CourseFamilyResponse()
-            {
-                Code = course.CourseFamily.Code, Name = course.CourseFamily.Name,
-                PublishedYear = course.CourseFamily.PublishedYear, IsActive = course.CourseFamily.IsActive,
-                CreatedAt = course.CourseFamily.CreatedAt, UpdatedAt = course.CourseFamily.UpdatedAt
-            }
-        };
+        var courseResponse = GetCourseResponse(course);
         return Ok(CustomResponse.Ok("Course Updated Successfully", courseResponse));
     }
-    
+
     // delete course
     [HttpDelete]
     [Route("api/courses/{code}")]
@@ -235,14 +202,19 @@ public class CourseController : ControllerBase
     public IActionResult DeleteCourse(string code)
     {
         var course = _context.Courses.FirstOrDefault(c => c.Code == code.Trim());
-        if(course == null)
+        if (course == null)
         {
             return NotFound(CustomResponse.NotFound("Not Found Course"));
         }
 
         _context.Courses.Remove(course);
         _context.SaveChanges();
-        
+
+        return Ok(CustomResponse.Ok("Course Deleted Successfully", null!));
+    }
+
+    private static CourseResponse GetCourseResponse(Course course)
+    {
         var courseResponse = new CourseResponse()
         {
             Code = course.Code, CourseFamilyCode = course.CourseFamilyCode, Name = course.Name,
@@ -255,6 +227,6 @@ public class CourseController : ControllerBase
                 CreatedAt = course.CourseFamily.CreatedAt, UpdatedAt = course.CourseFamily.UpdatedAt
             }
         };
-        return Ok(CustomResponse.Ok("Course Deleted Successfully", courseResponse));
+        return courseResponse;
     }
 }
