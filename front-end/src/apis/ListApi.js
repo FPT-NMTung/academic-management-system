@@ -13,8 +13,13 @@ export const CenterApis = {
     contextType: 'application/json',
   },
   createCenter: {
-    url: 'api/center',
+    url: 'api/centers',
     method: 'POST',
+    contextType: 'application/json',
+  },
+  updateCenter: {
+    url: 'api/centers/{0}',
+    method: 'PUT',
     contextType: 'application/json',
   },
 };
@@ -33,6 +38,24 @@ export const AddressApis = {
   getListWard: {
     url: 'api/address/provinces/{0}/districts/{1}/wards',
     method: 'GET',
+    contextType: 'application/json',
+  },
+};
+
+export const RoomApis = {
+  getAllRoom: {
+    url: 'api/rooms',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  createRoom: {
+    url: 'api/rooms',
+    method: 'POST',
+    contextType: 'application/json',
+  },
+  updateRoom: {
+    url: 'api/rooms/{0}',
+    method: 'PUT',
     contextType: 'application/json',
   },
 };

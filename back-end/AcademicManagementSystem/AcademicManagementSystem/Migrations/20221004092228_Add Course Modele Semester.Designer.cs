@@ -4,6 +4,7 @@ using AcademicManagementSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    partial class AmsContextModelSnapshot : ModelSnapshot
+    [Migration("20221004092228_Add Course Modele Semester")]
+    partial class AddCourseModeleSemester
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -462,79 +464,6 @@ namespace AcademicManagementSystem.Migrations
                     b.ToTable("sro");
                 });
 
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Teacher", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("user_id");
-
-                    b.Property<string>("CompanyAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("company_address");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("Nickname")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("nickname");
-
-                    b.Property<decimal>("Salary")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("salary");
-
-                    b.Property<DateTime>("StartWorkingDate")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("start_working_date");
-
-                    b.Property<string>("TaxCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("tax_code");
-
-                    b.Property<int>("TeacherTypeId")
-                        .HasColumnType("int")
-                        .HasColumnName("teacher_type_id");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("updated_at");
-
-                    b.Property<int>("WorkingTimeId")
-                        .HasColumnType("int")
-                        .HasColumnName("working_time_id");
-
-                    b.HasKey("UserId");
-
-                    b.HasIndex("TeacherTypeId");
-
-                    b.HasIndex("WorkingTimeId");
-
-                    b.ToTable("teacher");
-                });
-
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.TeacherType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("value");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("teacher_type");
-                });
-
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.User", b =>
                 {
                     b.Property<int>("Id")
@@ -696,25 +625,6 @@ namespace AcademicManagementSystem.Migrations
                     b.ToTable("ward");
                 });
 
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.WorkingTime", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("value");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("working_time");
-                });
-
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.ActiveRefreshToken", b =>
                 {
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.User", "User")
@@ -854,33 +764,6 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Teacher", b =>
-                {
-                    b.HasOne("AcademicManagementSystem.Context.AmsModels.TeacherType", "TeacherType")
-                        .WithMany("Teachers")
-                        .HasForeignKey("TeacherTypeId")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
-
-                    b.HasOne("AcademicManagementSystem.Context.AmsModels.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
-
-                    b.HasOne("AcademicManagementSystem.Context.AmsModels.WorkingTime", "WorkingTime")
-                        .WithMany("Teachers")
-                        .HasForeignKey("WorkingTimeId")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
-
-                    b.Navigation("TeacherType");
-
-                    b.Navigation("User");
-
-                    b.Navigation("WorkingTime");
-                });
-
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.User", b =>
                 {
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Center", "Center")
@@ -1015,11 +898,6 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("CoursesModuleSemesters");
                 });
 
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.TeacherType", b =>
-                {
-                    b.Navigation("Teachers");
-                });
-
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.User", b =>
                 {
                     b.Navigation("ActiveRefreshTokens");
@@ -1029,11 +907,6 @@ namespace AcademicManagementSystem.Migrations
 
                     b.Navigation("Sro")
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.WorkingTime", b =>
-                {
-                    b.Navigation("Teachers");
                 });
 #pragma warning restore 612, 618
         }

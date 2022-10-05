@@ -30,6 +30,9 @@ public class AmsContext : DbContext
         modelBuilder.Entity<User>()
             .HasIndex(u => u.CitizenIdentityCardNo)
             .IsUnique();
+
+        modelBuilder.Entity<CourseModuleSemester>()
+            .HasKey(cms => new { cms.CourseCode, cms.ModuleId, cms.SemesterId });
     }
     
     public DbSet<Province> Provinces { get; set; }
@@ -47,6 +50,11 @@ public class AmsContext : DbContext
     public DbSet<Sro> Sros { get; set; }
     public DbSet<RoomType> RoomTypes { get; set; }
     public DbSet<Room> Rooms { get; set; }
+    public DbSet<CourseFamily> CourseFamilies { get; set; }
+    public DbSet<Course> Courses { get; set; }
+    public DbSet<Module> Modules { get; set; }
+    public DbSet<Semester> Semesters { get; set; }
+    public DbSet<CourseModuleSemester> CourseModuleSemesters { get; set; }
     
     public DbSet<TeacherType> TeacherTypes { get; set; }
     

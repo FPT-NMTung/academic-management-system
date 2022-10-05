@@ -6,7 +6,6 @@ using AcademicManagementSystem.Context.AmsModels;
 using AcademicManagementSystem.Models;
 using AcademicManagementSystem.Models.AuthController.RefreshTokenModel;
 using Google.Apis.Auth;
-using Jose;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -41,7 +40,8 @@ public class AuthController : ControllerBase
             }).Result!;
 
         // Get and check the user from the database
-        var selectUser = _context.Users.Include(e => e.Role).FirstOrDefault(user => user.EmailOrganization == payload.Email);
+        var selectUser = _context.Users.Include(e => e.Role)
+            .FirstOrDefault(user => user.EmailOrganization == payload.Email);
         if (selectUser == null)
         {
             return BadRequest(CustomResponse.BadRequest("User not found", "auth-error-000001"));
@@ -86,10 +86,19 @@ public class AuthController : ControllerBase
         var refreshToken = GenerateRefreshToken(selectUser.Id);
 
         // Update refresh token in database
-        var listExpiredRefreshToken = _context.ActiveRefreshTokens
-            .Where(x => x.UserId == selectUser.Id && x.ExpDate < DateTime.Now).ToList();
-        _context.ActiveRefreshTokens.RemoveRange(listExpiredRefreshToken);
-        _context.ActiveRefreshTokens.Remove(selectRefreshToken);
+        try
+        {
+            var listExpiredRefreshToken = _context.ActiveRefreshTokens
+                .Where(x => x.UserId == selectUser.Id && x.ExpDate < DateTime.Now).ToList();
+            listExpiredRefreshToken.ForEach(x => _context.ActiveRefreshTokens.Remove(x));
+            _context.ActiveRefreshTokens.Remove(selectRefreshToken);
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            // Row already deleted
+        }
+        
         _context.ActiveRefreshTokens.Add(new ActiveRefreshToken()
         {
             UserId = selectUser.Id,
