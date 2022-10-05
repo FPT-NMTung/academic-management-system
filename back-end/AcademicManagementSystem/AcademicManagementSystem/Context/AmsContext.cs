@@ -30,6 +30,9 @@ public class AmsContext : DbContext
         modelBuilder.Entity<User>()
             .HasIndex(u => u.CitizenIdentityCardNo)
             .IsUnique();
+        modelBuilder.Entity<Teacher>()
+            .HasIndex(t => t.TaxCode)
+            .IsUnique();
 
         modelBuilder.Entity<CourseModuleSemester>()
             .HasKey(cms => new { cms.CourseCode, cms.ModuleId, cms.SemesterId });
