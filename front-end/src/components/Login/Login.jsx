@@ -68,7 +68,7 @@ const Login = () => {
         scope: '',
       });
     };
-    gapi.load('client:auth2', initClient);
+    window.gapi.load('client:auth2', initClient);
   }, []);
 
   useEffect(() => {
@@ -116,14 +116,12 @@ const Login = () => {
               <GoogleLogin
                 clientId="518989199582-9ul4cerv67mgmg777fpl0jl4lb4nsnji.apps.googleusercontent.com"
                 render={(propsButton) => {
-                  console.log(propsButton);
                   return (
                     <Button
                       css={{
                         width: '220px',
                         margin: '0 auto',
                       }}
-                      disabled={isLogining}
                       icon={<FcGoogle />}
                       auto
                       flat
