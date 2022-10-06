@@ -45,7 +45,7 @@ public class SroController : ControllerBase
             .ToList()
             .Select(s => new SroResponse()
             {
-                Id = s.Id,
+                UserId = s.Id,
                 Role = new RoleResponse()
                 {
                     RoleId = s.Role.Id,
@@ -85,7 +85,9 @@ public class SroController : ControllerBase
                 CenterName = s.Center.Name,
                 CitizenIdentityCardNo = s.CitizenIdentityCardNo,
                 CitizenIdentityCardPublishedDate = s.CitizenIdentityCardPublishedDate,
-                CitizenIdentityCardPublishedPlace = s.CitizenIdentityCardPublishedPlace
+                CitizenIdentityCardPublishedPlace = s.CitizenIdentityCardPublishedPlace,
+                CreatedAt = s.CreatedAt,
+                UpdatedAt = s.UpdatedAt
             });
 
         return Ok(CustomResponse.Ok("Get All Sro successfully", allSro));
@@ -116,7 +118,7 @@ public class SroController : ControllerBase
             .Where(s => s.CenterId == centerId)
             .Select(s => new SroResponse()
             {
-                Id = s.Id,
+                UserId = s.Id,
                 Role = new RoleResponse()
                 {
                     RoleId = s.Role.Id,
@@ -207,7 +209,7 @@ public class SroController : ControllerBase
             .ToList()
             .Select(s => new SroResponse()
             {
-                Id = s.Id,
+                UserId = s.Id,
                 Role = new RoleResponse()
                 {
                     RoleId = s.Role.Id,
@@ -561,7 +563,7 @@ public class SroController : ControllerBase
             .Where(u => u.Sro.UserId == id && u.RoleId == SroRoleId)
             .Select(u => new SroResponse()
             {
-                Id = u.Id,
+                UserId = u.Id,
                 Role = new RoleResponse()
                 {
                     RoleId = u.Role.Id,

@@ -106,7 +106,7 @@ public class CenterController : ControllerBase
     public IActionResult CreateCenter([FromBody] CreateCenterRequest request)
     {
         // is null or white space input
-        if (string.IsNullOrWhiteSpace(request.Name?.Trim()))
+        if (string.IsNullOrWhiteSpace(request.Name.Trim()))
         {
             var error = ErrorDescription.Error["E1002"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -196,6 +196,24 @@ public class CenterController : ControllerBase
         _context.SaveChanges();
         
         return Ok(CustomResponse.Ok("Update center success", center));
+    }
+
+    // delete center
+    [HttpDelete]
+    [Route("api/centers/{id:int}")]
+    public IActionResult DeleteCenter(int id)
+    {
+        var center = _context.Centers.FirstOrDefault(c => c.Id == id);
+        if (center == null)
+        {
+            var error = ErrorDescription.Error["E1001"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        _context.Centers.Remove(center);
+        _context.SaveChanges();
+        
+        return Ok(CustomResponse.Ok("Delete center success", null!));
     }
 
     // is center exists
