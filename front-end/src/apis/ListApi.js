@@ -59,3 +59,11 @@ export const RoomApis = {
     contextType: 'application/json',
   },
 };
+
+export const RoomTypeApis = {
+  getAllRoomType: {
+    url: 'api/room-types',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+}
