@@ -4,9 +4,9 @@ namespace AcademicManagementSystem.Models.RoleController;
 
 public class RoleResponse
 {
-    [JsonPropertyName("role_id")]
-    public int RoleId { get; set; }
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
     
-    [JsonPropertyName("role_value")]
-    public string RoleValue { get; set; }
+    [JsonPropertyName("value")]
+    public string Value { get; set; }
 }
