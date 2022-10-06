@@ -1,13 +1,16 @@
 ﻿using System.Text.Json.Serialization;
+using AcademicManagementSystem.Context.AmsModels;
 using AcademicManagementSystem.Models.AddressController.DistrictModel;
 using AcademicManagementSystem.Models.AddressController.ProvinceModel;
 using AcademicManagementSystem.Models.AddressController.WardModel;
 using AcademicManagementSystem.Models.GenderController;
 using AcademicManagementSystem.Models.RoleController;
+using AcademicManagementSystem.Models.TeacherTypeController;
+using AcademicManagementSystem.Models.WorkingTime;
 
-namespace AcademicManagementSystem.Models.UserController.SroController;
+namespace AcademicManagementSystem.Models.UserController.TeacherController;
 
-public class SroResponse
+public class TeacherResponse
 {
     [JsonPropertyName("user_id")]
     public int UserId { get; set; }
@@ -63,10 +66,30 @@ public class SroResponse
     [JsonPropertyName("citizen_identity_card_published_place")]
     public string? CitizenIdentityCardPublishedPlace { get; set; }
     
+    [JsonPropertyName("teacher_type")]
+    public TeacherTypeResponse TeacherType { get; set; }
+    
+    [JsonPropertyName("working_time")]
+    public WorkingTimeResponse WorkingTime { get; set; }
+    
+    [JsonPropertyName("nickname")]
+    public string? Nickname { get; set; }
+    
+    [JsonPropertyName("company_address")]
+    public string? CompanyAddress { get; set; }
+    
+    [JsonPropertyName("start_working_date")]
+    public DateTime StartWorkingDate { get; set; }
+    
+    [JsonPropertyName("salary")]
+    public decimal? Salary { get; set; }
+    
+    [JsonPropertyName("tax_code")]
+    public string? TaxCode { get; set; }
+    
     [JsonPropertyName("create_at")]
     public DateTime CreatedAt { get; set; }
     
     [JsonPropertyName("update_at")]
     public DateTime UpdatedAt { get; set; }
-    
 }
