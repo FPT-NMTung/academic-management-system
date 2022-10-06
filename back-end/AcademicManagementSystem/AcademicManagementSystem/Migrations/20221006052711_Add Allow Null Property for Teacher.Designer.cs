@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    [Migration("20221006051300_Add Allow Null Property")]
-    partial class AddAllowNullProperty
+    [Migration("20221006052711_Add Allow Null Property for Teacher")]
+    partial class AddAllowNullPropertyforTeacher
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -471,7 +471,6 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("user_id");
 
                     b.Property<string>("CompanyAddress")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("company_address");
 
@@ -480,11 +479,10 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("created_at");
 
                     b.Property<string>("Nickname")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("nickname");
 
-                    b.Property<decimal>("Salary")
+                    b.Property<decimal?>("Salary")
                         .HasColumnType("decimal(18,2)")
                         .HasColumnName("salary");
 
@@ -493,7 +491,6 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("start_working_date");
 
                     b.Property<string>("TaxCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)")
                         .HasColumnName("tax_code");
 
@@ -512,7 +509,8 @@ namespace AcademicManagementSystem.Migrations
                     b.HasKey("UserId");
 
                     b.HasIndex("TaxCode")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[tax_code] IS NOT NULL");
 
                     b.HasIndex("TeacherTypeId");
 
