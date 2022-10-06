@@ -73,5 +73,10 @@ export const ManageSroApis = {
     url: 'api/sros',
     method: 'GET',
     contextType: 'application/json',
+  },
+  searchSro: {
+    url: 'api/sros/search',
+    method: 'GET',
+    contextType: 'application/json',
   }
 }
