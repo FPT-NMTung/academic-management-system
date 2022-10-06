@@ -4,6 +4,7 @@ using AcademicManagementSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    partial class AmsContextModelSnapshot : ModelSnapshot
+    [Migration("20221005164331_Set Unique Key TaxCode")]
+    partial class SetUniqueKeyTaxCode
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -469,14 +471,20 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("user_id");
 
                     b.Property<string>("CompanyAddress")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("company_address");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
                     b.Property<string>("Nickname")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("nickname");
 
-                    b.Property<decimal?>("Salary")
+                    b.Property<decimal>("Salary")
                         .HasColumnType("decimal(18,2)")
                         .HasColumnName("salary");
 
@@ -485,12 +493,17 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("start_working_date");
 
                     b.Property<string>("TaxCode")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)")
                         .HasColumnName("tax_code");
 
                     b.Property<int>("TeacherTypeId")
                         .HasColumnType("int")
                         .HasColumnName("teacher_type_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
 
                     b.Property<int>("WorkingTimeId")
                         .HasColumnType("int")
@@ -499,8 +512,7 @@ namespace AcademicManagementSystem.Migrations
                     b.HasKey("UserId");
 
                     b.HasIndex("TaxCode")
-                        .IsUnique()
-                        .HasFilter("[tax_code] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("TeacherTypeId");
 
@@ -856,8 +868,8 @@ namespace AcademicManagementSystem.Migrations
                         .IsRequired();
 
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.User", "User")
-                        .WithOne("Teacher")
-                        .HasForeignKey("AcademicManagementSystem.Context.AmsModels.Teacher", "UserId")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
@@ -1021,9 +1033,6 @@ namespace AcademicManagementSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("Sro")
-                        .IsRequired();
-
-                    b.Navigation("Teacher")
                         .IsRequired();
                 });
 
