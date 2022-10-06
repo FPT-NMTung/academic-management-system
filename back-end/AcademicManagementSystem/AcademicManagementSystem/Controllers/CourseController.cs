@@ -39,7 +39,7 @@ public class CourseController : ControllerBase
                     CreatedAt = c.CourseFamily.CreatedAt, UpdatedAt = c.CourseFamily.UpdatedAt
                 }
             });
-        return Ok(courses);
+        return Ok(CustomResponse.Ok("Get Courses Successfully",courses));
     }
 
     // get course by code
@@ -56,7 +56,7 @@ public class CourseController : ControllerBase
         }
 
         var courseResponse = GetCourseResponse(course);
-        return Ok(courseResponse);
+        return Ok(CustomResponse.Ok("Get Course Successfully", courseResponse));
     }
 
     // create course
