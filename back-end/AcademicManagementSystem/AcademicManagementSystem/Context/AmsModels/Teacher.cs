@@ -32,13 +32,7 @@ public class Teacher
     //Unique Key
     [Column("tax_code")]
     public string? TaxCode { get; set; }
-    
-    [Column("created_at")]
-    public DateTime CreatedAt { get; set; }
-    
-    [Column("updated_at")]
-    public DateTime UpdatedAt { get; set; }
-    
+
     // relationships
     public virtual User User { get; set; }
 
