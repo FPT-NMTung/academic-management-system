@@ -105,21 +105,25 @@ public class CenterController : ControllerBase
     [Route("api/centers")]
     public IActionResult CreateCenter([FromBody] CreateCenterRequest request)
     {
+        request.Name = request.Name.Trim();
+
         // is null or white space input
-        if (string.IsNullOrWhiteSpace(request.Name?.Trim()))
+        if (string.IsNullOrWhiteSpace(request.Name.Trim()))
         {
             var error = ErrorDescription.Error["E1002"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         // name format
-        if (Regex.IsMatch(request.Name.Trim(), StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        request.Name = Regex.Replace(request.Name, StringConstant.RegexWhiteSpaces, " ");
+        request.Name = request.Name.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.Name, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
         {
             var error = ErrorDescription.Error["E1003"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (request.Name.Trim().Length > 100)
+        if (request.Name.Length > 100)
         {
             var error = ErrorDescription.Error["E1004"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -141,7 +145,7 @@ public class CenterController : ControllerBase
         var center = new Center()
         {
             ProvinceId = request.ProvinceId, DistrictId = request.DistrictId, WardId = request.WardId,
-            Name = request.Name.Trim(), CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now
+            Name = request.Name, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now
         };
         _context.Centers.Add(center);
         _context.SaveChanges();
@@ -154,6 +158,8 @@ public class CenterController : ControllerBase
     [Route("api/centers/{id:int}")]
     public IActionResult UpdateCenter(int id, [FromBody] UpdateCenterRequest request)
     {
+        request.Name = request.Name.Trim();
+        
         var center = _context.Centers.FirstOrDefault(c => c.Id == id);
         if (center == null)
         {
@@ -162,19 +168,21 @@ public class CenterController : ControllerBase
         }
 
         // name format
-        if (string.IsNullOrWhiteSpace(request.Name.Trim()))
+        request.Name = Regex.Replace(request.Name, StringConstant.RegexWhiteSpaces, " ");
+        request.Name = request.Name.Replace(" ' ", "'").Trim();
+        if (string.IsNullOrWhiteSpace(request.Name))
         {
             var error = ErrorDescription.Error["E1002"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (Regex.IsMatch(request.Name.Trim(), StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        if (Regex.IsMatch(request.Name, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
         {
             var error = ErrorDescription.Error["E1003"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (request.Name.Trim().Length > 100)
+        if (request.Name.Length > 100)
         {
             var error = ErrorDescription.Error["E1004"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -190,12 +198,30 @@ public class CenterController : ControllerBase
         center.ProvinceId = request.ProvinceId;
         center.DistrictId = request.DistrictId;
         center.WardId = request.WardId;
-        center.Name = request.Name.Trim();
+        center.Name = request.Name;
         center.UpdatedAt = DateTime.Now;
         _context.Centers.Update(center);
         _context.SaveChanges();
         
         return Ok(CustomResponse.Ok("Update center success", center));
+    }
+
+    // delete center
+    [HttpDelete]
+    [Route("api/centers/{id:int}")]
+    public IActionResult DeleteCenter(int id)
+    {
+        var center = _context.Centers.FirstOrDefault(c => c.Id == id);
+        if (center == null)
+        {
+            var error = ErrorDescription.Error["E1001"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        _context.Centers.Remove(center);
+        _context.SaveChanges();
+        
+        return Ok(CustomResponse.Ok("Delete center success", null!));
     }
 
     // is center exists
