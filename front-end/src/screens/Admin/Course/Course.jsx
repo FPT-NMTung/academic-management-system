@@ -18,7 +18,7 @@ const Course = () => {
         const apiCourse = CourseApis.getAllCourse;
         console.log(apiCourse);
         FetchApi(apiCourse).then((res) => {
-            const data = res;
+            const data = res.data;
             console.log(data);
             data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             const mergeAllCourse = data.map((e, index) => {
