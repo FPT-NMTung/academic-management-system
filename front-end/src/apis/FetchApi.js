@@ -1,5 +1,5 @@
-const endpoint = 'https://apms-api.azurewebsites.net/';
-// const endpoint = "https://localhost:7142/";
+// const endpoint = 'https://apms-api.azurewebsites.net/';
+const endpoint = 'https://localhost:7142/';
 
 /**
  * Fetches data from the API and returns a promise.
@@ -31,6 +31,8 @@ const FetchApi = async (api, bodyObject, params, pathValiable) => {
     delete options.headers['Content-Type'];
   }
 
+  console.log(params);
+
   let paramString = '?';
   for (const property in params) {
     if (params.hasOwnProperty(property)) {
@@ -49,6 +51,7 @@ const FetchApi = async (api, bodyObject, params, pathValiable) => {
 
   if (response.status === 401) {
     const dataRefresh = await refreshToken();
+    console.log(dataRefresh);
     if (dataRefresh) {
       localStorage.setItem('access_token', dataRefresh.data.access_token);
       localStorage.setItem('refresh_token', dataRefresh.data.refresh_token);
@@ -70,19 +73,18 @@ const FetchApi = async (api, bodyObject, params, pathValiable) => {
         default:
           break;
       }
-
-      let optionsR = {
-        method: api.method,
-        headers: {
-          'Content-Type': api.contextType,
-          Authorization: localStorage.getItem('access_token')
-            ? 'Bearer ' + localStorage.getItem('access_token')
-            : '',
-        },
-        body: bodyObject ? JSON.stringify(bodyObject) : null,
-      };
-      response = await fetch(`${endpoint}${newUrl}${paramString}`, optionsR);
     }
+    let optionsR = {
+      method: api.method,
+      headers: {
+        'Content-Type': api.contextType,
+        Authorization: localStorage.getItem('access_token')
+          ? 'Bearer ' + localStorage.getItem('access_token')
+          : '',
+      },
+      body: bodyObject ? JSON.stringify(bodyObject) : null,
+    };
+    response = await fetch(`${endpoint}${newUrl}${paramString}`, optionsR);
   }
 
   if (response.status >= 500) {
@@ -127,6 +129,10 @@ const refreshToken = async () => {
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('role');
     window.location.href = '/';
+    return null;
+  }
+
+  if (responseRefresh.status === 204) {
     return null;
   }
 
