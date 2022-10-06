@@ -99,7 +99,10 @@ const RoomScreen = () => {
           </Text>
         </Modal.Header>
         <Modal.Body>
-          <UpdateRoom data={listRooms.find((e) => e.id === selectRoomId)} onUpdateSuccess={handleUpdateSuccess}/>
+          <UpdateRoom
+            data={listRooms.find((e) => e.id === selectRoomId)}
+            onUpdateSuccess={handleUpdateSuccess}
+          />
         </Modal.Body>
       </Modal>
       <Grid.Container justify="center">

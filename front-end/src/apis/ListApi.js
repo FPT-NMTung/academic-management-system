@@ -67,3 +67,11 @@ export const RoomTypeApis = {
     contextType: 'application/json',
   },
 }
+
+export const ManageSroApis = {
+  getAllSro: {
+    url: 'api/sros',
+    method: 'GET',
+    contextType: 'application/json',
+  }
+}
