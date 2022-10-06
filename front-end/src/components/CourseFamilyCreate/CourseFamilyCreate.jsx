@@ -1,5 +1,5 @@
 import { Card, Grid, Text } from '@nextui-org/react';
-import { Form, Select, Input, Button } from 'antd';
+import { Form, Select, Input, Button, Radio } from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
 import { CourseFamilyApis} from '../../apis/ListApi';
@@ -11,6 +11,7 @@ const CouseFamilyCreate = ({onCreateSuccess}) => {
     const [isCreating, setIsCreating] = useState(false);
     const [isFailed, setIsFailed] = useState(false);
     const [form] = Form.useForm();
+
     const handleSubmitForm = (e) => {
         setIsCreating(true);
         FetchApi(
@@ -19,6 +20,7 @@ const CouseFamilyCreate = ({onCreateSuccess}) => {
             name: e.coursefamilyname,
             code: e.coursefamilycode,
             published_year: e.year,
+            is_active: true,
             
           },
           null,
@@ -104,10 +106,14 @@ const CouseFamilyCreate = ({onCreateSuccess}) => {
                         </Form.Item>
 
                         <Form.Item wrapperCol={{ offset: 6, span: 10 }}>
-                            <Button type="primary" htmlType="submit" loading={isCreating}>
+                            <Button 
+                             type="primary" htmlType="submit" loading={isCreating}>
                                 Tạo mới
                             </Button>
+
+                          
                         </Form.Item>
+                        
                     </Form>
                     {!isCreating && isFailed && (
                         <Text

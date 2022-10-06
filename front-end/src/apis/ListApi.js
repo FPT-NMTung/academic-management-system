@@ -47,9 +47,9 @@ export const CourseFamilyApis = {
     method: 'GET',
     contextType: 'application/json',
   },
-  getAllCourseFamilybycode: {
+  updateCourseFamily: {
     url: 'api/course-families/{0}',
-    method: 'GET',
+    method: 'PUT',
     contextType: 'application/json',
   },
   createCourseFamily: {
@@ -57,4 +57,5 @@ export const CourseFamilyApis = {
     method: 'POST',
     contextType: 'application/json',
   },
+
 };

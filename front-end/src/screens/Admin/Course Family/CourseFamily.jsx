@@ -12,36 +12,38 @@ import CourseFamilyUpdate from '../../../components/CourseFamilyUpdate/CourseFam
 const CourseFamily = () => {
     const [listCourseFamily, setlistCourseFamily] = useState([]);
     const [selectedCourseFamilyCode, setselectedCourseFamilyCode] = useState(null);
+
     const [IsLoading, setIsLoading] = useState(false);
     const [isCreate, setIsCreate] = useState(false);
-
+   
     
+
+
     const getData = () => {
         setIsLoading(true);
         const apiCourseFamily = CourseFamilyApis.getAllCourseFamily;
         console.log(apiCourseFamily);
         FetchApi(apiCourseFamily).then((res) => {
             const data = res.data;
-            
-            data.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
-          
+
+            data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
             const mergeAllCourseFamily = data.map((e, index) => {
                 return {
-                    
+
                     key: index,
                     namecoursefamily: `${e.name}`,
                     codefamily: `${e.code}`,
-                    codefamiyyear: `${e.published_year}`,
-                   
-                    activatecourse : e.is_active, 
-                 
+                    codefamilyyear: `${e.published_year}`,
+                    activatecourse: e.is_active,
+
                 };
-            
+
             });
-           
+
             setlistCourseFamily(mergeAllCourseFamily);
         });
-    
+       
     }
     const handleAddSuccess = () => {
         setIsCreate(false);
@@ -49,15 +51,19 @@ const CourseFamily = () => {
     }
     const handleUpdateSuccess = () => {
         setselectedCourseFamilyCode(null);
+       
         getData();
-      };
+    };
     useEffect(() => {
 
         getData();
+       
     }, []);
 
+    
 
     return (
+    
         <div>
             <Grid.Container gap={2} justify="center">
                 <Grid xs={5}>
@@ -82,44 +88,45 @@ const CourseFamily = () => {
                         </Card.Header>
                         <Card.Divider />
                         <Table
-                            rowClassName = {  (record, index) => {
+                        
+                       
+                            rowClassName={(record, index) => {
                                 if (record.activatecourse === false) {
                                     return record.classes = classes.rowDisable;
                                 }
 
                             }}
 
-                            
+                         
                             sortDirections={['descend', 'ascend']}
                             pagination={{ position: ['bottomCenter'] }}
-                            dataSource={listCourseFamily} 
-                           
-                      
-                            // rowClassName={record => activatecourse === 'false' && "disabled-row"}
+                            dataSource={listCourseFamily}
+
+
+                        // rowClassName={record => activatecourse === 'false' && "disabled-row"}
                         >
-                            <Table.Column sorter = { (a,b) => a.namecoursefamily - b.namecoursefamily}
-                             title="Tên" dataIndex="namecoursefamily" key="name" />
-                            <Table.Column  sorter = { (a,b) => a.codefamily - b.codefamily}
-                            title="Mã chương trình học" dataIndex="codefamily" key="address" />
-                            <Table.Column  className={classes.customSelect}
-
-                             sorter = { (a,b) => a.codefamiyyear - b.codefamiyyear}
-                             
-                             title="Năm áp dụng" 
-
-                            dataIndex="codefamiyyear" 
-                            key="year" />
+                            <Table.Column 
+                                title="Tên" dataIndex="namecoursefamily" key="name" />
+                            <Table.Column 
+                                title="Mã chương trình học" dataIndex="codefamily" key="address" />
+                            <Table.Column 
+                                sorter={(a, b) => a.codefamilyyear - b.codefamilyyear}
+                                title="Năm áp dụng"
+                                dataIndex="codefamilyyear"
+                                key="year" />
                             <Table.Column
                                 title=""
                                 dataIndex="action"
                                 key="action"
                                 render={(_, data) => {
                                     return (
-                                        <MdEdit 
-                                        className={classes.editIcon} 
-                                        onClick={() => {
-                                            setselectedCourseFamilyCode(data.code);
-                                         }} />
+                                        <MdEdit
+                                            className={classes.editIcon}
+                                            onClick={() => {
+                                                setselectedCourseFamilyCode(data.codefamily);
+                                                
+                                                
+                                            }} />
                                     );
                                 }}
                             />
@@ -131,25 +138,26 @@ const CourseFamily = () => {
                 )}
             </Grid.Container>
             <Modal
-        closeButton
-        aria-labelledby="modal-title"
-        open={selectedCourseFamilyCode !== null}
-        onClose={() => {
-            setselectedCourseFamilyCode(null);
-        }}
-        blur
-        width="500px"
-      >
-        <Modal.Header>
-          <Text size={16} b>
-            Cập nhật thông tin cơ sở
-          </Text>
-        </Modal.Header>
-        <Modal.Body>
-          <CourseFamilyUpdate data={listCourseFamily.find((e) => e.code === selectedCourseFamilyCode)} onUpdateSuccess={handleUpdateSuccess}/>
-        </Modal.Body>
-      </Modal>
-        </div>
+                closeButton
+                aria-labelledby="modal-title"
+                open={selectedCourseFamilyCode !== null}
+                onClose={() => {
+                    setselectedCourseFamilyCode(null);
+                   
+                }}
+            blur
+            width="500px"
+            >
+            <Modal.Header>
+                <Text size={16} b>
+                    Cập nhật thông tin cơ sở
+                </Text>
+            </Modal.Header>
+            <Modal.Body>
+                <CourseFamilyUpdate data={listCourseFamily.find((e) => e.codefamily === `${selectedCourseFamilyCode}`)} onUpdateSuccess={handleUpdateSuccess} />
+            </Modal.Body>
+        </Modal>
+        </div >
     )
 }
 export default CourseFamily;
