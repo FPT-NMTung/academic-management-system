@@ -3,112 +3,58 @@ import { Card, Grid, Text } from '@nextui-org/react';
 import { Form, Select, Input, Divider, Button, Table } from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../../apis/FetchApi';
-// import { AddressApis, CenterApis } from '../../../apis/ListApi';
+import { CourseApis } from '../../../apis/ListApi';
 import CourseCreate from '../../../components/CourseCreate/CourseCreate';
 import { MdEdit } from 'react-icons/md';
 const Course = () => {
-    const [listCourseFamily, setlistCourseFamily] = useState([]);
-    const [selectedCourseFamilyId, setselectedCourseFamilyId] = useState(null);
+    const [listCourse, setlistCourse] = useState([]);
+    const [selectedCourseCode, setselectedCourseCode] = useState(null);
     const [isCreate, setIsCreate] = useState(false);
-    useEffect(() => {
-        // const apiCanter = CenterApis.getAllCenter;
-        // FetchApi(apiCanter).then((res) => {
-        //   const data = res.data;
-        //   const mergeAddressRes = data.map((e) => {
-        //     return {
-        //       key: e.id,
-        //       ...e,
-        //       address: `${e.ward.prefix} ${e.ward.name}, ${e.district.prefix} ${e.district.name}, ${e.province.name}`,
-        //     };
-        //   });
-        //   setListCenter(mergeAddressRes);
-        // });
-        const mergeCourseFamily = [
-            {
-                key: 1,
-                name: 'ASAP',
-                code: 'AB-7023-CPISM',
-                year: '2021'
-            },
-            {
-                key: 2,
-                name: 'ACSS',
-                code: 'CD-7023-CPISM',
-                year: '2019'
-            },
-            {
-                key: 3,
-                name: 'BSSS',
-                code: 'AS-7023-CPISM',
-                year: '2022'
-            },
-            {
-                key: 4,
-                name: 'ASSSS',
-                code: 'SS-7023-CPISM',
-                year: '2024'
-            },
-            {
-                key: 5,
-                name: 'ASSSS',
-                code: 'SS-7023-CPISM',
-                year: '2024'
-            },
-            {
-                key: 6,
-                name: 'ASSSS',
-                code: 'SS-7023-CPISM',
-                year: '2024'
-            },
-            ,
-            {
-                key: 7,
-                name: 'ASSSS',
-                code: 'SS-7023-CPISM',
-                year: '2024'
-            },
-            ,
-            {
-                key: 8,
-                name: 'ASSSS',
-                code: 'SS-7023-CPISM',
-                year: '2024'
-            }, {
-                key: 9,
-                name: 'ASSSS',
-                code: 'SS-7023-CPISM',
-                year: '2024'
-            }, {
-                key: 10,
-                name: 'ASSSS',
-                code: 'SS-7023-CPISM',
-                year: '2024'
-            }, {
-                key: 11,
-                name: 'ASSSS',
-                code: 'SS-7023-CPISM',
-                year: '2024'
-            }, {
-                key: 12,
-                name: 'ASSSS',
-                code: 'SS-7023-CPISM',
-                year: '2024'
-            },
+    const [IsLoading, setIsLoading] = useState(false);
 
-        ]
-        // const data = mergeCourseFamily;
-        const mergeCourseFamilyres = mergeCourseFamily.map((e) => {
-            return {
-                key: e.key,
+    
+    const getData = () => {
+        setIsLoading(true);
+        const apiCourse = CourseApis.getAllCourse;
+        console.log(apiCourse);
+        FetchApi(apiCourse).then((res) => {
+            const data = res;
+            console.log(data);
+            data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            const mergeAllCourse = data.map((e, index) => {
+                return {
 
-                namecoursefamily: e.name,
-                codefamily: e.code,
-                codefamiyyear: e.year
-            };
+                    key: index,
+                    coursename: `${e.name}`,
+                    codecoursefamily: `${e.course_family_code}`,
+                    codecourse: `${e.code}`,
+                    semester: `${e.semester_count}`,
+                    activatecourse: e.is_active,
+                    ...e,
+
+                };
+
+            });
+
+            setlistCourse(mergeAllCourse);
+            setIsLoading(false);
         });
-        setlistCourseFamily(mergeCourseFamilyres);
+       
+    }
+    const handleAddSuccess = () => {
+        setIsCreate(false);
+        getData();
+    }
+    const handleUpdateSuccess = () => {
+        setselectedCourseCode(null);
+       
+        getData();
+    };
+    useEffect(() => {
 
-    });
+        getData();
+       
+    }, []);
 
     return (
         <div >
@@ -136,12 +82,15 @@ const Course = () => {
                         <Card.Divider />
                         <Table
                             pagination={{ position: ['bottomCenter'] }}
-                            dataSource={listCourseFamily}
+                            dataSource={listCourse}
+                            sortDirections={['descend', 'ascend']}
                         >
-                            <Table.Column title="Tên Khóa Học" dataIndex="namecoursefamily" key="name" />
-                            <Table.Column title="Mã chương trình học" dataIndex="codefamily" key="address" />
-                            <Table.Column title="Mã Khóa Học" dataIndex="codefamiyyear" key="year" />
-                            <Table.Column title="Học kỳ" dataIndex="codefamiyyear" key="year" />
+                            <Table.Column title="Tên Khóa Học" 
+                             sorter={(a, b) => a.coursename - b.coursename}
+                            dataIndex="coursename" key="coursename" />
+                            <Table.Column title="Mã chương trình học" dataIndex="codecoursefamily" key="codecoursefamily" />
+                            <Table.Column title="Mã Khóa Học" dataIndex="codecourse" key="codecourse" />
+                            <Table.Column title="Học kỳ" dataIndex="semester" key="semester" />
                             <Table.Column
                                 title=""
                                 dataIndex="action"

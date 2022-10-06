@@ -17,8 +17,10 @@ const CenterScreen = () => {
   const getData = () => {
     setIsLoading(true);
     const apiCanter = CenterApis.getAllCenter;
+
     FetchApi(apiCanter).then((res) => {
       const data = res.data;
+
       const mergeAddressRes = data.map((e) => {
         return {
           key: e.id,

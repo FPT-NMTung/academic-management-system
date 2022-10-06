@@ -21,10 +21,10 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
 
     FetchApi(apiCourseFamily).then((res) => {
       setlistCourseFamily(res.data);
-     
 
 
-  
+
+
     });
 
   }
@@ -32,7 +32,7 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
     setIsLoading(false);
     // getData();
 
-    
+
   }, []);
   const handleSubmitForm = (e) => {
     setIsUpdating(true);
@@ -42,7 +42,7 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
       code: e.codefamily,
       published_year: e.codefamilyyear,
       is_active: true,
-      
+
     };
 
     FetchApi(CourseFamilyApis.updateCourseFamily, body, null, [`${data.codefamily}`])
@@ -56,98 +56,99 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
   };
   return (
     <Fragment>
-    {(IsLoading) && (
-      <div className={classes.loading}>
-        <Spin/>
-      </div>
-    )}
-    {!IsLoading && (
-      <Form
-        labelCol={{ span: 7 }}
-        wrapperCol={{ span: 16 }}
-        layout="horizontal"
-        onFinish={handleSubmitForm}
-        form={form}
-        initialValues={{
-          coursefamilyname: data?.namecoursefamily,
-          codefamily: data?.codefamily,
-          codefamilyyear: data?.codefamilyyear,
-          
-    
-        }}
-      >
-        <Form.Item
-          name={'coursefamilyname'}
-          label={'Tên'}
-          rules={[
-            {
-              required: true,
-              message: 'Hãy nhập tên',
-            },
-          ]}
+      {(IsLoading) && (
+        <div className={classes.loading}>
+          <Spin />
+        </div>
+      )}
+      {!IsLoading && (
+        <Form
+          labelWrap
+          labelCol={{ span: 7 }}
+          wrapperCol={{ span: 16 }}
+          layout="horizontal"
+          onFinish={handleSubmitForm}
+          form={form}
+          initialValues={{
+            coursefamilyname: data?.namecoursefamily,
+            codefamily: data?.codefamily,
+            codefamilyyear: data?.codefamilyyear,
+
+
+          }}
         >
-          <Input />
-        </Form.Item>
-
-        <Fragment>
           <Form.Item
-            name={'codefamily'}
-            label={'Mã chương trình học'}
-            
+            name={'coursefamilyname'}
+            label={'Tên'}
             rules={[
               {
                 required: true,
-                message: 'Hãy nhập mã chương trình học',
+                message: 'Hãy nhập tên',
               },
             ]}
           >
-             <Input disabled  />
+            <Input />
           </Form.Item>
-          <Form.Item
-            name={'codefamilyyear'}
-            label={'Năm áp dụng'}
-            rules={[
-              {
-                required: true,
-                message: 'Hãy nhập năm áp dụng',
-              },
-            ]}
-          >
-           <Input />
-          </Form.Item>
-         
-        </Fragment>
 
-        <Form.Item wrapperCol={{ offset: 7, span: 99 }}>
-          <Button type="primary" htmlType="submit" loading={isUpdating}>
-            Cập nhật
-          </Button>
-          <Button
-          
-            style={{ marginLeft: 10 }}
-            type="primary"
-            htmlType="button"
-            danger
-            disabled
-          >
-            Xoá
-          </Button>
-        </Form.Item>
-      </Form>
-    )}
-    {!isUpdating && isFailed && (
-      <Text
-        size={14}
-        css={{
-          color: 'red',
-          textAlign: 'center',
-        }}
-      >
-        Cập nhật thất bại, vui lòng thử lại
-      </Text>
-    )}
-    
-  </Fragment>
+          <Fragment>
+            <Form.Item
+              name={'codefamily'}
+              label={'Mã chương trình học'}
+
+              rules={[
+                {
+                  required: true,
+                  message: 'Hãy nhập mã chương trình học',
+                },
+              ]}
+            >
+              <Input disabled />
+            </Form.Item>
+            <Form.Item
+              name={'codefamilyyear'}
+              label={'Năm áp dụng'}
+              rules={[
+                {
+                  required: true,
+                  message: 'Hãy nhập năm áp dụng',
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+
+          </Fragment>
+
+          <Form.Item wrapperCol={{ offset: 7, span: 99 }}>
+            <Button type="primary" htmlType="submit" loading={isUpdating}>
+              Cập nhật
+            </Button>
+            <Button
+
+              style={{ marginLeft: 10 }}
+              type="primary"
+              htmlType="button"
+              danger
+              disabled
+            >
+              Xoá
+            </Button>
+          </Form.Item>
+        </Form>
+      )}
+      {!isUpdating && isFailed && (
+        <Text
+          size={14}
+          css={{
+            color: 'red',
+            textAlign: 'center',
+          }}
+        >
+          Cập nhật thất bại, vui lòng thử lại
+        </Text>
+      )}
+
+    </Fragment>
   );
 };
 

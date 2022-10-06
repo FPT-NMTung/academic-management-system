@@ -25,7 +25,7 @@ const CourseFamily = () => {
         console.log(apiCourseFamily);
         FetchApi(apiCourseFamily).then((res) => {
             const data = res.data;
-
+            console.log(data);
             data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
             const mergeAllCourseFamily = data.map((e, index) => {

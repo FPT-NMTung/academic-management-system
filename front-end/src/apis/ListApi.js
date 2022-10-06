@@ -59,3 +59,21 @@ export const CourseFamilyApis = {
   },
 
 };
+export const CourseApis = {
+  getAllCourse: {
+    url: 'api/courses',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  updateCourse: {
+    url: 'api/courses/{0}',
+    method: 'PUT',
+    contextType: 'application/json',
+  },
+  createCourse: {
+    url: '/api/courses',
+    method: 'POST',
+    contextType: 'application/json',
+  },
+
+};
