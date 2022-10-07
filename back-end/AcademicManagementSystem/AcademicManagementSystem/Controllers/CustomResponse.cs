@@ -1,6 +1,5 @@
 using System.Net;
 using System.Text.Json.Serialization;
-using Azure;
 
 namespace AcademicManagementSystem.Controllers;
 
