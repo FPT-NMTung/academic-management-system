@@ -8,6 +8,7 @@ using AcademicManagementSystem.Models.AddressController.WardModel;
 using AcademicManagementSystem.Models.CenterController;
 using AcademicManagementSystem.Models.CourseModuleSemester;
 using AcademicManagementSystem.Models.ModuleController;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -96,6 +97,7 @@ public class ModuleController : ControllerBase
     // create module with course code and semester id
     [HttpPost]
     [Route("api/modules")]
+    [Authorize(Roles = "admin,sro")]
     public IActionResult CreateModule([FromBody] CreateModuleRequest request)
     {
         request.CourseCode = request.CourseCode?.ToUpper().Trim();
@@ -328,6 +330,7 @@ public class ModuleController : ControllerBase
     // update module by id
     [HttpPut]
     [Route("api/modules/{id}")]
+    [Authorize(Roles = "admin,sro")]
     public IActionResult UpdateModuleById(int id, [FromBody] UpdateModuleRequest request)
     {
         var module = _context.Modules.Include(m => m.Center)
