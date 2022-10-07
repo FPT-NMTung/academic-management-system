@@ -135,7 +135,7 @@ public class CourseFamilyController : ControllerBase
     [Authorize(Roles = "admin,sro")]
     public IActionResult UpdateCourseFamily(string code, [FromBody] UpdateCourseFamilyRequest request)
     {
-        request.Name = request.Name.Trim();
+        request.Name = request.Name?.Trim();
 
         var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.Trim());
         if (courseFamily == null)

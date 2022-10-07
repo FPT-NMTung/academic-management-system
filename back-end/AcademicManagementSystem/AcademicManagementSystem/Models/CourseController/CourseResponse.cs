@@ -28,7 +28,7 @@ public class CourseResponse
     public DateTime? UpdatedAt { get; set; }
     
     [JsonPropertyName("course_family")]
-    public CourseFamilyResponse CourseFamily { get; set; }
+    public CourseFamilyResponse? CourseFamily { get; set; }
     
     [JsonPropertyName("courses_modules_semesters")]
     public ICollection<CourseModuleSemesterResponse>? CoursesModulesSemesters { get; set; }
