@@ -82,7 +82,16 @@ public class SroController : ControllerBase
         var sLastName = lastName == null ? string.Empty : RemoveDiacritics(lastName.Trim().ToLower());
         var sMobilePhone = mobilePhone == null ? string.Empty : RemoveDiacritics(mobilePhone.Trim().ToLower());
         var sEmail = email == null ? string.Empty : RemoveDiacritics(email.Trim().ToLower());
-        var sEmailOrganization = emailOrganization == null ? string.Empty : RemoveDiacritics(emailOrganization.Trim().ToLower());
+        var sEmailOrganization = emailOrganization == null
+            ? string.Empty
+            : RemoveDiacritics(emailOrganization.Trim().ToLower());
+
+        if (sFirstName == string.Empty && sLastName == string.Empty && sMobilePhone == string.Empty
+            && sEmail == string.Empty && sEmailOrganization == string.Empty)
+        {
+            var error = ErrorDescription.Error["E0028"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         var listSro = GetAllUserRoleSro();
 
@@ -223,7 +232,7 @@ public class SroController : ControllerBase
         {
             _context.SaveChanges();
         }
-        catch (Exception e)
+        catch (DbUpdateException)
         {
             var error = ErrorDescription.Error["E0037"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -335,7 +344,7 @@ public class SroController : ControllerBase
         {
             _context.SaveChanges();
         }
-        catch (DbUpdateException e)
+        catch (DbUpdateException)
         {
             var error = ErrorDescription.Error["E0037"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));

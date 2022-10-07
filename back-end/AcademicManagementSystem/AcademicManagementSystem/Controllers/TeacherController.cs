@@ -95,7 +95,18 @@ public class TeacherController : ControllerBase
         var sNickname = nickname == null ? string.Empty : RemoveDiacritics(nickname.Trim().ToLower());
         var sMobilePhone = mobilePhone == null ? string.Empty : RemoveDiacritics(mobilePhone.Trim().ToLower());
         var sEmail = email == null ? string.Empty : RemoveDiacritics(email.Trim().ToLower());
-        var sEmailOrganization = emailOrganization == null ? string.Empty : RemoveDiacritics(emailOrganization.Trim().ToLower());
+        var sEmailOrganization = emailOrganization == null
+            ? string.Empty
+            : RemoveDiacritics(emailOrganization.Trim().ToLower());
+
+        //check empty
+        if (sFirstName == string.Empty && sLastName == string.Empty
+                                       && sNickname == string.Empty && sMobilePhone == string.Empty
+                                       && sEmail == string.Empty && sEmailOrganization == string.Empty)
+        {
+            var error = ErrorDescription.Error["E0039"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         var listSro = GetAllUserRoleTeacher();
 
