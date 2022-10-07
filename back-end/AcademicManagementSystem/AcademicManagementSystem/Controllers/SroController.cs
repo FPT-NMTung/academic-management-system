@@ -88,8 +88,8 @@ public class SroController : ControllerBase
         if (sFirstName == string.Empty && sLastName == string.Empty && sMobilePhone == string.Empty
             && sEmail == string.Empty && sEmailOrganization == string.Empty)
         {
-            var error = ErrorDescription.Error["E0028"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            var sros = GetAllUserRoleSro();
+            return Ok(CustomResponse.Ok("Search sros successfully", sros));
         }
 
         var listSro = GetAllUserRoleSro();
