@@ -41,7 +41,7 @@ public static class ErrorDescription
         { "E0025", new ErrorModel() { Message = "WardId not found for CREATE/UPDATE SRO", Type = "sro-error-0010" } },
         { "E0026", new ErrorModel() { Message = "GenderId not found for CREATE/UPDATE SRO", Type = "sro-error-0011" } },
         { "E0027", new ErrorModel() { Message = "Duplicated citizenIdentityCardNo for CREATE/UPDATE SRO", Type = "sro-error-0012" } },
-        { "E0028", new ErrorModel() { Message = "Birthday must match format yyyy/MM/dd for CREATE/UPDATE SRO", Type = "sro-error-0013" } },
+        { "E0028", new ErrorModel() { Message = "Please enter at least one search criteria", Type = "sro-error-0013" } },
         { "E0029", new ErrorModel() { Message = "CitizenIdentityCardPublishedDate must match format yyyy/MM/dd for CREATE/UPDATE SRO", Type = "sro-error-0014" } },
       
         { "E0030", new ErrorModel() { Message = "MobilePhone 10 digits and starting with 0", Type = "sro-error-0015" } },
@@ -77,6 +77,8 @@ public static class ErrorDescription
         
         // teacher
         { "E0038", new ErrorModel() { Message = "Invalid Data", Type = "teacher-error-0001" } },
+        { "E0039", new ErrorModel() { Message = "Please enter at least one search criteria", Type = "teacher-error-0002" } },
+
 
     };
 }
