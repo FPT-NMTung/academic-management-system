@@ -7,6 +7,7 @@ import { AddressApis, CenterApis } from '../../apis/ListApi';
 import classes from './CenterUpdate.module.css';
 
 const CenterUpdate = ({ data, onUpdateSuccess }) => {
+  
   const [listProvince, setListProvince] = useState([]);
   const [listDistrict, setListDistrict] = useState([]);
   const [listWard, setListWard] = useState([]);

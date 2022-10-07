@@ -17,8 +17,10 @@ const CenterScreen = () => {
   const getData = () => {
     setIsLoading(true);
     const apiCanter = CenterApis.getAllCenter;
+
     FetchApi(apiCanter).then((res) => {
       const data = res.data;
+
       const mergeAddressRes = data.map((e) => {
         return {
           key: e.id,
@@ -26,6 +28,7 @@ const CenterScreen = () => {
           address: `${e.ward.prefix} ${e.ward.name}, ${e.district.prefix} ${e.district.name}, ${e.province.name}`,
         };
       });
+     
       setListCenter(mergeAddressRes);
       setIsLoading(false);
     });
@@ -86,6 +89,8 @@ const CenterScreen = () => {
                       className={classes.editIcon}
                       onClick={() => {
                         setSelectedCenterId(data.key);
+
+                        
                       }}
                     />
                   );
@@ -113,10 +118,12 @@ const CenterScreen = () => {
         </Modal.Header>
         <Modal.Body>
           <CenterUpdate data={listCenter.find((e) => e.id === selectedCenterId)} onUpdateSuccess={handleUpdateSuccess}/>
+    
         </Modal.Body>
       </Modal>
     </div>
   );
+ 
 };
 
 export default CenterScreen;
