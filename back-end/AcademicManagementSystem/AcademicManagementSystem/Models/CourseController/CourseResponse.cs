@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using AcademicManagementSystem.Models.CourseFamilyController;
+using AcademicManagementSystem.Models.CourseModuleSemester;
 
 namespace AcademicManagementSystem.Models.CourseController;
 
@@ -28,4 +29,7 @@ public class CourseResponse
     
     [JsonPropertyName("course_family")]
     public CourseFamilyResponse CourseFamily { get; set; }
+    
+    [JsonPropertyName("courses_modules_semesters")]
+    public ICollection<CourseModuleSemesterResponse>? CoursesModulesSemesters { get; set; }
 }

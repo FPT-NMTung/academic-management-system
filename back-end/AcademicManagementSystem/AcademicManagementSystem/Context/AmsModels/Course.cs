@@ -9,7 +9,7 @@ public class Course
     // constructor
     public Course()
     {
-        this.CourseModuleSemesters = new HashSet<CourseModuleSemester>();
+        this.CoursesModulesSemesters = new HashSet<CourseModuleSemester>();
     }
     
     [Key]
@@ -39,6 +39,6 @@ public class Course
     
     // relationship
     public virtual CourseFamily CourseFamily { get; set; }
-    public virtual ICollection<CourseModuleSemester> CourseModuleSemesters { get; set; }
+    public virtual ICollection<CourseModuleSemester> CoursesModulesSemesters { get; set; }
 
 }

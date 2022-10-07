@@ -66,7 +66,7 @@ public class ModuleController : ControllerBase
                     CourseCode = cms.CourseCode,
                     ModuleId = cms.ModuleId,
                     SemesterId = cms.SemesterId,
-                }).ToList(),
+                }).ToList()
             });
         return Ok(CustomResponse.Ok("Modules retrieved successfully", modules));
     }
