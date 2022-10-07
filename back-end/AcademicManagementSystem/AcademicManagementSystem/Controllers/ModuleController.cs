@@ -261,22 +261,21 @@ public class ModuleController : ControllerBase
         var courseCode = request.CourseCode;
         var semesterId = request.SemesterId;
 
-        _context.Modules.Add(module);
-        try
+        // is course code, semester id, center id exist
+        var courseSemesterCenter = GetCourseSemesterCenter(request, courseCode, semesterId);
+        if (!courseSemesterCenter.Any())
         {
-            _context.SaveChanges();
-        }
-        catch (Exception e)
-        {
-            var error = ErrorDescription.Error["E1021"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
+            _context.Modules.Add(module);
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                var error = ErrorDescription.Error["E1021"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
 
-        // is course code, semester id, module id exist
-        var courseSemester = _context.CoursesModulesSemesters.FirstOrDefault(cms =>
-            cms.CourseCode == courseCode && cms.SemesterId == semesterId);
-        if (courseSemester == null)
-        {
             var courseModuleSemester = new CourseModuleSemester()
             {
                 CourseCode = courseCode,
@@ -294,12 +293,13 @@ public class ModuleController : ControllerBase
                 var error = ErrorDescription.Error["E1022"];
                 return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
             }
-        } else
+        }
+        else
         {
             var error = ErrorDescription.Error["E1041"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         var newModule = _context.Modules.Include(m => m.Center)
             .Include(m => m.Center.Province)
             .Include(m => m.Center.District)
@@ -313,6 +313,173 @@ public class ModuleController : ControllerBase
 
         var moduleResponse = GetModuleResponse(newModule);
         return Ok(CustomResponse.Ok("Module created successfully", moduleResponse));
+    }
+
+    private IQueryable<Module> GetCourseSemesterCenter(CreateModuleRequest request, string courseCode, int? semesterId)
+    {
+        var courseSemesterCenter = _context.Modules
+            .Join(_context.CoursesModulesSemesters, m => m.Id, cms => cms.ModuleId, (m, cms) => new { m, cms })
+            .Where(@t => @t.cms.CourseCode == courseCode && @t.cms.SemesterId == semesterId &&
+                         @t.m.CenterId == request.CenterId)
+            .Select(@t => @t.m);
+        return courseSemesterCenter;
+    }
+
+    // update module by id
+    [HttpPut]
+    [Route("api/modules/{id}")]
+    public IActionResult UpdateModuleById(int id, [FromBody] UpdateModuleRequest request)
+    {
+        var module = _context.Modules.Include(m => m.Center)
+            .Include(m => m.Center.Province)
+            .Include(m => m.Center.District)
+            .Include(m => m.Center.Ward)
+            .Include(m => m.CoursesModulesSemesters)
+            .FirstOrDefault(m => m.Id == id);
+        if (module == null)
+        {
+            return NotFound(CustomResponse.NotFound("Module not found"));
+        }
+
+        request.ModuleName = request.ModuleName?.Trim();
+        request.ModuleExamNamePortal = request.ModuleExamNamePortal?.Trim();
+        request.ModuleType = request.ModuleType?.Trim();
+        request.ExamType = request.ExamType?.Trim();
+        request.SemesterNamePortal = request.SemesterNamePortal?.Trim();
+
+        //check empty
+        if (string.IsNullOrEmpty(request.ModuleName) || string.IsNullOrEmpty(request.ModuleExamNamePortal) ||
+            string.IsNullOrEmpty(request.ModuleType) ||
+            string.IsNullOrEmpty(request.ExamType) || string.IsNullOrEmpty(request.SemesterNamePortal))
+        {
+            var error = ErrorDescription.Error["E1023"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // is center id exist
+        var center = _context.Centers.FirstOrDefault(c => c.Id == request.CenterId);
+        if (center == null)
+        {
+            var error = ErrorDescription.Error["E1039"];
+            return NotFound(CustomResponse.NotFound(error.Message));
+        }
+
+        //check module name
+        request.ModuleName = Regex.Replace(request.ModuleName, StringConstant.RegexWhiteSpaces, " ");
+        request.ModuleName = request.ModuleName.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.ModuleName, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        {
+            var error = ErrorDescription.Error["E1024"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.ModuleName.Length > 255)
+        {
+            var error = ErrorDescription.Error["E1025"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check exam name portal
+        request.ModuleExamNamePortal =
+            Regex.Replace(request.ModuleExamNamePortal, StringConstant.RegexWhiteSpaces, " ");
+        request.ModuleExamNamePortal = request.ModuleExamNamePortal.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.ModuleExamNamePortal, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        {
+            var error = ErrorDescription.Error["E1028"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.ModuleExamNamePortal.Length > 255)
+        {
+            var error = ErrorDescription.Error["E1029"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check module type
+        request.ModuleType = Regex.Replace(request.ModuleType, StringConstant.RegexWhiteSpaces, " ");
+        request.ModuleType = request.ModuleType.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.ModuleType, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        {
+            var error = ErrorDescription.Error["E1030"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.ModuleType.Length > 100)
+        {
+            var error = ErrorDescription.Error["E1031"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check exam type
+        request.ExamType = Regex.Replace(request.ExamType, StringConstant.RegexWhiteSpaces, " ");
+        request.ExamType = request.ExamType.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.ExamType, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        {
+            var error = ErrorDescription.Error["E1032"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.ExamType.Length > 100)
+        {
+            var error = ErrorDescription.Error["E1033"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check semester name portal
+        request.SemesterNamePortal = Regex.Replace(request.SemesterNamePortal, StringConstant.RegexWhiteSpaces, " ");
+        request.SemesterNamePortal = request.SemesterNamePortal.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.SemesterNamePortal, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        {
+            var error = ErrorDescription.Error["E1034"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.SemesterNamePortal.Length > 255)
+        {
+            var error = ErrorDescription.Error["E1035"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check days
+        if (request.Days is null or < 1)
+        {
+            var error = ErrorDescription.Error["E1036"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check hours
+        if (request.Hours is null or < 1)
+        {
+            var error = ErrorDescription.Error["E1037"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // update
+        try
+        {
+            module.CenterId = request.CenterId;
+            module.SemesterNamePortal = request.SemesterNamePortal;
+            module.ModuleName = request.ModuleName;
+            module.ModuleExamNamePortal = request.ModuleExamNamePortal;
+            module.ModuleType = request.ModuleType;
+            module.MaxTheoryGrade = request.MaxTheoryGrade;
+            module.MaxPracticalGrade = request.MaxPracticalGrade;
+            module.Hours = request.Hours;
+            module.Days = request.Days;
+            module.ExamType = request.ExamType;
+            module.UpdatedAt = DateTime.Now;
+            _context.Modules.Update(module);
+
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E1042"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var moduleResponse = GetModuleResponse(module);
+        return Ok(CustomResponse.Ok("Module updated successfully", moduleResponse));
     }
 
     private static ModuleResponse GetModuleResponse(Module module)
@@ -347,12 +514,6 @@ public class ModuleController : ControllerBase
                     Prefix = module.Center.Ward.Prefix,
                 }
             },
-            // CourseModuleSemester = module.CoursesModulesSemesters.Select(cms => new CourseModuleSemesterResponse()
-            // {
-            //     CourseCode = cms.CourseCode,
-            //     ModuleId = cms.ModuleId,
-            //     SemesterId = cms.SemesterId,
-            // }).ToList()
             CourseModuleSemester = new CourseModuleSemesterResponse()
             {
                 CourseCode = module.CoursesModulesSemesters.FirstOrDefault()?.CourseCode,
