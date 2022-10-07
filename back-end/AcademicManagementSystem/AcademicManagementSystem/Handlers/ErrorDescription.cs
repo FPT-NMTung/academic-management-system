@@ -97,7 +97,8 @@ public static class ErrorDescription
         { "E1039", new ErrorModel() { Message = "Center Id is not existed", Type = "module-error-00019" } },
         { "E1040", new ErrorModel() { Message = "Semester Id is not existed", Type = "module-error-00020" } },
         { "E1041", new ErrorModel() { Message = "Module with course code, semester id existed", Type = "module-error-00021" } },
-        
+        { "E1042", new ErrorModel() { Message = "Fail to SaveChange when Update Module", Type = "module-error-00022" } },
+
         // teacher
         { "E0039", new ErrorModel() { Message = "Please enter at least one search criteria", Type = "teacher-error-0002" } },
         { "E0040", new ErrorModel() { Message = "Invalid Data for Create/Update User", Type = "teacher-error-0003" } },
