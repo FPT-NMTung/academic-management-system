@@ -1,5 +1,7 @@
+using System.Text.RegularExpressions;
 using AcademicManagementSystem.Context;
 using AcademicManagementSystem.Context.AmsModels;
+using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.AddressController.DistrictModel;
 using AcademicManagementSystem.Models.AddressController.ProvinceModel;
 using AcademicManagementSystem.Models.AddressController.WardModel;
@@ -61,12 +63,12 @@ public class ModuleController : ControllerBase
                         Prefix = m.Center.Ward.Prefix,
                     }
                 },
-                CoursesModulesSemesters = m.CoursesModulesSemesters.Select(cms => new CourseModuleSemesterResponse()
+                CourseModuleSemester = new CourseModuleSemesterResponse()
                 {
-                    CourseCode = cms.CourseCode,
-                    ModuleId = cms.ModuleId,
-                    SemesterId = cms.SemesterId,
-                }).ToList()
+                    CourseCode = m.CoursesModulesSemesters.FirstOrDefault()?.CourseCode,
+                    ModuleId = m.CoursesModulesSemesters.FirstOrDefault()?.ModuleId,
+                    SemesterId = m.CoursesModulesSemesters.FirstOrDefault()?.SemesterId
+                }
             });
         return Ok(CustomResponse.Ok("Modules retrieved successfully", modules));
     }
@@ -103,6 +105,144 @@ public class ModuleController : ControllerBase
         request.ExamType = request.ExamType?.Trim();
         request.SemesterNamePortal = request.SemesterNamePortal?.Trim();
 
+        //check empty
+        if (string.IsNullOrEmpty(request.CourseCode) || string.IsNullOrEmpty(request.ModuleName) ||
+            string.IsNullOrEmpty(request.ModuleExamNamePortal) || string.IsNullOrEmpty(request.ModuleType) ||
+            string.IsNullOrEmpty(request.ExamType) || string.IsNullOrEmpty(request.SemesterNamePortal))
+        {
+            var error = ErrorDescription.Error["E1023"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check course code
+        request.CourseCode = Regex.Replace(request.CourseCode, StringConstant.RegexWhiteSpaces, " ");
+        request.CourseCode = request.CourseCode.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.CourseCode, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        {
+            var error = ErrorDescription.Error["E1026"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.CourseCode.Length > 100)
+        {
+            var error = ErrorDescription.Error["E1027"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // is course code exist
+        var course = _context.Courses.FirstOrDefault(c => c.Code == request.CourseCode);
+        if (course == null)
+        {
+            var error = ErrorDescription.Error["E1038"];
+            return NotFound(CustomResponse.NotFound(error.Message));
+        }
+
+        // is center id exist
+        var center = _context.Centers.FirstOrDefault(c => c.Id == request.CenterId);
+        if (center == null)
+        {
+            var error = ErrorDescription.Error["E1039"];
+            return NotFound(CustomResponse.NotFound(error.Message));
+        }
+
+        // is semester id exist
+        var semester = _context.Semesters.FirstOrDefault(s => s.Id == request.SemesterId);
+        if (semester == null)
+        {
+            var error = ErrorDescription.Error["E1040"];
+            return NotFound(CustomResponse.NotFound(error.Message));
+        }
+
+        //check module name
+        request.ModuleName = Regex.Replace(request.ModuleName, StringConstant.RegexWhiteSpaces, " ");
+        request.ModuleName = request.ModuleName.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.ModuleName, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        {
+            var error = ErrorDescription.Error["E1024"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.ModuleName.Length > 255)
+        {
+            var error = ErrorDescription.Error["E1025"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check exam name portal
+        request.ModuleExamNamePortal =
+            Regex.Replace(request.ModuleExamNamePortal, StringConstant.RegexWhiteSpaces, " ");
+        request.ModuleExamNamePortal = request.ModuleExamNamePortal.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.ModuleExamNamePortal, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        {
+            var error = ErrorDescription.Error["E1028"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.ModuleExamNamePortal.Length > 255)
+        {
+            var error = ErrorDescription.Error["E1029"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check module type
+        request.ModuleType = Regex.Replace(request.ModuleType, StringConstant.RegexWhiteSpaces, " ");
+        request.ModuleType = request.ModuleType.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.ModuleType, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        {
+            var error = ErrorDescription.Error["E1030"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.ModuleType.Length > 100)
+        {
+            var error = ErrorDescription.Error["E1031"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check exam type
+        request.ExamType = Regex.Replace(request.ExamType, StringConstant.RegexWhiteSpaces, " ");
+        request.ExamType = request.ExamType.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.ExamType, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        {
+            var error = ErrorDescription.Error["E1032"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.ExamType.Length > 100)
+        {
+            var error = ErrorDescription.Error["E1033"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check semester name portal
+        request.SemesterNamePortal = Regex.Replace(request.SemesterNamePortal, StringConstant.RegexWhiteSpaces, " ");
+        request.SemesterNamePortal = request.SemesterNamePortal.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.SemesterNamePortal, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        {
+            var error = ErrorDescription.Error["E1034"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.SemesterNamePortal.Length > 255)
+        {
+            var error = ErrorDescription.Error["E1035"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check days
+        if (request.Days is null or < 1)
+        {
+            var error = ErrorDescription.Error["E1036"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check hours
+        if (request.Hours is null or < 1)
+        {
+            var error = ErrorDescription.Error["E1037"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         var module = new Module()
         {
             CenterId = request.CenterId,
@@ -122,16 +262,44 @@ public class ModuleController : ControllerBase
         var semesterId = request.SemesterId;
 
         _context.Modules.Add(module);
-        _context.SaveChanges();
-        var courseModuleSemester = new CourseModuleSemester()
+        try
         {
-            CourseCode = courseCode,
-            ModuleId = module.Id,
-            SemesterId = semesterId
-        };
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E1021"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
-        _context.CoursesModulesSemesters.Add(courseModuleSemester);
-        _context.SaveChanges();
+        // is course code, semester id, module id exist
+        var courseSemester = _context.CoursesModulesSemesters.FirstOrDefault(cms =>
+            cms.CourseCode == courseCode && cms.SemesterId == semesterId);
+        if (courseSemester == null)
+        {
+            var courseModuleSemester = new CourseModuleSemester()
+            {
+                CourseCode = courseCode,
+                ModuleId = module.Id,
+                SemesterId = semesterId
+            };
+
+            _context.CoursesModulesSemesters.Add(courseModuleSemester);
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                var error = ErrorDescription.Error["E1022"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+        } else
+        {
+            var error = ErrorDescription.Error["E1041"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
         var newModule = _context.Modules.Include(m => m.Center)
             .Include(m => m.Center.Province)
             .Include(m => m.Center.District)
@@ -142,6 +310,7 @@ public class ModuleController : ControllerBase
         {
             return NotFound(CustomResponse.NotFound("Module not found"));
         }
+
         var moduleResponse = GetModuleResponse(newModule);
         return Ok(CustomResponse.Ok("Module created successfully", moduleResponse));
     }
@@ -178,12 +347,18 @@ public class ModuleController : ControllerBase
                     Prefix = module.Center.Ward.Prefix,
                 }
             },
-            CoursesModulesSemesters = module.CoursesModulesSemesters.Select(cms => new CourseModuleSemesterResponse()
+            // CourseModuleSemester = module.CoursesModulesSemesters.Select(cms => new CourseModuleSemesterResponse()
+            // {
+            //     CourseCode = cms.CourseCode,
+            //     ModuleId = cms.ModuleId,
+            //     SemesterId = cms.SemesterId,
+            // }).ToList()
+            CourseModuleSemester = new CourseModuleSemesterResponse()
             {
-                CourseCode = cms.CourseCode,
-                ModuleId = cms.ModuleId,
-                SemesterId = cms.SemesterId,
-            }).ToList()
+                CourseCode = module.CoursesModulesSemesters.FirstOrDefault()?.CourseCode,
+                ModuleId = module.CoursesModulesSemesters.FirstOrDefault()?.ModuleId,
+                SemesterId = module.CoursesModulesSemesters.FirstOrDefault()?.SemesterId,
+            }
         };
         return moduleResponse;
     }
