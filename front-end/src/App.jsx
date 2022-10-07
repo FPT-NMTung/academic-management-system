@@ -50,6 +50,7 @@ const App = () => {
         <Route path='/admin/manage-course/module' element={<Module/>}/>
         <Route path='/admin/account/sro' element={<SroScreen />}/>
         <Route path='/admin/account/sro/:id' element={<SroDetail />}/>
+        <Route path='/admin/account/sro/create' element={<SroCreate />}/>
       </Route>
       <Route path="*" element={<NotFoundScreen />} />
     </Routes>
