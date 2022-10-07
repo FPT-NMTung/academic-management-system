@@ -277,6 +277,20 @@ public class TeacherController : ControllerBase
     [Authorize(Roles = "admin, sro")]
     public IActionResult UpdateTeacher(int id, [FromBody] UpdateTeacherRequest request)
     {
+        var user = _context.Users.FirstOrDefault(u => u.Id == id);
+        if (user == null)
+        {
+            var error = ErrorDescription.Error["E0048"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var teacher = _context.Teachers.FirstOrDefault(s => s.UserId == id);
+        if (teacher == null)
+        {
+            var error = ErrorDescription.Error["E0055"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
         request.FirstName = Regex.Replace(request.FirstName!, StringConstant.RegexWhiteSpaces, " ");
         // function replace string ex: H ' Hen Nie => H'Hen Nie
         request.FirstName = request.FirstName.Replace(" ' ", "'").Trim();
@@ -356,20 +370,6 @@ public class TeacherController : ControllerBase
                 var error = ErrorDescription.Error["E0054"];
                 return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
             }
-        }
-
-        var user = _context.Users.FirstOrDefault(u => u.Id == id);
-        if (user == null)
-        {
-            var error = ErrorDescription.Error["E0048"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        var teacher = _context.Teachers.FirstOrDefault(s => s.UserId == id);
-        if (teacher == null)
-        {
-            var error = ErrorDescription.Error["E0055"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         user.ProvinceId = request.ProvinceId;
