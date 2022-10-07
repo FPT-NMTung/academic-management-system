@@ -11,6 +11,7 @@ import ColumnGroup from 'antd/lib/table/ColumnGroup';
 
 const SroScreen = () => {
   const [listSro, setListSro] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
 
@@ -32,6 +33,7 @@ const SroScreen = () => {
         };
       });
       setListSro(data);
+      setIsLoading(false);
     });
   };
 
@@ -45,20 +47,29 @@ const SroScreen = () => {
         <Card>
           <Card.Body>
             <Form layout="inline">
-              <Form.Item name="firstName" style={{ width: 'calc(17% - 16px)' }}>
-                <Input placeholder="ádasdsdasd" />
+              <Form.Item
+                name="first_name"
+                style={{ width: 'calc(17% - 16px)' }}
+              >
+                <Input placeholder="Họ" />
               </Form.Item>
-              <Form.Item name="firstName" style={{ width: 'calc(17% - 16px)' }}>
-                <Input placeholder="ádasdsdasd" />
+              <Form.Item name="last_name" style={{ width: 'calc(17% - 16px)' }}>
+                <Input placeholder="Tên" />
               </Form.Item>
-              <Form.Item name="firstName" style={{ width: 'calc(17% - 16px)' }}>
-                <Input placeholder="ádasdsdasd" />
+              <Form.Item
+                name="mobile_phone"
+                style={{ width: 'calc(17% - 16px)' }}
+              >
+                <Input placeholder="Số điện thoại" />
               </Form.Item>
-              <Form.Item name="firstName" style={{ width: 'calc(17% - 16px)' }}>
-                <Input placeholder="ádasdsdasd" />
+              <Form.Item name="email" style={{ width: 'calc(17% - 16px)' }}>
+                <Input placeholder="Email cá nhân" />
               </Form.Item>
-              <Form.Item name="firstName" style={{ width: 'calc(17% - 16px)' }}>
-                <Input placeholder="ádasdsdasd" />
+              <Form.Item
+                name="email_organization"
+                style={{ width: 'calc(17% - 16px)' }}
+              >
+                <Input placeholder="Email tổ chức" />
               </Form.Item>
               <Form.Item style={{ width: 'calc(9% - 16px)' }}>
                 <Button
@@ -117,6 +128,7 @@ const SroScreen = () => {
             </Grid.Container>
           </Card.Header>
           <Table
+            loading={isLoading}
             bordered
             size="middle"
             dataSource={listSro}
@@ -259,9 +271,13 @@ const SroScreen = () => {
               render={(_, data) => {
                 return (
                   <div className={classes.logoEdit}>
-                    <MdEdit color="0a579f" style={{ cursor: 'pointer' }} onClick={() => {
-                      navigate(`/admin/account/sro/${data.user_id}`)
-                    }} />
+                    <MdEdit
+                      color="0a579f"
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        navigate(`/admin/account/sro/${data.user_id}`);
+                      }}
+                    />
                   </div>
                 );
               }}
