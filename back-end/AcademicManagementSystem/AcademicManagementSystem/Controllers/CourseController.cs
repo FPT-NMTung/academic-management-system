@@ -4,6 +4,7 @@ using AcademicManagementSystem.Context.AmsModels;
 using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.CourseController;
 using AcademicManagementSystem.Models.CourseFamilyController;
+using AcademicManagementSystem.Models.CourseModuleSemester;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +27,9 @@ public class CourseController : ControllerBase
     [Authorize(Roles = "admin,sro")]
     public IActionResult GetCourses()
     {
-        var courses = _context.Courses.Include(c => c.CourseFamily)
+        var courses = _context.Courses
+            .Include(c => c.CourseFamily)
+            .Include(c => c.CoursesModulesSemesters)
             .ToList()
             .Select(c => new CourseResponse()
             {
@@ -37,7 +40,13 @@ public class CourseController : ControllerBase
                     Code = c.CourseFamily.Code, Name = c.CourseFamily.Name,
                     PublishedYear = c.CourseFamily.PublishedYear, IsActive = c.CourseFamily.IsActive,
                     CreatedAt = c.CourseFamily.CreatedAt, UpdatedAt = c.CourseFamily.UpdatedAt
-                }
+                },
+                CoursesModulesSemesters = c.CoursesModulesSemesters.Select(cms => new CourseModuleSemesterResponse()
+                {
+                    CourseCode = cms.CourseCode,
+                    ModuleId = cms.ModuleId,
+                    SemesterId = cms.SemesterId,
+                }).ToList()
             });
         return Ok(CustomResponse.Ok("Get Courses Successfully", courses));
     }
@@ -48,7 +57,9 @@ public class CourseController : ControllerBase
     [Authorize(Roles = "admin,sro")]
     public IActionResult GetCourseByCode(string code)
     {
-        var course = _context.Courses.Include(c => c.CourseFamily)
+        var course = _context.Courses
+            .Include(c => c.CourseFamily)
+            .Include(c => c.CoursesModulesSemesters)
             .FirstOrDefault(c => c.Code == code.ToUpper().Trim());
         if (course == null)
         {
@@ -74,23 +85,6 @@ public class CourseController : ControllerBase
             string.IsNullOrWhiteSpace(request.CourseFamilyCode))
         {
             var error = ErrorDescription.Error["E1007"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        // check existed
-        var course = _context.Courses.Include(c => c.CourseFamily)
-            .FirstOrDefault(c => c.Code == request.Code);
-        if (course == null)
-        {
-            var error = ErrorDescription.Error["E1014"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        var courseFamily =
-            _context.CourseFamilies.FirstOrDefault(cf => cf.Code == request.CourseFamilyCode);
-        if (courseFamily == null)
-        {
-            var error = ErrorDescription.Error["E1015"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -124,21 +118,42 @@ public class CourseController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        if (IsExistedCourse(request.Code))
+        {
+            var error = ErrorDescription.Error["E1014"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         if (request.SemesterCount is < 1 or > 10)
         {
             var error = ErrorDescription.Error["E1020"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        course = new Course()
+        var courseFamily =
+            _context.CourseFamilies.FirstOrDefault(cf => cf.Code == request.CourseFamilyCode);
+        if (courseFamily == null)
+        {
+            var error = ErrorDescription.Error["E1015"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var course = new Course()
         {
             Code = request.Code, CourseFamilyCode = request.CourseFamilyCode, Name = request.Name,
             SemesterCount = request.SemesterCount, IsActive = request.IsActive, CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now
         };
 
-        _context.Courses.Add(course);
-        _context.SaveChanges();
+        try
+        {
+            _context.Courses.Add(course);
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+        }
 
         var courseResponse = GetCourseResponse(course);
         return Ok(CustomResponse.Ok("Course Created Successfully", courseResponse));
@@ -150,8 +165,8 @@ public class CourseController : ControllerBase
     [Authorize(Roles = "admin,sro")]
     public IActionResult UpdateCourse(string code, [FromBody] UpdateCourseRequest request)
     {
-        request.Name = request.Name.Trim();
-        request.CourseFamilyCode = request.CourseFamilyCode.ToUpper().Trim();
+        request.Name = request.Name?.Trim();
+        request.CourseFamilyCode = request.CourseFamilyCode?.ToUpper().Trim();
 
         var course = _context.Courses.FirstOrDefault(c => c.Code == code.Trim());
         if (course == null)
@@ -159,21 +174,13 @@ public class CourseController : ControllerBase
             return NotFound(CustomResponse.NotFound("Not Found Course"));
         }
 
+        // name format
         if (string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.CourseFamilyCode))
         {
             var error = ErrorDescription.Error["E1007"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var courseFamilyCode =
-            _context.CourseFamilies.FirstOrDefault(cf => cf.Code == request.CourseFamilyCode);
-        if (courseFamilyCode == null)
-        {
-            var error = ErrorDescription.Error["E1015"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        // name format
         request.Name = Regex.Replace(request.Name, StringConstant.RegexWhiteSpaces, " ");
         request.Name = request.Name.Replace(" ' ", "'").Trim();
         if (Regex.IsMatch(request.Name, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
@@ -188,19 +195,34 @@ public class CourseController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        var courseFamilyCode =
+            _context.CourseFamilies.FirstOrDefault(cf => cf.Code == request.CourseFamilyCode);
+        if (courseFamilyCode == null)
+        {
+            var error = ErrorDescription.Error["E1015"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         if (request.SemesterCount is < 1 or > 10)
         {
             var error = ErrorDescription.Error["E1020"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        course.CourseFamilyCode = request.CourseFamilyCode;
-        course.Name = request.Name;
-        course.SemesterCount = request.SemesterCount;
-        course.IsActive = request.IsActive;
-        course.UpdatedAt = DateTime.Now;
+        try
+        {
+            course.CourseFamilyCode = request.CourseFamilyCode;
+            course.Name = request.Name;
+            course.SemesterCount = request.SemesterCount;
+            course.IsActive = request.IsActive;
+            course.UpdatedAt = DateTime.Now;
 
-        _context.SaveChanges();
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+        }
 
         var courseResponse = GetCourseResponse(course);
         return Ok(CustomResponse.Ok("Course Updated Successfully", courseResponse));
@@ -212,14 +234,21 @@ public class CourseController : ControllerBase
     [Authorize(Roles = "admin,sro")]
     public IActionResult DeleteCourse(string code)
     {
-        var course = _context.Courses.FirstOrDefault(c => c.Code == code.Trim());
-        if (course == null)
+        try
         {
-            return NotFound(CustomResponse.NotFound("Not Found Course"));
-        }
+            var course = _context.Courses.FirstOrDefault(c => c.Code == code.Trim());
+            if (course == null)
+            {
+                return NotFound(CustomResponse.NotFound("Not Found Course"));
+            }
 
-        _context.Courses.Remove(course);
-        _context.SaveChanges();
+            _context.Courses.Remove(course);
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+        }
 
         return Ok(CustomResponse.Ok("Course Deleted Successfully", null!));
     }
@@ -236,8 +265,20 @@ public class CourseController : ControllerBase
                 Code = course.CourseFamily.Code, Name = course.CourseFamily.Name,
                 PublishedYear = course.CourseFamily.PublishedYear, IsActive = course.CourseFamily.IsActive,
                 CreatedAt = course.CourseFamily.CreatedAt, UpdatedAt = course.CourseFamily.UpdatedAt
-            }
+            },
+            CoursesModulesSemesters = course.CoursesModulesSemesters.Select(cms => new CourseModuleSemesterResponse()
+            {
+                CourseCode = cms.CourseCode,
+                ModuleId = cms.ModuleId,
+                SemesterId = cms.SemesterId
+            }).ToList()
         };
         return courseResponse;
+    }
+
+    // is existed course
+    private bool IsExistedCourse(string code)
+    {
+        return _context.Courses.Any(c => c.Code == code.ToUpper().Trim());
     }
 }
