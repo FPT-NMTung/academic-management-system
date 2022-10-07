@@ -72,7 +72,7 @@ public class ModuleController : ControllerBase
             });
         return Ok(CustomResponse.Ok("Modules retrieved successfully", modules));
     }
-
+    
     // get module by id
     [HttpGet]
     [Route("api/modules/{id}")]
@@ -91,6 +91,59 @@ public class ModuleController : ControllerBase
 
         var moduleResponse = GetModuleResponse(module);
         return Ok(CustomResponse.Ok("Module retrieved successfully", moduleResponse));
+    }
+    
+    // create module
+    [HttpPost]
+    [Route("api/modules")]
+    public IActionResult CreateModule([FromBody] CreateModuleRequest createModuleRequest)
+    {
+        var module = new Module()
+        {
+            CenterId = createModuleRequest.CenterId,
+            SemesterNamePortal = createModuleRequest.SemesterNamePortal,
+            ModuleName = createModuleRequest.ModuleName,
+            ModuleExamNamePortal = createModuleRequest.ModuleExamNamePortal,
+            ModuleType = createModuleRequest.ModuleType,
+            MaxTheoryGrade = createModuleRequest.MaxTheoryGrade,
+            MaxPracticalGrade = createModuleRequest.MaxPracticalGrade,
+            Hours = createModuleRequest.Hours,
+            Days = createModuleRequest.Days,
+            ExamType = createModuleRequest.ExamType,
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+        };
+        // create courses modules semesters
+        if (createModuleRequest.CoursesModulesSemesters != null)
+        {
+            foreach (var courseModuleSemester in createModuleRequest.CoursesModulesSemesters)
+            {
+                var course = _context.Courses.FirstOrDefault(c => c.Code == courseModuleSemester.CourseCode);
+                if (course == null)
+                {
+                    return NotFound(CustomResponse.NotFound("Course not found"));
+                }
+
+                var coursesModulesSemesters = new CourseModuleSemester()
+                {
+                    CourseCode = courseModuleSemester.CourseCode,
+                    ModuleId = module.Id,
+                    SemesterId = courseModuleSemester.SemesterId
+                };
+                module.CoursesModulesSemesters.Add(coursesModulesSemesters);
+            }
+        }
+        try
+        {
+            _context.Modules.Add(module);
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+        }
+        var moduleResponse = GetModuleResponse(module);
+        return Ok(CustomResponse.Ok("Module created successfully", moduleResponse));
     }
 
     private static ModuleResponse GetModuleResponse(Module module)

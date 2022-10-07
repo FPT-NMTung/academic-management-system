@@ -14,7 +14,7 @@ public class CourseModuleSemester
     public int ModuleId { get; set; }
     
     [Column("semester_id")]
-    public int SemesterId { get; set; }
+    public int? SemesterId { get; set; }
     
     // relationships
     public virtual Course Course { get; set; }

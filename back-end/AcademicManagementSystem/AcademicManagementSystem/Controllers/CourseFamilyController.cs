@@ -25,7 +25,9 @@ public class CourseFamilyController : ControllerBase
     [Authorize(Roles = "admin,sro")]
     public IActionResult GetCourseFamilies()
     {
-        var courseFamilies = _context.CourseFamilies.Include(cf => cf.Courses).ToList()
+        var courseFamilies = _context.CourseFamilies
+            .Include(cf => cf.Courses)
+            .ToList()
             .Select(cf => new CourseFamilyResponse()
             {
                 Code = cf.Code, Name = cf.Name, PublishedYear = cf.PublishedYear, IsActive = cf.IsActive,
@@ -65,6 +67,21 @@ public class CourseFamilyController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        // code format
+        request.Code = Regex.Replace(request.Code, StringConstant.RegexWhiteSpaces, " ");
+        request.Code = request.Code.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.Code, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        {
+            var error = ErrorDescription.Error["E1010"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.Code.Length > 100)
+        {
+            var error = ErrorDescription.Error["E1011"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         // name format
         request.Name = Regex.Replace(request.Name, StringConstant.RegexWhiteSpaces, " ");
         request.Name = request.Name.Replace(" ' ", "'").Trim();
@@ -80,24 +97,9 @@ public class CourseFamilyController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // code format
         if (IsCourseFamilyExists(request))
         {
             var error = ErrorDescription.Error["E1013"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        request.Code = Regex.Replace(request.Code, StringConstant.RegexWhiteSpaces, " ");
-        request.Code = request.Code.Replace(" ' ", "'").Trim();
-        if (Regex.IsMatch(request.Code, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
-        {
-            var error = ErrorDescription.Error["E1010"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (request.Code.Length > 100)
-        {
-            var error = ErrorDescription.Error["E1011"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
