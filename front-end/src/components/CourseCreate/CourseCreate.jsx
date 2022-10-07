@@ -4,17 +4,54 @@ import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
 import { AddressApis, CenterApis } from '../../apis/ListApi';
 import mergeCourseFamilyres from '../../screens/Admin/Course Family/CourseFamily';
+import { CourseFamilyApis, CourseApis } from '../../apis/ListApi';
 
-
-const CourseCreate = () => {
-
+const CourseCreate = ({ onCreateSuccess }) => {
+    const [listCourseFamily, setListCourseFamily] = useState([]);
 
     const [isCreating, setIsCreating] = useState(false);
     const [isFailed, setIsFailed] = useState(false);
     const [form] = Form.useForm();
-    const handleSubmitForm = (e) => {
 
+    const getListCourseFamily = () => {
+        FetchApi(CourseFamilyApis.getAllCourseFamily).then((res) => {
+            setListCourseFamily(res.data);
+        });
     };
+
+    const handleSubmitForm = (e) => {
+        console.log(e.coursecode);
+        console.log(e.coursefamilycode);
+        console.log(e.coursename);
+        console.log(e.semester);
+        setIsCreating(true);
+        FetchApi(
+            CourseApis.createCourse,
+            {
+                code: e.coursecode,
+                course_family_code: e.coursefamilycode,
+                name: e.coursename,
+                semester_count: e.semester,
+                is_active: true,
+
+
+
+            },
+            null,
+            null
+        )
+
+            .then(() => {
+                onCreateSuccess();
+            })
+            .catch(() => {
+                setIsCreating(false);
+                setIsFailed(true);
+            });
+    };
+    useEffect(() => {
+        getListCourseFamily();
+    }, []);
     return (
         <Grid xs={4}>
             <Card
@@ -40,13 +77,12 @@ const CourseCreate = () => {
                         layout="horizontal"
                         labelAlign="left"
                         labelWrap
-
-                        //   onFinish={handleSubmitForm}
+                        onFinish={handleSubmitForm}
                         form={form}
                     >
                         <Form.Item
 
-                            name={'coursefamilyname'}
+                            name={'coursename'}
                             label={'Tên Khóa Học'}
 
                             rules={[
@@ -70,21 +106,23 @@ const CourseCreate = () => {
                         >
 
                             <Select
-                                // showSearch
-                                // disabled={listProvince.length === 0}
+                                showSearch
+                                disabled={listCourseFamily.length === 0}
                                 placeholder="Chọn mã chương trình"
                                 optionFilterProp="children"
                             // onChange={getListDistrict}
                             >
-                                {/* {listProvince.map((e) => (
-                                    <Select.Option key={e.id} value={e.id}>
-                                        {e.name}
+                                {listCourseFamily.map((e, index) => (
+                                    <Select.Option key={index} value={e.code}>
+                                        {e.data} {e.code}
+
                                     </Select.Option>
-                                ))} */}
+
+                                ))}
                             </Select>
                         </Form.Item>
                         <Form.Item
-                            name={'coursefamilycode'}
+                            name={'coursecode'}
                             label={'Mã Khóa Học'}
                             rules={[
                                 {
@@ -97,8 +135,8 @@ const CourseCreate = () => {
                             <Input />
                         </Form.Item>
                         <Form.Item
-                       
-                            name={'year'}
+
+                            name={'semester'}
                             label={'Học Kỳ'}
                             rules={[
                                 {
@@ -117,7 +155,7 @@ const CourseCreate = () => {
                             </Button>
                         </Form.Item>
                     </Form>
-                    {isCreating && isFailed && (
+                    {!isCreating && isFailed && (
                         <Text
                             size={14}
                             css={{
