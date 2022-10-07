@@ -34,7 +34,7 @@ public static class ErrorDescription
         { "E0018", new ErrorModel() { Message = "centerId for CREATE/UPDATE SRO not found", Type = "sro-error-0003" } },
         { "E0019", new ErrorModel() { Message = "RoleId for CREATE/UPDATE SRO not found", Type = "sro-error-0004" } },
         { "E0020", new ErrorModel() { Message = "Duplicated MobilePhone for CREATE/UPDATE SRO", Type = "sro-error-0005" } },
-        { "E0021", new ErrorModel() { Message = "Duplicated Email for CREATE/UPDATE SRO ", Type = "user-error-0006" } },
+        { "E0021", new ErrorModel() { Message = "Duplicated Email for CREATE/UPDATE SRO ", Type = "sro-error-0006" } },
         { "E0022", new ErrorModel() { Message = "Duplicated EmailOrganization for CREATE/UPDATE SRO", Type = "sro-error-0007" } },
         { "E0023", new ErrorModel() { Message = "ProvinceId not found for CREATE/UPDATE SRO", Type = "sro-error-0008" } },
         { "E0024", new ErrorModel() { Message = "DistrictId not found for CREATE/UPDATE SRO", Type = "sro-error-0009" } },
@@ -51,9 +51,9 @@ public static class ErrorDescription
         { "E0034", new ErrorModel() { Message = "FirstName must match with format", Type = "sro-error-0019" } },
         { "E0035", new ErrorModel() { Message = "LastName must match with format", Type = "sro-error-0020" } },
         { "E0036", new ErrorModel() { Message = "User role SRO Not found", Type = "sro-error-0021" } },
-        { "E0037", new ErrorModel() { Message = "Invalid Data", Type = "sro-error-0022" } },
+        { "E0037", new ErrorModel() { Message = "Invalid Data for create/update user", Type = "sro-error-0022" } },
+        { "E0038", new ErrorModel() { Message = "Invalid Data for create/update sro", Type = "sro-error-0023" } },
 
-        
         // address
         { "E1006", new ErrorModel() { Message = "Do not exist provinceId, DistrictId or WardId", Type = "address-error-0001" } },
         
@@ -73,11 +73,49 @@ public static class ErrorDescription
         { "E1017", new ErrorModel() { Message = "Course name must be less or equal than 255 characters", Type = "course-error-0012" } },
         { "E1018", new ErrorModel() { Message = "Course code not match with format", Type = "course-error-0013" } },
         { "E1019", new ErrorModel() { Message = "Course code must be less or equal than 100 characters", Type = "course-error-0014" } },
-        { "E1020", new ErrorModel() { Message = "Semester count mus be between 1-10", Type = "course-error-0014" } },
+        { "E1020", new ErrorModel() { Message = "Semester count mus be between 1-10", Type = "course-error-0015" } },
+        
+        // module
+        { "E1021", new ErrorModel() { Message = "Fail to SaveChange when Add Module", Type = "module-error-0001" } },
+        { "E1022", new ErrorModel() { Message = "Fail to SaveChange when Add data to CourseModuleSemester", Type = "module-error-0002" } },
+        { "E1023", new ErrorModel() { Message = "Input cannot be null or white space", Type = "module-error-0003" } },
+        { "E1024", new ErrorModel() { Message = "Module name not match with format", Type = "module-error-0004" } },
+        { "E1025", new ErrorModel() { Message = "Module name must be less or equal than 255 characters", Type = "module-error-0005" } },
+        { "E1026", new ErrorModel() { Message = "Course code not match with format", Type = "module-error-0006" } },
+        { "E1027", new ErrorModel() { Message = "Course code must be less or equal than 100 characters", Type = "module-error-0007" } },
+        { "E1028", new ErrorModel() { Message = "ModuleExamNamePortal not match with format", Type = "module-error-0008" } },
+        { "E1029", new ErrorModel() { Message = "ModuleExamNamePortal be less or equal than 255 characters", Type = "module-error-0009" } },
+        { "E1030", new ErrorModel() { Message = "ModuleType code not match with format", Type = "module-error-00010" } },
+        { "E1031", new ErrorModel() { Message = "ModuleType code must be less or equal than 100 characters", Type = "module-error-00011" } },
+        { "E1032", new ErrorModel() { Message = "ExamType code not match with format", Type = "module-error-00012" } },
+        { "E1033", new ErrorModel() { Message = "ExamType code must be less or equal than 100 characters", Type = "module-error-00013" } },
+        { "E1034", new ErrorModel() { Message = "SemesterNamePortal code not match with format", Type = "module-error-00014" } },
+        { "E1035", new ErrorModel() { Message = "SemesterNamePortal code must be less or equal than 255 characters", Type = "module-error-00015" } },
+        { "E1036", new ErrorModel() { Message = "Days must larger than 0", Type = "module-error-00016" } },
+        { "E1037", new ErrorModel() { Message = "Hours must larger than 0", Type = "module-error-00017" } },
+        { "E1038", new ErrorModel() { Message = "Course Code is not existed", Type = "module-error-00018" } },
+        { "E1039", new ErrorModel() { Message = "Center Id is not existed", Type = "module-error-00019" } },
+        { "E1040", new ErrorModel() { Message = "Semester Id is not existed", Type = "module-error-00020" } },
+        { "E1041", new ErrorModel() { Message = "Module with course code, semester id existed", Type = "module-error-00021" } },
         
         // teacher
-        { "E0038", new ErrorModel() { Message = "Invalid Data", Type = "teacher-error-0001" } },
         { "E0039", new ErrorModel() { Message = "Please enter at least one search criteria", Type = "teacher-error-0002" } },
+        { "E0040", new ErrorModel() { Message = "Invalid Data for Create/Update User", Type = "teacher-error-0003" } },
+        { "E0041", new ErrorModel() { Message = "Duplicated Individual Tax Code", Type = "teacher-error-0004" } },
+        { "E0042", new ErrorModel() { Message = "MobilePhone must be 10 digits and starting with 0", Type = "teacher-error-0005" } },
+        { "E0043", new ErrorModel() { Message = "Email must match with format", Type = "teacher-error-0006" } },
+        { "E0044", new ErrorModel() { Message = "EmailOrganization must match with format", Type = "teacher-error-0007" } },
+        { "E0045", new ErrorModel() { Message = "CitizenIdCardNo must be 9 or 12 digits", Type = "teacher-error-0008" } },
+        { "E0046", new ErrorModel() { Message = "FirstName must match with format", Type = "teacher-error-0009" } },
+        { "E0047", new ErrorModel() { Message = "LastName must match with format", Type = "teacher-error-0010" } },
+        { "E0048", new ErrorModel() { Message = "User role Teacher Not found", Type = "teacher-error-0011" } },
+        { "E0049", new ErrorModel() { Message = "Invalid Data for Create/Update Teacher", Type = "teacher-error-0012" } },
+        { "E0050", new ErrorModel() { Message = "Duplicated MobilePhone for CREATE/UPDATE Teacher", Type = "teacher-error-0013" } },
+        { "E0051", new ErrorModel() { Message = "Duplicated Email for CREATE/UPDATE Teacher ", Type = "teacher-error-0014" } },
+        { "E0052", new ErrorModel() { Message = "Duplicated EmailOrganization for CREATE/UPDATE Teacher", Type = "teacher-error-0015" } },
+        { "E0053", new ErrorModel() { Message = "Duplicated citizenIdentityCardNo for CREATE/UPDATE Teacher", Type = "teacher-error-0016" } },
+        { "E0054", new ErrorModel() { Message = "Tax Code must be 10 digits", Type = "teacher-error-0017" } },
+        { "E0055", new ErrorModel() { Message = "Teacher Not Found", Type = "teacher-error-0018" } },
 
 
     };
