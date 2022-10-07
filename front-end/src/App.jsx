@@ -9,6 +9,9 @@ import Schedule from './screens/Student/ScheduleScreen/ScheduleScreen';
 import SecondLayout from './components/Layout/SecondLayout/SecondLayout';
 import CenterScreen from './screens/Admin/Center/CenterScreen';
 import RoomScreen from './screens/Admin/Room/RoomScreen';
+import CourseFamily from './screens/Admin/Course Family/CourseFamily';
+import Course from './screens/Admin/Course/Course';
+import Module from './screens/Admin/Module/Module';
 
 const App = () => {
   return (
@@ -41,6 +44,9 @@ const App = () => {
         <Route path="/admin/room" element={<RoomScreen />} />
         <Route path='/admin/account/sro' element={<p>Quản lý SRO</p>}/>
         <Route path='/admin/account/sro/:id' element={<p>Quản lý SRO detail</p>}/>
+        <Route path='/admin/manage-course/course-family' element={<CourseFamily/>}/>
+        <Route path='/admin/manage-course/course' element={<Course/>}/>
+        <Route path='/admin/manage-course/module' element={<Module/>}/>
       </Route>
       <Route path="*" element={<NotFoundScreen />} />
     </Routes>

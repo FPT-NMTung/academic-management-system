@@ -1,0 +1,22 @@
+.headerTable {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  width: 100%;
+}
+
+.editIcon {
+  cursor: pointer;
+}
+
+.rowDisable {
+  background-color: #f5f5f5;
+  /* pointer-events: none; */
+
+}
+
+
+
+
