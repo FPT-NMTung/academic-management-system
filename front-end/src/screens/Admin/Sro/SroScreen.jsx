@@ -234,7 +234,7 @@ const SroScreen = () => {
                 title="Tỉnh/Thành phố"
                 dataIndex="province"
                 key="province"
-                width={160}
+                width={180}
                 render={(data) => {
                   return <Fragment>{data.name}</Fragment>;
                 }}
@@ -243,18 +243,18 @@ const SroScreen = () => {
                 title="Quận/Huyện"
                 dataIndex="district"
                 key="district"
-                width={160}
+                width={180}
                 render={(data) => {
-                  return <Fragment>{data.name}</Fragment>;
+                  return <Fragment>{data.prefix} {data.name}</Fragment>;
                 }}
               />
               <Table.Column
                 title="Phường/Xã"
                 dataIndex="ward"
                 key="ward"
-                width={160}
+                width={180}
                 render={(data) => {
-                  return <Fragment>{data.name}</Fragment>;
+                  return <Fragment>{data.prefix} {data.name}</Fragment>;
                 }}
               />
             </ColumnGroup>

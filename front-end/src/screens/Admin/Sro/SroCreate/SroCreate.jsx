@@ -3,7 +3,12 @@ import { Button, Form, Input, Select, Divider, DatePicker } from 'antd';
 import classes from './SroCreate.module.css';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { CenterApis, GenderApis, AddressApis } from '../../../../apis/ListApi';
+import {
+  CenterApis,
+  GenderApis,
+  AddressApis,
+  ManageSroApis,
+} from '../../../../apis/ListApi';
 import FetchApi from '../../../../apis/FetchApi';
 import { Validater } from '../../../../validater/Validater';
 
@@ -63,6 +68,32 @@ const SroCreate = () => {
     form.setFieldsValue({ ward_id: null });
   };
 
+  const handleSubmitForm = () => {
+    const data = form.getFieldsValue();
+    const body = {
+      first_name: data.first_name,
+      last_name: data.last_name,
+      mobile_phone: data.mobile_phone,
+      email: data.email,
+      email_organization: data.email_organization,
+      province_id: data.province_id,
+      district_id: data.district_id,
+      ward_id: data.ward_id,
+      gender_id: data.gender_id,
+      birthday: data.birthday.toDate(),
+      center_id: data.center_id,
+      citizen_identity_card_no: data.citizen_identity_card_no,
+      citizen_identity_card_published_date:
+        data.citizen_identity_card_published_date.toDate(),
+      citizen_identity_card_published_place:
+        data.citizen_identity_card_published_place,
+    };
+
+    FetchApi(ManageSroApis.createSro, body, null, null).then((res) => {
+      navigate('/admin/account/sro');
+    });
+  };
+
   useEffect(() => {
     getListCenter();
     getListGender();
@@ -70,10 +101,11 @@ const SroCreate = () => {
   }, []);
 
   return (
-    <Form labelCol={{ span: 7 }} wrapperCol={{ span: 15 }} form={form}
-      initialValues={{
-        
-      }}
+    <Form
+      labelCol={{ span: 7 }}
+      wrapperCol={{ span: 15 }}
+      form={form}
+      onFinish={handleSubmitForm}
     >
       <Grid.Container justify="center">
         <Grid xs={7} direction={'column'} css={{ rowGap: 20 }}>
@@ -120,7 +152,9 @@ const SroCreate = () => {
                       required: true,
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
-                          return Promise.reject('Trường này không được để trống');
+                          return Promise.reject(
+                            'Trường này không được để trống'
+                          );
                         }
                         if (value.trim().length >= 2) {
                           return Promise.resolve();
@@ -146,7 +180,9 @@ const SroCreate = () => {
                       required: true,
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
-                          return Promise.reject('Trường này không được để trống');
+                          return Promise.reject(
+                            'Trường này không được để trống'
+                          );
                         }
                         if (value.trim().length >= 2) {
                           return Promise.resolve();
@@ -362,7 +398,9 @@ const SroCreate = () => {
                       required: true,
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
-                          return Promise.reject('Trường này không được để trống');
+                          return Promise.reject(
+                            'Trường này không được để trống'
+                          );
                         }
                         if (value.trim().length >= 2) {
                           return Promise.resolve();
