@@ -74,15 +74,24 @@ public class SroController : ControllerBase
     [HttpGet]
     [Route("api/sros/search")]
     [Authorize(Roles = "admin")]
-    public IActionResult SearchSro([FromQuery] string? firstName = "", [FromQuery] string? lastName = "",
-        [FromQuery] string? mobilePhone = "", [FromQuery] string? email = "",
-        [FromQuery] string? emailOrganization = "")
+    public IActionResult SearchSro(string firstName = "", string lastName = "",
+        string mobilePhone = "", string email = "",
+        string emailOrganization = "")
     {
         var sFirstName = firstName == null ? string.Empty : RemoveDiacritics(firstName.Trim().ToLower());
         var sLastName = lastName == null ? string.Empty : RemoveDiacritics(lastName.Trim().ToLower());
         var sMobilePhone = mobilePhone == null ? string.Empty : RemoveDiacritics(mobilePhone.Trim().ToLower());
         var sEmail = email == null ? string.Empty : RemoveDiacritics(email.Trim().ToLower());
-        var sEmailOrganization = emailOrganization == null ? string.Empty : RemoveDiacritics(emailOrganization.Trim().ToLower());
+        var sEmailOrganization = emailOrganization == null
+            ? string.Empty
+            : RemoveDiacritics(emailOrganization.Trim().ToLower());
+
+        if (sFirstName == string.Empty && sLastName == string.Empty && sMobilePhone == string.Empty
+            && sEmail == string.Empty && sEmailOrganization == string.Empty)
+        {
+            var error = ErrorDescription.Error["E0028"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         var listSro = GetAllUserRoleSro();
 
@@ -202,6 +211,9 @@ public class SroController : ControllerBase
             UpdatedAt = DateTime.Now
         };
 
+        /*
+         * if sro has another parameters, refer to create teacher 
+         */
         _context.Users.Add(user);
         try
         {
@@ -223,9 +235,9 @@ public class SroController : ControllerBase
         {
             _context.SaveChanges();
         }
-        catch (Exception e)
+        catch (DbUpdateException)
         {
-            var error = ErrorDescription.Error["E0037"];
+            var error = ErrorDescription.Error["E0038"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -293,6 +305,12 @@ public class SroController : ControllerBase
         //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         // }
 
+        if (IsCitizenIdentityCardNoExists(request.CitizenIdentityCardNo, true, id))
+        {
+            var error = ErrorDescription.Error["E0027"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         if (!Regex.IsMatch(request.CitizenIdentityCardNo!, StringConstant.RegexCitizenIdCardNo))
         {
             var error = ErrorDescription.Error["E0033"];
@@ -331,13 +349,14 @@ public class SroController : ControllerBase
         user.CitizenIdentityCardPublishedDate = request.CitizenIdentityCardPublishedDate;
         user.CitizenIdentityCardPublishedPlace = request.CitizenIdentityCardPublishedPlace!;
         user.UpdatedAt = DateTime.Now;
+
         try
         {
             _context.SaveChanges();
         }
-        catch (DbUpdateException e)
+        catch (DbUpdateException)
         {
-            var error = ErrorDescription.Error["E0037"];
+            var error = ErrorDescription.Error["E0038"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -354,29 +373,28 @@ public class SroController : ControllerBase
     {
         return isUpdate
             ? _context.Users.Any(e => e.MobilePhone == mobilePhone && e.Id != userId)
-            : _context.Users.Any(e => e.MobilePhone == mobilePhone && e.RoleId == SroRoleId);
+            : _context.Users.Any(e => e.MobilePhone == mobilePhone);
     }
 
     private bool IsEmailExists(string? email, bool isUpdate, int userId)
     {
         return isUpdate
             ? _context.Users.Any(e => e.Email == email && e.Id != userId)
-            : _context.Users.Any(e => e.Email == email && e.RoleId == SroRoleId);
+            : _context.Users.Any(e => e.Email == email);
     }
-
 
     private bool IsEmailOrganizationExists(string? emailOrganization, bool isUpdate, int userId)
     {
         return isUpdate
             ? _context.Users.Any(e => e.EmailOrganization == emailOrganization && e.Id != userId)
-            : _context.Users.Any(e => e.EmailOrganization == emailOrganization && e.RoleId == SroRoleId);
+            : _context.Users.Any(e => e.EmailOrganization == emailOrganization);
     }
 
     private bool IsCitizenIdentityCardNoExists(string? citizenIdentityCardNo, bool isUpdate, int userId)
     {
         return isUpdate
             ? _context.Users.Any(e => e.CitizenIdentityCardNo == citizenIdentityCardNo && e.Id != userId)
-            : _context.Users.Any(e => e.CitizenIdentityCardNo == citizenIdentityCardNo && e.RoleId == SroRoleId);
+            : _context.Users.Any(e => e.CitizenIdentityCardNo == citizenIdentityCardNo);
     }
 
     private static string RemoveDiacritics(string text)
