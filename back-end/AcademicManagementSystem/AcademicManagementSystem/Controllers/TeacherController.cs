@@ -105,8 +105,8 @@ public class TeacherController : ControllerBase
                                        && sNickname == string.Empty && sMobilePhone == string.Empty
                                        && sEmail == string.Empty && sEmailOrganization == string.Empty)
         {
-            var error = ErrorDescription.Error["E0039"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            var teachers = GetAllUserRoleTeacher();
+            return Ok(CustomResponse.Ok("Search teachers successfully", teachers));
         }
 
         var listSro = GetAllUserRoleTeacher();
