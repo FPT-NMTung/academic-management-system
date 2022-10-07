@@ -250,6 +250,21 @@ public class SroController : ControllerBase
     [Authorize(Roles = "admin")]
     public IActionResult UpdateSro([FromRoute] int id, [FromBody] UpdateSroRequest request)
     {
+        var sro = _context.Sros.FirstOrDefault(s => s.UserId == id);
+
+        if (sro == null)
+        {
+            var error = ErrorDescription.Error["E0017"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var user = _context.Users.FirstOrDefault(u => u.Id == sro.UserId);
+        if (user == null)
+        {
+            var error = ErrorDescription.Error["E0036"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
         request.FirstName = Regex.Replace(request.FirstName!, StringConstant.RegexWhiteSpaces, " ");
         // function replace string ex: H ' Hen Nie => H'Hen Nie
         request.FirstName = request.FirstName.Replace(" ' ", "'").Trim();
@@ -313,21 +328,6 @@ public class SroController : ControllerBase
         if (!Regex.IsMatch(request.CitizenIdentityCardNo!, StringConstant.RegexCitizenIdCardNo))
         {
             var error = ErrorDescription.Error["E0033"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        var sro = _context.Sros.FirstOrDefault(s => s.UserId == id);
-
-        if (sro == null)
-        {
-            var error = ErrorDescription.Error["E0017"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        var user = _context.Users.FirstOrDefault(u => u.Id == sro.UserId);
-        if (user == null)
-        {
-            var error = ErrorDescription.Error["E0036"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
