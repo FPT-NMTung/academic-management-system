@@ -1,0 +1,19 @@
+.logo {
+  width : 160px;
+  height: 160px;
+
+  display        : flex;
+  justify-content: center;
+  align-items    : center;
+
+  border-radius   : 10em;
+  background-color: rgb(224, 224, 224);
+}
+
+.loading {
+  height         : 450px;
+  width          : 100%;
+  display        : flex;
+  justify-content: center;
+  align-items    : center;
+}

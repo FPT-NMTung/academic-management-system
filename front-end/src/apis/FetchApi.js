@@ -31,8 +31,6 @@ const FetchApi = async (api, bodyObject, params, pathValiable) => {
     delete options.headers['Content-Type'];
   }
 
-  console.log(params);
-
   let paramString = '?';
   for (const property in params) {
     if (params.hasOwnProperty(property)) {
