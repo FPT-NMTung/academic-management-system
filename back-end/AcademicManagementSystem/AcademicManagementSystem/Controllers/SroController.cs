@@ -74,9 +74,9 @@ public class SroController : ControllerBase
     [HttpGet]
     [Route("api/sros/search")]
     [Authorize(Roles = "admin")]
-    public IActionResult SearchSro([FromQuery] string? firstName = "", [FromQuery] string? lastName = "",
-        [FromQuery] string? mobilePhone = "", [FromQuery] string? email = "",
-        [FromQuery] string? emailOrganization = "")
+    public IActionResult SearchSro(string firstName = "", string lastName = "",
+        string mobilePhone = "", string email = "",
+        string emailOrganization = "")
     {
         var sFirstName = firstName == null ? string.Empty : RemoveDiacritics(firstName.Trim().ToLower());
         var sLastName = lastName == null ? string.Empty : RemoveDiacritics(lastName.Trim().ToLower());

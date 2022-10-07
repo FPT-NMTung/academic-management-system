@@ -41,6 +41,42 @@ export const AddressApis = {
     contextType: 'application/json',
   },
 };
+export const CourseFamilyApis = {
+  getAllCourseFamily: {
+    url: 'api/course-families',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  updateCourseFamily: {
+    url: 'api/course-families/{0}',
+    method: 'PUT',
+    contextType: 'application/json',
+  },
+  createCourseFamily: {
+    url: 'api/course-families',
+    method: 'POST',
+    contextType: 'application/json',
+  },
+
+};
+export const CourseApis = {
+  getAllCourse: {
+    url: 'api/courses',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  updateCourse: {
+    url: 'api/courses/{0}',
+    method: 'PUT',
+    contextType: 'application/json',
+  },
+  createCourse: {
+    url: '/api/courses',
+    method: 'POST',
+    contextType: 'application/json',
+  },
+
+};
 
 export const RoomApis = {
   getAllRoom: {
@@ -59,3 +95,29 @@ export const RoomApis = {
     contextType: 'application/json',
   },
 };
+
+export const RoomTypeApis = {
+  getAllRoomType: {
+    url: 'api/room-types',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+}
+
+export const ManageSroApis = {
+  getAllSro: {
+    url: 'api/sros',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  searchSro: {
+    url: 'api/sros/search',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getDetailSro: {
+    url: 'api/sros/{0}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+}
