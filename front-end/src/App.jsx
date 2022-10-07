@@ -12,6 +12,8 @@ import RoomScreen from './screens/Admin/Room/RoomScreen';
 import CourseFamily from './screens/Admin/Course Family/CourseFamily';
 import Course from './screens/Admin/Course/Course';
 import Module from './screens/Admin/Module/Module';
+import SroDetail from './screens/Admin/Sro/SroDetail/SroDetail';
+import SroScreen from './screens/Admin/Sro/SroScreen';
 
 const App = () => {
   return (
