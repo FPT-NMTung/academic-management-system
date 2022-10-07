@@ -121,3 +121,11 @@ export const ManageSroApis = {
     contextType: 'application/json',
   },
 }
+
+export const GenderApis = {
+  getAllGender: {
+    url: 'api/genders',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+}

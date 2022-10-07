@@ -24,7 +24,7 @@ const SroScreen = () => {
       email: form.getFieldValue('email'),
       emailOrganization: form.getFieldValue('email_organization'),
     };
-    
+
     FetchApi(ManageSroApis.searchSro, null, param, null).then((res) => {
       const data = res.data.map((item, index) => {
         return {
@@ -39,8 +39,8 @@ const SroScreen = () => {
   };
 
   const handleClearInput = () => {
-    console.log(123);
     form.resetFields();
+    getAllSro();
   };
 
   const handleSubmitForm = () => {

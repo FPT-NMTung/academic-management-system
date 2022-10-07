@@ -1,0 +1,11 @@
+.layout {
+  display              : grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.buttonCreate {
+  width          : 100%;
+  display        : flex;
+  justify-content: center;
+
+}

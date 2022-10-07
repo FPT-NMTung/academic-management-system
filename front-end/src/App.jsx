@@ -42,7 +42,7 @@ const App = () => {
 
       {/* Routers for role admin */}
       <Route path={'/admin'} element={<SecondLayout><RequireAuth role={'admin'} /></SecondLayout>} >
-        <Route index element={<p>Trang chủ</p>} />
+        <Route index element={<Navigate to="/admin/center"/>} />
         <Route path='/admin/center' element={<CenterScreen/>}/>
         <Route path="/admin/room" element={<RoomScreen />} />
         <Route path='/admin/manage-course/course-family' element={<CourseFamily/>}/>
