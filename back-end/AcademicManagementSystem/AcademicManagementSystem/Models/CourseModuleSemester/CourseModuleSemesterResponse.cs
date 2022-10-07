@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using AcademicManagementSystem.Models.CourseController;
 
 namespace AcademicManagementSystem.Models.CourseModuleSemester;
 

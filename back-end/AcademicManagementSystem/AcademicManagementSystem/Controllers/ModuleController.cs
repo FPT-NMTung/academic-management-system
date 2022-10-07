@@ -4,6 +4,8 @@ using AcademicManagementSystem.Models.AddressController.DistrictModel;
 using AcademicManagementSystem.Models.AddressController.ProvinceModel;
 using AcademicManagementSystem.Models.AddressController.WardModel;
 using AcademicManagementSystem.Models.CenterController;
+using AcademicManagementSystem.Models.CourseController;
+using AcademicManagementSystem.Models.CourseFamilyController;
 using AcademicManagementSystem.Models.CourseModuleSemester;
 using AcademicManagementSystem.Models.ModuleController;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +32,7 @@ public class ModuleController : ControllerBase
             .Include(m => m.Center.Province)
             .Include(m => m.Center.District)
             .Include(m => m.Center.Ward)
+            .Include(m => m.CoursesModulesSemesters)
             .ToList()
             .Select(m => new ModuleResponse()
             {
@@ -59,10 +62,76 @@ public class ModuleController : ControllerBase
                         Name = m.Center.Ward.Name,
                         Prefix = m.Center.Ward.Prefix,
                     }
-                }
+                },
+                CoursesModulesSemesters = m.CoursesModulesSemesters.Select(cms => new CourseModuleSemesterResponse()
+                {
+                    CourseCode = cms.CourseCode,
+                    ModuleId = cms.ModuleId,
+                    SemesterId = cms.SemesterId,
+                }).ToList(),
             });
         return Ok(CustomResponse.Ok("Modules retrieved successfully", modules));
     }
-    
-    
+
+    // get module by id
+    [HttpGet]
+    [Route("api/modules/{id}")]
+    public IActionResult GetModuleById(int id)
+    {
+        var module = _context.Modules.Include(m => m.Center)
+            .Include(m => m.Center.Province)
+            .Include(m => m.Center.District)
+            .Include(m => m.Center.Ward)
+            .Include(m => m.CoursesModulesSemesters)
+            .FirstOrDefault(m => m.Id == id);
+        if (module == null)
+        {
+            return NotFound(CustomResponse.NotFound("Module not found"));
+        }
+
+        var moduleResponse = GetModuleResponse(module);
+        return Ok(CustomResponse.Ok("Module retrieved successfully", moduleResponse));
+    }
+
+    private static ModuleResponse GetModuleResponse(Module module)
+    {
+        var moduleResponse = new ModuleResponse()
+        {
+            Id = module.Id, CenterId = module.CenterId, SemesterNamePortal = module.SemesterNamePortal,
+            ModuleName = module.ModuleName,
+            ModuleExamNamePortal = module.ModuleExamNamePortal, ModuleType = module.ModuleType,
+            MaxTheoryGrade = module.MaxTheoryGrade, MaxPracticalGrade = module.MaxPracticalGrade, Hours = module.Hours,
+            Days = module.Days, ExamType = module.ExamType, CreatedAt = module.CreatedAt, UpdatedAt = module.UpdatedAt,
+            Center = new CenterResponse()
+            {
+                Id = module.Center.Id,
+                Name = module.Center.Name, CreatedAt = module.Center.CreatedAt, UpdatedAt = module.Center.UpdatedAt,
+                Province = new ProvinceResponse()
+                {
+                    Id = module.Center.Province.Id,
+                    Name = module.Center.Province.Name,
+                    Code = module.Center.Province.Code
+                },
+                District = new DistrictResponse()
+                {
+                    Id = module.Center.District.Id,
+                    Name = module.Center.District.Name,
+                    Prefix = module.Center.District.Prefix,
+                },
+                Ward = new WardResponse()
+                {
+                    Id = module.Center.Ward.Id,
+                    Name = module.Center.Ward.Name,
+                    Prefix = module.Center.Ward.Prefix,
+                }
+            },
+            CoursesModulesSemesters = module.CoursesModulesSemesters.Select(cms => new CourseModuleSemesterResponse()
+            {
+                CourseCode = cms.CourseCode,
+                ModuleId = cms.ModuleId,
+                SemesterId = cms.SemesterId,
+            }).ToList()
+        };
+        return moduleResponse;
+    }
 }

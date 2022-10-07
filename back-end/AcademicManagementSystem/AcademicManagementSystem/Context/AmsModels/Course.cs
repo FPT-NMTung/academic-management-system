@@ -15,15 +15,15 @@ public class Course
     [Key]
     [Column("code")]
     [StringLength(100)]
-    public string Code { get; set; }
+    public string? Code { get; set; }
     
     [Column("course_family_code")]
     [StringLength(100)]
-    public string CourseFamilyCode { get; set; }
+    public string? CourseFamilyCode { get; set; }
     
     [Column("name")]
     [StringLength(255)]
-    public string Name { get; set; }
+    public string? Name { get; set; }
     
     [Column("semester_count")]
     public int SemesterCount { get; set; }

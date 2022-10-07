@@ -8,7 +8,7 @@ public class CourseModuleSemester
 {
     [Column("course_code")]
     [StringLength(100)]
-    public string CourseCode { get; set; }
+    public string? CourseCode { get; set; }
     
     [Column("module_id")]
     public int ModuleId { get; set; }

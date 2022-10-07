@@ -1,5 +1,7 @@
 using System.Text.Json.Serialization;
 using AcademicManagementSystem.Models.CenterController;
+using AcademicManagementSystem.Models.CourseController;
+using AcademicManagementSystem.Models.CourseModuleSemester;
 
 namespace AcademicManagementSystem.Models.ModuleController;
 
@@ -46,4 +48,7 @@ public class ModuleResponse
     
     [JsonPropertyName("center")]
     public CenterResponse? Center { get; set; }
+    
+    [JsonPropertyName("courses_modules_semesters")]
+    public ICollection<CourseModuleSemesterResponse>? CoursesModulesSemesters { get; set; }
 }
