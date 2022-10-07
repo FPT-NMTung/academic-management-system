@@ -9,6 +9,9 @@ import Schedule from './screens/Student/ScheduleScreen/ScheduleScreen';
 import SecondLayout from './components/Layout/SecondLayout/SecondLayout';
 import CenterScreen from './screens/Admin/Center/CenterScreen';
 import RoomScreen from './screens/Admin/Room/RoomScreen';
+import CourseFamily from './screens/Admin/Course Family/CourseFamily';
+import Course from './screens/Admin/Course/Course';
+import Module from './screens/Admin/Module/Module';
 import SroScreen from './screens/Admin/Sro/SroScreen';
 import SroDetail from './screens/Admin/Sro/SroDetail/SroDetail';
 import SroCreate from './screens/Admin/Sro/SroCreate/SroCreate';
@@ -42,9 +45,8 @@ const App = () => {
         <Route index element={<p>Trang chủ</p>} />
         <Route path='/admin/center' element={<CenterScreen/>}/>
         <Route path="/admin/room" element={<RoomScreen />} />
-        <Route path='/admin/account/sro' element={<SroScreen />}/>
-        <Route path='/admin/account/sro/create' element={<SroCreate />}/>
-        <Route path='/admin/account/sro/:id' element={<SroDetail />}/>
+        <Route path='/admin/account/sro' element={<p>Quản lý SRO</p>}/>
+        <Route path='/admin/account/sro/:id' element={<p>Quản lý SRO detail</p>}/>
       </Route>
       <Route path="*" element={<NotFoundScreen />} />
     </Routes>
