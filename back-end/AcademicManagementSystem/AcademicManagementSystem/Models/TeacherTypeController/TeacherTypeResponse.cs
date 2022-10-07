@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace AcademicManagementSystem.Models.RoleController;
+namespace AcademicManagementSystem.Models.TeacherTypeController;
 
-public class RoleResponse
+public class TeacherTypeResponse
 {
     [JsonPropertyName("id")]
     public int Id { get; set; }

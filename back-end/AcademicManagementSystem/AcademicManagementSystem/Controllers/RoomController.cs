@@ -76,21 +76,9 @@ public class RoomController : ControllerBase
 
         roomCreate.Name = Regex.Replace(roomCreate.Name, StringConstant.RegexWhiteSpaces, " ");
 
-        if (IsRoomExists(roomCreate))
+        if (IsRoomExists(roomCreate, false, 0))
         {
             var error = ErrorDescription.Error["E0003"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (!IsCenterExists(createRoomRequest.CenterId))
-        {
-            var error = ErrorDescription.Error["E0004"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (!IsRoomTypeExists(createRoomRequest.RoomTypeId))
-        {
-            var error = ErrorDescription.Error["E0005"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -113,7 +101,16 @@ public class RoomController : ControllerBase
         }
 
         _context.Rooms.Add(roomCreate);
-        _context.SaveChanges();
+        
+        try
+        {
+            _context.SaveChanges();
+
+        }catch(DbUpdateException)
+        {
+            var error = ErrorDescription.Error["E0005"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         var roomResponse = GetRoomResponse(roomCreate.Id);
 
@@ -144,12 +141,6 @@ public class RoomController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (!IsRoomTypeExists(updateRoomRequest.RoomTypeId))
-        {
-            var error = ErrorDescription.Error["E0013"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
         if (updateRoomRequest.Capacity < 20 || updateRoomRequest.Capacity > 100)
         {
             var error = ErrorDescription.Error["E0014"];
@@ -160,29 +151,40 @@ public class RoomController : ControllerBase
         roomToUpdate.Name = Regex.Replace(updateRoomRequest.Name.Trim(), StringConstant.RegexWhiteSpaces, " ");
         roomToUpdate.Capacity = updateRoomRequest.Capacity;
 
-        if (IsRoomExists(roomToUpdate))
+        if (IsRoomExists(roomToUpdate,true, roomId))
         {
             var error = ErrorDescription.Error["E0015"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        _context.SaveChanges();
+        try
+        {
+            _context.SaveChanges();
+
+        }catch(DbUpdateException)
+        {
+            var error = ErrorDescription.Error["E0005"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         var roomResponse = GetRoomResponse(roomToUpdate.Id);
         return Ok(CustomResponse.Ok("Update room successfully", roomResponse));
     }
 
-    private bool IsRoomExists(Room room)
+    private bool IsRoomExists(Room room, bool isUpdate, int idUpdate)
     {
+        if (isUpdate)
+        {
+            return _context.Rooms.Any(r =>
+                r.CenterId == room.CenterId &&
+                r.RoomTypeId == room.RoomTypeId &&
+                r.Name == room.Name &&
+                r.Id != idUpdate);
+        }
         return _context.Rooms.Any(r =>
             r.CenterId == room.CenterId &&
             r.RoomTypeId == room.RoomTypeId &&
             r.Name == room.Name);
-    }
-
-    private bool IsRoomTypeExists(int roomTypeId)
-    {
-        return _context.RoomTypes.Any(e => e.Id == roomTypeId);
     }
 
     private bool IsCenterExists(int? centerId)

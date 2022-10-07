@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace AcademicManagementSystem.Models.RoleController;
+namespace AcademicManagementSystem.Models.WorkingTime;
 
-public class RoleResponse
+public class WorkingTimeResponse
 {
     [JsonPropertyName("id")]
     public int Id { get; set; }
