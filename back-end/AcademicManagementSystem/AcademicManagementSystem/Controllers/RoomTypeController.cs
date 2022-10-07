@@ -23,17 +23,11 @@ public class RoomTypeController : ControllerBase
     [Authorize(Roles = "admin")]
     public IActionResult GetRoomTypes()
     {
-        var roomTypes = _context.RoomTypes.ToList().Select(rt => new RoomTypeResponse()
+        var roomTypes = _context.RoomTypes.Select(rt => new RoomTypeResponse()
         {
             Id = rt.Id,
             Value = rt.Value
         });
-
-        // empty list roomTypes
-        if (!roomTypes.Any())
-        {
-            return BadRequest(CustomResponse.BadRequest("No room types found", "room-type-error-000001"));
-        }
 
         return Ok(CustomResponse.Ok("Get all room type success", roomTypes));
     }

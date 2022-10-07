@@ -9,7 +9,7 @@ public static class ErrorDescription
         { "E0002", new ErrorModel() { Message = "Not found any room in this center", Type = "room-error-0002" } },
         { "E0003", new ErrorModel() { Message = "This room already exists for CREATE", Type = "room-error-0003" } },
         { "E0004", new ErrorModel() { Message = "centerId for CREATE room not found", Type = "room-error-0004" } },
-        { "E0005", new ErrorModel() { Message = "roomTypeId for CREATE room not found", Type = "room-error-0005" } },
+        { "E0005", new ErrorModel() { Message = "Invalid Data for CREATE room ", Type = "room-error-0005" } },
         { "E0006", new ErrorModel() { Message = "Capacity for CREATE room must be between 20 and 100", Type = "room-error-0006" } },
         { "E0007", new ErrorModel() { Message = "Name for CREATE room cannot be empty", Type = "room-error-0007" } },
         { "E0008", new ErrorModel() { Message = "Name for CREATE room must match with format", Type = "room-error-0008" } },
@@ -41,7 +41,7 @@ public static class ErrorDescription
         { "E0025", new ErrorModel() { Message = "WardId not found for CREATE/UPDATE SRO", Type = "sro-error-0010" } },
         { "E0026", new ErrorModel() { Message = "GenderId not found for CREATE/UPDATE SRO", Type = "sro-error-0011" } },
         { "E0027", new ErrorModel() { Message = "Duplicated citizenIdentityCardNo for CREATE/UPDATE SRO", Type = "sro-error-0012" } },
-        { "E0028", new ErrorModel() { Message = "Birthday must match format yyyy/MM/dd for CREATE/UPDATE SRO", Type = "sro-error-0013" } },
+        { "E0028", new ErrorModel() { Message = "Please enter at least one search criteria", Type = "sro-error-0013" } },
         { "E0029", new ErrorModel() { Message = "CitizenIdentityCardPublishedDate must match format yyyy/MM/dd for CREATE/UPDATE SRO", Type = "sro-error-0014" } },
       
         { "E0030", new ErrorModel() { Message = "MobilePhone 10 digits and starting with 0", Type = "sro-error-0015" } },
@@ -74,6 +74,12 @@ public static class ErrorDescription
         { "E1018", new ErrorModel() { Message = "Course code not match with format", Type = "course-error-0013" } },
         { "E1019", new ErrorModel() { Message = "Course code must be less or equal than 100 characters", Type = "course-error-0014" } },
         { "E1020", new ErrorModel() { Message = "Semester count mus be between 1-10", Type = "course-error-0014" } },
+        
+        // teacher
+        { "E0038", new ErrorModel() { Message = "Invalid Data", Type = "teacher-error-0001" } },
+        { "E0039", new ErrorModel() { Message = "Please enter at least one search criteria", Type = "teacher-error-0002" } },
+
+
     };
 }
 
