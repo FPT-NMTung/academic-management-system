@@ -49,6 +49,6 @@ public class ModuleResponse
     [JsonPropertyName("center")]
     public CenterResponse? Center { get; set; }
     
-    [JsonPropertyName("courses_modules_semesters")]
-    public ICollection<CourseModuleSemesterResponse>? CoursesModulesSemesters { get; set; }
+    [JsonPropertyName("course_module_semester")]
+    public CourseModuleSemesterResponse? CourseModuleSemester { get; set; }
 }
