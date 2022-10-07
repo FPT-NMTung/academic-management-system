@@ -112,7 +112,7 @@ const MenuLayout = () => {
       defaultOpenKeys={[itemMatch?.key.split('-')[0]]}
       mode="inline"
       items={itemsAdmin}
-      onSelect={handleChangeTab}
+      onClick={handleChangeTab}
     />
   );
 };
