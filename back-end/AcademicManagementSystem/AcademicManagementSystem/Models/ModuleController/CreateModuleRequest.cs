@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using AcademicManagementSystem.Models.CourseModuleSemester;
 
 namespace AcademicManagementSystem.Models.ModuleController;
 
@@ -35,6 +34,9 @@ public class CreateModuleRequest
     [JsonPropertyName("exam_type")]
     public string? ExamType { get; set; }
     
-    [JsonPropertyName("courses_modules_semesters")]
-    public List<CreateCourseModuleSemesterRequest>? CoursesModulesSemesters { get; set; }
+    [JsonPropertyName("course_code")]
+    public string? CourseCode { get; set; }
+    
+    [JsonPropertyName("semester_id")]
+    public int? SemesterId { get; set; }
 }
