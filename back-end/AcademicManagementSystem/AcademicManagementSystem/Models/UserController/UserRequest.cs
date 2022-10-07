@@ -42,7 +42,6 @@ public class UserRequest
     public int GenderId { get; set; }
 
     [JsonPropertyName("birthday")]
-    [Newtonsoft.Json.JsonConverter(typeof(DateFormatConverter), "dd/MM/yyyy")]
     public DateTime Birthday { get; set; }
 
     [JsonPropertyName("center_id")]
@@ -52,7 +51,6 @@ public class UserRequest
     public string? CitizenIdentityCardNo { get; set; }
     
     [JsonPropertyName("citizen_identity_card_date")]
-    [Newtonsoft.Json.JsonConverter(typeof(DateFormatConverter), "dd/MM/yyyy")]
     public DateTime CitizenIdentityCardDate { get; set; }
     
     [JsonPropertyName("citizen_identity_card_place")]

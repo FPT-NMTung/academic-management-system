@@ -4,6 +4,7 @@ using AcademicManagementSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    partial class AmsContextModelSnapshot : ModelSnapshot
+    [Migration("20221006052711_Add Allow Null Property for Teacher")]
+    partial class AddAllowNullPropertyforTeacher
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -472,6 +474,10 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("company_address");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
                     b.Property<string>("Nickname")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("nickname");
@@ -491,6 +497,10 @@ namespace AcademicManagementSystem.Migrations
                     b.Property<int>("TeacherTypeId")
                         .HasColumnType("int")
                         .HasColumnName("teacher_type_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
 
                     b.Property<int>("WorkingTimeId")
                         .HasColumnType("int")
@@ -856,8 +866,8 @@ namespace AcademicManagementSystem.Migrations
                         .IsRequired();
 
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.User", "User")
-                        .WithOne("Teacher")
-                        .HasForeignKey("AcademicManagementSystem.Context.AmsModels.Teacher", "UserId")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
@@ -1021,9 +1031,6 @@ namespace AcademicManagementSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("Sro")
-                        .IsRequired();
-
-                    b.Navigation("Teacher")
                         .IsRequired();
                 });
 

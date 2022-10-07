@@ -6,7 +6,6 @@ using AcademicManagementSystem.Context.AmsModels;
 using AcademicManagementSystem.Models;
 using AcademicManagementSystem.Models.AuthController.RefreshTokenModel;
 using Google.Apis.Auth;
-using Jose;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -41,7 +40,8 @@ public class AuthController : ControllerBase
             }).Result!;
 
         // Get and check the user from the database
-        var selectUser = _context.Users.Include(e => e.Role).FirstOrDefault(user => user.EmailOrganization == payload.Email);
+        var selectUser = _context.Users.Include(e => e.Role)
+            .FirstOrDefault(user => user.EmailOrganization == payload.Email);
         if (selectUser == null)
         {
             return BadRequest(CustomResponse.BadRequest("User not found", "auth-error-000001"));
@@ -53,7 +53,7 @@ public class AuthController : ControllerBase
         {
             UserId = selectUser.Id,
             RefreshToken = refreshToken,
-            ExpDate = DateTime.Now.AddDays(1)
+            ExpDate = DateTime.Now.AddHours(1)
         });
         _context.SaveChanges();
 
@@ -86,19 +86,25 @@ public class AuthController : ControllerBase
         var refreshToken = GenerateRefreshToken(selectUser.Id);
 
         // Update refresh token in database
-        var listExpiredRefreshToken = _context.ActiveRefreshTokens
-            .Where(x => x.UserId == selectUser.Id && x.ExpDate < DateTime.Now).ToList();
-        listExpiredRefreshToken.ForEach(x => _context.ActiveRefreshTokens.Remove(x));
-        _context.ActiveRefreshTokens.Remove(selectRefreshToken);
-        _context.SaveChanges();
-        _context.ActiveRefreshTokens.Add(new ActiveRefreshToken()
+        // try
+        // {
+        //     _context.ActiveRefreshTokens.Remove(selectRefreshToken);
+        //     _context.SaveChanges();
+        // }
+        // catch (Exception)
+        // {
+        //     return NoContent();
+        // }
+
+        _context.ActiveRefreshTokens.Add(new ActiveRefreshToken
         {
             UserId = selectUser.Id,
             RefreshToken = refreshToken,
-            ExpDate = DateTime.Now.AddDays(1)
+            ExpDate = DateTime.Now.AddHours(1)
         });
         _context.SaveChanges();
 
+        Console.Out.WriteLine("refreshToken = " + refreshToken);
         return Ok(CustomResponse.Ok("Refresh token success", new LoginResponse()
         {
             UserId = selectUser.Id,
@@ -114,7 +120,8 @@ public class AuthController : ControllerBase
         List<Claim> claims = new()
         {
             new Claim("uid", userId.ToString()),
-            new Claim("role", userRole)
+            new Claim("role", userRole),
+            new Claim("unique_string", RandomString())
         };
 
         var creds = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
@@ -122,7 +129,7 @@ public class AuthController : ControllerBase
 
         var token = new JwtSecurityToken(
             claims: claims,
-            expires: DateTime.Now.AddMinutes(10),
+            expires: DateTime.Now.AddMinutes(2),
             signingCredentials: creds
         );
 
@@ -134,7 +141,8 @@ public class AuthController : ControllerBase
         var secretKey = _configuration.GetSection("SecretKeyRefreshToken").Value!;
         List<Claim> claims = new()
         {
-            new Claim("uid", userId.ToString())
+            new Claim("uid", userId.ToString()),
+            new Claim("unique_string", RandomString())
         };
 
         var creds = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
@@ -147,5 +155,13 @@ public class AuthController : ControllerBase
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    // random string generator length 30
+    private static string RandomString()
+    {
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        return new string(Enumerable.Repeat(chars, 32)
+            .Select(s => s[new Random().Next(s.Length)]).ToArray());
     }
 }

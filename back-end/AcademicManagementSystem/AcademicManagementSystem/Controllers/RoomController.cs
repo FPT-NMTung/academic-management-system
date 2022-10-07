@@ -23,11 +23,11 @@ public class RoomController : ControllerBase
     }
 
     [HttpGet]
-    [Route("api/centers/{centerId:int}/rooms")]
+    [Route("api/rooms")]
     [Authorize(Roles = "admin")]
-    public IActionResult GetRoomsByCenterId(int centerId)
+    public IActionResult GetRoomsByCenterId([FromQuery] int? centerId)
     {
-        if (!IsCenterExists(centerId))
+        if (centerId != null && !IsCenterExists(centerId))
         {
             var error = ErrorDescription.Error["E0001"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -36,29 +36,28 @@ public class RoomController : ControllerBase
         var roomsResponses = _context.Rooms
             .Include(r => r.Center)
             .Include(r => r.RoomType)
-            .ToList()
-            .Where(r => r.CenterId == centerId)
-            .Select(r => new RoomResponse()
-            {
-                Id = r.Id,
-                CenterId = r.CenterId,
-                CenterName = r.Center.Name,
-                Room = new RoomTypeResponse()
-                {
-                    Id = r.RoomTypeId,
-                    Value = r.RoomType.Value
-                },
-                Name = r.Name,
-                Capacity = r.Capacity
-            });
+            .ToList();
 
-        if (!roomsResponses.Any())
+        if (centerId != null)
         {
-            var notFound = ErrorDescription.Error["E0002"];
-            return Ok(CustomResponse.Ok(notFound.Message, roomsResponses));
+            roomsResponses = roomsResponses.Where(r => r.CenterId == centerId).ToList();
         }
 
-        return Ok(CustomResponse.Ok("Get all rooms by centerId successfully", roomsResponses));
+        var responses = roomsResponses.Select(r => new RoomResponse()
+        {
+            Id = r.Id,
+            CenterId = r.CenterId,
+            CenterName = r.Center.Name,
+            Room = new RoomTypeResponse()
+            {
+                Id = r.RoomTypeId,
+                Value = r.RoomType.Value
+            },
+            Name = r.Name,
+            Capacity = r.Capacity
+        });
+
+        return Ok(CustomResponse.Ok("Get all rooms by centerId successfully", responses));
     }
 
     //create new room
@@ -77,21 +76,9 @@ public class RoomController : ControllerBase
 
         roomCreate.Name = Regex.Replace(roomCreate.Name, StringConstant.RegexWhiteSpaces, " ");
 
-        if (IsRoomExists(roomCreate))
+        if (IsRoomExists(roomCreate, false, 0))
         {
             var error = ErrorDescription.Error["E0003"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (!IsCenterExists(createRoomRequest.CenterId))
-        {
-            var error = ErrorDescription.Error["E0004"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (!IsRoomTypeExists(createRoomRequest.RoomTypeId))
-        {
-            var error = ErrorDescription.Error["E0005"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -114,8 +101,17 @@ public class RoomController : ControllerBase
         }
 
         _context.Rooms.Add(roomCreate);
-        _context.SaveChanges();
         
+        try
+        {
+            _context.SaveChanges();
+
+        }catch(DbUpdateException)
+        {
+            var error = ErrorDescription.Error["E0005"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         var roomResponse = GetRoomResponse(roomCreate.Id);
 
         return Ok(CustomResponse.Ok("Create room successfully", roomResponse));
@@ -145,12 +141,6 @@ public class RoomController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (!IsRoomTypeExists(updateRoomRequest.RoomTypeId))
-        {
-            var error = ErrorDescription.Error["E0013"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
         if (updateRoomRequest.Capacity < 20 || updateRoomRequest.Capacity > 100)
         {
             var error = ErrorDescription.Error["E0014"];
@@ -160,33 +150,44 @@ public class RoomController : ControllerBase
         roomToUpdate.RoomTypeId = updateRoomRequest.RoomTypeId;
         roomToUpdate.Name = Regex.Replace(updateRoomRequest.Name.Trim(), StringConstant.RegexWhiteSpaces, " ");
         roomToUpdate.Capacity = updateRoomRequest.Capacity;
-        
-        if (IsRoomExists(roomToUpdate))
+
+        if (IsRoomExists(roomToUpdate,true, roomId))
         {
             var error = ErrorDescription.Error["E0015"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        _context.SaveChanges();
+        try
+        {
+            _context.SaveChanges();
+
+        }catch(DbUpdateException)
+        {
+            var error = ErrorDescription.Error["E0005"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         var roomResponse = GetRoomResponse(roomToUpdate.Id);
         return Ok(CustomResponse.Ok("Update room successfully", roomResponse));
     }
 
-    private bool IsRoomExists(Room room)
+    private bool IsRoomExists(Room room, bool isUpdate, int idUpdate)
     {
+        if (isUpdate)
+        {
+            return _context.Rooms.Any(r =>
+                r.CenterId == room.CenterId &&
+                r.RoomTypeId == room.RoomTypeId &&
+                r.Name == room.Name &&
+                r.Id != idUpdate);
+        }
         return _context.Rooms.Any(r =>
             r.CenterId == room.CenterId &&
             r.RoomTypeId == room.RoomTypeId &&
             r.Name == room.Name);
     }
 
-    private bool IsRoomTypeExists(int roomTypeId)
-    {
-        return _context.RoomTypes.Any(e => e.Id == roomTypeId);
-    }
-
-    private bool IsCenterExists(int centerId)
+    private bool IsCenterExists(int? centerId)
     {
         return _context.Centers.Any(e => e.Id == centerId);
     }
