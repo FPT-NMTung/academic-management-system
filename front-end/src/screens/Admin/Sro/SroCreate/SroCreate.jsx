@@ -1,7 +1,7 @@
 import { Grid, Card, Text, Spacer } from '@nextui-org/react';
 import { Button, Form, Input, Select, Divider, DatePicker } from 'antd';
 import classes from './SroCreate.module.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import {
   CenterApis,
@@ -11,15 +11,19 @@ import {
 } from '../../../../apis/ListApi';
 import FetchApi from '../../../../apis/FetchApi';
 import { Validater } from '../../../../validater/Validater';
+import moment from 'moment';
 
-const SroCreate = () => {
+const SroCreate = ({ modeUpdate }) => {
   const [listCenter, setListCenter] = useState([]);
   const [listGender, setListGender] = useState([]);
   const [listProvince, setListProvince] = useState([]);
   const [listDistrict, setListDistrict] = useState([]);
   const [listWard, setListWard] = useState([]);
+  const [isGetDateUser, setIsGetDateUser] = useState(modeUpdate);
+  const [isCreatingOrUpdating, setIsCreatingOrUpdating] = useState(false);
 
   const navigate = useNavigate();
+  const { id } = useParams();
   const [form] = Form.useForm();
 
   const getListCenter = () => {
@@ -68,36 +72,100 @@ const SroCreate = () => {
     form.setFieldsValue({ ward_id: null });
   };
 
+  const getListDistrictForUpdate = () => {
+    const provinceId = form.getFieldValue('province_id');
+
+    FetchApi(AddressApis.getListDistrict, null, null, [`${provinceId}`]).then(
+      (res) => {
+        setListDistrict(res.data);
+      }
+    );
+  };
+
+  const getListWardForUpdate = () => {
+    const provinceId = form.getFieldValue('province_id');
+    const districtId = form.getFieldValue('district_id');
+
+    FetchApi(AddressApis.getListWard, null, null, [
+      `${provinceId}`,
+      `${districtId}`,
+    ]).then((res) => {
+      setListWard(res.data);
+    });
+  };
+
   const handleSubmitForm = () => {
+    setIsCreatingOrUpdating(true);
     const data = form.getFieldsValue();
     const body = {
-      first_name: data.first_name,
-      last_name: data.last_name,
-      mobile_phone: data.mobile_phone,
-      email: data.email,
-      email_organization: data.email_organization,
+      first_name: data.first_name.trim(),
+      last_name: data.last_name.trim(),
+      mobile_phone: data.mobile_phone.trim(),
+      email: data.email.trim(),
+      email_organization: data.email_organization.trim(),
       province_id: data.province_id,
       district_id: data.district_id,
       ward_id: data.ward_id,
       gender_id: data.gender_id,
       birthday: data.birthday.toDate(),
       center_id: data.center_id,
-      citizen_identity_card_no: data.citizen_identity_card_no,
+      citizen_identity_card_no: data.citizen_identity_card_no.trim(),
       citizen_identity_card_published_date:
         data.citizen_identity_card_published_date.toDate(),
       citizen_identity_card_published_place:
-        data.citizen_identity_card_published_place,
+        data.citizen_identity_card_published_place.trim(),
     };
 
-    FetchApi(ManageSroApis.createSro, body, null, null).then((res) => {
-      navigate('/admin/account/sro');
+    const api = modeUpdate ? ManageSroApis.updateSro : ManageSroApis.createSro;
+    const params = modeUpdate ? [`${id}`] : null;
+    FetchApi(api, body, null, params).then((res) => {
+      const user_id = res.data.user_id;
+      navigate(`/admin/account/sro/${user_id}`, { replace: true });
     });
+  };
+
+  const getInformationSro = () => {
+    FetchApi(ManageSroApis.getDetailSro, null, null, [`${id}`])
+      .then((res) => {
+        const data = res.data;
+        form.setFieldsValue({
+          first_name: data.first_name,
+          last_name: data.last_name,
+          mobile_phone: data.mobile_phone,
+          email: data.email,
+          email_organization: data.email_organization,
+          province_id: data.province.id,
+          district_id: data.district.id,
+          ward_id: data.ward.id,
+          gender_id: data.gender.id,
+          birthday: moment(data.birthday),
+          center_id: data.center_id,
+          citizen_identity_card_no: data.citizen_identity_card_no,
+          citizen_identity_card_published_date: moment(
+            data.citizen_identity_card_published_date
+          ),
+          citizen_identity_card_published_place:
+            data.citizen_identity_card_published_place,
+        });
+        setIsGetDateUser(false);
+
+        getListCenter();
+        getListGender();
+        getListDistrictForUpdate();
+        getListWardForUpdate();
+      })
+      .catch((err) => {
+        navigate('/admin/account/sro');
+      });
   };
 
   useEffect(() => {
     getListCenter();
     getListGender();
     getListProvince();
+    if (modeUpdate) {
+      getInformationSro();
+    }
   }, []);
 
   return (
@@ -106,6 +174,7 @@ const SroCreate = () => {
       wrapperCol={{ span: 15 }}
       form={form}
       onFinish={handleSubmitForm}
+      disabled={isGetDateUser}
     >
       <Grid.Container justify="center">
         <Grid xs={7} direction={'column'} css={{ rowGap: 20 }}>
@@ -120,7 +189,8 @@ const SroCreate = () => {
                   textAlign: 'center',
                 }}
               >
-                Tạo mới SRO
+                {!modeUpdate && 'Tạo mới SRO'}
+                {modeUpdate && 'Cập nhật SRO'}
               </Text>
             </Card.Header>
             <Card.Body>
@@ -135,9 +205,15 @@ const SroCreate = () => {
                     },
                   ]}
                 >
-                  <Select placeholder="Cơ sở" loading={listCenter.length === 0}>
+                  <Select
+                    disabled={modeUpdate}
+                    placeholder="Cơ sở"
+                    loading={listCenter.length === 0}
+                  >
                     {listCenter.map((e) => (
-                      <Select.Option value={e.id}>{e.name}</Select.Option>
+                      <Select.Option key={e.id} value={e.id}>
+                        {e.name}
+                      </Select.Option>
                     ))}
                   </Select>
                 </Form.Item>
@@ -215,7 +291,9 @@ const SroCreate = () => {
                     loading={listGender.length === 0}
                   >
                     {listGender.map((e) => (
-                      <Select.Option value={e.id}>{e.value}</Select.Option>
+                      <Select.Option key={e.id} value={e.id}>
+                        {e.value}
+                      </Select.Option>
                     ))}
                   </Select>
                 </Form.Item>
@@ -307,7 +385,9 @@ const SroCreate = () => {
                     }}
                   >
                     {listProvince.map((e) => (
-                      <Select.Option value={e.id}>{e.name}</Select.Option>
+                      <Select.Option key={e.id} value={e.id}>
+                        {e.name}
+                      </Select.Option>
                     ))}
                   </Select>
                 </Form.Item>
@@ -329,7 +409,7 @@ const SroCreate = () => {
                     }}
                   >
                     {listDistrict.map((e) => (
-                      <Select.Option value={e.id}>
+                      <Select.Option key={e.id} value={e.id}>
                         {e.prefix} {e.name}
                       </Select.Option>
                     ))}
@@ -350,7 +430,7 @@ const SroCreate = () => {
                     loading={listWard.length === 0}
                   >
                     {listWard.map((e) => (
-                      <Select.Option value={e.id}>
+                      <Select.Option key={e.id} value={e.id}>
                         {e.prefix} {e.name}
                       </Select.Option>
                     ))}
@@ -421,8 +501,9 @@ const SroCreate = () => {
               </div>
               <Spacer y={1.5} />
               <div className={classes.buttonCreate}>
-                <Button type="primary" htmlType="submit">
-                  Tạo mới
+                <Button type="primary" htmlType="submit" loading={isCreatingOrUpdating}>
+                  {!modeUpdate && 'Tạo mới'}
+                  {modeUpdate && 'Cập nhật'}
                 </Button>
               </div>
             </Card.Body>

@@ -1,10 +1,10 @@
-import { Card, Grid, Text } from '@nextui-org/react';
+import { Card, Grid, Text, Tooltip } from '@nextui-org/react';
 import { Button, Form, Input, Table } from 'antd';
 import { Fragment } from 'react';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../../apis/FetchApi';
 import { ManageSroApis } from '../../../apis/ListApi';
-import { MdEdit } from 'react-icons/md';
+import { RiEyeFill } from 'react-icons/ri';
 import classes from './SroScreen.module.css';
 import { useNavigate } from 'react-router-dom';
 import ColumnGroup from 'antd/lib/table/ColumnGroup';
@@ -245,7 +245,11 @@ const SroScreen = () => {
                 key="district"
                 width={180}
                 render={(data) => {
-                  return <Fragment>{data.prefix} {data.name}</Fragment>;
+                  return (
+                    <Fragment>
+                      {data.prefix} {data.name}
+                    </Fragment>
+                  );
                 }}
               />
               <Table.Column
@@ -254,7 +258,11 @@ const SroScreen = () => {
                 key="ward"
                 width={180}
                 render={(data) => {
-                  return <Fragment>{data.prefix} {data.name}</Fragment>;
+                  return (
+                    <Fragment>
+                      {data.prefix} {data.name}
+                    </Fragment>
+                  );
                 }}
               />
             </ColumnGroup>
@@ -294,13 +302,16 @@ const SroScreen = () => {
               render={(_, data) => {
                 return (
                   <div className={classes.logoEdit}>
-                    <MdEdit
-                      color="0a579f"
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        navigate(`/admin/account/sro/${data.user_id}`);
-                      }}
-                    />
+                    <Tooltip placement="left" content="Chi tiết" color={'invert'}>
+                      <RiEyeFill
+                        size={20}
+                        color="0a579f"
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => {
+                          navigate(`/admin/account/sro/${data.user_id}`);
+                        }}
+                      />
+                    </Tooltip>
                   </div>
                 );
               }}

@@ -125,6 +125,11 @@ export const ManageSroApis = {
     method: 'POST',
     contextType: 'application/json',
   },
+  updateSro: {
+    url: 'api/sros/{0}',
+    method: 'PUT',
+    contextType: 'application/json',
+  },
 }
 
 export const GenderApis = {

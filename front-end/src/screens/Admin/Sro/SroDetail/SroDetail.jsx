@@ -93,7 +93,9 @@ const SroDetail = () => {
                     title="Thông tin cơ bản"
                     bordered
                     column={{ md: 2, lg: 2, xl: 2, xxl: 2 }}
-                    extra={<Button type="primary">Chỉnh sửa thông tin</Button>}
+                    extra={<Button type="primary" onClick={() => {
+                      navigate(`/admin/account/sro/${id}/update`)
+                    }}>Chỉnh sửa thông tin</Button>}
                   >
                     <Descriptions.Item label="Họ và tên đệm">
                       {dataUser.first_name}
