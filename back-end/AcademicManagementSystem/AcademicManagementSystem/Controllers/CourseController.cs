@@ -136,9 +136,15 @@ public class CourseController : ControllerBase
             SemesterCount = request.SemesterCount, IsActive = request.IsActive, CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now
         };
-
-        _context.Courses.Add(course);
-        _context.SaveChanges();
+        try
+        {
+            _context.Courses.Add(course);
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+        }
 
         var courseResponse = GetCourseResponse(course);
         return Ok(CustomResponse.Ok("Course Created Successfully", courseResponse));
@@ -194,13 +200,20 @@ public class CourseController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        course.CourseFamilyCode = request.CourseFamilyCode;
-        course.Name = request.Name;
-        course.SemesterCount = request.SemesterCount;
-        course.IsActive = request.IsActive;
-        course.UpdatedAt = DateTime.Now;
+        try
+        {
+            course.CourseFamilyCode = request.CourseFamilyCode;
+            course.Name = request.Name;
+            course.SemesterCount = request.SemesterCount;
+            course.IsActive = request.IsActive;
+            course.UpdatedAt = DateTime.Now;
 
-        _context.SaveChanges();
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+        }
 
         var courseResponse = GetCourseResponse(course);
         return Ok(CustomResponse.Ok("Course Updated Successfully", courseResponse));
@@ -212,14 +225,21 @@ public class CourseController : ControllerBase
     [Authorize(Roles = "admin,sro")]
     public IActionResult DeleteCourse(string code)
     {
-        var course = _context.Courses.FirstOrDefault(c => c.Code == code.Trim());
-        if (course == null)
+        try
         {
-            return NotFound(CustomResponse.NotFound("Not Found Course"));
-        }
+            var course = _context.Courses.FirstOrDefault(c => c.Code == code.Trim());
+            if (course == null)
+            {
+                return NotFound(CustomResponse.NotFound("Not Found Course"));
+            }
 
-        _context.Courses.Remove(course);
-        _context.SaveChanges();
+            _context.Courses.Remove(course);
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+        }
 
         return Ok(CustomResponse.Ok("Course Deleted Successfully", null!));
     }

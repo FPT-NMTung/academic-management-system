@@ -58,7 +58,7 @@ public class CourseFamilyController : ControllerBase
     {
         request.Code = request.Code.ToUpper().Trim();
         request.Name = request.Name.Trim();
-        
+
         if (string.IsNullOrWhiteSpace(request.Name.Trim()) || string.IsNullOrWhiteSpace(request.Code))
         {
             var error = ErrorDescription.Error["E1007"];
@@ -113,8 +113,15 @@ public class CourseFamilyController : ControllerBase
             IsActive = request.IsActive,
             CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now
         };
-        _context.CourseFamilies.Add(courseFamily);
-        _context.SaveChanges();
+        try
+        {
+            _context.CourseFamilies.Add(courseFamily);
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+        }
 
         var courseFamilyResponse = GetCourseFamilyResponse(courseFamily);
         return Ok(CustomResponse.Ok("Create course family success", courseFamilyResponse));
@@ -127,7 +134,7 @@ public class CourseFamilyController : ControllerBase
     public IActionResult UpdateCourseFamily(string code, [FromBody] UpdateCourseFamilyRequest request)
     {
         request.Name = request.Name.Trim();
-        
+
         var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.Trim());
         if (courseFamily == null)
         {
@@ -161,11 +168,18 @@ public class CourseFamilyController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        courseFamily.Name = request.Name;
-        courseFamily.PublishedYear = request.PublishedYear;
-        courseFamily.IsActive = request.IsActive;
-        courseFamily.UpdatedAt = DateTime.Now;
-        _context.SaveChanges();
+        try
+        {
+            courseFamily.Name = request.Name;
+            courseFamily.PublishedYear = request.PublishedYear;
+            courseFamily.IsActive = request.IsActive;
+            courseFamily.UpdatedAt = DateTime.Now;
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+        }
 
         var courseFamilyResponse = GetCourseFamilyResponse(courseFamily);
         return Ok(CustomResponse.Ok("Update course family success", courseFamilyResponse));
@@ -177,14 +191,21 @@ public class CourseFamilyController : ControllerBase
     [Authorize(Roles = "admin,sro")]
     public IActionResult DeleteCourseFamily(string code)
     {
-        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.Trim());
-        if (courseFamily == null)
+        try
         {
-            return NotFound(CustomResponse.NotFound("Course family not found"));
-        }
+            var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.Trim());
+            if (courseFamily == null)
+            {
+                return NotFound(CustomResponse.NotFound("Course family not found"));
+            }
 
-        _context.CourseFamilies.Remove(courseFamily);
-        _context.SaveChanges();
+            _context.CourseFamilies.Remove(courseFamily);
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+        }
 
         return Ok(CustomResponse.Ok("Delete course family success", null!));
     }

@@ -73,7 +73,7 @@ public static class ErrorDescription
         { "E1017", new ErrorModel() { Message = "Course name must be less or equal than 255 characters", Type = "course-error-0012" } },
         { "E1018", new ErrorModel() { Message = "Course code not match with format", Type = "course-error-0013" } },
         { "E1019", new ErrorModel() { Message = "Course code must be less or equal than 100 characters", Type = "course-error-0014" } },
-        { "E1020", new ErrorModel() { Message = "Semester count mus be between 1-10", Type = "course-error-0014" } },
+        { "E1020", new ErrorModel() { Message = "Semester count mus be between 1-10", Type = "course-error-0015" } },
         
         // teacher
         { "E0038", new ErrorModel() { Message = "Invalid Data", Type = "teacher-error-0001" } },

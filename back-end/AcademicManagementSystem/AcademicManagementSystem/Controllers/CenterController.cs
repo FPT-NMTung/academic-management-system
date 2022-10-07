@@ -147,10 +147,17 @@ public class CenterController : ControllerBase
             ProvinceId = request.ProvinceId, DistrictId = request.DistrictId, WardId = request.WardId,
             Name = request.Name, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now
         };
-        _context.Centers.Add(center);
-        _context.SaveChanges();
-        
-        return Ok(CustomResponse.Ok("Create center success", center));
+        try
+        {
+            _context.Centers.Add(center);
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+        }
+
+        return Ok(CustomResponse.Ok("Center created successfully", center));
     }
 
     // update center
@@ -159,7 +166,7 @@ public class CenterController : ControllerBase
     public IActionResult UpdateCenter(int id, [FromBody] UpdateCenterRequest request)
     {
         request.Name = request.Name.Trim();
-        
+
         var center = _context.Centers.FirstOrDefault(c => c.Id == id);
         if (center == null)
         {
@@ -195,15 +202,22 @@ public class CenterController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        center.ProvinceId = request.ProvinceId;
-        center.DistrictId = request.DistrictId;
-        center.WardId = request.WardId;
-        center.Name = request.Name;
-        center.UpdatedAt = DateTime.Now;
-        _context.Centers.Update(center);
-        _context.SaveChanges();
-        
-        return Ok(CustomResponse.Ok("Update center success", center));
+        try
+        {
+            center.ProvinceId = request.ProvinceId;
+            center.DistrictId = request.DistrictId;
+            center.WardId = request.WardId;
+            center.Name = request.Name;
+            center.UpdatedAt = DateTime.Now;
+            _context.Centers.Update(center);
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+        }
+
+        return Ok(CustomResponse.Ok("Center updated successfully", center));
     }
 
     // delete center
@@ -211,17 +225,24 @@ public class CenterController : ControllerBase
     [Route("api/centers/{id:int}")]
     public IActionResult DeleteCenter(int id)
     {
-        var center = _context.Centers.FirstOrDefault(c => c.Id == id);
-        if (center == null)
+        try
         {
-            var error = ErrorDescription.Error["E1001"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            var center = _context.Centers.FirstOrDefault(c => c.Id == id);
+            if (center == null)
+            {
+                var error = ErrorDescription.Error["E1001"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+
+            _context.Centers.Remove(center);
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
         }
 
-        _context.Centers.Remove(center);
-        _context.SaveChanges();
-        
-        return Ok(CustomResponse.Ok("Delete center success", null!));
+        return Ok(CustomResponse.Ok("Center deleted successfully", null!));
     }
 
     // is center exists
