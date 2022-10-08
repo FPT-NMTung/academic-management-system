@@ -11,23 +11,19 @@ import ColumnGroup from 'antd/lib/table/ColumnGroup';
 
 const ModuleCreate = ({ onCreateSuccess }) => {
 
-    const [isUpdating, setIsUpdating] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
     const [isFailed, setIsFailed] = useState(false);
     const [isLoading, setisLoading] = useState(true);
     const [listCenters, setListCenters] = useState([]);
-    const [isGetListCenter, setIsGetListCenter] = useState(false);
     const [listCourses, setListCourses] = useState([]);
-    const [isGetListCourse, setIsGetListCourse] = useState(false);
     const [listSemesterid, setListSemesterid] = useState([]);
-    const [isGetListSemesterid, setIsGetListSemesterid] = useState(false);
     const [exam_type, setExam_type] = useState(4);
 
 
     const [form] = Form.useForm();
 
     const getListCenter = () => {
-        setIsGetListCenter(true);
+    
         FetchApi(CenterApis.getAllCenter).then((res) => {
             const data = res.data.map((e) => {
                 return {
@@ -36,11 +32,11 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                 };
             });
             setListCenters(data);
-            setIsGetListCenter(false);
+            setisLoading(false);
         });
     };
     const getListCourse = () => {
-        setIsGetListCourse(true);
+       
         FetchApi(CourseApis.getAllCourse).then((res) => {
             const data = res.data.map((e) => {
                 return {
@@ -48,59 +44,70 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                 };
             });
             setListCourses(data);
+            setisLoading(false);
 
-
-            setIsGetListCourse(false);
+        
         });
         setListSemesterid([]);
     };
     const GetListSemesterid = () => {
         const coursecode = form.getFieldValue('course_code').trim();
-        setIsGetListSemesterid(true);
+     
         FetchApi(CourseApis.getCourseByCode, null, null, [`${coursecode}`]).then((res) => {
             const data = res.data.semester_count
 
             setListSemesterid(data);
             console.log(data);
-            setIsGetListSemesterid(false);
+         
         });
+        setisLoading(false);
     };
 
     const handleChangeExamType = () => {
         const examtype = form.getFieldValue('exam_type');
-        console.log(examtype);
         setExam_type(examtype);
-        // console.log(exam_type);
+
     };
 
     useEffect(() => {
         getListCenter();
         getListCourse();
-        setisLoading(false);
-        
+    
 
     }, []);
 
     const handleSubmitForm = (e) => {
-        // setIsCreating(true);
-        // FetchApi(
-        //   CenterApis.createCenter,
-        //   {
-        //     name: e.name.trim(),
-        //     province_id: e.province,
-        //     district_id: e.district,
-        //     ward_id: e.ward,
-        //   },
-        //   null,
-        //   null
-        // )
-        //   .then(() => {
-        //     onCreateSuccess();
-        //   })
-        //   .catch(() => {
-        //     setIsCreating(false);
-        //     setIsFailed(true);
-        //   });
+        setIsCreating(true);
+        FetchApi(
+            ModulesApis.createModules,
+          {
+            center_id: e.center_id,
+            semester_name_portal: e.semester_name_portal.trim(),
+            module_name: e.module_name.trim(),
+            module_exam_name_portal: e.module_exam_name_portal.trim(),
+            module_type: e.module_type.trim(),
+            max_theory_grade: e.max_theory_grade,
+            max_practical_grade: e.max_practical_grade,
+            hours: e.hours,
+            days: e.days,
+            // exam_type: e.exam_type,
+           exam_type:'Lys thuyet',
+            course_code: e.course_code,
+            semester_id: e.semesterid,
+
+          },
+          null,
+          null
+        )
+          .then(() => {
+            setIsCreating(false);
+            setIsFailed(false);
+            onCreateSuccess();
+          })
+          .catch(() => {
+            setIsCreating(false);
+            setIsFailed(true);
+          });
     };
 
     return (
@@ -162,7 +169,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                             placeholder="Chọn cơ sở"
                             style={{ width: '100%' }}
                             dropdownStyle={{ zIndex: 9999 }}
-                            loading={isGetListCenter}
+                            loading={isLoading}
                         >
                             {listCenters.map((e) => (
                                 <Select.Option key={e.key} value={e.id}>
@@ -200,7 +207,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                                 placeholder="Chọn mã khóa học"
                                 style={{ width: '100%' }}
                                 dropdownStyle={{ zIndex: 9999 }}
-                                loading={isGetListCourse}
+                                loading={isLoading}
                                 onChange={GetListSemesterid}
 
                             >
@@ -315,18 +322,14 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                                 style={{ width: '100%' }}
                                 dropdownStyle={{ zIndex: 9999 }}
                                 placeholder="Hình thức học">
-                                <Select.Option key="1" value="module_type1">Lý thuyết</Select.Option>
-                                <Select.Option key="2" value="module_type2">Thực hành</Select.Option>
-                                <Select.Option key="3" value="module_type3">Lý thuyết và Thực hành</Select.Option>
+                                <Select.Option key="1" value="Lý thuyết">Lý thuyết</Select.Option>
+                                <Select.Option key="2" value="Thực hành">Thực hành</Select.Option>
+                                <Select.Option key="3" value="Lý thuyết và Thực hành">Lý thuyết và Thực hành</Select.Option>
                             </Select>
                         </Form.Item>
                         <Form.Item
                             name="exam_type"
-                            rules={[
-                                {
-                                    required: true,
-                                },
-                            ]}
+                           
                             style={{
                                 display: 'inline-block',
                                 width: 'calc(50% - 8px)',
@@ -342,6 +345,10 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                                 <Select.Option key="5" value={2}>Thực hành</Select.Option>
                                 <Select.Option key="6" value={3}>Lý thuyết và Thực hành</Select.Option>
                                 <Select.Option key="7" value={4}>Không thi</Select.Option>
+                                 {/* <Select.Option key="4" value="Lý thuyết">Lý thuyết</Select.Option>
+                                <Select.Option key="5" value="Thực hành">Thực hành</Select.Option>
+                                <Select.Option key="6" value="Lý thuyết và thực hành">Lý thuyết và Thực hành</Select.Option>
+                                <Select.Option key="7" value="Không thi">Không thi</Select.Option> */}
                             </Select>
                         </Form.Item>
                     </Form.Item>
@@ -355,7 +362,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                             name="max_theory_grade"
                             rules={[
                                 {
-                                    required: true,
+                                   
                                 },
                             ]}
                             style={{
@@ -370,10 +377,11 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                             </Input>
                         </Form.Item>
                         <Form.Item
+                            name="max_practical_grade"
 
                             rules={[
                                 {
-                                    required: true,
+                                 
                                 },
                             ]}
                             style={{
@@ -382,10 +390,10 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                                 margin: '0 8px',
                             }}
                         >
-                            <Input 
-                               disabled={exam_type !== 2 && exam_type !== 3}
-                            placeholder='Thực hành'/>
-                
+                            <Input
+                                disabled={exam_type !== 2 && exam_type !== 3}
+                                placeholder='Thực hành' />
+
                         </Form.Item>
                     </Form.Item>
                     <Form.Item
@@ -435,8 +443,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                         <Button type="primary" htmlType="submit" loading={isCreating}>
                             Tạo mới
                         </Button>
-
-
+                       
                     </Form.Item>
 
 
@@ -449,7 +456,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
 
                 </Form>
             )}
-            {!isUpdating && isFailed && (
+            {!isCreating && isFailed && (
                 <Text
                     size={14}
                     css={{
@@ -457,7 +464,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                         textAlign: 'center',
                     }}
                 >
-                    Cập nhật thất bại, vui lòng thử lại
+                    Tạo môn học thất bại, vui lòng thử lại
                 </Text>
             )}
         </Fragment>

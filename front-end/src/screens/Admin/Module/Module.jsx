@@ -51,6 +51,8 @@ const Module = () => {
     };
     const handleAddSuccess = () => {
         setisCreate(false);
+        console.log('add success');
+        console.log(isCreate);
         getData();
     }
     const handleUpdateSuccess = () => {
@@ -137,7 +139,7 @@ const Module = () => {
                                             width: '100%',
                                         }}
                                         onClick={() => {
-                                            setisCreate(!isCreate);
+                                            setisCreate(true);
                                       
                                            
                                         }}
@@ -283,9 +285,9 @@ const Module = () => {
             <Modal
                 closeButton
                 aria-labelledby="modal-title"
-                open={isCreate===true}
+                open={isCreate==true}
                 onClose={() => {
-                    setisCreate(!isCreate);
+                    setisCreate(false);
 
                 }}
                 blur
