@@ -12,6 +12,8 @@ import {
 import FetchApi from '../../../../apis/FetchApi';
 import { Validater } from '../../../../validater/Validater';
 import moment from 'moment';
+import { ErrorCodeApi } from '../../../../apis/ErrorCodeApi';
+import { Fragment } from 'react';
 
 const SroCreate = ({ modeUpdate }) => {
   const [listCenter, setListCenter] = useState([]);
@@ -21,6 +23,7 @@ const SroCreate = ({ modeUpdate }) => {
   const [listWard, setListWard] = useState([]);
   const [isGetDateUser, setIsGetDateUser] = useState(modeUpdate);
   const [isCreatingOrUpdating, setIsCreatingOrUpdating] = useState(false);
+  const [messageFailed, setMessageFailed] = useState(undefined);
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -96,7 +99,10 @@ const SroCreate = ({ modeUpdate }) => {
 
   const handleSubmitForm = () => {
     setIsCreatingOrUpdating(true);
+    setMessageFailed(undefined);
     const data = form.getFieldsValue();
+    console.log(data.birthday.toISOString());
+    console.log(moment().toISOString())
     const body = {
       first_name: data.first_name.trim(),
       last_name: data.last_name.trim(),
@@ -118,10 +124,15 @@ const SroCreate = ({ modeUpdate }) => {
 
     const api = modeUpdate ? ManageSroApis.updateSro : ManageSroApis.createSro;
     const params = modeUpdate ? [`${id}`] : null;
-    FetchApi(api, body, null, params).then((res) => {
-      const user_id = res.data.user_id;
-      navigate(`/admin/account/sro/${user_id}`, { replace: true });
-    });
+    FetchApi(api, body, null, params)
+      .then((res) => {
+        const user_id = res.data.user_id;
+        navigate(`/admin/account/sro/${user_id}`, { replace: true });
+      })
+      .catch((err) => {
+        setIsCreatingOrUpdating(false);
+        setMessageFailed(ErrorCodeApi[err.type_error]);
+      });
   };
 
   const getInformationSro = () => {
@@ -148,7 +159,6 @@ const SroCreate = ({ modeUpdate }) => {
             data.citizen_identity_card_published_place,
         });
         setIsGetDateUser(false);
-
         getListCenter();
         getListGender();
         getListDistrictForUpdate();
@@ -501,10 +511,22 @@ const SroCreate = ({ modeUpdate }) => {
               </div>
               <Spacer y={1.5} />
               <div className={classes.buttonCreate}>
-                <Button type="primary" htmlType="submit" loading={isCreatingOrUpdating}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={isCreatingOrUpdating}
+                >
                   {!modeUpdate && 'Tạo mới'}
                   {modeUpdate && 'Cập nhật'}
                 </Button>
+                {!isCreatingOrUpdating && messageFailed !== undefined && (
+                  <Fragment>
+                    <Spacer x={0.5} />
+                    <Text color="error" size={15}>
+                      {messageFailed}, vui lòng thử lại
+                    </Text>
+                  </Fragment>
+                )}
               </div>
             </Card.Body>
           </Card>

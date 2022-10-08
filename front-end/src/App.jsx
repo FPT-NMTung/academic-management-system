@@ -52,6 +52,7 @@ const App = () => {
         <Route path='/admin/account/sro/:id' element={<SroDetail />}/>
         <Route path='/admin/account/sro/create' element={<SroCreate modeUpdate={false}/>}/>
         <Route path='/admin/account/sro/:id/update' element={<SroCreate modeUpdate={true}/>}/>
+        <Route path='/admin/account/teacher' element={<p>Teacher screen</p>}/>
       </Route>
       <Route path="*" element={<NotFoundScreen />} />
     </Routes>
