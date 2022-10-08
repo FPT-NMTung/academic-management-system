@@ -1,6 +1,6 @@
 import classes from './Module.module.css';
-import { Card, Grid, Text } from '@nextui-org/react';
-import { Form, Select, Input, Divider, Button, Table, Modal } from 'antd';
+import { Card, Grid, Text, Modal } from '@nextui-org/react';
+import { Form, Select, Input, Divider, Button, Table, } from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../../apis/FetchApi';
 import { ModulesApis } from '../../../apis/ListApi';
@@ -9,13 +9,13 @@ import ModuleCreate from '../../../components/ModuleCreate/ModuleCreate';
 import { MdEdit } from 'react-icons/md';
 import { Fragment } from 'react';
 import ColumnGroup from 'antd/lib/table/ColumnGroup';
-import { Navigate, useNavigate } from 'react-router-dom';
+
 const Module = () => {
     const [listModules, setlistModules] = useState([]);
     const [selectedModuleId, setselectedModuleId] = useState(null);
     const [IsLoading, setIsLoading] = useState(false);
-    const [isCreate, setIsCreate] = useState(false);
-    const navigate = useNavigate();
+    const [isCreate, setisCreate] = useState(false);
+
     const getData = () => {
         setIsLoading(true);
         const apiModule = ModulesApis.getAllModules;
@@ -50,7 +50,7 @@ const Module = () => {
         });
     };
     const handleAddSuccess = () => {
-        setIsCreate(false);
+        setisCreate(false);
         getData();
     }
     const handleUpdateSuccess = () => {
@@ -59,7 +59,7 @@ const Module = () => {
     };
     useEffect(() => {
         getData();
-
+      
     }, []);
     return (
         <div >
@@ -137,7 +137,9 @@ const Module = () => {
                                             width: '100%',
                                         }}
                                         onClick={() => {
-                                            // navigate('/admin/account/sro/create');
+                                            setisCreate(!isCreate);
+                                      
+                                           
                                         }}
                                     >
                                         + Tạo mới
@@ -146,7 +148,7 @@ const Module = () => {
                             </Grid.Container>
                         </Card.Header>
                         <Table
-                            // loading={IsLoading}
+                            loading={IsLoading===false}
                             bordered
                             size="middle"
                             dataSource={listModules}
@@ -281,25 +283,27 @@ const Module = () => {
             <Modal
                 closeButton
                 aria-labelledby="modal-title"
-                // open={isCreate===true}
+                open={isCreate===true}
                 onClose={() => {
-                    setIsCreate(!isCreate);
+                    setisCreate(!isCreate);
 
                 }}
                 blur
-                width="1200px"
+                width="700px"
             >
                 <Modal.Header>
                     <Text size={16} b>
-                        Cập nhật thông tin môn học
+                        Thêm môn học
                     </Text>
+                    
                 </Modal.Header>
+                <Card.Divider />
                 <Modal.Body>
                     <ModuleCreate onCreateSuccess={handleAddSuccess} />
 
                 </Modal.Body>
             </Modal>
         </div>
-    )
-}
+    );
+};
 export default Module;
