@@ -1,5 +1,5 @@
 import classes from './Course.module.css';
-import { Card, Grid, Text,Modal } from '@nextui-org/react';
+import { Card, Grid, Text, Modal } from '@nextui-org/react';
 import { Form, Select, Input, Divider, Button, Table } from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../../apis/FetchApi';
@@ -13,7 +13,7 @@ const Course = () => {
     const [isCreate, setIsCreate] = useState(false);
     const [IsLoading, setIsLoading] = useState(false);
 
-    
+
     const getData = () => {
         setIsLoading(true);
         const apiCourse = CourseApis.getAllCourse;
@@ -40,7 +40,16 @@ const Course = () => {
             setlistCourse(mergeAllCourse);
             setIsLoading(false);
         });
-       
+
+    }
+    const sortCourseName = (a, b) => {
+        if (a.coursename < b.coursename) {
+            return -1;
+        }
+        if (a.coursename > b.coursename) {
+            return 1;
+        }
+        return 0;
     }
     const handleAddSuccess = () => {
         setIsCreate(false);
@@ -48,13 +57,13 @@ const Course = () => {
     }
     const handleUpdateSuccess = () => {
         setselectedCourseCode(null);
-       
+
         getData();
     };
     useEffect(() => {
 
         getData();
-       
+
     }, []);
 
     return (
@@ -92,9 +101,14 @@ const Course = () => {
 
                             }}
                         >
-                            <Table.Column title="Tên Khóa Học" 
-                             sorter={(a, b) => a.coursename - b.coursename}
-                            dataIndex="coursename" key="coursename" />
+                            <Table.Column
+
+                                title="Tên Khóa Học"
+                                dataIndex="coursename"
+                                key="name" 
+                                sorter={sortCourseName}
+                                />
+                        
                             <Table.Column title="Mã chương trình học" dataIndex="codecoursefamily" key="codecoursefamily" />
                             <Table.Column title="Mã Khóa Học" dataIndex="codecourse" key="codecourse" />
                             <Table.Column title="Số lượng kỳ học" dataIndex="semester_count" key="semester_count" />
@@ -104,10 +118,10 @@ const Course = () => {
                                 key="action"
                                 render={(_, data) => {
                                     return (
-                                        <MdEdit className={classes.editIcon} 
-                                        onClick={() => { 
-                                            setselectedCourseCode(data.codecourse);
-                                        }} />
+                                        <MdEdit className={classes.editIcon}
+                                            onClick={() => {
+                                                setselectedCourseCode(data.codecourse);
+                                            }} />
                                     );
                                 }}
                             />
@@ -119,25 +133,26 @@ const Course = () => {
                 )}
             </Grid.Container>
             <Modal
-        closeButton
-        aria-labelledby="modal-title"
-        open={selectedCourseCode !== null}
-        onClose={() => {
-          setselectedCourseCode(null);
-        }}
-        blur
-        width="500px"
-      >
-        <Modal.Header>
-          <Text size={16} b>
-            Cập nhật thông tin khóa học
-          </Text>
-        </Modal.Header>
-        <Modal.Body>
-          <CourseUpdate data={listCourse.find((e) => e.code === `${selectedCourseCode}`)} onUpdateSuccess={handleUpdateSuccess}/>
-    
-        </Modal.Body>
-      </Modal>
+                closeButton
+                aria-labelledby="modal-title"
+                open={selectedCourseCode !== null}
+                onClose={() => {
+                    setselectedCourseCode(null);
+                }}
+                blur
+
+                width="700px"
+            >
+                <Modal.Header>
+                    <Text size={16} b>
+                        Cập nhật thông tin khóa học
+                    </Text>
+                </Modal.Header>
+                <Modal.Body>
+                    <CourseUpdate data={listCourse.find((e) => e.code === `${selectedCourseCode}`)} onUpdateSuccess={handleUpdateSuccess} />
+
+                </Modal.Body>
+            </Modal>
         </div>
     )
 }

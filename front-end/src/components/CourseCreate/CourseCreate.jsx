@@ -16,6 +16,7 @@ const CourseCreate = ({ onCreateSuccess }) => {
     const getListCourseFamily = () => {
         FetchApi(CourseFamilyApis.getAllCourseFamily).then((res) => {
             setListCourseFamily(res.data);
+          
         });
     };
 
@@ -51,6 +52,7 @@ const CourseCreate = ({ onCreateSuccess }) => {
     };
     useEffect(() => {
         getListCourseFamily();
+      
     }, []);
     return (
         <Grid xs={4}>

@@ -78,7 +78,8 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
             )}
             {!IsLoading && (
                 <Form
-                    labelCol={{ span: 7 }}
+               
+                    labelCol={{ span: 7  }}
                     wrapperCol={{ span: 16 }}
                     layout="horizontal"
                     onFinish={handleSubmitForm}
@@ -117,7 +118,7 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
                         >
                             <Select
                                 showSearch
-                                // disabled={listCourseFamily.length === 0}
+                                disabled={listCourseFamily.length === 0}
                                 placeholder="Chọn mã chương trình học"
                                 optionFilterProp="children"
                                 onChange={getlistCourseFamily}

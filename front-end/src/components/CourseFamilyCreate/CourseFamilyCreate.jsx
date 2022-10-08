@@ -72,7 +72,7 @@ const CouseFamilyCreate = ({onCreateSuccess}) => {
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Hãy nhập tên cơ sở',
+                                    message: 'Hãy nhập tên chương trình học',
                                 },
                             ]}
                         >

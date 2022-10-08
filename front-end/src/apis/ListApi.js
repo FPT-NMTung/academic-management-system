@@ -77,6 +77,20 @@ export const CourseApis = {
   },
 
 };
+export const ModulesApis = {
+  getAllModules: {
+    url: '/api/modules',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+
+  createModules: {
+    url: '/api/modules',
+    method: 'POST',
+    contextType: 'application/json',
+  },
+
+};
 
 export const RoomApis = {
   getAllRoom: {
