@@ -1,5 +1,5 @@
-// const endpoint = 'https://apms-api.azurewebsites.net/';
-const endpoint = 'https://localhost:7142/';
+const endpoint = 'https://apms-api.azurewebsites.net/';
+// const endpoint = 'https://localhost:7142/';
 
 /**
  * Fetches data from the API and returns a promise.
@@ -30,8 +30,6 @@ const FetchApi = async (api, bodyObject, params, pathValiable) => {
   if (api.contextType === 'multipart/form-data') {
     delete options.headers['Content-Type'];
   }
-
-  console.log(params);
 
   let paramString = '?';
   for (const property in params) {

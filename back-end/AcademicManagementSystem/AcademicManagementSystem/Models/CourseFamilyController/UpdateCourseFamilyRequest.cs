@@ -5,7 +5,7 @@ namespace AcademicManagementSystem.Models.CourseFamilyController;
 public class UpdateCourseFamilyRequest
 {
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
     
     [JsonPropertyName("published_year")]
     public int PublishedYear { get; set; }
