@@ -42,7 +42,7 @@ const App = () => {
 
       {/* Routers for role admin */}
       <Route path={'/admin'} element={<SecondLayout><RequireAuth role={'admin'} /></SecondLayout>} >
-        <Route index element={<p>Trang chủ</p>} />
+        <Route index element={<Navigate to="/admin/center"/>} />
         <Route path='/admin/center' element={<CenterScreen/>}/>
         <Route path="/admin/room" element={<RoomScreen />} />
         <Route path='/admin/manage-course/course-family' element={<CourseFamily/>}/>
@@ -50,6 +50,9 @@ const App = () => {
         <Route path='/admin/manage-course/module' element={<Module/>}/>
         <Route path='/admin/account/sro' element={<SroScreen />}/>
         <Route path='/admin/account/sro/:id' element={<SroDetail />}/>
+        <Route path='/admin/account/sro/create' element={<SroCreate modeUpdate={false}/>}/>
+        <Route path='/admin/account/sro/:id/update' element={<SroCreate modeUpdate={true}/>}/>
+        <Route path='/admin/account/teacher' element={<p>Teacher screen</p>}/>
       </Route>
       <Route path="*" element={<NotFoundScreen />} />
     </Routes>

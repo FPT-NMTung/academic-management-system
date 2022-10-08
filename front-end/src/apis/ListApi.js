@@ -153,4 +153,22 @@ export const ManageSroApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  createSro: {
+    url: 'api/sros',
+    method: 'POST',
+    contextType: 'application/json',
+  },
+  updateSro: {
+    url: 'api/sros/{0}',
+    method: 'PUT',
+    contextType: 'application/json',
+  },
+}
+
+export const GenderApis = {
+  getAllGender: {
+    url: 'api/genders',
+    method: 'GET',
+    contextType: 'application/json',
+  },
 }
