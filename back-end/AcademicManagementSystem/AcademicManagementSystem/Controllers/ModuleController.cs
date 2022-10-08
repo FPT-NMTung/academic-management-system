@@ -245,6 +245,13 @@ public class ModuleController : ControllerBase
             var error = ErrorDescription.Error["E1037"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
+        
+        // check max grade
+        if (request.MaxTheoryGrade is < 1 || request.MaxPracticalGrade is < 1)
+        {
+            var error = ErrorDescription.Error["E1043"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         var module = new Module()
         {
@@ -455,6 +462,13 @@ public class ModuleController : ControllerBase
         if (request.Hours is null or < 1)
         {
             var error = ErrorDescription.Error["E1037"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
+        // check max grade
+        if (request.MaxTheoryGrade is < 1 || request.MaxPracticalGrade is < 1)
+        {
+            var error = ErrorDescription.Error["E1043"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 

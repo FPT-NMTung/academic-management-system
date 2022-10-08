@@ -98,6 +98,7 @@ public static class ErrorDescription
         { "E1040", new ErrorModel() { Message = "Semester Id is not existed", Type = "module-error-00020" } },
         { "E1041", new ErrorModel() { Message = "Module with course code, semester id existed", Type = "module-error-00021" } },
         { "E1042", new ErrorModel() { Message = "Fail to SaveChange when Update Module", Type = "module-error-00022" } },
+        { "E1043", new ErrorModel() { Message = "Max Grade must be ignore or greater than 0", Type = "module-error-00023" } },
 
         // teacher
         { "E0039", new ErrorModel() { Message = "Please enter at least one search criteria", Type = "teacher-error-0002" } },
