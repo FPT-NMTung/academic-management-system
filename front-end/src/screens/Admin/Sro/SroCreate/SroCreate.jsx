@@ -101,8 +101,7 @@ const SroCreate = ({ modeUpdate }) => {
     setIsCreatingOrUpdating(true);
     setMessageFailed(undefined);
     const data = form.getFieldsValue();
-    console.log(data.birthday.toISOString());
-    console.log(moment().toISOString())
+    console.log(data.birthday.add(7, 'hours'));
     const body = {
       first_name: data.first_name.trim(),
       last_name: data.last_name.trim(),
@@ -113,11 +112,11 @@ const SroCreate = ({ modeUpdate }) => {
       district_id: data.district_id,
       ward_id: data.ward_id,
       gender_id: data.gender_id,
-      birthday: data.birthday.toDate(),
+      birthday: data.birthday.add(7, 'hours').toDate(),
       center_id: data.center_id,
       citizen_identity_card_no: data.citizen_identity_card_no.trim(),
       citizen_identity_card_published_date:
-        data.citizen_identity_card_published_date.toDate(),
+        data.citizen_identity_card_published_date.add(7, 'hours').toDate(),
       citizen_identity_card_published_place:
         data.citizen_identity_card_published_place.trim(),
     };
