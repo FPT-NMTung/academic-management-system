@@ -375,12 +375,12 @@ public class TeacherController : ControllerBase
         user.ProvinceId = request.ProvinceId;
         user.DistrictId = request.DistrictId;
         user.WardId = request.WardId;
-        user.CenterId = request.CenterId;
+        // user.CenterId = request.CenterId;
         user.GenderId = request.GenderId;
         user.RoleId = RoleIdTeacher;
         user.FirstName = request.FirstName!;
         user.LastName = request.LastName!;
-        user.Avatar = request.Avatar;
+        // user.Avatar = request.Avatar;
         user.MobilePhone = request.MobilePhone!;
         user.Email = request.Email!;
         user.EmailOrganization = request.EmailOrganization!;
