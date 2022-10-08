@@ -74,9 +74,8 @@ public class SroController : ControllerBase
     [HttpGet]
     [Route("api/sros/search")]
     [Authorize(Roles = "admin")]
-    public IActionResult SearchSro(string firstName = "", string lastName = "",
-        string mobilePhone = "", string email = "",
-        string emailOrganization = "")
+    public IActionResult SearchSro(string? firstName, string? lastName,
+        string? mobilePhone, string? email, string? emailOrganization)
     {
         var sFirstName = firstName == null ? string.Empty : RemoveDiacritics(firstName.Trim().ToLower());
         var sLastName = lastName == null ? string.Empty : RemoveDiacritics(lastName.Trim().ToLower());
@@ -89,8 +88,8 @@ public class SroController : ControllerBase
         if (sFirstName == string.Empty && sLastName == string.Empty && sMobilePhone == string.Empty
             && sEmail == string.Empty && sEmailOrganization == string.Empty)
         {
-            var error = ErrorDescription.Error["E0028"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            var sros = GetAllUserRoleSro();
+            return Ok(CustomResponse.Ok("Search sros successfully", sros));
         }
 
         var listSro = GetAllUserRoleSro();
@@ -211,6 +210,9 @@ public class SroController : ControllerBase
             UpdatedAt = DateTime.Now
         };
 
+        /*
+         * if sro has another parameters, refer to create teacher 
+         */
         _context.Users.Add(user);
         try
         {
@@ -234,7 +236,7 @@ public class SroController : ControllerBase
         }
         catch (DbUpdateException)
         {
-            var error = ErrorDescription.Error["E0037"];
+            var error = ErrorDescription.Error["E0038"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -248,6 +250,21 @@ public class SroController : ControllerBase
     [Authorize(Roles = "admin")]
     public IActionResult UpdateSro([FromRoute] int id, [FromBody] UpdateSroRequest request)
     {
+        var sro = _context.Sros.FirstOrDefault(s => s.UserId == id);
+
+        if (sro == null)
+        {
+            var error = ErrorDescription.Error["E0017"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var user = _context.Users.FirstOrDefault(u => u.Id == sro.UserId);
+        if (user == null)
+        {
+            var error = ErrorDescription.Error["E0036"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
         request.FirstName = Regex.Replace(request.FirstName!, StringConstant.RegexWhiteSpaces, " ");
         // function replace string ex: H ' Hen Nie => H'Hen Nie
         request.FirstName = request.FirstName.Replace(" ' ", "'").Trim();
@@ -302,24 +319,15 @@ public class SroController : ControllerBase
         //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         // }
 
+        if (IsCitizenIdentityCardNoExists(request.CitizenIdentityCardNo, true, id))
+        {
+            var error = ErrorDescription.Error["E0027"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         if (!Regex.IsMatch(request.CitizenIdentityCardNo!, StringConstant.RegexCitizenIdCardNo))
         {
             var error = ErrorDescription.Error["E0033"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        var sro = _context.Sros.FirstOrDefault(s => s.UserId == id);
-
-        if (sro == null)
-        {
-            var error = ErrorDescription.Error["E0017"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        var user = _context.Users.FirstOrDefault(u => u.Id == sro.UserId);
-        if (user == null)
-        {
-            var error = ErrorDescription.Error["E0036"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -340,13 +348,14 @@ public class SroController : ControllerBase
         user.CitizenIdentityCardPublishedDate = request.CitizenIdentityCardPublishedDate;
         user.CitizenIdentityCardPublishedPlace = request.CitizenIdentityCardPublishedPlace!;
         user.UpdatedAt = DateTime.Now;
+
         try
         {
             _context.SaveChanges();
         }
         catch (DbUpdateException)
         {
-            var error = ErrorDescription.Error["E0037"];
+            var error = ErrorDescription.Error["E0038"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -363,29 +372,28 @@ public class SroController : ControllerBase
     {
         return isUpdate
             ? _context.Users.Any(e => e.MobilePhone == mobilePhone && e.Id != userId)
-            : _context.Users.Any(e => e.MobilePhone == mobilePhone && e.RoleId == SroRoleId);
+            : _context.Users.Any(e => e.MobilePhone == mobilePhone);
     }
 
     private bool IsEmailExists(string? email, bool isUpdate, int userId)
     {
         return isUpdate
             ? _context.Users.Any(e => e.Email == email && e.Id != userId)
-            : _context.Users.Any(e => e.Email == email && e.RoleId == SroRoleId);
+            : _context.Users.Any(e => e.Email == email);
     }
-
 
     private bool IsEmailOrganizationExists(string? emailOrganization, bool isUpdate, int userId)
     {
         return isUpdate
             ? _context.Users.Any(e => e.EmailOrganization == emailOrganization && e.Id != userId)
-            : _context.Users.Any(e => e.EmailOrganization == emailOrganization && e.RoleId == SroRoleId);
+            : _context.Users.Any(e => e.EmailOrganization == emailOrganization);
     }
 
     private bool IsCitizenIdentityCardNoExists(string? citizenIdentityCardNo, bool isUpdate, int userId)
     {
         return isUpdate
             ? _context.Users.Any(e => e.CitizenIdentityCardNo == citizenIdentityCardNo && e.Id != userId)
-            : _context.Users.Any(e => e.CitizenIdentityCardNo == citizenIdentityCardNo && e.RoleId == SroRoleId);
+            : _context.Users.Any(e => e.CitizenIdentityCardNo == citizenIdentityCardNo);
     }
 
     private static string RemoveDiacritics(string text)

@@ -57,7 +57,7 @@ public class AmsContext : DbContext
     public DbSet<Course> Courses { get; set; }
     public DbSet<Module> Modules { get; set; }
     public DbSet<Semester> Semesters { get; set; }
-    public DbSet<CourseModuleSemester> CourseModuleSemesters { get; set; }
+    public DbSet<CourseModuleSemester> CoursesModulesSemesters { get; set; }
     
     public DbSet<TeacherType> TeacherTypes { get; set; }
     

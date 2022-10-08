@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
 using AcademicManagementSystem.Context;
+using AcademicManagementSystem.Context.AmsModels;
 using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.AddressController.DistrictModel;
 using AcademicManagementSystem.Models.AddressController.ProvinceModel;
@@ -104,8 +105,8 @@ public class TeacherController : ControllerBase
                                        && sNickname == string.Empty && sMobilePhone == string.Empty
                                        && sEmail == string.Empty && sEmailOrganization == string.Empty)
         {
-            var error = ErrorDescription.Error["E0039"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            var teachers = GetAllUserRoleTeacher();
+            return Ok(CustomResponse.Ok("Search teachers successfully", teachers));
         }
 
         var listSro = GetAllUserRoleTeacher();
@@ -133,6 +134,316 @@ public class TeacherController : ControllerBase
         }
 
         return Ok(CustomResponse.Ok("Search Teacher successfully", sroResponse));
+    }
+
+    // create teacher
+    [HttpPost]
+    [Route("api/teachers")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult CreateTeacher([FromBody] CreateTeacherRequest request)
+    {
+        request.FirstName = Regex.Replace(request.FirstName!, StringConstant.RegexWhiteSpaces, " ");
+        // function replace string ex: H ' Hen Nie => H'Hen Nie
+        request.FirstName = request.FirstName.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.FirstName, RegexSpecialCharacters))
+        {
+            var error = ErrorDescription.Error["E0046"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        request.LastName = Regex.Replace(request.LastName!, StringConstant.RegexWhiteSpaces, " ");
+        request.LastName = request.LastName.Replace(" ' ", "'").Trim();
+
+        if (Regex.IsMatch(request.LastName, RegexSpecialCharacters))
+        {
+            var error = ErrorDescription.Error["E0047"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsMobilePhoneExists(request.MobilePhone, false, 0))
+        {
+            var error = ErrorDescription.Error["E0050"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!Regex.IsMatch(request.MobilePhone!, StringConstant.RegexMobilePhone))
+        {
+            var error = ErrorDescription.Error["E0042"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsEmailExists(request.Email, false, 0))
+        {
+            var error = ErrorDescription.Error["E0051"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // if (!Regex.IsMatch(request.Email!, StringConstant.RegexEmail))
+        // {
+        //     var error = ErrorDescription.Error["E0043"];
+        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        // }
+
+        if (IsEmailOrganizationExists(request.EmailOrganization, false, 0))
+        {
+            var error = ErrorDescription.Error["E0052"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // if (!Regex.IsMatch(request.EmailOrganization!, StringConstant.RegexEmail))
+        // {
+        //     var error = ErrorDescription.Error["E0044"];
+        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        // }
+
+        if (IsCitizenIdentityCardNoExists(request.CitizenIdentityCardNo, false, 0))
+        {
+            var error = ErrorDescription.Error["E0053"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!Regex.IsMatch(request.CitizenIdentityCardNo!, StringConstant.RegexCitizenIdCardNo))
+        {
+            var error = ErrorDescription.Error["E0045"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.TaxCode != null)
+        {
+            if (IsTaxCodeExists(request.TaxCode, false, 0))
+            {
+                var error = ErrorDescription.Error["E0041"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+
+            if (!Regex.IsMatch(request.TaxCode!, StringConstant.RegexTenDigits))
+            {
+                var error = ErrorDescription.Error["E0054"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+        }
+
+        var user = new User()
+        {
+            ProvinceId = request.ProvinceId,
+            DistrictId = request.DistrictId,
+            WardId = request.WardId,
+            CenterId = request.CenterId,
+            GenderId = request.GenderId,
+            RoleId = RoleIdTeacher,
+            FirstName = request.FirstName!,
+            LastName = request.LastName!,
+            Avatar = request.Avatar,
+            MobilePhone = request.MobilePhone!,
+            Email = request.Email!,
+            EmailOrganization = request.EmailOrganization!,
+            Birthday = request.Birthday,
+            CitizenIdentityCardNo = request.CitizenIdentityCardNo!,
+            CitizenIdentityCardPublishedDate = request.CitizenIdentityCardPublishedDate,
+            CitizenIdentityCardPublishedPlace = request.CitizenIdentityCardPublishedPlace!,
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+            Teacher = new Teacher()
+            {
+                TeacherTypeId = request.TeacherTypeId,
+                WorkingTimeId = request.WorkingTimeId,
+                Nickname = request.Nickname,
+                CompanyAddress = request.CompanyAddress,
+                StartWorkingDate = request.StartWorkingDate,
+                Salary = request.Salary,
+                TaxCode = request.TaxCode
+            }
+        };
+
+        try
+        {
+            _context.Users.Add(user);
+            _context.Teachers.Add(user.Teacher);
+            _context.SaveChanges();
+        }
+        catch (DbUpdateException)
+        {
+            var error = ErrorDescription.Error["E0049"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var sroResponse = GetAllUserRoleTeacher().FirstOrDefault(s => s.UserId == user.Id);
+        return Ok(CustomResponse.Ok("Create Teacher successfully", sroResponse!));
+    }
+
+    //update teacher 
+    [HttpPut]
+    [Route("api/teachers/{id:int}")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult UpdateTeacher(int id, [FromBody] UpdateTeacherRequest request)
+    {
+        var user = _context.Users.FirstOrDefault(u => u.Id == id);
+        if (user == null)
+        {
+            var error = ErrorDescription.Error["E0048"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var teacher = _context.Teachers.FirstOrDefault(s => s.UserId == id);
+        if (teacher == null)
+        {
+            var error = ErrorDescription.Error["E0055"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
+        request.FirstName = Regex.Replace(request.FirstName!, StringConstant.RegexWhiteSpaces, " ");
+        // function replace string ex: H ' Hen Nie => H'Hen Nie
+        request.FirstName = request.FirstName.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.FirstName, RegexSpecialCharacters))
+        {
+            var error = ErrorDescription.Error["E0046"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        request.LastName = Regex.Replace(request.LastName!, StringConstant.RegexWhiteSpaces, " ");
+        request.LastName = request.LastName.Replace(" ' ", "'").Trim();
+
+        if (Regex.IsMatch(request.LastName, RegexSpecialCharacters))
+        {
+            var error = ErrorDescription.Error["E0047"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsMobilePhoneExists(request.MobilePhone, true, id))
+        {
+            var error = ErrorDescription.Error["E0050"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!Regex.IsMatch(request.MobilePhone!, StringConstant.RegexMobilePhone))
+        {
+            var error = ErrorDescription.Error["E0042"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsEmailExists(request.Email, true, id))
+        {
+            var error = ErrorDescription.Error["E0051"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // if (!Regex.IsMatch(request.Email!, StringConstant.RegexEmail))
+        // {
+        //     var error = ErrorDescription.Error["E0043"];
+        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        // }
+
+        if (IsEmailOrganizationExists(request.EmailOrganization, true, id))
+        {
+            var error = ErrorDescription.Error["E0052"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // if (!Regex.IsMatch(request.EmailOrganization!, StringConstant.RegexEmail))
+        // {
+        //     var error = ErrorDescription.Error["E0044"];
+        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        // }
+
+        if (IsCitizenIdentityCardNoExists(request.CitizenIdentityCardNo, true, id))
+        {
+            var error = ErrorDescription.Error["E0053"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!Regex.IsMatch(request.CitizenIdentityCardNo!, StringConstant.RegexCitizenIdCardNo))
+        {
+            var error = ErrorDescription.Error["E0045"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.TaxCode != null)
+        {
+            if (IsTaxCodeExists(request.TaxCode, true, id))
+            {
+                var error = ErrorDescription.Error["E0041"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+
+            if (!Regex.IsMatch(request.TaxCode!, StringConstant.RegexTenDigits))
+            {
+                var error = ErrorDescription.Error["E0054"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+        }
+
+        user.ProvinceId = request.ProvinceId;
+        user.DistrictId = request.DistrictId;
+        user.WardId = request.WardId;
+        user.CenterId = request.CenterId;
+        user.GenderId = request.GenderId;
+        user.RoleId = RoleIdTeacher;
+        user.FirstName = request.FirstName!;
+        user.LastName = request.LastName!;
+        user.Avatar = request.Avatar;
+        user.MobilePhone = request.MobilePhone!;
+        user.Email = request.Email!;
+        user.EmailOrganization = request.EmailOrganization!;
+        user.Birthday = request.Birthday;
+        user.CitizenIdentityCardNo = request.CitizenIdentityCardNo!;
+        user.CitizenIdentityCardPublishedDate = request.CitizenIdentityCardPublishedDate;
+        user.CitizenIdentityCardPublishedPlace = request.CitizenIdentityCardPublishedPlace!;
+        user.Teacher.TeacherTypeId = request.TeacherTypeId;
+        user.Teacher.WorkingTimeId = request.WorkingTimeId;
+        user.Teacher.Nickname = request.Nickname;
+        user.Teacher.CompanyAddress = request.CompanyAddress;
+        user.Teacher.StartWorkingDate = request.StartWorkingDate;
+        user.Teacher.Salary = request.Salary;
+        user.Teacher.TaxCode = request.TaxCode!;
+        user.UpdatedAt = DateTime.Now;
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (DbUpdateException)
+        {
+            var error = ErrorDescription.Error["E0049"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var teacherResponse = GetAllUserRoleTeacher().FirstOrDefault(s => s.UserId == teacher.UserId);
+        return Ok(CustomResponse.Ok("Update SRO successfully", teacherResponse!));
+    }
+
+    private bool IsMobilePhoneExists(string? mobilePhone, bool isUpdate, int userId)
+    {
+        return isUpdate
+            ? _context.Users.Any(e => e.MobilePhone == mobilePhone && e.Id != userId)
+            : _context.Users.Any(e => e.MobilePhone == mobilePhone);
+    }
+
+    private bool IsEmailExists(string? email, bool isUpdate, int userId)
+    {
+        return isUpdate
+            ? _context.Users.Any(e => e.Email == email && e.Id != userId)
+            : _context.Users.Any(e => e.Email == email);
+    }
+
+    private bool IsEmailOrganizationExists(string? emailOrganization, bool isUpdate, int userId)
+    {
+        return isUpdate
+            ? _context.Users.Any(e => e.EmailOrganization == emailOrganization && e.Id != userId)
+            : _context.Users.Any(e => e.EmailOrganization == emailOrganization);
+    }
+
+    private bool IsCitizenIdentityCardNoExists(string? citizenIdentityCardNo, bool isUpdate, int userId)
+    {
+        return isUpdate
+            ? _context.Users.Any(e => e.CitizenIdentityCardNo == citizenIdentityCardNo && e.Id != userId)
+            : _context.Users.Any(e => e.CitizenIdentityCardNo == citizenIdentityCardNo);
+    }
+
+    private bool IsTaxCodeExists(string? taxCode, bool isUpdate, int userId)
+    {
+        return isUpdate
+            ? _context.Teachers.Any(t => t.TaxCode == taxCode && t.UserId != userId)
+            : _context.Teachers.Any(t => t.TaxCode == taxCode);
     }
 
     private IEnumerable<TeacherResponse> GetAllUserRoleTeacher()
