@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.RegularExpressions;
 using AcademicManagementSystem.Context;
 using AcademicManagementSystem.Context.AmsModels;
@@ -485,6 +486,55 @@ public class ModuleController : ControllerBase
         return Ok(CustomResponse.Ok("Module updated successfully", moduleResponse));
     }
 
+    // search module by module name, course code, module type, exam type
+    [HttpGet]
+    [Route("api/modules/search")]
+    [Authorize(Roles = "admin,sro")]
+    public IActionResult SearchModule(string? moduleName, string? courseCode,
+        string? moduleType, string? examType)
+    {
+        var sModuleName = moduleName?.Trim() == null ? string.Empty : RemoveDiacritics(moduleName.Trim().ToUpper());
+        var sCourseCode = courseCode?.Trim() == null ? string.Empty : RemoveDiacritics(courseCode.Trim().ToUpper());
+        var sModuleType = moduleType?.Trim() == null ? string.Empty : RemoveDiacritics(moduleType.Trim().ToUpper());
+        var sExamType = examType?.Trim() == null ? string.Empty : RemoveDiacritics(examType.Trim().ToUpper());
+        if(sModuleName == String.Empty && sCourseCode == String.Empty && sModuleType == String.Empty && sExamType == String.Empty)
+        {
+            var modules = GetAllModules();
+            return Ok(CustomResponse.Ok("Module search successfully", modules));
+        }
+
+        var listModules = GetAllModules();
+        var moduleResponse = new List<ModuleResponse>();
+        foreach (var module in listModules)
+        {
+            var s1 = RemoveDiacritics(module.ModuleName!.ToUpper());
+            var s2 = RemoveDiacritics(module.CourseModuleSemester!.CourseCode!.ToUpper());
+            var s3 = RemoveDiacritics(module.ModuleType!.ToUpper());
+            var s4 = RemoveDiacritics(module.ExamType!.ToUpper());
+            
+            if (s1.Contains(sModuleName) && s2.Contains(sCourseCode) && s3.Contains(sModuleType) && s4.Contains(sExamType))
+            {
+                moduleResponse.Add(module);
+            }
+        }
+        return Ok(CustomResponse.Ok("Module search successfully", moduleResponse));
+    }
+
+    // func get all module
+    private IEnumerable<ModuleResponse> GetAllModules()
+    {
+        var modules = _context.Modules
+            .Include(m => m.Center)
+            .Include(m => m.CoursesModulesSemesters)
+            .Include(m => m.Center.Province)
+            .Include(m => m.Center.District)
+            .Include(m => m.Center.Ward)
+            .ToList()
+            .Select(GetModuleResponse);
+        
+        return modules;
+    }
+    
     private static ModuleResponse GetModuleResponse(Module module)
     {
         var moduleResponse = new ModuleResponse()
@@ -525,5 +575,17 @@ public class ModuleController : ControllerBase
             }
         };
         return moduleResponse;
+    }
+    
+    private static string RemoveDiacritics(string text)
+    {
+        //regex pattern to remove diacritics
+        const string pattern = "\\p{IsCombiningDiacriticalMarks}+";
+
+        var normalizedStr = text.Normalize(NormalizationForm.FormD);
+
+        return Regex.Replace(normalizedStr, pattern, string.Empty)
+            .Replace('\u0111', 'd')
+            .Replace('\u0110', 'D');
     }
 }
