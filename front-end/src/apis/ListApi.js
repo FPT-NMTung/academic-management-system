@@ -41,6 +41,13 @@ export const AddressApis = {
     contextType: 'application/json',
   },
 };
+export const SemesterApis = { 
+  getAllSemester: {
+    url: 'api/semesters',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+};
 export const CourseFamilyApis = {
   getAllCourseFamily: {
     url: 'api/course-families',
@@ -75,6 +82,11 @@ export const CourseApis = {
     method: 'POST',
     contextType: 'application/json',
   },
+  getCourseByCode: {
+    url: 'api/courses/{0}',
+    method: 'GET',
+    contextType: 'application/json',
+  }
 
 };
 export const ModulesApis = {
@@ -90,6 +102,13 @@ export const ModulesApis = {
     contextType: 'application/json',
   },
 
+};
+export const CourseModuleSemesterApis = {
+  getByCourseCode :{
+    url: '/api/courses_modules_semesters/courses/{0}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
 };
 
 export const RoomApis = {
