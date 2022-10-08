@@ -1,5 +1,7 @@
 using System.Text.Json.Serialization;
 using AcademicManagementSystem.Models.CourseController;
+using AcademicManagementSystem.Models.ModuleController;
+using AcademicManagementSystem.Models.SemesterController;
 
 namespace AcademicManagementSystem.Models.CourseModuleSemester;
 
@@ -13,4 +15,13 @@ public class CourseModuleSemesterResponse
     
     [JsonPropertyName("semester_id")]
     public int? SemesterId { get; set; }
+    
+    [JsonPropertyName("module")]
+    public ModuleResponse? Module { get; set; }
+    
+    [JsonPropertyName("semester")]
+    public SemesterResponse? Semester { get; set; }
+    
+    [JsonPropertyName("course")]
+    public CourseResponse? Course { get; set; }
 }
