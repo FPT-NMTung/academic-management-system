@@ -4,14 +4,18 @@ import { Form, Select, Input, Divider, Button, Table, Modal } from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../../apis/FetchApi';
 import { ModulesApis } from '../../../apis/ListApi';
-import  ModuleUpdate  from '../../../components/ModuleUpdate/ModuleUpdate';
-import  ModuleCreate  from '../../../components/ModuleCreate/ModuleCreate';
+import ModuleUpdate from '../../../components/ModuleUpdate/ModuleUpdate';
+import ModuleCreate from '../../../components/ModuleCreate/ModuleCreate';
 import { MdEdit } from 'react-icons/md';
+import { Fragment } from 'react';
+import ColumnGroup from 'antd/lib/table/ColumnGroup';
+import { Navigate, useNavigate } from 'react-router-dom';
 const Module = () => {
     const [listModules, setlistModules] = useState([]);
     const [selectedModuleId, setselectedModuleId] = useState(null);
     const [IsLoading, setIsLoading] = useState(false);
     const [isCreate, setIsCreate] = useState(false);
+    const navigate = useNavigate();
     const getData = () => {
         setIsLoading(true);
         const apiModule = ModulesApis.getAllModules;
@@ -59,156 +63,225 @@ const Module = () => {
     }, []);
     return (
         <div >
-            <Grid.Container gap={2} justify="center">
-                <Grid xs={12}>
-                    <Card
-                        css={{
-                            width: '100%',
-                            height: 'fit-content',
 
-                        }}
-                    >
+            <Grid.Container gap={2}>
+                <Grid sm={12}>
+                    <Card>
+                        <Card.Body>
+                            <Form layout="inline"
+                            >
+                                <Form.Item
+                                    name="modulename"
+                                    style={{ width: 'calc(17% - 16px)' }}
+                                >
+                                    <Input placeholder="Môn học" />
+                                </Form.Item>
+                                <Form.Item name="course_code" style={{ width: 'calc(17% - 16px)' }}>
+                                    <Input placeholder="Mã khóa học" />
+                                </Form.Item>
+                                <Form.Item
+                                    name="module_type"
+                                    style={{ width: 'calc(17% - 16px)' }}
+                                >
+                                    <Input placeholder="Hình thức học" />
+                                </Form.Item>
+                                <Form.Item name="exam_type" style={{ width: 'calc(17% - 16px)' }}>
+                                    <Input placeholder="Hình thức thi" />
+                                </Form.Item>
+                             
+                                <Form.Item style={{ width: 'calc(9% - 16px)' }}>
+                                    <Button
+                                        type="primary"
+                                        htmlType="submit"
+                                        style={{ width: '100%' }}
+                                    >
+                                        Tìm kiếm
+                                    </Button>
+                                </Form.Item>
+                                <Form.Item style={{ width: '6%', marginRight: 0 }}>
+                                    <Button
+                                        type="default"
+                                        style={{
+                                            width: '100%',
+                                        }}
+                                    >
+                                        Huỷ
+                                    </Button>
+                                </Form.Item>
+                            </Form>
+                        </Card.Body>
+                    </Card>
+                </Grid>
+                <Grid sm={12}>
+                    <Card>
                         <Card.Header>
-                            <div className={classes.headerTable}>
-                                <Text size={14}>Danh sách môn học</Text>
-                                <Form
-
-                                    wrapperCol={{ span: 18 }}
-                                    layout="inline"
-                                    labelAlign="left"
-
-
-
-                                //   onFinish={handleSubmitForm}
-
-                                >
-                                    <Form.Item
-
-                                        name={'modulename'}
-
-
-                                        rules={[
-                                            {
-
-                                                message: 'Hãy điền tên môn học',
-                                                // min: 0, max: 10
-                                            },
-                                        ]}
+                            <Grid.Container>
+                                <Grid sm={1}></Grid>
+                                <Grid sm={10}>
+                                    <Text
+                                        b
+                                        size={14}
+                                        p
+                                        css={{
+                                            width: '100%',
+                                            textAlign: 'center',
+                                        }}
                                     >
-                                        <Input placeholder={'Môn học'} />
-                                    </Form.Item>
-                                    <Form.Item
-                                        name={'course_code'}
-
-                                        rules={[
-                                            {
-
-                                                message: 'Hãy điền mã khóa học',
-                                            },
-                                        ]}
+                                        Danh sách môn học
+                                    </Text>
+                                </Grid>
+                                <Grid sm={1}>
+                                    <Button
+                                        type="primary"
+                                        style={{
+                                            width: '100%',
+                                        }}
+                                        onClick={() => {
+                                            // navigate('/admin/account/sro/create');
+                                        }}
                                     >
-                                        <Input placeholder={'Mã khóa học'} />
-                                    </Form.Item>
-                                    <Form.Item
-                                        name={'module_type'}
-
-                                        rules={[
-                                            {
-
-                                                message: 'Hãy điền hình thức học',
-                                            },
-                                        ]}
-                                    >
-
-                                        <Input placeholder={'Hình thức học'} />
-                                    </Form.Item>
-                                    <Form.Item
-
-                                        name={'exam_type'}
-
-                                        rules={[
-                                            {
-
-                                                message: 'Hãy điền hình thức thi',
-                                            },
-                                        ]}
-                                    >
-
-                                        <Input placeholder={'Hình thức thi'} />
-                                    </Form.Item>
-
-
-                                </Form>
-                                <Button
-                                    type="primary"
-                                // onClick={() => {
-                                //     setIsCreate(!isCreate);
-                                // }}
-                                >
-                                    Tìm kiếm
-                                </Button>
-                                <Button
-                                    title=''
-                                    dataIndex="action"
-                                    key="action"
-                                    type="primary"
-                                    onClick={() => {
-                                        setIsCreate(!isCreate);
-                                    }}
-
-                                >
-                                    Thêm môn học
-                                </Button>
-                            </div>
+                                        + Tạo mới
+                                    </Button>
+                                </Grid>
+                            </Grid.Container>
                         </Card.Header>
-
-                        <Card.Divider />
                         <Table
-                            pagination={{ position: ['bottomCenter'] }}
+                            // loading={IsLoading}
+                            bordered
+                            size="middle"
                             dataSource={listModules}
-                        // tableLayout="auto "
+
+                            // columns={designColumns}
+                            scroll={{
+                                x: 1500,
+                            }}
+                            pagination={{
+                                size: 'default',
+                                position: ['bottomCenter'],
+                            }}
                         >
-                            <Table.Column title="" dataIndex="id" key="id" />
-                            <Table.Column title="STT" dataIndex="key" key="name" />
-                            <Table.Column title="Môn học" dataIndex="modulename" key="modulename" />
-                            <Table.Column title="Cơ sở" dataIndex="centername" key="centername" />
-                            <Table.Column title="Mã Khóa Học" width='150px' dataIndex="coursecode" key="coursecode" />
-                            <Table.Column title="Thời lượng học/ tiếng" dataIndex="hours" key="hours" />
-                            <Table.Column title="Số buổi" dataIndex="days" key="days" />
-                            <Table.Column title="Hình thức học" dataIndex="module_type" key="module_type" />
-                            <Table.Column title="Hình thức thi" dataIndex="exam_type" key="exam_type" />
-                            <Table.Column title="Điểm tối đa thi lý thuyết" dataIndex="max_theory_grade" key="max_theory_grade" />
-                            <Table.Column title="Điểm tối đa thi thực hành" dataIndex="max_practical_grade" key="max_practical_grade" />
-                            <Table.Column title="Tên kỳ học ( Ấn Độ )" dataIndex="semester_name_portal" key="semester_name_portal" />
-                            <Table.Column title="Tên kỳ thi ( Ấn Độ )" dataIndex="module_exam_name_portal" key="module_exam_name_portal" />
-                            <Table.Column title="Học kỳ" dataIndex="semester" key="semester" />
                             <Table.Column
-                                title="Hành động"
-                                dataIndex="action"
+                                title="STT"
+                                dataIndex="key"
+                                key="key"
+                                width={50}
+                                fixed={'left'}
+                            />
+                            <ColumnGroup title="Môn học">
+                                <Table.Column
+                                    title="Tên môn học"
+                                    dataIndex="modulename"
+                                    key="modulename"
+                                    width={320}
+                                    fixed={'left'}
+                                />
+                                <Table.Column
+                                    title="Mã khóa học"
+                                    dataIndex="coursecode"
+                                    key="coursecode"
+                                    width={200}
+                                    fixed={'left'}
+                                />
+                            </ColumnGroup>
+                            <ColumnGroup title="Thời lượng học">
+                                <Table.Column
+                                    title="Số Tiếng"
+                                    dataIndex="hours"
+                                    key="hours"
+                                    width={80}
+                                />
+                                <Table.Column
+                                    title="Số buổi"
+                                    dataIndex="days"
+                                    key="days"
+                                    width={80}
+                                />
+                            </ColumnGroup>
+                            <ColumnGroup title="Hình thức môn học">
+                                <Table.Column
+                                    title="Hình thức học"
+                                    dataIndex="module_type"
+                                    key="module_type"
+                                    width={150}
+                                />
+                                <Table.Column
+                                    title="Hình thức thi"
+                                    dataIndex="exam_type"
+                                    key="exam_type"
+                                    width={150}
+                                />
+                            </ColumnGroup>
+                            <ColumnGroup title="Điểm tối đa thi">
+                                <Table.Column
+                                    title="Lý thuyểt"
+                                    dataIndex="max_theory_grade"
+                                    key="max_theory_grade"
+                                    width={90}
+                                />
+                                <Table.Column
+                                    title="Thực hành"
+                                    dataIndex="max_practical_grade"
+                                    key="max_practical_grade"
+                                    width={90}
+                                />
+                            </ColumnGroup>
+                            <ColumnGroup title="Tên theo Ấn Độ">
+                                <Table.Column
+                                    title="Kỳ học"
+                                    dataIndex="semester_name_portal"
+                                    key="semester_name_portal"
+                                    width={350}
+                                />
+                                <Table.Column
+                                    title="Kỳ thi"
+                                    dataIndex="module_exam_name_portal"
+                                    key="module_exam_name_portal"
+                                    width={350}
+                                />
+                            </ColumnGroup>
+                            <Table.Column
+                                title="Học kỳ"
+                                dataIndex="semester"
+                                key="semester"
+                                width={90}
+                            />
+                               <Table.Column
+                                title="Cơ sở"
+                                dataIndex="centername"
+                                key="centername"
+                                width={90}
+                            />
+                    
+                     
+                     
+                            <Table.Column
+                                width={50}
+                                title=""
+                                dataIndex=""
                                 key="action"
+                                fixed={'right'}
                                 render={(_, data) => {
                                     return (
-                                        <MdEdit className={classes.editIcon} onClick={() => {
-                                            // setIsModalOpen(!isModalOpen);
-
-                                        }} />
+                                        <div className={classes.logoEdit}>
+                                            <MdEdit
+                                                color="0a579f"
+                                                style={{ cursor: 'pointer' }}
+                                                onClick={() => {
+                                                    // navigate(`/admin/account/sro/${data.user_id}`);
+                                                }}
+                                            />
+                                        </div>
                                     );
                                 }}
                             />
                         </Table>
-
                     </Card>
-
                 </Grid>
-                {/* {isCreate && (
-                    <ModuleCreate />
-                )} */}
-
             </Grid.Container>
             <Modal
                 closeButton
                 aria-labelledby="modal-title"
-                open={isCreate===true}
+                // open={isCreate===true}
                 onClose={() => {
                     setIsCreate(!isCreate);
 
@@ -222,8 +295,8 @@ const Module = () => {
                     </Text>
                 </Modal.Header>
                 <Modal.Body>
-                   <ModuleCreate onCreateSuccess={handleAddSuccess}/>
-   
+                    <ModuleCreate onCreateSuccess={handleAddSuccess} />
+
                 </Modal.Body>
             </Modal>
         </div>
