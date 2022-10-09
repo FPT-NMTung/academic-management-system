@@ -102,13 +102,13 @@ public class ModuleController : ControllerBase
         request.ModuleExamNamePortal = request.ModuleExamNamePortal?.Trim();
         request.SemesterNamePortal = request.SemesterNamePortal?.Trim();
 
-        //check empty
-        if (string.IsNullOrEmpty(request.CourseCode) || string.IsNullOrEmpty(request.ModuleName) ||
-            string.IsNullOrEmpty(request.ModuleExamNamePortal) || string.IsNullOrEmpty(request.SemesterNamePortal))
-        {
-            var error = ErrorDescription.Error["E1023"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
+        // check empty string
+         if (string.IsNullOrWhiteSpace(request.CourseCode) || string.IsNullOrWhiteSpace(request.ModuleName) ||
+             string.IsNullOrWhiteSpace(request.ModuleExamNamePortal) || string.IsNullOrWhiteSpace(request.SemesterNamePortal))
+         {
+             var error = ErrorDescription.Error["E1023"];
+             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+         }
 
         // check course code
         request.CourseCode = Regex.Replace(request.CourseCode, StringConstant.RegexWhiteSpaces, " ");
@@ -196,7 +196,7 @@ public class ModuleController : ControllerBase
         }
 
         // module type and exam type
-        if (request.ModuleType is < 1 or > 4)
+        if (request.ModuleType is < 1 or > 3)
         {
             var error = ErrorDescription.Error["E1031"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -206,6 +206,26 @@ public class ModuleController : ControllerBase
         {
             var error = ErrorDescription.Error["E1033"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
+        // set null for max grade
+        switch (request.ExamType)
+        {
+            case 1:
+                request.MaxPracticalGrade = null;
+                break;
+            case 2:
+                request.MaxTheoryGrade = null;
+                break;
+            case 3:
+                break;
+            case 4:
+                request.MaxPracticalGrade = null;
+                request.MaxTheoryGrade = null;
+                break;
+            default:
+                var error = ErrorDescription.Error["E1045"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         // check days
@@ -286,19 +306,14 @@ public class ModuleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var newModule = _context.Modules.Include(m => m.Center)
-            .Include(m => m.Center.Province)
-            .Include(m => m.Center.District)
-            .Include(m => m.Center.Ward)
-            .Include(m => m.CoursesModulesSemesters)
-            .FirstOrDefault(m => m.Id == module.Id);
-        if (newModule == null)
+        var createdModule = GetCoursesModulesSemestersByModuleId(module.Id).FirstOrDefault();
+        if (createdModule == null)
         {
-            return NotFound(CustomResponse.NotFound("Module not found"));
+            var error = ErrorDescription.Error["E1045"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var moduleResponse = GetModuleResponse(newModule);
-        return Ok(CustomResponse.Ok("Module created successfully", moduleResponse));
+        return Ok(CustomResponse.Ok("Module created successfully", createdModule));
     }
 
     private IQueryable<Module> GetCourseSemesterCenter(CreateModuleRequest request, string courseCode, int? semesterId)
@@ -333,8 +348,8 @@ public class ModuleController : ControllerBase
         request.SemesterNamePortal = request.SemesterNamePortal?.Trim();
 
         //check empty
-        if (string.IsNullOrEmpty(request.ModuleName) || string.IsNullOrEmpty(request.ModuleExamNamePortal) ||
-            string.IsNullOrEmpty(request.SemesterNamePortal))
+        if (string.IsNullOrWhiteSpace(request.ModuleName) || string.IsNullOrWhiteSpace(request.ModuleExamNamePortal) ||
+            string.IsNullOrWhiteSpace(request.SemesterNamePortal))
         {
             var error = ErrorDescription.Error["E1023"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -395,7 +410,7 @@ public class ModuleController : ControllerBase
         }
 
         // module type and exam type
-        if (request.ModuleType is < 1 or > 4)
+        if (request.ModuleType is < 1 or > 3)
         {
             var error = ErrorDescription.Error["E1031"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -405,6 +420,26 @@ public class ModuleController : ControllerBase
         {
             var error = ErrorDescription.Error["E1033"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
+        // set null for max grade
+        switch (request.ExamType)
+        {
+            case 1:
+                request.MaxPracticalGrade = null;
+                break;
+            case 2:
+                request.MaxTheoryGrade = null;
+                break;
+            case 3:
+                break;
+            case 4:
+                request.MaxPracticalGrade = null;
+                request.MaxTheoryGrade = null;
+                break;
+            default:
+                var error = ErrorDescription.Error["E1045"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         // check days
@@ -452,8 +487,14 @@ public class ModuleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var moduleResponse = GetModuleResponse(module);
-        return Ok(CustomResponse.Ok("Module updated successfully", moduleResponse));
+        var updatedModule = GetCoursesModulesSemestersByModuleId(module.Id).FirstOrDefault();
+        if (updatedModule == null)
+        {
+            var error = ErrorDescription.Error["E1044"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        return Ok(CustomResponse.Ok("Module updated successfully", updatedModule));
     }
 
     // search module by module name, course code, module type, exam type
@@ -508,6 +549,22 @@ public class ModuleController : ControllerBase
             .Include(cms => cms.Module.Center.Ward)
             .Select(GetCourseModuleSemesterResponse)
             .ToList();
+        return courseModuleSemesters;
+    }
+
+    private IEnumerable<CourseModuleSemesterResponse> GetCoursesModulesSemestersByModuleId(int id)
+    {
+        var courseModuleSemesters = _context.CoursesModulesSemesters
+            .Include(cms => cms.Course)
+            .Include(cms => cms.Module)
+            .Include(cms => cms.Semester)
+            .Include(cms => cms.Course.CourseFamily)
+            .Include(cms => cms.Module.Center)
+            .Include(cms => cms.Module.Center.Province)
+            .Include(cms => cms.Module.Center.District)
+            .Include(cms => cms.Module.Center.Ward)
+            .Where(cms => cms.ModuleId == id).AsEnumerable()
+            .Select(GetCourseModuleSemesterResponse);
         return courseModuleSemesters;
     }
 
@@ -571,21 +628,6 @@ public class ModuleController : ControllerBase
         };
         return courseModuleSemester;
     }
-
-    // func get all module
-    // private IEnumerable<ModuleResponse> GetAllModules()
-    // {
-    //     var modules = _context.Modules
-    //         .Include(m => m.Center)
-    //         .Include(m => m.CoursesModulesSemesters)
-    //         .Include(m => m.Center.Province)
-    //         .Include(m => m.Center.District)
-    //         .Include(m => m.Center.Ward)
-    //         .Select(GetModuleResponse)
-    //         .ToList();
-    //
-    //     return modules;
-    // }
 
     private static ModuleResponse GetModuleResponse(Module module)
     {
