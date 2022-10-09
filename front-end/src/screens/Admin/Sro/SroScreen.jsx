@@ -1,12 +1,12 @@
-import { Card, Grid, Text } from '@nextui-org/react';
+import { Card, Grid, Text, Tooltip } from '@nextui-org/react';
 import { Button, Form, Input, Table } from 'antd';
 import { Fragment } from 'react';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../../apis/FetchApi';
 import { ManageSroApis } from '../../../apis/ListApi';
-import { MdEdit } from 'react-icons/md';
+import { RiEyeFill } from 'react-icons/ri';
 import classes from './SroScreen.module.css';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import ColumnGroup from 'antd/lib/table/ColumnGroup';
 
 const SroScreen = () => {
@@ -14,17 +14,18 @@ const SroScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
-
-  const param = {
-    firstName: '',
-    lastName: '',
-    mobilePhone: '',
-    email: '',
-    emailOrganization: '',
-  };
+  const [form] = Form.useForm();
 
   const getAllSro = () => {
-    FetchApi(ManageSroApis.getAllSro, null, param, null).then((res) => {
+    const param = {
+      firstName: form.getFieldValue('first_name'),
+      lastName: form.getFieldValue('last_name'),
+      mobilePhone: form.getFieldValue('mobile_phone'),
+      email: form.getFieldValue('email'),
+      emailOrganization: form.getFieldValue('email_organization'),
+    };
+
+    FetchApi(ManageSroApis.searchSro, null, param, null).then((res) => {
       const data = res.data.map((item, index) => {
         return {
           key: item.id,
@@ -37,6 +38,15 @@ const SroScreen = () => {
     });
   };
 
+  const handleClearInput = () => {
+    form.resetFields();
+    getAllSro();
+  };
+
+  const handleSubmitForm = () => {
+    getAllSro();
+  };
+
   useEffect(() => {
     getAllSro();
   }, []);
@@ -46,7 +56,19 @@ const SroScreen = () => {
       <Grid sm={12}>
         <Card>
           <Card.Body>
-            <Form layout="inline">
+            <Form
+              name="basic"
+              layout="inline"
+              form={form}
+              initialValues={{
+                first_name: '',
+                last_name: '',
+                mobile_phone: '',
+                email: '',
+                email_organization: '',
+              }}
+              onFinish={handleSubmitForm}
+            >
               <Form.Item
                 name="first_name"
                 style={{ width: 'calc(17% - 16px)' }}
@@ -86,6 +108,7 @@ const SroScreen = () => {
                   style={{
                     width: '100%',
                   }}
+                  onClick={handleClearInput}
                 >
                   Huỷ
                 </Button>
@@ -211,7 +234,7 @@ const SroScreen = () => {
                 title="Tỉnh/Thành phố"
                 dataIndex="province"
                 key="province"
-                width={160}
+                width={180}
                 render={(data) => {
                   return <Fragment>{data.name}</Fragment>;
                 }}
@@ -220,18 +243,26 @@ const SroScreen = () => {
                 title="Quận/Huyện"
                 dataIndex="district"
                 key="district"
-                width={160}
+                width={180}
                 render={(data) => {
-                  return <Fragment>{data.name}</Fragment>;
+                  return (
+                    <Fragment>
+                      {data.prefix} {data.name}
+                    </Fragment>
+                  );
                 }}
               />
               <Table.Column
                 title="Phường/Xã"
                 dataIndex="ward"
                 key="ward"
-                width={160}
+                width={180}
                 render={(data) => {
-                  return <Fragment>{data.name}</Fragment>;
+                  return (
+                    <Fragment>
+                      {data.prefix} {data.name}
+                    </Fragment>
+                  );
                 }}
               />
             </ColumnGroup>
@@ -271,13 +302,16 @@ const SroScreen = () => {
               render={(_, data) => {
                 return (
                   <div className={classes.logoEdit}>
-                    <MdEdit
-                      color="0a579f"
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        navigate(`/admin/account/sro/${data.user_id}`);
-                      }}
-                    />
+                    <Tooltip placement="left" content="Chi tiết" color={'invert'}>
+                      <RiEyeFill
+                        size={20}
+                        color="0a579f"
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => {
+                          navigate(`/admin/account/sro/${data.user_id}`);
+                        }}
+                      />
+                    </Tooltip>
                   </div>
                 );
               }}

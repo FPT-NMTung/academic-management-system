@@ -4,6 +4,7 @@ import { ImBooks } from 'react-icons/im';
 import { MdManageAccounts } from 'react-icons/md';
 import { MdMeetingRoom } from 'react-icons/md';
 import { useLocation, matchPath, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 const getItem = (label, key, icon, children, url, link) => {
   return {
@@ -17,7 +18,6 @@ const getItem = (label, key, icon, children, url, link) => {
 };
 
 const itemsAdmin = [
-  getItem('Trang chủ', 'main1', <IoHome />, undefined, '/admin', '/admin'),
   getItem(
     'Quản lý cơ sở',
     'main2',
@@ -88,6 +88,9 @@ const flatItemsAdmin = itemsAdmin.flatMap((item) => {
 });
 
 const MenuLayout = () => {
+  const [itemMatched, setItemMatched] = useState(null);
+  const [openKeys, setOpenKeys] = useState([]);
+
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
@@ -98,6 +101,7 @@ const MenuLayout = () => {
   });
 
   const handleChangeTab = (e) => {
+    setItemMatched(e.key);
     navigate(e.item.props.link);
   };
 
@@ -108,8 +112,12 @@ const MenuLayout = () => {
       style={{
         width: '100%',
       }}
-      defaultSelectedKeys={[itemMatch?.key]}
-      defaultOpenKeys={[itemMatch?.key.split('-')[0]]}
+      selectedKeys={[itemMatch?.key]}
+      openKeys={openKeys.length === 0 ? [itemMatch?.key.split('-')[0]] : openKeys}
+      onSelect={handleChangeTab}
+      onOpenChange={(openKeys) => {
+        setOpenKeys(openKeys);
+      }}
       mode="inline"
       items={itemsAdmin}
       onClick={handleChangeTab}
