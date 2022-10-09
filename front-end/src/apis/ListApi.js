@@ -41,7 +41,7 @@ export const AddressApis = {
     contextType: 'application/json',
   },
 };
-export const SemesterApis = { 
+export const SemesterApis = {
   getAllSemester: {
     url: 'api/semesters',
     method: 'GET',
@@ -104,11 +104,17 @@ export const ModulesApis = {
 
 };
 export const CourseModuleSemesterApis = {
-  getByCourseCode :{
+  getByCourseCode: {
     url: '/api/courses_modules_semesters/courses/{0}',
     method: 'GET',
     contextType: 'application/json',
   },
+  getAllCourseModuleSemesterApis: {
+    url: '/api/courses_modules_semesters',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+
 };
 
 export const RoomApis = {

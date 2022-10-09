@@ -57,7 +57,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
             const data = res.data.semester_count
 
             setListSemesterid(data);
-            console.log(data);
+
          
         });
         setisLoading(false);
@@ -84,14 +84,14 @@ const ModuleCreate = ({ onCreateSuccess }) => {
             center_id: e.center_id,
             semester_name_portal: e.semester_name_portal.trim(),
             module_name: e.module_name.trim(),
-            module_exam_name_portal: e.module_exam_name_portal.trim(),
-            module_type: e.module_type.trim(),
+            module_exam_name_portal: e.module_exam_name_portal.trim(),               
+            module_type: e.module_type,
             max_theory_grade: e.max_theory_grade,
             max_practical_grade: e.max_practical_grade,
             hours: e.hours,
             days: e.days,
-            // exam_type: e.exam_type,
-           exam_type:'Lys thuyet',
+            exam_type: e.exam_type,
+        //    exam_type:'Lys thuyet',
             course_code: e.course_code,
             semester_id: e.semesterid,
 
@@ -133,6 +133,8 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                     labelWrap
                     initialValues={{
                         exam_type: 4,
+                        max_theory_grade:null,
+                        max_practical_grade:null,
                     }}
 
                     onFinish={handleSubmitForm}
@@ -310,7 +312,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                             name="module_type"
                             rules={[
                                 {
-
+                                    required: true,
                                 },
                             ]}
                             style={{
@@ -322,9 +324,9 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                                 style={{ width: '100%' }}
                                 dropdownStyle={{ zIndex: 9999 }}
                                 placeholder="Hình thức học">
-                                <Select.Option key="1" value="Lý thuyết">Lý thuyết</Select.Option>
-                                <Select.Option key="2" value="Thực hành">Thực hành</Select.Option>
-                                <Select.Option key="3" value="Lý thuyết và Thực hành">Lý thuyết và Thực hành</Select.Option>
+                                <Select.Option key="1" value="1">Lý thuyết</Select.Option>
+                                <Select.Option key="2" value="2">Thực hành</Select.Option>
+                                <Select.Option key="3" value="3">Lý thuyết và Thực hành</Select.Option>
                             </Select>
                         </Form.Item>
                         <Form.Item
@@ -359,12 +361,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                         }}
                     >
                         <Form.Item
-                            name="max_theory_grade"
-                            rules={[
-                                {
-                                   
-                                },
-                            ]}
+                            name="max_theory_grade"               
                             style={{
                                 display: 'inline-block',
                                 width: 'calc(50% - 8px)',
@@ -440,7 +437,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                             margin: '10px 0 0 0',
                         }}
                     >
-                        <Button type="primary" htmlType="submit" loading={isCreating}>
+                        <Button type="primary" htmlType="submit" loading={isCreating} >
                             Tạo mới
                         </Button>
                        
@@ -456,7 +453,10 @@ const ModuleCreate = ({ onCreateSuccess }) => {
 
                 </Form>
             )}
-            {!isCreating && isFailed && (
+            {!isCreating && isFailed && ( 
+          form.resetFields(['max_theory_grade','max_practical_grade']),
+                
+
                 <Text
                     size={14}
                     css={{

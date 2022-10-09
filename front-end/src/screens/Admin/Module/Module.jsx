@@ -3,14 +3,27 @@ import { Card, Grid, Text, Modal } from '@nextui-org/react';
 import { Form, Select, Input, Divider, Button, Table, } from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../../apis/FetchApi';
-import { ModulesApis } from '../../../apis/ListApi';
+import { ModulesApis,CourseModuleSemesterApis } from '../../../apis/ListApi';
 import ModuleUpdate from '../../../components/ModuleUpdate/ModuleUpdate';
 import ModuleCreate from '../../../components/ModuleCreate/ModuleCreate';
 import { MdEdit } from 'react-icons/md';
 import { Fragment } from 'react';
 import ColumnGroup from 'antd/lib/table/ColumnGroup';
+const TYPE_EXAM = {
+    1: 'Lý thuyết',
+    2: 'Thực hành',
+    3: 'Thực hành và Lý thuyết',
+    4: 'Không thi',
 
+} 
+const TYPE_MODULE = {
+    1: 'Lý thuyết',
+    2: 'Thực hành',
+    3: 'Thực hành và Lý thuyết',
+ 
+}
 const Module = () => {
+    
     const [listModules, setlistModules] = useState([]);
     const [selectedModuleId, setselectedModuleId] = useState(null);
     const [IsLoading, setIsLoading] = useState(false);
@@ -18,32 +31,32 @@ const Module = () => {
 
     const getData = () => {
         setIsLoading(true);
-        const apiModule = ModulesApis.getAllModules;
+        const apiModule = CourseModuleSemesterApis.getAllCourseModuleSemesterApis;
 
         FetchApi(apiModule).then((res) => {
             const data = res.data;
             const mergeModuleRes = data.map((e, index) => {
                 return {
-                    id: e.id,
+                    ...e,
+                    id: e.module.id,
                     key: index,
-                    modulename: e.module_name,
-                    ...e,
-                    ...e,
-                    centername: e.center.province.name,
-                    coursecode: e.course_module_semester.course_code,
-                    hours: e.hours,
-                    days: e.days,
-                    module_type: e.module_type,
-                    exam_type: e.exam_type,
-                    max_theory_grade: e.max_theory_grade,
-                    max_practical_grade: e.max_practical_grade,
-                    semester_name_portal: e.semester_name_portal,
-                    module_exam_name_portal: e.module_exam_name_portal,
-                    semester: e.course_module_semester.semester_id,
+                    center_id:e.module.center_id,
+                    modulename: e.module.module_name,
+                    centername: e.module.center.name,
+                    coursecode: e.course_code,
+                    hours: e.module.hours,
+                    days: e.module.days,
+                    module_type: TYPE_MODULE[e.module.module_type],
+                    exam_type: TYPE_EXAM[e.module.exam_type],
+                    max_theory_grade: e.module.max_theory_grade,
+                    max_practical_grade: e.module.max_practical_grade,
+                    semester_name_portal: e.module.semester_name_portal,
+                    module_exam_name_portal: e.module.module_exam_name_portal,
+                    semester: e.semester.name,
 
                 };
             });
-
+   
 
             setlistModules(mergeModuleRes);
             // setIsLoading(false);
@@ -51,8 +64,6 @@ const Module = () => {
     };
     const handleAddSuccess = () => {
         setisCreate(false);
-        console.log('add success');
-        console.log(isCreate);
         getData();
     }
     const handleUpdateSuccess = () => {
@@ -234,7 +245,7 @@ const Module = () => {
                                     title="Kỳ học"
                                     dataIndex="semester_name_portal"
                                     key="semester_name_portal"
-                                    width={350}
+                                    width={430}
                                 />
                                 <Table.Column
                                     title="Kỳ thi"
@@ -253,7 +264,7 @@ const Module = () => {
                                 title="Cơ sở"
                                 dataIndex="centername"
                                 key="centername"
-                                width={90}
+                                width={120}
                             />
                     
                      
@@ -271,7 +282,7 @@ const Module = () => {
                                                 color="0a579f"
                                                 style={{ cursor: 'pointer' }}
                                                 onClick={() => {
-                                                    // navigate(`/admin/account/sro/${data.user_id}`);
+                                                    setselectedModuleId(data.id)
                                                 }}
                                             />
                                         </div>
@@ -302,6 +313,29 @@ const Module = () => {
                 <Card.Divider />
                 <Modal.Body>
                     <ModuleCreate onCreateSuccess={handleAddSuccess} />
+
+                </Modal.Body>
+            </Modal>
+            <Modal
+                closeButton
+                aria-labelledby="modal-title"
+                open={selectedModuleId !== null}
+                onClose={() => {
+                    setselectedModuleId(null)
+
+                }}
+                blur
+                width="700px"
+            >
+                <Modal.Header>
+                    <Text size={16} b>
+                        Chỉnh sửa môn học
+                    </Text>
+                    
+                </Modal.Header>
+                <Card.Divider />
+                <Modal.Body>
+                <ModuleUpdate data={listModules.find((e) => e.id === selectedModuleId)} onUpdateSuccess={handleUpdateSuccess}/>
 
                 </Modal.Body>
             </Modal>
