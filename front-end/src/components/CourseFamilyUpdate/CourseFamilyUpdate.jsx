@@ -7,7 +7,7 @@ import { CourseFamilyApis } from '../../apis/ListApi';
 import classes from './CourseFamilyUpdate.module.css';
 
 const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
-  console.log(data);
+  // console.log(data);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const [IsLoading, setIsLoading] = useState(true);
