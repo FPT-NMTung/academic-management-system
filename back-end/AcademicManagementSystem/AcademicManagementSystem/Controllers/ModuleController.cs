@@ -7,8 +7,11 @@ using AcademicManagementSystem.Models.AddressController.DistrictModel;
 using AcademicManagementSystem.Models.AddressController.ProvinceModel;
 using AcademicManagementSystem.Models.AddressController.WardModel;
 using AcademicManagementSystem.Models.CenterController;
+using AcademicManagementSystem.Models.CourseController;
+using AcademicManagementSystem.Models.CourseFamilyController;
 using AcademicManagementSystem.Models.CourseModuleSemester;
 using AcademicManagementSystem.Models.ModuleController;
+using AcademicManagementSystem.Models.SemesterController;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -63,12 +66,6 @@ public class ModuleController : ControllerBase
                         Name = m.Center.Ward.Name,
                         Prefix = m.Center.Ward.Prefix,
                     }
-                },
-                CourseModuleSemester = new CourseModuleSemesterResponse()
-                {
-                    CourseCode = m.CoursesModulesSemesters.FirstOrDefault()!.CourseCode,
-                    ModuleId = m.CoursesModulesSemesters.FirstOrDefault()!.ModuleId,
-                    SemesterId = m.CoursesModulesSemesters.FirstOrDefault()!.SemesterId
                 }
             }).ToList();
         return Ok(CustomResponse.Ok("Modules retrieved successfully", modules));
@@ -431,7 +428,6 @@ public class ModuleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-
         // update
         try
         {
@@ -474,43 +470,122 @@ public class ModuleController : ControllerBase
         if (sModuleName == String.Empty && sCourseCode == String.Empty && sModuleType == String.Empty &&
             sExamType == String.Empty)
         {
-            var modules = GetAllModules();
+            var modules = GetAllCoursesModulesSemesters();
             return Ok(CustomResponse.Ok("Module search successfully", modules));
         }
 
-        var listModules = GetAllModules();
-        var moduleResponse = new List<ModuleResponse>();
-        foreach (var module in listModules)
+        var listCoursesModulesSemesters = GetAllCoursesModulesSemesters();
+
+        var moduleResponse = new List<CourseModuleSemesterResponse>();
+        foreach (var cms in listCoursesModulesSemesters)
         {
-            var s1 = RemoveDiacritics(module.ModuleName!.ToUpper());
-            var s2 = RemoveDiacritics(module.CourseModuleSemester!.CourseCode!.ToUpper());
-            var s3 = RemoveDiacritics(module.ModuleType.ToString()!);
-            var s4 = RemoveDiacritics(module.ExamType.ToString()!);
+            var s1 = RemoveDiacritics(cms.Module!.ModuleName!.ToUpper());
+            var s2 = RemoveDiacritics(cms.CourseCode!.ToUpper());
+            var s3 = RemoveDiacritics(cms.Module.ModuleType.ToString()!);
+            var s4 = RemoveDiacritics(cms.Module.ExamType.ToString()!);
 
             if (s1.Contains(sModuleName) && s2.Contains(sCourseCode) && s3.Contains(sModuleType) &&
                 s4.Contains(sExamType))
             {
-                moduleResponse.Add(module);
+                moduleResponse.Add(cms);
             }
         }
 
-        return Ok(CustomResponse.Ok("Module search successfully", moduleResponse));
+        return Ok(CustomResponse.Ok("Module searched successfully", moduleResponse));
+    }
+
+    // func get all courses module semester
+    private IEnumerable<CourseModuleSemesterResponse> GetAllCoursesModulesSemesters()
+    {
+        var courseModuleSemesters = _context.CoursesModulesSemesters
+            .Include(cms => cms.Course)
+            .Include(cms => cms.Module)
+            .Include(cms => cms.Semester)
+            .Include(cms => cms.Course.CourseFamily)
+            .Include(cms => cms.Module.Center)
+            .Include(cms => cms.Module.Center.Province)
+            .Include(cms => cms.Module.Center.District)
+            .Include(cms => cms.Module.Center.Ward)
+            .Select(GetCourseModuleSemesterResponse)
+            .ToList();
+        return courseModuleSemesters;
+    }
+
+    // func get course_module_semester response
+    private static CourseModuleSemesterResponse GetCourseModuleSemesterResponse(CourseModuleSemester cms)
+    {
+        var courseModuleSemester = new CourseModuleSemesterResponse()
+        {
+            CourseCode = cms.CourseCode,
+            ModuleId = cms.ModuleId,
+            SemesterId = cms.SemesterId,
+            Course = new CourseResponse()
+            {
+                Code = cms.Course.Code, Name = cms.Course.Name, CourseFamilyCode = cms.Course.CourseFamilyCode,
+                SemesterCount = cms.Course.SemesterCount, IsActive = cms.Course.IsActive,
+                CreatedAt = cms.Course.CreatedAt,
+                UpdatedAt = cms.Course.UpdatedAt, CourseFamily = new CourseFamilyResponse()
+                {
+                    Code = cms.Course.CourseFamily.Code, Name = cms.Course.CourseFamily.Name,
+                    PublishedYear = cms.Course.CourseFamily.PublishedYear,
+                    IsActive = cms.Course.CourseFamily.IsActive,
+                    CreatedAt = cms.Course.CourseFamily.CreatedAt, UpdatedAt = cms.Course.CourseFamily.UpdatedAt
+                }
+            },
+            Module = new ModuleResponse()
+            {
+                Id = cms.Module.Id, ModuleName = cms.Module.ModuleName, ModuleType = cms.Module.ModuleType,
+                CenterId = cms.Module.CenterId, Days = cms.Module.Days, Hours = cms.Module.Hours,
+                MaxPracticalGrade = cms.Module.MaxPracticalGrade, MaxTheoryGrade = cms.Module.MaxTheoryGrade,
+                ExamType = cms.Module.ExamType, SemesterNamePortal = cms.Module.SemesterNamePortal,
+                ModuleExamNamePortal = cms.Module.ModuleExamNamePortal,
+                CreatedAt = cms.Module.CreatedAt, UpdatedAt = cms.Module.UpdatedAt,
+                Center = new CenterResponse()
+                {
+                    Id = cms.Module.Center.Id, Name = cms.Module.Center.Name,
+                    CreatedAt = cms.Module.Center.CreatedAt, UpdatedAt = cms.Module.Center.UpdatedAt,
+                    Province = new ProvinceResponse()
+                    {
+                        Id = cms.Module.Center.Province.Id,
+                        Code = cms.Module.Center.Province.Code,
+                        Name = cms.Module.Center.Province.Name,
+                    },
+                    District = new DistrictResponse()
+                    {
+                        Id = cms.Module.Center.District.Id,
+                        Name = cms.Module.Center.District.Name,
+                        Prefix = cms.Module.Center.District.Prefix
+                    },
+                    Ward = new WardResponse()
+                    {
+                        Id = cms.Module.Center.Ward.Id,
+                        Name = cms.Module.Center.Ward.Name,
+                        Prefix = cms.Module.Center.Ward.Prefix
+                    }
+                }
+            },
+            Semester = new SemesterResponse()
+            {
+                Id = cms.Semester.Id, Name = cms.Semester.Name
+            }
+        };
+        return courseModuleSemester;
     }
 
     // func get all module
-    private IEnumerable<ModuleResponse> GetAllModules()
-    {
-        var modules = _context.Modules
-            .Include(m => m.Center)
-            .Include(m => m.CoursesModulesSemesters)
-            .Include(m => m.Center.Province)
-            .Include(m => m.Center.District)
-            .Include(m => m.Center.Ward)
-            .Select(GetModuleResponse)
-            .ToList();
-
-        return modules;
-    }
+    // private IEnumerable<ModuleResponse> GetAllModules()
+    // {
+    //     var modules = _context.Modules
+    //         .Include(m => m.Center)
+    //         .Include(m => m.CoursesModulesSemesters)
+    //         .Include(m => m.Center.Province)
+    //         .Include(m => m.Center.District)
+    //         .Include(m => m.Center.Ward)
+    //         .Select(GetModuleResponse)
+    //         .ToList();
+    //
+    //     return modules;
+    // }
 
     private static ModuleResponse GetModuleResponse(Module module)
     {
@@ -543,12 +618,6 @@ public class ModuleController : ControllerBase
                     Name = module.Center.Ward.Name,
                     Prefix = module.Center.Ward.Prefix,
                 }
-            },
-            CourseModuleSemester = new CourseModuleSemesterResponse()
-            {
-                CourseCode = module.CoursesModulesSemesters.FirstOrDefault()?.CourseCode,
-                ModuleId = module.CoursesModulesSemesters.FirstOrDefault()?.ModuleId,
-                SemesterId = module.CoursesModulesSemesters.FirstOrDefault()?.SemesterId,
             }
         };
         return moduleResponse;
