@@ -23,7 +23,7 @@ public class ModuleResponse
     public string? ModuleExamNamePortal { get; set; }
     
     [JsonPropertyName("module_type")]
-    public string? ModuleType { get; set; }
+    public int? ModuleType { get; set; }
     
     [JsonPropertyName("max_theory_grade")]
     public int? MaxTheoryGrade { get; set; }
@@ -38,7 +38,7 @@ public class ModuleResponse
     public int? Days { get; set; }
     
     [JsonPropertyName("exam_type")]
-    public string? ExamType { get; set; }
+    public int? ExamType { get; set; }
     
     [JsonPropertyName("created_at")]
     public DateTime? CreatedAt { get; set; }
@@ -48,7 +48,4 @@ public class ModuleResponse
     
     [JsonPropertyName("center")]
     public CenterResponse? Center { get; set; }
-    
-    [JsonPropertyName("course_module_semester")]
-    public CourseModuleSemesterResponse? CourseModuleSemester { get; set; }
 }

@@ -30,7 +30,6 @@ public class CenterController : ControllerBase
         var centers = _context.Centers.Include(e => e.Province)
             .Include(e => e.District)
             .Include(e => e.Ward)
-            .ToList()
             .Select(c => new CenterResponse()
             {
                 Id = c.Id,
@@ -53,7 +52,7 @@ public class CenterController : ControllerBase
                     Name = c.Ward.Name,
                     Prefix = c.Ward.Prefix,
                 }
-            });
+            }).ToList();
         return Ok(CustomResponse.Ok("Get all centers success", centers));
     }
 
@@ -251,6 +250,6 @@ public class CenterController : ControllerBase
         return _context.Centers.Any(c => c.ProvinceId == request.ProvinceId
                                          && c.DistrictId == request.DistrictId
                                          && c.WardId == request.WardId
-                                         && c.Name == request.Name!.Trim());
+                                         && c.Name == request.Name.Trim());
     }
 }
