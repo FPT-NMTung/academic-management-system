@@ -35,7 +35,6 @@ public class ModuleController : ControllerBase
             .Include(m => m.Center.District)
             .Include(m => m.Center.Ward)
             .Include(m => m.CoursesModulesSemesters)
-            .ToList()
             .Select(m => new ModuleResponse()
             {
                 Id = m.Id, CenterId = m.CenterId, SemesterNamePortal = m.SemesterNamePortal, ModuleName = m.ModuleName,
@@ -67,11 +66,11 @@ public class ModuleController : ControllerBase
                 },
                 CourseModuleSemester = new CourseModuleSemesterResponse()
                 {
-                    CourseCode = m.CoursesModulesSemesters.FirstOrDefault()?.CourseCode,
-                    ModuleId = m.CoursesModulesSemesters.FirstOrDefault()?.ModuleId,
-                    SemesterId = m.CoursesModulesSemesters.FirstOrDefault()?.SemesterId
+                    CourseCode = m.CoursesModulesSemesters.FirstOrDefault()!.CourseCode,
+                    ModuleId = m.CoursesModulesSemesters.FirstOrDefault()!.ModuleId,
+                    SemesterId = m.CoursesModulesSemesters.FirstOrDefault()!.SemesterId
                 }
-            });
+            }).ToList();
         return Ok(CustomResponse.Ok("Modules retrieved successfully", modules));
     }
 
@@ -101,17 +100,14 @@ public class ModuleController : ControllerBase
     [Authorize(Roles = "admin,sro")]
     public IActionResult CreateModule([FromBody] CreateModuleRequest request)
     {
-        request.CourseCode = request.CourseCode?.ToUpper().Trim();
-        request.ModuleName = request.ModuleName?.Trim();
+        request.CourseCode = request.CourseCode.ToUpper().Trim();
+        request.ModuleName = request.ModuleName.Trim();
         request.ModuleExamNamePortal = request.ModuleExamNamePortal?.Trim();
-        request.ModuleType = request.ModuleType?.Trim();
-        request.ExamType = request.ExamType?.Trim();
         request.SemesterNamePortal = request.SemesterNamePortal?.Trim();
 
         //check empty
         if (string.IsNullOrEmpty(request.CourseCode) || string.IsNullOrEmpty(request.ModuleName) ||
-            string.IsNullOrEmpty(request.ModuleExamNamePortal) || string.IsNullOrEmpty(request.ModuleType) ||
-            string.IsNullOrEmpty(request.ExamType) || string.IsNullOrEmpty(request.SemesterNamePortal))
+            string.IsNullOrEmpty(request.ModuleExamNamePortal) || string.IsNullOrEmpty(request.SemesterNamePortal))
         {
             var error = ErrorDescription.Error["E1023"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -187,36 +183,6 @@ public class ModuleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // check module type
-        request.ModuleType = Regex.Replace(request.ModuleType, StringConstant.RegexWhiteSpaces, " ");
-        request.ModuleType = request.ModuleType.Replace(" ' ", "'").Trim();
-        if (Regex.IsMatch(request.ModuleType, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
-        {
-            var error = ErrorDescription.Error["E1030"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (request.ModuleType.Length > 100)
-        {
-            var error = ErrorDescription.Error["E1031"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        // check exam type
-        request.ExamType = Regex.Replace(request.ExamType, StringConstant.RegexWhiteSpaces, " ");
-        request.ExamType = request.ExamType.Replace(" ' ", "'").Trim();
-        if (Regex.IsMatch(request.ExamType, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
-        {
-            var error = ErrorDescription.Error["E1032"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (request.ExamType.Length > 100)
-        {
-            var error = ErrorDescription.Error["E1033"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
         // check semester name portal
         request.SemesterNamePortal = Regex.Replace(request.SemesterNamePortal, StringConstant.RegexWhiteSpaces, " ");
         request.SemesterNamePortal = request.SemesterNamePortal.Replace(" ' ", "'").Trim();
@@ -232,17 +198,37 @@ public class ModuleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        // module type and exam type
+        if (request.ModuleType is < 1 or > 4)
+        {
+            var error = ErrorDescription.Error["E1031"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.ExamType is < 1 or > 4)
+        {
+            var error = ErrorDescription.Error["E1033"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         // check days
-        if (request.Days is null or < 1)
+        if (request.Days < 1)
         {
             var error = ErrorDescription.Error["E1036"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         // check hours
-        if (request.Hours is null or < 1)
+        if (request.Hours < 1)
         {
             var error = ErrorDescription.Error["E1037"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check max grade
+        if (request.MaxTheoryGrade is < 1 || request.MaxPracticalGrade is < 1)
+        {
+            var error = ErrorDescription.Error["E1043"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -345,16 +331,13 @@ public class ModuleController : ControllerBase
             return NotFound(CustomResponse.NotFound("Module not found"));
         }
 
-        request.ModuleName = request.ModuleName?.Trim();
+        request.ModuleName = request.ModuleName.Trim();
         request.ModuleExamNamePortal = request.ModuleExamNamePortal?.Trim();
-        request.ModuleType = request.ModuleType?.Trim();
-        request.ExamType = request.ExamType?.Trim();
         request.SemesterNamePortal = request.SemesterNamePortal?.Trim();
 
         //check empty
         if (string.IsNullOrEmpty(request.ModuleName) || string.IsNullOrEmpty(request.ModuleExamNamePortal) ||
-            string.IsNullOrEmpty(request.ModuleType) ||
-            string.IsNullOrEmpty(request.ExamType) || string.IsNullOrEmpty(request.SemesterNamePortal))
+            string.IsNullOrEmpty(request.SemesterNamePortal))
         {
             var error = ErrorDescription.Error["E1023"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -399,36 +382,6 @@ public class ModuleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // check module type
-        request.ModuleType = Regex.Replace(request.ModuleType, StringConstant.RegexWhiteSpaces, " ");
-        request.ModuleType = request.ModuleType.Replace(" ' ", "'").Trim();
-        if (Regex.IsMatch(request.ModuleType, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
-        {
-            var error = ErrorDescription.Error["E1030"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (request.ModuleType.Length > 100)
-        {
-            var error = ErrorDescription.Error["E1031"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        // check exam type
-        request.ExamType = Regex.Replace(request.ExamType, StringConstant.RegexWhiteSpaces, " ");
-        request.ExamType = request.ExamType.Replace(" ' ", "'").Trim();
-        if (Regex.IsMatch(request.ExamType, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
-        {
-            var error = ErrorDescription.Error["E1032"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (request.ExamType.Length > 100)
-        {
-            var error = ErrorDescription.Error["E1033"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
         // check semester name portal
         request.SemesterNamePortal = Regex.Replace(request.SemesterNamePortal, StringConstant.RegexWhiteSpaces, " ");
         request.SemesterNamePortal = request.SemesterNamePortal.Replace(" ' ", "'").Trim();
@@ -444,19 +397,40 @@ public class ModuleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        // module type and exam type
+        if (request.ModuleType is < 1 or > 4)
+        {
+            var error = ErrorDescription.Error["E1031"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.ExamType is < 1 or > 4)
+        {
+            var error = ErrorDescription.Error["E1033"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         // check days
-        if (request.Days is null or < 1)
+        if (request.Days < 1)
         {
             var error = ErrorDescription.Error["E1036"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         // check hours
-        if (request.Hours is null or < 1)
+        if (request.Hours < 1)
         {
             var error = ErrorDescription.Error["E1037"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
+
+        // check max grade
+        if (request.MaxTheoryGrade is < 1 || request.MaxPracticalGrade is < 1)
+        {
+            var error = ErrorDescription.Error["E1043"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
 
         // update
         try
@@ -497,7 +471,8 @@ public class ModuleController : ControllerBase
         var sCourseCode = courseCode?.Trim() == null ? string.Empty : RemoveDiacritics(courseCode.Trim().ToUpper());
         var sModuleType = moduleType?.Trim() == null ? string.Empty : RemoveDiacritics(moduleType.Trim().ToUpper());
         var sExamType = examType?.Trim() == null ? string.Empty : RemoveDiacritics(examType.Trim().ToUpper());
-        if(sModuleName == String.Empty && sCourseCode == String.Empty && sModuleType == String.Empty && sExamType == String.Empty)
+        if (sModuleName == String.Empty && sCourseCode == String.Empty && sModuleType == String.Empty &&
+            sExamType == String.Empty)
         {
             var modules = GetAllModules();
             return Ok(CustomResponse.Ok("Module search successfully", modules));
@@ -509,14 +484,16 @@ public class ModuleController : ControllerBase
         {
             var s1 = RemoveDiacritics(module.ModuleName!.ToUpper());
             var s2 = RemoveDiacritics(module.CourseModuleSemester!.CourseCode!.ToUpper());
-            var s3 = RemoveDiacritics(module.ModuleType!.ToUpper());
-            var s4 = RemoveDiacritics(module.ExamType!.ToUpper());
-            
-            if (s1.Contains(sModuleName) && s2.Contains(sCourseCode) && s3.Contains(sModuleType) && s4.Contains(sExamType))
+            var s3 = RemoveDiacritics(module.ModuleType.ToString()!);
+            var s4 = RemoveDiacritics(module.ExamType.ToString()!);
+
+            if (s1.Contains(sModuleName) && s2.Contains(sCourseCode) && s3.Contains(sModuleType) &&
+                s4.Contains(sExamType))
             {
                 moduleResponse.Add(module);
             }
         }
+
         return Ok(CustomResponse.Ok("Module search successfully", moduleResponse));
     }
 
@@ -529,12 +506,12 @@ public class ModuleController : ControllerBase
             .Include(m => m.Center.Province)
             .Include(m => m.Center.District)
             .Include(m => m.Center.Ward)
-            .ToList()
-            .Select(GetModuleResponse);
-        
+            .Select(GetModuleResponse)
+            .ToList();
+
         return modules;
     }
-    
+
     private static ModuleResponse GetModuleResponse(Module module)
     {
         var moduleResponse = new ModuleResponse()
@@ -576,7 +553,7 @@ public class ModuleController : ControllerBase
         };
         return moduleResponse;
     }
-    
+
     private static string RemoveDiacritics(string text)
     {
         //regex pattern to remove diacritics

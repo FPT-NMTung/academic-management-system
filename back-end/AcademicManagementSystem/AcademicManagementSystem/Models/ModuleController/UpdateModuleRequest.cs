@@ -11,13 +11,13 @@ public class UpdateModuleRequest
     public string? SemesterNamePortal { get; set; }
     
     [JsonPropertyName("module_name")]
-    public string? ModuleName { get; set; }
+    public string ModuleName { get; set; }
     
     [JsonPropertyName("module_exam_name_portal")]
     public string? ModuleExamNamePortal { get; set; }
     
     [JsonPropertyName("module_type")]
-    public string? ModuleType { get; set; }
+    public int ModuleType { get; set; }
     
     [JsonPropertyName("max_theory_grade")]
     public int? MaxTheoryGrade { get; set; }
@@ -26,11 +26,11 @@ public class UpdateModuleRequest
     public int? MaxPracticalGrade { get; set; }
     
     [JsonPropertyName("hours")]
-    public int? Hours { get; set; }
+    public int Hours { get; set; }
     
     [JsonPropertyName("days")]
-    public int? Days { get; set; }
+    public int Days { get; set; }
     
     [JsonPropertyName("exam_type")]
-    public string? ExamType { get; set; }
+    public int ExamType { get; set; }
 }
