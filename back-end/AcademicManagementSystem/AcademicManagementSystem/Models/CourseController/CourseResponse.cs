@@ -29,7 +29,4 @@ public class CourseResponse
     
     [JsonPropertyName("course_family")]
     public CourseFamilyResponse? CourseFamily { get; set; }
-    
-    [JsonPropertyName("courses_modules_semesters")]
-    public ICollection<CourseModuleSemesterResponse>? CoursesModulesSemesters { get; set; }
 }
