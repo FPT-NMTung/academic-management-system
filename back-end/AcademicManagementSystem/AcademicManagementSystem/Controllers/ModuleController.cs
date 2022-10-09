@@ -102,13 +102,13 @@ public class ModuleController : ControllerBase
         request.ModuleExamNamePortal = request.ModuleExamNamePortal?.Trim();
         request.SemesterNamePortal = request.SemesterNamePortal?.Trim();
 
-        //check empty
-        if (string.IsNullOrEmpty(request.CourseCode) || string.IsNullOrEmpty(request.ModuleName) ||
-            string.IsNullOrEmpty(request.ModuleExamNamePortal) || string.IsNullOrEmpty(request.SemesterNamePortal))
-        {
-            var error = ErrorDescription.Error["E1023"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
+        // check empty string
+         if (string.IsNullOrWhiteSpace(request.CourseCode) || string.IsNullOrWhiteSpace(request.ModuleName) ||
+             string.IsNullOrWhiteSpace(request.ModuleExamNamePortal) || string.IsNullOrWhiteSpace(request.SemesterNamePortal))
+         {
+             var error = ErrorDescription.Error["E1023"];
+             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+         }
 
         // check course code
         request.CourseCode = Regex.Replace(request.CourseCode, StringConstant.RegexWhiteSpaces, " ");
@@ -206,6 +206,26 @@ public class ModuleController : ControllerBase
         {
             var error = ErrorDescription.Error["E1033"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
+        // set null for max grade
+        switch (request.ExamType)
+        {
+            case 1:
+                request.MaxPracticalGrade = null;
+                break;
+            case 2:
+                request.MaxTheoryGrade = null;
+                break;
+            case 3:
+                break;
+            case 4:
+                request.MaxPracticalGrade = null;
+                request.MaxTheoryGrade = null;
+                break;
+            default:
+                var error = ErrorDescription.Error["E1045"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         // check days
@@ -328,8 +348,8 @@ public class ModuleController : ControllerBase
         request.SemesterNamePortal = request.SemesterNamePortal?.Trim();
 
         //check empty
-        if (string.IsNullOrEmpty(request.ModuleName) || string.IsNullOrEmpty(request.ModuleExamNamePortal) ||
-            string.IsNullOrEmpty(request.SemesterNamePortal))
+        if (string.IsNullOrWhiteSpace(request.ModuleName) || string.IsNullOrWhiteSpace(request.ModuleExamNamePortal) ||
+            string.IsNullOrWhiteSpace(request.SemesterNamePortal))
         {
             var error = ErrorDescription.Error["E1023"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -400,6 +420,26 @@ public class ModuleController : ControllerBase
         {
             var error = ErrorDescription.Error["E1033"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
+        // set null for max grade
+        switch (request.ExamType)
+        {
+            case 1:
+                request.MaxPracticalGrade = null;
+                break;
+            case 2:
+                request.MaxTheoryGrade = null;
+                break;
+            case 3:
+                break;
+            case 4:
+                request.MaxPracticalGrade = null;
+                request.MaxTheoryGrade = null;
+                break;
+            default:
+                var error = ErrorDescription.Error["E1045"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         // check days
