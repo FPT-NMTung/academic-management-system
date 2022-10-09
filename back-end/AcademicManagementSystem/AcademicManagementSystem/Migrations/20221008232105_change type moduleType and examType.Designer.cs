@@ -4,6 +4,7 @@ using AcademicManagementSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    partial class AmsContextModelSnapshot : ModelSnapshot
+    [Migration("20221008232105_change type moduleType and examType")]
+    partial class changetypemoduleTypeandexamType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,116 +108,6 @@ namespace AcademicManagementSystem.Migrations
                     b.HasIndex("WardId");
 
                     b.ToTable("center");
-                });
-
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Class", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("CenterId")
-                        .HasColumnType("int")
-                        .HasColumnName("center_id");
-
-                    b.Property<int>("ClassDaysId")
-                        .HasColumnType("int")
-                        .HasColumnName("class_days_id");
-
-                    b.Property<TimeSpan>("ClassHourEnd")
-                        .HasColumnType("time")
-                        .HasColumnName("class_hour_end");
-
-                    b.Property<TimeSpan>("ClassHourStart")
-                        .HasColumnType("time")
-                        .HasColumnName("class_hour_start");
-
-                    b.Property<int>("ClassStatusId")
-                        .HasColumnType("int")
-                        .HasColumnName("class_status_id");
-
-                    b.Property<DateTime>("CompletionDate")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("completion_date");
-
-                    b.Property<string>("CourseCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("course_code");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("created_at");
-
-                    b.Property<DateTime>("GraduationDate")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("graduation_date");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("name");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("start_date");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("updated_at");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CenterId");
-
-                    b.HasIndex("ClassDaysId");
-
-                    b.HasIndex("ClassStatusId");
-
-                    b.HasIndex("CourseCode");
-
-                    b.ToTable("class");
-                });
-
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.ClassDays", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("value");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("class_days");
-                });
-
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.ClassStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("value");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("class_status");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Course", b =>
@@ -861,41 +753,6 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("Ward");
                 });
 
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Class", b =>
-                {
-                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Center", "Center")
-                        .WithMany("Classes")
-                        .HasForeignKey("CenterId")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
-
-                    b.HasOne("AcademicManagementSystem.Context.AmsModels.ClassDays", "ClassDays")
-                        .WithMany("Classes")
-                        .HasForeignKey("ClassDaysId")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
-
-                    b.HasOne("AcademicManagementSystem.Context.AmsModels.ClassStatus", "ClassStatus")
-                        .WithMany("Classes")
-                        .HasForeignKey("ClassStatusId")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
-
-                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Course", "Course")
-                        .WithMany("Classes")
-                        .HasForeignKey("CourseCode")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
-
-                    b.Navigation("Center");
-
-                    b.Navigation("ClassDays");
-
-                    b.Navigation("ClassStatus");
-
-                    b.Navigation("Course");
-                });
-
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Course", b =>
                 {
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.CourseFamily", "CourseFamily")
@@ -1085,8 +942,6 @@ namespace AcademicManagementSystem.Migrations
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Center", b =>
                 {
-                    b.Navigation("Classes");
-
                     b.Navigation("Modules");
 
                     b.Navigation("Rooms");
@@ -1094,20 +949,8 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.ClassDays", b =>
-                {
-                    b.Navigation("Classes");
-                });
-
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.ClassStatus", b =>
-                {
-                    b.Navigation("Classes");
-                });
-
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Course", b =>
                 {
-                    b.Navigation("Classes");
-
                     b.Navigation("CoursesModulesSemesters");
                 });
 

@@ -25,15 +25,14 @@ public class Module
     
     [Column("module_name")]
     [StringLength(255)]
-    public string? ModuleName { get; set; }
+    public string ModuleName { get; set; }
     
     [Column("module_exam_name_portal")]
     [StringLength(255)]
     public string? ModuleExamNamePortal { get; set; }
     
     [Column("module_type")]
-    [StringLength(100)]
-    public string? ModuleType { get; set; }
+    public int ModuleType { get; set; }
     
     [Column("max_theory_grade")]
     public int? MaxTheoryGrade { get; set; }
@@ -42,14 +41,13 @@ public class Module
     public int? MaxPracticalGrade { get; set; }
     
     [Column("hours")]
-    public int? Hours { get; set; }
+    public int Hours { get; set; }
     
     [Column("days")]
-    public int? Days { get; set; }
+    public int Days { get; set; }
     
     [Column("exam_type")]
-    [StringLength(100)]
-    public string? ExamType { get; set; }
+    public int ExamType { get; set; }
     
     [Column("created_at")]
     public DateTime CreatedAt { get; set; }

@@ -20,9 +20,9 @@ public class UpdateSroRequest
     [JsonPropertyName("email_organization")]
     public string? EmailOrganization { get; set; }
     
-    [JsonPropertyName("avatar")]
-    [DefaultValue(null)]
-    public string? Avatar { get; set; }
+    // [JsonPropertyName("avatar")]
+    // [DefaultValue(null)]
+    // public string? Avatar { get; set; }
     
     [JsonPropertyName("province_id")]
     public int ProvinceId { get; set; }
@@ -39,8 +39,8 @@ public class UpdateSroRequest
     [JsonPropertyName("birthday")]
     public DateTime Birthday { get; set; }
 
-    [JsonPropertyName("center_id")]
-    public int CenterId { get; set; }
+    // [JsonPropertyName("center_id")]
+    // public int CenterId { get; set; }
 
     [JsonPropertyName("citizen_identity_card_no")]
     public string? CitizenIdentityCardNo { get; set; }
