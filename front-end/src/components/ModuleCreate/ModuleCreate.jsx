@@ -23,7 +23,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
     const [form] = Form.useForm();
 
     const getListCenter = () => {
-    
+
         FetchApi(CenterApis.getAllCenter).then((res) => {
             const data = res.data.map((e) => {
                 return {
@@ -36,7 +36,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
         });
     };
     const getListCourse = () => {
-       
+
         FetchApi(CourseApis.getAllCourse).then((res) => {
             const data = res.data.map((e) => {
                 return {
@@ -46,19 +46,19 @@ const ModuleCreate = ({ onCreateSuccess }) => {
             setListCourses(data);
             setisLoading(false);
 
-        
+
         });
         setListSemesterid([]);
     };
     const GetListSemesterid = () => {
         const coursecode = form.getFieldValue('course_code').trim();
-     
+
         FetchApi(CourseApis.getCourseByCode, null, null, [`${coursecode}`]).then((res) => {
             const data = res.data.semester_count
 
             setListSemesterid(data);
 
-         
+
         });
         setisLoading(false);
     };
@@ -72,7 +72,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
     useEffect(() => {
         getListCenter();
         getListCourse();
-    
+
 
     }, []);
 
@@ -80,34 +80,34 @@ const ModuleCreate = ({ onCreateSuccess }) => {
         setIsCreating(true);
         FetchApi(
             ModulesApis.createModules,
-          {
-            center_id: e.center_id,
-            semester_name_portal: e.semester_name_portal.trim(),
-            module_name: e.module_name.trim(),
-            module_exam_name_portal: e.module_exam_name_portal.trim(),               
-            module_type: e.module_type,
-            max_theory_grade: e.max_theory_grade,
-            max_practical_grade: e.max_practical_grade,
-            hours: e.hours,
-            days: e.days,
-            exam_type: e.exam_type,
-        //    exam_type:'Lys thuyet',
-            course_code: e.course_code,
-            semester_id: e.semesterid,
+            {
+                center_id: e.center_id,
+                semester_name_portal: e.semester_name_portal.trim(),
+                module_name: e.module_name.trim(),
+                module_exam_name_portal: e.module_exam_name_portal.trim(),
+                module_type: e.module_type,
+                max_theory_grade: e.max_theory_grade,
+                max_practical_grade: e.max_practical_grade,
+                hours: e.hours,
+                days: e.days,
+                exam_type: e.exam_type,
+                course_code: e.course_code,
+                semester_id: e.semesterid,
 
-          },
-          null,
-          null
+            },
+            null,
+            null
         )
-          .then(() => {
-            setIsCreating(false);
-            setIsFailed(false);
-            onCreateSuccess();
-          })
-          .catch(() => {
-            setIsCreating(false);
-            setIsFailed(true);
-          });
+            .then(() => {
+                alert('Tạo môn học thành công');
+                setIsCreating(false);
+                setIsFailed(false);
+                onCreateSuccess();
+            })
+            .catch(() => {
+                setIsCreating(false);
+                setIsFailed(true);
+            });
     };
 
     return (
@@ -133,8 +133,8 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                     labelWrap
                     initialValues={{
                         exam_type: 4,
-                        max_theory_grade:null,
-                        max_practical_grade:null,
+                        max_theory_grade: null,
+                        max_practical_grade: null,
                     }}
 
                     onFinish={handleSubmitForm}
@@ -147,7 +147,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                         rules={[
                             {
                                 required: true,
-                                message: 'Hãy điền mã chương trình',
+                                message: 'Hãy chọn môn học',
                             },
                         ]}
                     >
@@ -162,7 +162,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                         rules={[
                             {
                                 required: true,
-                                message: 'Hãy điền mã chương trình',
+                                message: 'Hãy chọn cơ sở',
                             },
                         ]}
                     >
@@ -244,10 +244,10 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                                 optionFilterProp="children"
                             // onChange={getListDistrict}
                             >
-                                <Select.Option key="1" value="1">1</Select.Option>
-                                <Select.Option key="2" value="2">2</Select.Option>
-                                <Select.Option key="3" value="3">3</Select.Option>
-                                <Select.Option key="4" value="4">4</Select.Option>
+                                <Select.Option key="1" value="1">Học kỳ 1</Select.Option>
+                                <Select.Option key="2" value="2">Học kỳ 2</Select.Option>
+                                <Select.Option key="3" value="3">Học kỳ 3</Select.Option>
+                                <Select.Option key="4" value="4">Học kỳ 4</Select.Option>
 
 
 
@@ -331,7 +331,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                         </Form.Item>
                         <Form.Item
                             name="exam_type"
-                           
+
                             style={{
                                 display: 'inline-block',
                                 width: 'calc(50% - 8px)',
@@ -347,7 +347,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                                 <Select.Option key="5" value={2}>Thực hành</Select.Option>
                                 <Select.Option key="6" value={3}>Lý thuyết và Thực hành</Select.Option>
                                 <Select.Option key="7" value={4}>Không thi</Select.Option>
-                                 {/* <Select.Option key="4" value="Lý thuyết">Lý thuyết</Select.Option>
+                                {/* <Select.Option key="4" value="Lý thuyết">Lý thuyết</Select.Option>
                                 <Select.Option key="5" value="Thực hành">Thực hành</Select.Option>
                                 <Select.Option key="6" value="Lý thuyết và thực hành">Lý thuyết và Thực hành</Select.Option>
                                 <Select.Option key="7" value="Không thi">Không thi</Select.Option> */}
@@ -361,7 +361,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                         }}
                     >
                         <Form.Item
-                            name="max_theory_grade"               
+                            name="max_theory_grade"
                             style={{
                                 display: 'inline-block',
                                 width: 'calc(50% - 8px)',
@@ -378,7 +378,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
 
                             rules={[
                                 {
-                                 
+
                                 },
                             ]}
                             style={{
@@ -440,7 +440,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                         <Button type="primary" htmlType="submit" loading={isCreating} >
                             Tạo mới
                         </Button>
-                       
+
                     </Form.Item>
 
 
@@ -453,9 +453,9 @@ const ModuleCreate = ({ onCreateSuccess }) => {
 
                 </Form>
             )}
-            {!isCreating && isFailed && ( 
-          form.resetFields(['max_theory_grade','max_practical_grade']),
-                
+            {!isCreating && isFailed && (
+                form.resetFields(['max_theory_grade', 'max_practical_grade']),
+
 
                 <Text
                     size={14}

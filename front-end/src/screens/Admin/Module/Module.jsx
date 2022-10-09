@@ -3,7 +3,7 @@ import { Card, Grid, Text, Modal } from '@nextui-org/react';
 import { Form, Select, Input, Divider, Button, Table, } from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../../apis/FetchApi';
-import { ModulesApis,CourseModuleSemesterApis } from '../../../apis/ListApi';
+import { ModulesApis, CourseModuleSemesterApis } from '../../../apis/ListApi';
 import ModuleUpdate from '../../../components/ModuleUpdate/ModuleUpdate';
 import ModuleCreate from '../../../components/ModuleCreate/ModuleCreate';
 import { MdEdit } from 'react-icons/md';
@@ -15,18 +15,18 @@ const TYPE_EXAM = {
     3: 'Thực hành và Lý thuyết',
     4: 'Không thi',
 
-} 
+}
 const TYPE_MODULE = {
     1: 'Lý thuyết',
     2: 'Thực hành',
     3: 'Thực hành và Lý thuyết',
- 
+
 }
 const Module = () => {
-    
+
     const [listModules, setlistModules] = useState([]);
     const [selectedModuleId, setselectedModuleId] = useState(null);
-    const [IsLoading, setIsLoading] = useState(false);
+    const [IsLoading, setIsLoading] = useState(true);
     const [isCreate, setisCreate] = useState(false);
 
     const getData = () => {
@@ -35,12 +35,13 @@ const Module = () => {
 
         FetchApi(apiModule).then((res) => {
             const data = res.data;
+            // console.log(data);
             const mergeModuleRes = data.map((e, index) => {
                 return {
                     ...e,
                     id: e.module.id,
                     key: index,
-                    center_id:e.module.center_id,
+                    center_id: e.module.center_id,
                     modulename: e.module.module_name,
                     centername: e.module.center.name,
                     coursecode: e.course_code,
@@ -53,13 +54,14 @@ const Module = () => {
                     semester_name_portal: e.module.semester_name_portal,
                     module_exam_name_portal: e.module.module_exam_name_portal,
                     semester: e.semester.name,
+                    semester_id: e.semester.id,
 
                 };
             });
-   
+
 
             setlistModules(mergeModuleRes);
-            // setIsLoading(false);
+            setIsLoading(false);
         });
     };
     const handleAddSuccess = () => {
@@ -72,7 +74,7 @@ const Module = () => {
     };
     useEffect(() => {
         getData();
-      
+
     }, []);
     return (
         <div >
@@ -101,7 +103,7 @@ const Module = () => {
                                 <Form.Item name="exam_type" style={{ width: 'calc(17% - 16px)' }}>
                                     <Input placeholder="Hình thức thi" />
                                 </Form.Item>
-                             
+
                                 <Form.Item style={{ width: 'calc(9% - 16px)' }}>
                                     <Button
                                         type="primary"
@@ -151,8 +153,8 @@ const Module = () => {
                                         }}
                                         onClick={() => {
                                             setisCreate(true);
-                                      
-                                           
+
+
                                         }}
                                     >
                                         + Tạo mới
@@ -161,7 +163,7 @@ const Module = () => {
                             </Grid.Container>
                         </Card.Header>
                         <Table
-                            loading={IsLoading===false}
+                            loading={IsLoading}
                             bordered
                             size="middle"
                             dataSource={listModules}
@@ -217,13 +219,13 @@ const Module = () => {
                                     title="Hình thức học"
                                     dataIndex="module_type"
                                     key="module_type"
-                                    width={150}
+                                    width={200}
                                 />
                                 <Table.Column
                                     title="Hình thức thi"
                                     dataIndex="exam_type"
                                     key="exam_type"
-                                    width={150}
+                                    width={200}
                                 />
                             </ColumnGroup>
                             <ColumnGroup title="Điểm tối đa thi">
@@ -256,19 +258,20 @@ const Module = () => {
                             </ColumnGroup>
                             <Table.Column
                                 title="Học kỳ"
-                                dataIndex="semester"
+                                dataIndex="semester_id"
+                                value="semester_id"
                                 key="semester"
-                                width={90}
+                                width={80}
                             />
-                               <Table.Column
+                            <Table.Column
                                 title="Cơ sở"
-                                dataIndex="centername"
-                                key="centername"
-                                width={120}
+                                dataIndex="center_id"
+                                key="center_id"
+                                width={80}
                             />
-                    
-                     
-                     
+
+
+
                             <Table.Column
                                 width={50}
                                 title=""
@@ -296,7 +299,7 @@ const Module = () => {
             <Modal
                 closeButton
                 aria-labelledby="modal-title"
-                open={isCreate==true}
+                open={isCreate == true}
                 onClose={() => {
                     setisCreate(false);
 
@@ -308,7 +311,7 @@ const Module = () => {
                     <Text size={16} b>
                         Thêm môn học
                     </Text>
-                    
+
                 </Modal.Header>
                 <Card.Divider />
                 <Modal.Body>
@@ -331,11 +334,11 @@ const Module = () => {
                     <Text size={16} b>
                         Chỉnh sửa môn học
                     </Text>
-                    
+
                 </Modal.Header>
                 <Card.Divider />
                 <Modal.Body>
-                <ModuleUpdate data={listModules.find((e) => e.id === selectedModuleId)} onUpdateSuccess={handleUpdateSuccess}/>
+                    <ModuleUpdate data={listModules.find((e) => e.id === selectedModuleId)} onUpdateSuccess={handleUpdateSuccess} />
 
                 </Modal.Body>
             </Modal>

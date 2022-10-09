@@ -101,7 +101,16 @@ export const ModulesApis = {
     method: 'POST',
     contextType: 'application/json',
   },
-
+  getModuleByID: {
+    url: '/api/modules/{0}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  updateModule: {
+    url: 'api/modules/{0}',
+    method: 'PUT',
+    contextType: 'application/json',
+  },
 };
 export const CourseModuleSemesterApis = {
   getByCourseCode: {
