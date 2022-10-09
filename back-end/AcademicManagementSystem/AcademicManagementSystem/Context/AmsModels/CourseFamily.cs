@@ -14,11 +14,11 @@ public class CourseFamily
     
     [Key] [Column("code")] 
     [StringLength(100)]
-    public string? Code { get; set; }
+    public string Code { get; set; }
 
     [Column("name")] 
     [StringLength(255)]
-    public string? Name { get; set; }
+    public string Name { get; set; }
 
     [Column("published_year")] 
     public int PublishedYear { get; set; }
