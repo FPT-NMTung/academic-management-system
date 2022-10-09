@@ -8,9 +8,11 @@ public class Center
 {
     public Center()
     {
-        this.Rooms = new HashSet<Room>();
-        this.Users = new HashSet<User>();
-        this.Modules = new HashSet<Module>();
+        Rooms = new HashSet<Room>();
+        Users = new HashSet<User>();
+        Modules = new HashSet<Module>();
+        Classes = new HashSet<Class>();
+        
     }
 
     [Key]
@@ -43,4 +45,6 @@ public class Center
     public virtual ICollection<Room> Rooms { get; set; }
     public virtual ICollection<User> Users { get; set; }
     public virtual ICollection<Module> Modules { get; set; }
+    
+    public virtual ICollection<Class> Classes { get; set; }
 }
