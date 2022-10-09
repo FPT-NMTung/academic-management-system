@@ -37,7 +37,6 @@ public class CourseModuleSemesterController : ControllerBase
             .Include(cms => cms.Module.Center.Province)
             .Include(cms => cms.Module.Center.District)
             .Include(cms => cms.Module.Center.Ward)
-            .ToList()
             .Select(cms => new CourseModuleSemesterResponse()
             {
                 CourseCode = cms.CourseCode,
@@ -92,10 +91,10 @@ public class CourseModuleSemesterController : ControllerBase
                 {
                     Id = cms.Semester.Id, Name = cms.Semester.Name
                 }
-            });
+            }).ToList();
         return Ok(CustomResponse.Ok("Get all course module semesters successfully", courseModuleSemesters));
     }
-    
+
     // get course module semester by course code
     [HttpGet]
     [Route("api/courses_modules_semesters/courses/{courseCode}")]
@@ -110,7 +109,6 @@ public class CourseModuleSemesterController : ControllerBase
             .Include(cms => cms.Module.Center.Province)
             .Include(cms => cms.Module.Center.District)
             .Include(cms => cms.Module.Center.Ward)
-            .ToList()
             .Where(cms => cms.CourseCode == courseCode)
             .Select(cms => new CourseModuleSemesterResponse()
             {
@@ -166,14 +164,15 @@ public class CourseModuleSemesterController : ControllerBase
                 {
                     Id = cms.Semester.Id, Name = cms.Semester.Name
                 }
-            });
+            }).ToList();
         if (!courseModuleSemester.Any())
         {
             return NotFound(CustomResponse.NotFound("Course_module_semester by course code not found"));
         }
+
         return Ok(CustomResponse.Ok("Get all course module semesters successfully", courseModuleSemester));
     }
-    
+
     // get course module semester by semester id
     [HttpGet]
     [Route("api/courses_modules_semesters/semesters/{semesterId}")]
@@ -188,7 +187,6 @@ public class CourseModuleSemesterController : ControllerBase
             .Include(cms => cms.Module.Center.Province)
             .Include(cms => cms.Module.Center.District)
             .Include(cms => cms.Module.Center.Ward)
-            .ToList()
             .Where(cms => cms.SemesterId == semesterId)
             .Select(cms => new CourseModuleSemesterResponse()
             {
@@ -244,11 +242,12 @@ public class CourseModuleSemesterController : ControllerBase
                 {
                     Id = cms.Semester.Id, Name = cms.Semester.Name
                 }
-            });
+            }).ToList();
         if (!courseModuleSemester.Any())
         {
             return NotFound(CustomResponse.NotFound("Course_module_semester by course code not found"));
         }
+
         return Ok(CustomResponse.Ok("Get all course module semesters successfully", courseModuleSemester));
     }
 }

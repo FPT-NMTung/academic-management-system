@@ -30,7 +30,6 @@ public class CourseController : ControllerBase
         var courses = _context.Courses
             .Include(c => c.CourseFamily)
             .Include(c => c.CoursesModulesSemesters)
-            .ToList()
             .Select(c => new CourseResponse()
             {
                 Code = c.Code, CourseFamilyCode = c.CourseFamilyCode, Name = c.Name, SemesterCount = c.SemesterCount,
@@ -47,7 +46,7 @@ public class CourseController : ControllerBase
                     ModuleId = cms.ModuleId,
                     SemesterId = cms.SemesterId,
                 }).ToList()
-            });
+            }).ToList();
         return Ok(CustomResponse.Ok("Get Courses Successfully", courses));
     }
 
@@ -165,8 +164,8 @@ public class CourseController : ControllerBase
     [Authorize(Roles = "admin,sro")]
     public IActionResult UpdateCourse(string code, [FromBody] UpdateCourseRequest request)
     {
-        request.Name = request.Name?.Trim();
-        request.CourseFamilyCode = request.CourseFamilyCode?.ToUpper().Trim();
+        request.Name = request.Name.Trim();
+        request.CourseFamilyCode = request.CourseFamilyCode.ToUpper().Trim();
 
         var course = _context.Courses.FirstOrDefault(c => c.Code == code.Trim());
         if (course == null)

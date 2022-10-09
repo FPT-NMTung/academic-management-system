@@ -27,12 +27,11 @@ public class CourseFamilyController : ControllerBase
     {
         var courseFamilies = _context.CourseFamilies
             .Include(cf => cf.Courses)
-            .ToList()
             .Select(cf => new CourseFamilyResponse()
             {
                 Code = cf.Code, Name = cf.Name, PublishedYear = cf.PublishedYear, IsActive = cf.IsActive,
                 CreatedAt = cf.CreatedAt, UpdatedAt = cf.UpdatedAt
-            });
+            }).ToList();
         return Ok(CustomResponse.Ok("Get course families success", courseFamilies));
     }
 

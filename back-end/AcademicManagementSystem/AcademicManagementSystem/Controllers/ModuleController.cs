@@ -35,7 +35,6 @@ public class ModuleController : ControllerBase
             .Include(m => m.Center.District)
             .Include(m => m.Center.Ward)
             .Include(m => m.CoursesModulesSemesters)
-            .ToList()
             .Select(m => new ModuleResponse()
             {
                 Id = m.Id, CenterId = m.CenterId, SemesterNamePortal = m.SemesterNamePortal, ModuleName = m.ModuleName,
@@ -67,11 +66,11 @@ public class ModuleController : ControllerBase
                 },
                 CourseModuleSemester = new CourseModuleSemesterResponse()
                 {
-                    CourseCode = m.CoursesModulesSemesters.FirstOrDefault()?.CourseCode,
-                    ModuleId = m.CoursesModulesSemesters.FirstOrDefault()?.ModuleId,
-                    SemesterId = m.CoursesModulesSemesters.FirstOrDefault()?.SemesterId
+                    CourseCode = m.CoursesModulesSemesters.FirstOrDefault()!.CourseCode,
+                    ModuleId = m.CoursesModulesSemesters.FirstOrDefault()!.ModuleId,
+                    SemesterId = m.CoursesModulesSemesters.FirstOrDefault()!.SemesterId
                 }
-            });
+            }).ToList();
         return Ok(CustomResponse.Ok("Modules retrieved successfully", modules));
     }
 
@@ -507,8 +506,8 @@ public class ModuleController : ControllerBase
             .Include(m => m.Center.Province)
             .Include(m => m.Center.District)
             .Include(m => m.Center.Ward)
-            .ToList()
-            .Select(GetModuleResponse);
+            .Select(GetModuleResponse)
+            .ToList();
 
         return modules;
     }
