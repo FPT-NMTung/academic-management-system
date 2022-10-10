@@ -9,20 +9,13 @@ public class GradeItem
     [Key]
     [Column("id")]
     public int Id { get; set; }
-    
-    [Column("module_id")]
-    public int ModuleId { get; set; }
-    
-    [Column("grade_category_id")]
-    public int GradeCategoryId { get; set; }
+
+    [Column("grade_category_module_id")]
+    public int GradeCategoryModuleId { get; set; }
     
     [Column("name")]
     public string Name { get; set; }
-    
-    [Column("weight")]
-    public int Weight { get; set; }
-    
+
     // relationships
-    public virtual Module Module { get; set; }
-    public virtual GradeCategory GradeCategory { get; set; }
+    public virtual GradeCategoryModule GradeCategoryModule { get; set; }
 }
