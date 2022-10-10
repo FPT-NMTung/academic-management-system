@@ -13,7 +13,7 @@ const CourseFamily = () => {
     const [listCourseFamily, setlistCourseFamily] = useState([]);
     const [selectedCourseFamilyCode, setselectedCourseFamilyCode] = useState(null);
 
-    const [IsLoading, setIsLoading] = useState(false);
+    const [IsLoading, setIsLoading] = useState(true);
     const [isCreate, setIsCreate] = useState(false);
    
     
@@ -40,7 +40,7 @@ const CourseFamily = () => {
                 };
 
             });
-
+            setIsLoading(false);
             setlistCourseFamily(mergeAllCourseFamily);
         });
        
@@ -88,7 +88,7 @@ const CourseFamily = () => {
                         </Card.Header>
                         <Card.Divider />
                         <Table
-                        
+                            loading={IsLoading}
                        
                             rowClassName={(record, index) => {
                                 if (record.activatecourse === false) {
