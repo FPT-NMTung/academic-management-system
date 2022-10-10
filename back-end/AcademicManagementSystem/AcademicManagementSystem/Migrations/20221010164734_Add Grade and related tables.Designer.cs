@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    [Migration("20221010074758_Add Grade Item and Grade Category")]
-    partial class AddGradeItemandGradeCategory
+    [Migration("20221010164734_Add Grade and related tables")]
+    partial class AddGradeandrelatedtables
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -389,7 +389,7 @@ namespace AcademicManagementSystem.Migrations
                     b.ToTable("grade_category");
                 });
 
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.GradeItem", b =>
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.GradeCategoryModule", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -406,20 +406,44 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnType("int")
                         .HasColumnName("module_id");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("name");
-
-                    b.Property<int>("Weight")
+                    b.Property<int>("QuantityGradeItem")
                         .HasColumnType("int")
-                        .HasColumnName("weight");
+                        .HasColumnName("quantity_grade_item");
+
+                    b.Property<int>("TotalWeight")
+                        .HasColumnType("int")
+                        .HasColumnName("total_weight");
 
                     b.HasKey("Id");
 
                     b.HasIndex("GradeCategoryId");
 
                     b.HasIndex("ModuleId");
+
+                    b.ToTable("grade_category_module");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.GradeItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("GradeCategoryModuleId")
+                        .HasColumnType("int")
+                        .HasColumnName("grade_category_module_id");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GradeCategoryModuleId");
 
                     b.ToTable("grade_item");
                 });
@@ -1001,16 +1025,16 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("Province");
                 });
 
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.GradeItem", b =>
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.GradeCategoryModule", b =>
                 {
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.GradeCategory", "GradeCategory")
-                        .WithMany("GradeItems")
+                        .WithMany("GradeCategoryModules")
                         .HasForeignKey("GradeCategoryId")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Module", "Module")
-                        .WithMany("GradeItems")
+                        .WithMany("GradeCategoryModule")
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
@@ -1018,6 +1042,17 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("GradeCategory");
 
                     b.Navigation("Module");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.GradeItem", b =>
+                {
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.GradeCategoryModule", "GradeCategoryModule")
+                        .WithMany("GradeItems")
+                        .HasForeignKey("GradeCategoryModuleId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.Navigation("GradeCategoryModule");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Module", b =>
@@ -1207,6 +1242,11 @@ namespace AcademicManagementSystem.Migrations
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.GradeCategory", b =>
                 {
+                    b.Navigation("GradeCategoryModules");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.GradeCategoryModule", b =>
+                {
                     b.Navigation("GradeItems");
                 });
 
@@ -1214,7 +1254,7 @@ namespace AcademicManagementSystem.Migrations
                 {
                     b.Navigation("CoursesModulesSemesters");
 
-                    b.Navigation("GradeItems");
+                    b.Navigation("GradeCategoryModule");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Province", b =>
