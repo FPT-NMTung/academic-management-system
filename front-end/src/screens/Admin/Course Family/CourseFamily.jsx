@@ -13,7 +13,7 @@ const CourseFamily = () => {
     const [listCourseFamily, setlistCourseFamily] = useState([]);
     const [selectedCourseFamilyCode, setselectedCourseFamilyCode] = useState(null);
 
-    const [IsLoading, setIsLoading] = useState(false);
+    const [IsLoading, setIsLoading] = useState(true);
     const [isCreate, setIsCreate] = useState(false);
    
     
@@ -22,10 +22,10 @@ const CourseFamily = () => {
     const getData = () => {
         setIsLoading(true);
         const apiCourseFamily = CourseFamilyApis.getAllCourseFamily;
-        console.log(apiCourseFamily);
+        // console.log(apiCourseFamily);
         FetchApi(apiCourseFamily).then((res) => {
             const data = res.data;
-            console.log(data);
+           
             data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
             const mergeAllCourseFamily = data.map((e, index) => {
@@ -40,7 +40,7 @@ const CourseFamily = () => {
                 };
 
             });
-
+            setIsLoading(false);
             setlistCourseFamily(mergeAllCourseFamily);
         });
        
@@ -88,7 +88,7 @@ const CourseFamily = () => {
                         </Card.Header>
                         <Card.Divider />
                         <Table
-                        
+                            loading={IsLoading}
                        
                             rowClassName={(record, index) => {
                                 if (record.activatecourse === false) {
@@ -150,7 +150,7 @@ const CourseFamily = () => {
             >
             <Modal.Header>
                 <Text size={16} b>
-                    Cập nhật thông tin cơ sở
+                    Cập nhật thông tin chương trình học
                 </Text>
             </Modal.Header>
             <Modal.Body>

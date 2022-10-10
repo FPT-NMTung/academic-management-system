@@ -23,7 +23,6 @@ public class SemesterController : ControllerBase
     {
         var semesters = _context.Semesters
             .Include(s => s.CoursesModuleSemesters)
-            .ToList()
             .Select(s => new SemesterResponse()
             {
                 Id = s.Id, Name = s.Name,
@@ -31,7 +30,7 @@ public class SemesterController : ControllerBase
                 {
                     CourseCode = cms.CourseCode, ModuleId = cms.ModuleId, SemesterId = cms.SemesterId
                 }).ToList()
-            });
+            }).ToList();
         return Ok(semesters);
     }
     
