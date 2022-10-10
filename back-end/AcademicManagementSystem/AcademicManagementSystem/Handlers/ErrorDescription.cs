@@ -85,10 +85,8 @@ public static class ErrorDescription
         { "E1027", new ErrorModel() { Message = "Course code must be less or equal than 100 characters", Type = "module-error-0007" } },
         { "E1028", new ErrorModel() { Message = "ModuleExamNamePortal not match with format", Type = "module-error-0008" } },
         { "E1029", new ErrorModel() { Message = "ModuleExamNamePortal be less or equal than 255 characters", Type = "module-error-0009" } },
-        { "E1030", new ErrorModel() { Message = "ModuleType code not match with format", Type = "module-error-00010" } },
-        { "E1031", new ErrorModel() { Message = "ModuleType code must be less or equal than 100 characters", Type = "module-error-00011" } },
-        { "E1032", new ErrorModel() { Message = "ExamType code not match with format", Type = "module-error-00012" } },
-        { "E1033", new ErrorModel() { Message = "ExamType code must be less or equal than 100 characters", Type = "module-error-00013" } },
+        { "E1031", new ErrorModel() { Message = "ModuleType must be between 1-3", Type = "module-error-00011" } },
+        { "E1033", new ErrorModel() { Message = "ExamType must be between 1-4", Type = "module-error-00013" } },
         { "E1034", new ErrorModel() { Message = "SemesterNamePortal code not match with format", Type = "module-error-00014" } },
         { "E1035", new ErrorModel() { Message = "SemesterNamePortal code must be less or equal than 255 characters", Type = "module-error-00015" } },
         { "E1036", new ErrorModel() { Message = "Days must larger than 0", Type = "module-error-00016" } },
@@ -98,6 +96,10 @@ public static class ErrorDescription
         { "E1040", new ErrorModel() { Message = "Semester Id is not existed", Type = "module-error-00020" } },
         { "E1041", new ErrorModel() { Message = "Module with course code, semester id existed", Type = "module-error-00021" } },
         { "E1042", new ErrorModel() { Message = "Fail to SaveChange when Update Module", Type = "module-error-00022" } },
+        { "E1043", new ErrorModel() { Message = "Max Grade must be ignore or greater than 0", Type = "module-error-00023" } },
+        { "E1044", new ErrorModel() { Message = "Update module success but cannot get response", Type = "module-error-00024" } },
+        { "E1045", new ErrorModel() { Message = "Create module success but cannot get response", Type = "module-error-00025" } },
+        { "E1046", new ErrorModel() { Message = "Set null for max grade by exam type fail", Type = "module-error-00026" } },
 
         // teacher
         { "E0039", new ErrorModel() { Message = "Please enter at least one search criteria", Type = "teacher-error-0002" } },

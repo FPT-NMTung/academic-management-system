@@ -4,6 +4,7 @@ using AcademicManagementSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    partial class AmsContextModelSnapshot : ModelSnapshot
+    [Migration("20221009094009_Add Class and Constraints")]
+    partial class AddClassandConstraints
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -366,60 +368,6 @@ namespace AcademicManagementSystem.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("gender");
-                });
-
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.GradeCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("grade_category");
-                });
-
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.GradeItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("GradeCategoryId")
-                        .HasColumnType("int")
-                        .HasColumnName("grade_category_id");
-
-                    b.Property<int>("ModuleId")
-                        .HasColumnType("int")
-                        .HasColumnName("module_id");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("name");
-
-                    b.Property<int>("Weight")
-                        .HasColumnType("int")
-                        .HasColumnName("weight");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GradeCategoryId");
-
-                    b.HasIndex("ModuleId");
-
-                    b.ToTable("grade_item");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Module", b =>
@@ -999,25 +947,6 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("Province");
                 });
 
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.GradeItem", b =>
-                {
-                    b.HasOne("AcademicManagementSystem.Context.AmsModels.GradeCategory", "GradeCategory")
-                        .WithMany("GradeItems")
-                        .HasForeignKey("GradeCategoryId")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
-
-                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Module", "Module")
-                        .WithMany("GradeItems")
-                        .HasForeignKey("ModuleId")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
-
-                    b.Navigation("GradeCategory");
-
-                    b.Navigation("Module");
-                });
-
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Module", b =>
                 {
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Center", "Center")
@@ -1203,16 +1132,9 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.GradeCategory", b =>
-                {
-                    b.Navigation("GradeItems");
-                });
-
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Module", b =>
                 {
                     b.Navigation("CoursesModulesSemesters");
-
-                    b.Navigation("GradeItems");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Province", b =>

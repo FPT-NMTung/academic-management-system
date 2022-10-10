@@ -41,6 +41,13 @@ export const AddressApis = {
     contextType: 'application/json',
   },
 };
+export const SemesterApis = {
+  getAllSemester: {
+    url: 'api/semesters',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+};
 export const CourseFamilyApis = {
   getAllCourseFamily: {
     url: 'api/course-families',
@@ -73,6 +80,47 @@ export const CourseApis = {
   createCourse: {
     url: '/api/courses',
     method: 'POST',
+    contextType: 'application/json',
+  },
+  getCourseByCode: {
+    url: 'api/courses/{0}',
+    method: 'GET',
+    contextType: 'application/json',
+  }
+
+};
+export const ModulesApis = {
+  getAllModules: {
+    url: '/api/modules',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+
+  createModules: {
+    url: '/api/modules',
+    method: 'POST',
+    contextType: 'application/json',
+  },
+  getModuleByID: {
+    url: '/api/modules/{0}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  updateModule: {
+    url: 'api/modules/{0}',
+    method: 'PUT',
+    contextType: 'application/json',
+  },
+};
+export const CourseModuleSemesterApis = {
+  getByCourseCode: {
+    url: '/api/courses_modules_semesters/courses/{0}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getAllCourseModuleSemesterApis: {
+    url: '/api/courses_modules_semesters',
+    method: 'GET',
     contextType: 'application/json',
   },
 

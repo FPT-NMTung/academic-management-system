@@ -13,6 +13,7 @@
 
 .rowDisable {
   background-color: #f5f5f5;
+  color: rgb(158, 158, 158);
   /* pointer-events: none; */
 
 }
