@@ -25,7 +25,7 @@ export const ErrorCodeApi = {
   'sro-error-0002': '',
   'sro-error-0003': '',
   'sro-error-0004': '',
-  'sro-error-0005': 'Số điện thoại đã tồn tại trong hệ thống',
+  'sro0005-error-': 'Số điện thoại đã tồn tại trong hệ thống',
   'sro-error-0006': 'Email cá nhân này đã tồn tại trong hệ thống',
   'sro-error-0007': 'Email tổ chức này đã tồn tại trong hệ thống',
   'sro-error-0008': '',
@@ -60,4 +60,9 @@ export const ErrorCodeApi = {
   'course-error-0012': '',
   'course-error-0013': '',
   'course-error-0014': '',
+
+
+
+
+  "module-error-00021":"Môn học với mã khóa học, học kỳ đã tồn tại",
 };

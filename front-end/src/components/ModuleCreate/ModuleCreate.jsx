@@ -7,7 +7,7 @@ import classes from './ModuleCreate.module.css';
 import { Fragment } from 'react';
 import { MdEdit } from 'react-icons/md';
 import ColumnGroup from 'antd/lib/table/ColumnGroup';
-
+import { ErrorCodeApi } from '../../apis/ErrorCodeApi';
 
 const ModuleCreate = ({ onCreateSuccess }) => {
 
@@ -18,7 +18,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
     const [listCourses, setListCourses] = useState([]);
     const [listSemesterid, setListSemesterid] = useState([]);
     const [exam_type, setExam_type] = useState(4);
-
+    const [errorValue, setErrorValue] = useState(undefined);
 
     const [form] = Form.useForm();
 
@@ -78,6 +78,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
 
     const handleSubmitForm = (e) => {
         setIsCreating(true);
+        setErrorValue(undefined);
         FetchApi(
             ModulesApis.createModules,
             {
@@ -104,7 +105,8 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                 setIsFailed(false);
                 onCreateSuccess();
             })
-            .catch(() => {
+            .catch((err) => {
+                setErrorValue(ErrorCodeApi[err.type_error]);
                 setIsCreating(false);
                 setIsFailed(true);
             });
@@ -198,6 +200,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                             rules={[
                                 {
                                     required: true,
+                                    message: 'Hãy chọc mã khóa học',
                                 },
                             ]}
                             style={{
@@ -274,6 +277,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                             name="hours"
                             rules={[
                                 {
+                                    message: 'Vui lòng nhập số tiếng học',
                                     required: true,
                                 },
                             ]}
@@ -288,6 +292,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                             name="days"
                             rules={[
                                 {
+                                    message: 'Vui lòng nhập số buổi học',
                                     required: true,
                                 },
                             ]}
@@ -312,6 +317,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                             name="module_type"
                             rules={[
                                 {
+                                    message: 'Vui lòng chọn hình thức học',
                                     required: true,
                                 },
                             ]}
@@ -403,6 +409,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                             name="semester_name_portal"
                             rules={[
                                 {
+                                    message: 'Vui lòng nhập tên kỳ học',
                                     required: true,
                                 },
                             ]}
@@ -418,6 +425,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                             rules={[
                                 {
                                     required: true,
+                                    message: 'Vui lòng nhập tên khóa học',
                                 },
                             ]}
                             style={{
@@ -464,7 +472,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                         textAlign: 'center',
                     }}
                 >
-                    Tạo môn học thất bại, vui lòng thử lại
+                    {errorValue}, vui lòng thử lại
                 </Text>
             )}
         </Fragment>

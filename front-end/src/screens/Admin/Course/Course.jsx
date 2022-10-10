@@ -11,7 +11,7 @@ const Course = () => {
     const [listCourse, setlistCourse] = useState([]);
     const [selectedCourseCode, setselectedCourseCode] = useState(null);
     const [isCreate, setIsCreate] = useState(false);
-    const [IsLoading, setIsLoading] = useState(false);
+    const [IsLoading, setIsLoading] = useState(true);
 
 
     const getData = () => {
@@ -91,6 +91,7 @@ const Course = () => {
                         </Card.Header>
                         <Card.Divider />
                         <Table
+                        loading={IsLoading}
                             pagination={{ position: ['bottomCenter'] }}
                             dataSource={listCourse}
                             sortDirections={['descend', 'ascend']}
