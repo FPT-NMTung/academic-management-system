@@ -8,7 +8,7 @@ import classes from './CourseFamilyUpdate.module.css';
 import { Validater } from '../../validater/Validater';
 
 const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
-  // console.log(data);
+
   const [isUpdating, setIsUpdating] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const [IsLoading, setIsLoading] = useState(true);
@@ -22,9 +22,6 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
 
     FetchApi(apiCourseFamily).then((res) => {
       setlistCourseFamily(res.data);
-
-
-
 
     });
 
@@ -110,7 +107,7 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
               label={'Năm áp dụng'}
               rules={[
                 {
-                  
+
                   required: true,
                   validator: (_, value) => {
                     // check regex phone number viet nam

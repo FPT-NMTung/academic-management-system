@@ -9,7 +9,6 @@ import { Validater } from '../../validater/Validater';
 const CourseUpdate = ({ data, onUpdateSuccess }) => {
 
 
-
     const [isUpdating, setIsUpdating] = useState(false);
     const [isFailed, setIsFailed] = useState(false);
     const [IsLoading, setIsLoading] = useState(true);
@@ -152,8 +151,9 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
                                     // message: 'Hãy nhập học kỳ',
                                     required: true,
                                     validator: (_, value) => {
+                                        const semester = value.toString();
                                         // check regex phone number viet nam
-                                        if (Validater.isNumber(value)) {
+                                        if (Validater.isNumber(semester)) {
                                             return Promise.resolve();
                                         }
                                         return Promise.reject(
