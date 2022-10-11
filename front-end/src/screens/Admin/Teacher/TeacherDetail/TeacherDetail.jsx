@@ -174,7 +174,13 @@ const TeacherDetail = () => {
                       {dataUser.working_time.value}
                     </Descriptions.Item>
                     <Descriptions.Item label="Mức lương">
-                      {dataUser.salary ? dataUser.salary : 0} VNĐ
+                      {dataUser.salary
+                        ? String(dataUser.salary).replace(
+                            /\B(?=(\d{3})+(?!\d))/g,
+                            ','
+                          )
+                        : 0}{' '}
+                      VNĐ
                     </Descriptions.Item>
                   </Descriptions>
                 </Card.Body>

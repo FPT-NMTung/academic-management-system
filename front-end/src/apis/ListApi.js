@@ -41,6 +41,7 @@ export const AddressApis = {
     contextType: 'application/json',
   },
 };
+
 export const SemesterApis = {
   getAllSemester: {
     url: 'api/semesters',
@@ -65,8 +66,8 @@ export const CourseFamilyApis = {
     method: 'POST',
     contextType: 'application/json',
   },
-
 };
+
 export const CourseApis = {
   getAllCourse: {
     url: 'api/courses',
@@ -79,7 +80,7 @@ export const CourseApis = {
     contextType: 'application/json',
   },
   createCourse: {
-    url: '/api/courses',
+    url: 'api/courses',
     method: 'POST',
     contextType: 'application/json',
   },
@@ -87,23 +88,23 @@ export const CourseApis = {
     url: 'api/courses/{0}',
     method: 'GET',
     contextType: 'application/json',
-  }
-
+  },
 };
+
 export const ModulesApis = {
   getAllModules: {
-    url: '/api/modules',
+    url: 'api/modules',
     method: 'GET',
     contextType: 'application/json',
   },
 
   createModules: {
-    url: '/api/modules',
+    url: 'api/modules',
     method: 'POST',
     contextType: 'application/json',
   },
   getModuleByID: {
-    url: '/api/modules/{0}',
+    url: 'api/modules/{0}',
     method: 'GET',
     contextType: 'application/json',
   },
@@ -113,18 +114,18 @@ export const ModulesApis = {
     contextType: 'application/json',
   },
 };
+
 export const CourseModuleSemesterApis = {
   getByCourseCode: {
-    url: '/api/courses_modules_semesters/courses/{0}',
+    url: 'api/courses_modules_semesters/courses/{0}',
     method: 'GET',
     contextType: 'application/json',
   },
   getAllCourseModuleSemesterApis: {
-    url: '/api/courses_modules_semesters',
+    url: 'api/courses_modules_semesters',
     method: 'GET',
     contextType: 'application/json',
   },
-
 };
 
 export const RoomApis = {
@@ -151,7 +152,7 @@ export const RoomTypeApis = {
     method: 'GET',
     contextType: 'application/json',
   },
-}
+};
 
 export const ManageSroApis = {
   getAllSro: {
@@ -179,7 +180,7 @@ export const ManageSroApis = {
     method: 'PUT',
     contextType: 'application/json',
   },
-}
+};
 
 export const GenderApis = {
   getAllGender: {
@@ -187,7 +188,7 @@ export const GenderApis = {
     method: 'GET',
     contextType: 'application/json',
   },
-}
+};
 
 export const ManageTeacherApis = {
   searchTeacher: {
@@ -200,4 +201,37 @@ export const ManageTeacherApis = {
     method: 'GET',
     contextType: 'application/json',
   },
-}
+  getWorkingTime: {
+    url: 'api/working-times',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getTeacherType: {
+    url: 'api/teacher-types',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  createTeacher: {
+    url: 'api/teachers',
+    method: 'POST',
+    contextType: 'application/json',
+  },
+  updateTeacher: {
+    url: 'api/teachers/{0}',
+    method: 'PUT',
+    contextType: 'application/json',
+  },
+  getInformationTeacher: {
+    url: 'api/teachers/{0}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+};
+
+export const UserApis = {
+  getInformationUser: {
+    url: 'api/users/information',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+};

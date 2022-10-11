@@ -156,7 +156,7 @@ const TeacherScreen = () => {
                     width: '100%',
                   }}
                   onClick={() => {
-                    navigate('/admin/account/sro/create');
+                    navigate('/admin/account/teacher/create');
                   }}
                 >
                   + Tạo mới
