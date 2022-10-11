@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
 import { CourseFamilyApis } from '../../apis/ListApi';
 import classes from './CourseFamilyUpdate.module.css';
+import { Validater } from '../../validater/Validater';
 
 const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
   // console.log(data);
@@ -110,7 +111,15 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
               rules={[
                 {
                   required: true,
-                  message: 'Hãy nhập năm áp dụng',
+                  validator: (_, value) => {
+                    // check regex phone number viet nam
+                    if (Validater.isNumber(value)) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error('Số năm không hợp lệ')
+                    );
+                  },
                 },
               ]}
             >

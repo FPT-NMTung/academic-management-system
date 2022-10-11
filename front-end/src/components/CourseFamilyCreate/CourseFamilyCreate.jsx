@@ -3,7 +3,7 @@ import { Form, Select, Input, Button, Radio } from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
 import { CourseFamilyApis} from '../../apis/ListApi';
-
+import { Validater } from '../../validater/Validater';
 
 const CouseFamilyCreate = ({onCreateSuccess}) => {
 
@@ -96,10 +96,18 @@ const CouseFamilyCreate = ({onCreateSuccess}) => {
                             label={'Năm áp dụng'}
                             rules={[
                                 {
-                                    required: true,
-                                    message: 'Hãy điền năm áp dụng',
+                                  required: true,
+                                  validator: (_, value) => {
+                                    // check regex phone number viet nam
+                                    if (Validater.isNumber(value)) {
+                                      return Promise.resolve();
+                                    }
+                                    return Promise.reject(
+                                      new Error('Số năm không hợp lệ')
+                                    );
+                                  },
                                 },
-                            ]}
+                              ]}
                         >
 
                             <Input />

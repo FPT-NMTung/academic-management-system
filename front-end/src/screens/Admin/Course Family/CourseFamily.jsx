@@ -9,13 +9,14 @@ import CouseFamilyCreate from '../../../components/CourseFamilyCreate/CourseFami
 import CourseFamilyUpdate from '../../../components/CourseFamilyUpdate/CourseFamilyUpdate';
 
 
+
 const CourseFamily = () => {
     const [listCourseFamily, setlistCourseFamily] = useState([]);
     const [selectedCourseFamilyCode, setselectedCourseFamilyCode] = useState(null);
 
     const [IsLoading, setIsLoading] = useState(true);
     const [isCreate, setIsCreate] = useState(false);
-   
+    const [messageFailed, setMessageFailed] = useState(undefined);
     
 
 
@@ -112,6 +113,7 @@ const CourseFamily = () => {
                             <Table.Column 
                                 sorter={(a, b) => a.codefamilyyear - b.codefamilyyear}
                                 title="Năm áp dụng"
+                               
                                 dataIndex="codefamilyyear"
                                 key="year" />
                             <Table.Column
