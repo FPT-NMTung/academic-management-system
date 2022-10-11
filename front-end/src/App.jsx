@@ -15,6 +15,7 @@ import Module from './screens/Admin/Module/Module';
 import SroScreen from './screens/Admin/Sro/SroScreen';
 import SroDetail from './screens/Admin/Sro/SroDetail/SroDetail';
 import SroCreate from './screens/Admin/Sro/SroCreate/SroCreate';
+import ModuleUpdate from './components/ModuleUpdate/ModuleUpdate';
 
 const App = () => {
   return (
@@ -48,6 +49,7 @@ const App = () => {
         <Route path='/admin/manage-course/course-family' element={<CourseFamily/>}/>
         <Route path='/admin/manage-course/course' element={<Course/>}/>
         <Route path='/admin/manage-course/module' element={<Module/>}/>
+        <Route path='/admin/manage-course/module/:id/update' element={<ModuleUpdate/>}/>
         <Route path='/admin/account/sro' element={<SroScreen />}/>
         <Route path='/admin/account/sro/:id' element={<SroDetail />}/>
         <Route path='/admin/account/sro/create' element={<SroCreate modeUpdate={false}/>}/>

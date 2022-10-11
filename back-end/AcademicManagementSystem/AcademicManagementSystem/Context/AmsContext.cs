@@ -64,4 +64,16 @@ public class AmsContext : DbContext
     public DbSet<WorkingTime> WorkingTimes { get; set; }
     
     public DbSet<Teacher> Teachers { get; set; }
+    
+    public DbSet<ClassDays> ClassDays { get; set; }
+    
+    public DbSet<ClassStatus> ClassStatuses { get; set; }
+    
+    public DbSet<Class> Classes { get; set; }
+    
+    public DbSet<GradeCategory> GradeCategories { get; set; }
+    
+    public DbSet<GradeCategoryModule> GradeCategoryModules { get; set; }
+
+    public DbSet<GradeItem> GradeItems { get; set; }
 }
