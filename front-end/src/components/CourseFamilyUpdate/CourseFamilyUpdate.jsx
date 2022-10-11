@@ -1,11 +1,12 @@
 import { Card, Grid, Text } from '@nextui-org/react';
-import { Form, Select, Input, Button, Spin } from 'antd';
+import { Form, Select, DatePicker, Input, Button, Spin } from 'antd';
 import { Fragment } from 'react';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
 import { CourseFamilyApis } from '../../apis/ListApi';
 import classes from './CourseFamilyUpdate.module.css';
 import { Validater } from '../../validater/Validater';
+import moment from 'moment';
 
 const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
 
@@ -16,6 +17,7 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
   const [listCourseFamily, setlistCourseFamily] = useState([]);
 
   const getData = () => {
+
     setIsLoading(true);
     const apiCourseFamily = CourseFamilyApis.getAllCourseFamily;
     console.log(apiCourseFamily);
@@ -38,7 +40,7 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
     const body = {
       name: e.coursefamilyname.trim(),
       code: e.codefamily,
-      published_year: e.codefamilyyear,
+      published_year: e.codefamilyyear.year(),
       is_active: true,
 
     };
@@ -70,7 +72,7 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
           initialValues={{
             coursefamilyname: data?.namecoursefamily,
             codefamily: data?.codefamily,
-            codefamilyyear: data?.codefamilyyear,
+            codefamilyyear: moment(data?.codefamilyyear),
 
 
           }}
@@ -107,21 +109,16 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
               label={'Năm áp dụng'}
               rules={[
                 {
-
                   required: true,
-                  validator: (_, value) => {
-                    // check regex phone number viet nam
-                    if (Validater.isNumber(value)) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error('Số năm không hợp lệ')
-                    );
-                  },
+                  message: 'Hãy chọn năm áp dụng',
                 },
               ]}
             >
-              <Input />
+              <DatePicker
+                popupStyle={{ zIndex: 999999}}
+                placeholder="Năm áp dụng"
+                picker="year" />
+             
             </Form.Item>
 
           </Fragment>

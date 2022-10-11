@@ -20,7 +20,7 @@ const TYPE_EXAM = {
 const TYPE_MODULE = {
   1: 'Lý thuyết',
   2: 'Thực hành',
-  3: 'Thực hành và Lý thuyết',
+  3: 'Lý thuyết và Thực hành',
 };
 const Module = () => {
   const [listModules, setlistModules] = useState([]);
@@ -34,10 +34,21 @@ const Module = () => {
     const param = {
       moduleName: form.getFieldValue('module_name'),
       courseCode: form.getFieldValue('course_code'),
-      moduleType: form.getFieldValue('module_type'),
-      examType: form.getFieldValue('exam_type'),
-      // semester: form.getFieldValue('semester_id'),
     };
+
+    const moduletype = form.getFieldValue('module_type');
+    const examtype = form.getFieldValue('exam_type');
+    const semesterid = form.getFieldValue('semester_id');
+    
+    if (moduletype !== null) {
+      param.moduleType = moduletype;
+    }
+    if (examtype !== null) {
+      param.examType = examtype;
+    }
+    if (semesterid !== null) {
+      param.semesterId = semesterid;
+    }
 
     FetchApi(ModulesApis.searchModules, null, param, null).then((res) => {
       const data = res.data;

@@ -126,8 +126,7 @@ const CourseFamily = () => {
                                             className={classes.editIcon}
                                             onClick={() => {
                                                 setselectedCourseFamilyCode(data.codefamily);
-                                                
-                                                
+                                                                                               
                                             }} />
                                     );
                                 }}
