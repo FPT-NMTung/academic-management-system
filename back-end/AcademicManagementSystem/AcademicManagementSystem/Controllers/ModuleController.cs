@@ -31,6 +31,7 @@ public class ModuleController : ControllerBase
     // get all modules
     [HttpGet]
     [Route("api/modules")]
+    [Authorize(Roles = "admin,sro,teacher,student")]
     public IActionResult GetModules()
     {
         var modules = _context.Modules.Include(m => m.Center)
@@ -74,6 +75,7 @@ public class ModuleController : ControllerBase
     // get module by id
     [HttpGet]
     [Route("api/modules/{id}")]
+    [Authorize(Roles = "admin,sro,teacher,student")]
     public IActionResult GetModuleById(int id)
     {
         var module = _context.Modules.Include(m => m.Center)
@@ -508,8 +510,8 @@ public class ModuleController : ControllerBase
         var sCourseCode = courseCode?.Trim() == null ? string.Empty : RemoveDiacritics(courseCode.Trim().ToUpper());
         var sModuleType = moduleType?.Trim() == null ? string.Empty : RemoveDiacritics(moduleType.Trim().ToUpper());
         var sExamType = examType?.Trim() == null ? string.Empty : RemoveDiacritics(examType.Trim().ToUpper());
-        if (sModuleName == String.Empty && sCourseCode == String.Empty && sModuleType == String.Empty &&
-            sExamType == String.Empty)
+        if (sModuleName == string.Empty && sCourseCode == string.Empty && sModuleType == string.Empty &&
+            sExamType == string.Empty)
         {
             var modules = GetAllCoursesModulesSemesters();
             return Ok(CustomResponse.Ok("Module search successfully", modules));
