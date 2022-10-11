@@ -7,6 +7,8 @@ using AcademicManagementSystem.Models.RoleController;
 using AcademicManagementSystem.Models.TeacherTypeController;
 using AcademicManagementSystem.Models.UserController;
 using AcademicManagementSystem.Models.WorkingTime;
+using AcademicManagementSystem.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AcademicManagementSystem.Controllers;
@@ -15,21 +17,21 @@ namespace AcademicManagementSystem.Controllers;
 public class UserController : ControllerBase
 {
     private readonly AmsContext _context;
+    private readonly IUserService _userService;
 
-    public UserController(AmsContext context)
+    public UserController(AmsContext context, IUserService userService)
     {
         _context = context;
+        _userService = userService;
     }
 
     [HttpGet]
-    [Route("api/users/{id:int}")]
-    public IActionResult GetUsers(int id)
+    [Route("api/users/information")]
+    [Authorize(Roles = "admin, sro, teacher, student")]
+    public IActionResult GetUsersInformation()
     {
-        var user = getAllUsers().FirstOrDefault(u => u.UserId == id);
-        if (user == null)
-        {
-            return NotFound(CustomResponse.NotFound("Not found user with id: " + id));
-        }
+        var id = _userService.GetUserId();
+        var user = getAllUsers().FirstOrDefault(u => u.UserId.ToString() == id);
         return Ok(CustomResponse.Ok("Get user by id successfully", user));
     }
 

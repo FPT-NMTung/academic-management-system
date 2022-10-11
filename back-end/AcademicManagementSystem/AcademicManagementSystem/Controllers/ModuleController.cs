@@ -31,6 +31,7 @@ public class ModuleController : ControllerBase
     // get all modules
     [HttpGet]
     [Route("api/modules")]
+    [Authorize(Roles = "admin,sro,teacher,student")]
     public IActionResult GetModules()
     {
         var modules = _context.Modules.Include(m => m.Center)
@@ -73,7 +74,8 @@ public class ModuleController : ControllerBase
 
     // get module by id
     [HttpGet]
-    [Route("api/modules/{id}")]
+    [Route("api/modules/{id:int}")]
+    [Authorize(Roles = "admin,sro,teacher,student")]
     public IActionResult GetModuleById(int id)
     {
         var module = _context.Modules.Include(m => m.Center)
@@ -103,12 +105,13 @@ public class ModuleController : ControllerBase
         request.SemesterNamePortal = request.SemesterNamePortal?.Trim();
 
         // check empty string
-         if (string.IsNullOrWhiteSpace(request.CourseCode) || string.IsNullOrWhiteSpace(request.ModuleName) ||
-             string.IsNullOrWhiteSpace(request.ModuleExamNamePortal) || string.IsNullOrWhiteSpace(request.SemesterNamePortal))
-         {
-             var error = ErrorDescription.Error["E1023"];
-             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-         }
+        if (string.IsNullOrWhiteSpace(request.CourseCode) || string.IsNullOrWhiteSpace(request.ModuleName) ||
+            string.IsNullOrWhiteSpace(request.ModuleExamNamePortal) ||
+            string.IsNullOrWhiteSpace(request.SemesterNamePortal))
+        {
+            var error = ErrorDescription.Error["E1023"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         // check course code
         request.CourseCode = Regex.Replace(request.CourseCode, StringConstant.RegexWhiteSpaces, " ");
@@ -207,7 +210,7 @@ public class ModuleController : ControllerBase
             var error = ErrorDescription.Error["E1033"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         // set null for max grade
         switch (request.ExamType)
         {
@@ -328,7 +331,7 @@ public class ModuleController : ControllerBase
 
     // update module by id
     [HttpPut]
-    [Route("api/modules/{id}")]
+    [Route("api/modules/{id:int}")]
     [Authorize(Roles = "admin,sro")]
     public IActionResult UpdateModuleById(int id, [FromBody] UpdateModuleRequest request)
     {
@@ -421,7 +424,7 @@ public class ModuleController : ControllerBase
             var error = ErrorDescription.Error["E1033"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         // set null for max grade
         switch (request.ExamType)
         {
@@ -502,17 +505,19 @@ public class ModuleController : ControllerBase
     [Route("api/modules/search")]
     [Authorize(Roles = "admin,sro")]
     public IActionResult SearchModule(string? moduleName, string? courseCode,
-        string? moduleType, string? examType)
+        string? moduleType, string? examType, string? semesterId)
     {
         var sModuleName = moduleName?.Trim() == null ? string.Empty : RemoveDiacritics(moduleName.Trim().ToUpper());
         var sCourseCode = courseCode?.Trim() == null ? string.Empty : RemoveDiacritics(courseCode.Trim().ToUpper());
-        var sModuleType = moduleType?.Trim() == null ? string.Empty : RemoveDiacritics(moduleType.Trim().ToUpper());
-        var sExamType = examType?.Trim() == null ? string.Empty : RemoveDiacritics(examType.Trim().ToUpper());
-        if (sModuleName == String.Empty && sCourseCode == String.Empty && sModuleType == String.Empty &&
-            sExamType == String.Empty)
+        var sModuleType = moduleType?.Trim() == null ? null : moduleType.Trim();
+        var sExamType = examType?.Trim() == null ? null : examType.Trim();
+        var sSemesterId = semesterId?.Trim() == null ? null : semesterId.Trim();
+
+        if (sModuleName == string.Empty && sCourseCode == string.Empty && string.IsNullOrEmpty(sModuleType) &&
+            string.IsNullOrEmpty(sExamType) && string.IsNullOrEmpty(sSemesterId))
         {
             var modules = GetAllCoursesModulesSemesters();
-            return Ok(CustomResponse.Ok("Module search successfully", modules));
+            return Ok(CustomResponse.Ok("Module searched successfully", modules));
         }
 
         var listCoursesModulesSemesters = GetAllCoursesModulesSemesters();
@@ -522,11 +527,18 @@ public class ModuleController : ControllerBase
         {
             var s1 = RemoveDiacritics(cms.Module!.ModuleName!.ToUpper());
             var s2 = RemoveDiacritics(cms.CourseCode!.ToUpper());
-            var s3 = RemoveDiacritics(cms.Module.ModuleType.ToString()!);
-            var s4 = RemoveDiacritics(cms.Module.ExamType.ToString()!);
+            var s3 = cms.Module!.ModuleType!.ToString()!;
+            var s4 = cms.Module!.ExamType!.ToString()!;
+            var s5 = cms.Semester!.Id.ToString();
+
+            sModuleType ??= "";
+
+            sExamType ??= "";
+
+            sSemesterId ??= "";
 
             if (s1.Contains(sModuleName) && s2.Contains(sCourseCode) && s3.Contains(sModuleType) &&
-                s4.Contains(sExamType))
+                s4.Contains(sExamType) && s5.Contains(sSemesterId))
             {
                 moduleResponse.Add(cms);
             }
