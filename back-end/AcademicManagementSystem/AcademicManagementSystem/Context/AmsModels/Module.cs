@@ -9,7 +9,8 @@ public class Module
     // constructor
     public Module()
     {
-        this.CoursesModulesSemesters = new HashSet<CourseModuleSemester>();
+        CoursesModulesSemesters = new HashSet<CourseModuleSemester>();
+        GradeCategoryModule = new HashSet<GradeCategoryModule>();
     }
     
     [Key]
@@ -58,4 +59,6 @@ public class Module
     // relationships
     public virtual Center Center { get; set; }
     public virtual ICollection<CourseModuleSemester> CoursesModulesSemesters { get; set; }
+    
+    public virtual ICollection<GradeCategoryModule> GradeCategoryModule { get; set; }
 }
