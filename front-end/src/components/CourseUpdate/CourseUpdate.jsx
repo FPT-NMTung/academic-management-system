@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
 import { CourseFamilyApis, CourseApis } from '../../apis/ListApi';
 import classes from './CourseUpdate.module.css';
-
+import { Validater } from '../../validater/Validater';
 const CourseUpdate = ({ data, onUpdateSuccess }) => {
 
 
@@ -19,24 +19,24 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
     const getlistCourseFamily = () => {
         FetchApi(CourseFamilyApis.getAllCourseFamily).then((res) => {
             setlistCourseFamily(res.data);
-          
+
         });
-      
-      };
+
+    };
     const getData = () => {
         setIsLoading(true);
         const apiCourse = CourseApis.getAllCourse;
         console.log(apiCourse);
-    
+
         FetchApi(apiCourse).then((res) => {
             setlistCourse(res.data);
 
-    
-    
+
+
         });
-        
-    
-      }
+
+
+    }
 
 
 
@@ -45,12 +45,12 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
     useEffect(() => {
         setIsLoading(false);
         getlistCourseFamily();
-        
+
     }, []);
 
     const handleSubmitForm = (e) => {
         setIsUpdating(true);
- 
+
         const body = {
             code: e.codecourse,
             course_family_code: e.course_family_code,
@@ -78,8 +78,8 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
             )}
             {!IsLoading && (
                 <Form
-               
-                    labelCol={{ span: 7  }}
+
+                    labelCol={{ span: 7 }}
                     wrapperCol={{ span: 16 }}
                     layout="horizontal"
                     onFinish={handleSubmitForm}
@@ -124,10 +124,10 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
                                 onChange={getlistCourseFamily}
                                 dropdownStyle={{ zIndex: 9999 }}
                             >
-                                {listCourseFamily.map((e,index) => (
+                                {listCourseFamily.map((e, index) => (
                                     <Select.Option key={index} value={e.code}>
                                         {e.data} {e.code}
-                                        
+
                                     </Select.Option>
                                 ))}
                             </Select>
@@ -142,15 +142,24 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
                                 },
                             ]}
                         >
-                            <Input  disabled/>
+                            <Input disabled />
                         </Form.Item>
                         <Form.Item
                             name={'semester_count'}
                             label={'Học kỳ'}
                             rules={[
                                 {
+                                    // message: 'Hãy nhập học kỳ',
                                     required: true,
-                                    message: 'Hãy nhập học kỳ',
+                                    validator: (_, value) => {
+                                        // check regex phone number viet nam
+                                        if (Validater.isNumber(value)) {
+                                            return Promise.resolve();
+                                        }
+                                        return Promise.reject(
+                                            new Error('Học kỳ không hợp lệ')
+                                        );
+                                    },
                                 },
                             ]}
                         >

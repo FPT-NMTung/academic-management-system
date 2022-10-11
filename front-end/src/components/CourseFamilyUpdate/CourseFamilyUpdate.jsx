@@ -110,6 +110,7 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
               label={'Năm áp dụng'}
               rules={[
                 {
+                  
                   required: true,
                   validator: (_, value) => {
                     // check regex phone number viet nam
