@@ -120,6 +120,13 @@ public static class ErrorDescription
         { "E0054", new ErrorModel() { Message = "Tax Code must be 10 digits", Type = "teacher-error-0017" } },
         { "E0055", new ErrorModel() { Message = "Teacher Not Found", Type = "teacher-error-0018" } },
 
+        //grade
+        { "E0056", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0001" } },
+        { "E0057", new ErrorModel() { Message = "Total Weight must be 100 for all grade category", Type = "grade-error-0002" } },
+        { "E0058", new ErrorModel() { Message = "Invalid data for create grade category details", Type = "grade-error-0003" } },
+        { "E0059", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0004" } },
+
+        
 
     };
 }
