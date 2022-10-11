@@ -22,6 +22,10 @@ namespace AcademicManagementSystem.Controllers;
 public class ModuleController : ControllerBase
 {
     private readonly AmsContext _context;
+    private const int PracticeExam = 5;
+    private const int FinalExam = 6;
+    private const int PracticeExamResit = 7;
+    private const int FinalExamResit = 8;
 
     public ModuleController(AmsContext context)
     {
@@ -103,12 +107,13 @@ public class ModuleController : ControllerBase
         request.SemesterNamePortal = request.SemesterNamePortal?.Trim();
 
         // check empty string
-         if (string.IsNullOrWhiteSpace(request.CourseCode) || string.IsNullOrWhiteSpace(request.ModuleName) ||
-             string.IsNullOrWhiteSpace(request.ModuleExamNamePortal) || string.IsNullOrWhiteSpace(request.SemesterNamePortal))
-         {
-             var error = ErrorDescription.Error["E1023"];
-             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-         }
+        if (string.IsNullOrWhiteSpace(request.CourseCode) || string.IsNullOrWhiteSpace(request.ModuleName) ||
+            string.IsNullOrWhiteSpace(request.ModuleExamNamePortal) ||
+            string.IsNullOrWhiteSpace(request.SemesterNamePortal))
+        {
+            var error = ErrorDescription.Error["E1023"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         // check course code
         request.CourseCode = Regex.Replace(request.CourseCode, StringConstant.RegexWhiteSpaces, " ");
@@ -207,7 +212,7 @@ public class ModuleController : ControllerBase
             var error = ErrorDescription.Error["E1033"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         // set null for max grade
         switch (request.ExamType)
         {
@@ -312,6 +317,8 @@ public class ModuleController : ControllerBase
             var error = ErrorDescription.Error["E1045"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
+
+        AddDataToGradeCategoryModule(module.Id, request.ExamType);
 
         return Ok(CustomResponse.Ok("Module created successfully", createdModule));
     }
@@ -421,7 +428,7 @@ public class ModuleController : ControllerBase
             var error = ErrorDescription.Error["E1033"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         // set null for max grade
         switch (request.ExamType)
         {
@@ -493,6 +500,8 @@ public class ModuleController : ControllerBase
             var error = ErrorDescription.Error["E1044"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
+
+        AddDataToGradeCategoryModule(module.Id, request.ExamType);
 
         return Ok(CustomResponse.Ok("Module updated successfully", updatedModule));
     }
@@ -675,5 +684,116 @@ public class ModuleController : ControllerBase
         return Regex.Replace(normalizedStr, pattern, string.Empty)
             .Replace('\u0111', 'd')
             .Replace('\u0110', 'D');
+    }
+
+    private void AddDataToGradeCategoryModule(int moduleId, int examType)
+    {
+        DeleteDataGradeCategoryModuleAndItems(moduleId);
+        // no exam
+        if (examType == 4)
+        {
+            _context.SaveChanges();
+            return;
+        }
+        var gradeItemNameFe = _context.GradeCategories.Find(FinalExam)!.Name;
+        var gradeItemNameFResit = _context.GradeCategories.Find(FinalExamResit)!.Name;
+
+        var gradeCategoryModule = new GradeCategoryModule()
+        {
+            ModuleId = moduleId,
+            GradeCategoryId = FinalExam,
+            TotalWeight = 100,
+            QuantityGradeItem = 1,
+            GradeItems = new List<GradeItem>()
+            {
+                new GradeItem()
+                {
+                    Name = gradeItemNameFe
+                }
+            }
+        };
+
+        var gradeCategoryModuleResit = new GradeCategoryModule()
+        {
+            ModuleId = moduleId,
+            GradeCategoryId = FinalExamResit,
+            TotalWeight = 100,
+            QuantityGradeItem = 1,
+            GradeItems = new List<GradeItem>()
+            {
+                new GradeItem()
+                {
+                    Name = gradeItemNameFResit
+                }
+            }
+        };
+
+        switch (examType)
+        {
+            // theory exam
+            case 1:
+                break;
+            // practical exam
+            case 2:
+                gradeCategoryModule.GradeCategoryId = PracticeExam;
+                gradeCategoryModuleResit.GradeCategoryId = PracticeExamResit;
+                break;
+            // both theory and practical exam
+            case 3:
+                var gradeCategoryModulePe = new GradeCategoryModule()
+                {
+                    ModuleId = moduleId,
+                    GradeCategoryId = PracticeExam,
+                    TotalWeight = 50,
+                    QuantityGradeItem = 1,
+                    GradeItems = new List<GradeItem>()
+                    {
+                        new GradeItem()
+                        {
+                            Name = _context.GradeCategories.Find(PracticeExam)!.Name
+                        }
+                    }
+                };
+                var gradeCategoryModulePeResit = new GradeCategoryModule()
+                {
+                    ModuleId = moduleId,
+                    GradeCategoryId = PracticeExamResit,
+                    TotalWeight = 50,
+                    QuantityGradeItem = 1,
+                    GradeItems = new List<GradeItem>()
+                    {
+                        new GradeItem()
+                        {
+                            Name = _context.GradeCategories.Find(PracticeExamResit)!.Name
+                        }
+                    }
+                };
+                gradeCategoryModule.TotalWeight = 50;
+                gradeCategoryModuleResit.TotalWeight = 50;
+                _context.GradeCategoryModules.Add(gradeCategoryModulePe);
+                _context.GradeCategoryModules.Add(gradeCategoryModulePeResit);
+                break;
+        }
+
+        _context.GradeCategoryModules.Add(gradeCategoryModule);
+        _context.GradeCategoryModules.Add(gradeCategoryModuleResit);
+
+        _context.SaveChanges();
+    }
+
+    private void DeleteDataGradeCategoryModuleAndItems(int moduleId)
+    {
+        // delete all grade items by the grade category module id
+        var gradeItems =
+            _context.GradeItems
+                .Include(gi => gi.GradeCategoryModule)
+                .ThenInclude(gcd => gcd.Module)
+                .Where(gi => gi.GradeCategoryModule.ModuleId == moduleId);
+        _context.GradeItems.RemoveRange(gradeItems);
+
+        // delete all grade category module by module id
+        var gradeCategoryModules =
+            _context.GradeCategoryModules.Where(gcm => gcm.ModuleId == moduleId);
+        _context.GradeCategoryModules.RemoveRange(gradeCategoryModules);
     }
 }

@@ -65,7 +65,7 @@ public class GradeCategoryModuleController : ControllerBase
 
             foreach (var gcd in request.GradeCategoryDetails)
             {
-                var categoryName = _context.GradeCategories.Find(gcd.GradeCategoryId)!.Name;
+                var gradeCategoryName = _context.GradeCategories.Find(gcd.GradeCategoryId)!.Name;
 
                 var gradeCategoryModule = new GradeCategoryModule()
                 {
@@ -82,11 +82,11 @@ public class GradeCategoryModuleController : ControllerBase
                     var gradeItem = new GradeItem()
                     {
                         GradeCategoryModuleId = gradeCategoryModule.Id,
-                        Name = categoryName,
+                        Name = gradeCategoryName,
                     };
-                    if (!categoryName.Contains("Exam"))
+                    if (!gradeCategoryName.Contains("Exam") || !gradeCategoryName.Contains("Final"))
                     {
-                        gradeItem.Name = categoryName + $" {i + 1}";
+                        gradeItem.Name = gradeCategoryName + $" {i + 1}";
                     }
 
                     gradeCategoryModule.GradeItems.Add(gradeItem);
