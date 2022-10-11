@@ -28,14 +28,19 @@ const Module = () => {
   const [IsLoading, setIsLoading] = useState(true);
   const [isCreate, setisCreate] = useState(false);
   const navigate = useNavigate();
+  const [form] = Form.useForm();
 
   const getData = () => {
-    setIsLoading(true);
-    const apiModule = CourseModuleSemesterApis.getAllCourseModuleSemesterApis;
+    const param = {
+      moduleName: form.getFieldValue('module_name'),
+      courseCode: form.getFieldValue('course_code'),
+      moduleType: form.getFieldValue('module_type'),
+      examType: form.getFieldValue('exam_type'),
+      // semester: form.getFieldValue('semester_id'),
+    };
 
-    FetchApi(apiModule).then((res) => {
+    FetchApi(ModulesApis.searchModules, null, param, null).then((res) => {
       const data = res.data;
-      // console.log(data);
       const mergeModuleRes = data
         .sort(
           (a, b) =>
@@ -69,6 +74,15 @@ const Module = () => {
       setIsLoading(false);
     });
   };
+  const handleClearInput = () => {
+    form.resetFields();
+    getData();
+  };
+
+  const handleSubmitForm = () => {
+    getData();
+  };
+
   const handleAddSuccess = () => {
     setisCreate(false);
     getData();
@@ -89,9 +103,20 @@ const Module = () => {
         <Grid sm={12}>
           <Card>
             <Card.Body>
-              <Form layout="inline">
+              <Form
+                layout="inline"
+                form={form}
+                initialValues={{
+                  module_name: '',
+                  course_code: '',
+                  module_type: null,
+                  exam_type: null,
+                  semester_id: null,
+                }}
+                onFinish={handleSubmitForm}
+              >
                 <Form.Item
-                  name="modulename"
+                  name="module_name"
                   style={{ width: 'calc(17% - 16px)' }}
                 >
                   <Input placeholder="Môn học" />
@@ -105,14 +130,48 @@ const Module = () => {
                 <Form.Item
                   name="module_type"
                   style={{ width: 'calc(17% - 16px)' }}
+
                 >
-                  <Input placeholder="Hình thức học" />
+                  <Select
+                    style={{ width: '100%' }}
+                    dropdownStyle={{ zIndex: 9999 }}
+                    placeholder="Hình thức học"
+                  >
+                    <Select.Option key="1" value="1">Lý thuyết</Select.Option>
+                    <Select.Option key="2" value="2">Thực hành</Select.Option>
+                    <Select.Option key="3" value="3">Lý thuyết và Thực hành</Select.Option>
+                  </Select>
                 </Form.Item>
                 <Form.Item
                   name="exam_type"
                   style={{ width: 'calc(17% - 16px)' }}
                 >
-                  <Input placeholder="Hình thức thi" />
+                  <Select
+                    style={{ width: '100%' }}
+                    dropdownStyle={{ zIndex: 9999 }}
+                    placeholder="Hình thức thi">
+                    <Select.Option key="4" value="1">Lý thuyết</Select.Option>
+                    <Select.Option key="5" value="2">Thực hành</Select.Option>
+                    <Select.Option key="6" value="3">Lý thuyết và Thực hành</Select.Option>
+                    <Select.Option key="7" value="4">Không thi</Select.Option>
+                  </Select>
+                </Form.Item>
+                <Form.Item
+                  name="semester_id"
+                  style={{ width: 'calc(17% - 16px)' }}
+                >
+                  <Select
+                    style={{ width: '100%' }}
+                    dropdownStyle={{ zIndex: 9999 }}
+                    placeholder="Chọn học kỳ"
+                    optionFilterProp="children"
+                  >
+                    <Select.Option key="1" value="1">Học kỳ 1</Select.Option>
+                    <Select.Option key="2" value="2">Học kỳ 2</Select.Option>
+                    <Select.Option key="3" value="3">Học kỳ 3</Select.Option>
+                    <Select.Option key="4" value="4">Học kỳ 4</Select.Option>
+
+                  </Select>
                 </Form.Item>
 
                 <Form.Item style={{ width: 'calc(9% - 16px)' }}>
@@ -130,6 +189,7 @@ const Module = () => {
                     style={{
                       width: '100%',
                     }}
+                    onClick={handleClearInput}
                   >
                     Huỷ
                   </Button>
