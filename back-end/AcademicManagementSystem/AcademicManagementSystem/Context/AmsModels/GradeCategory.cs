@@ -8,7 +8,7 @@ public class GradeCategory
 {
     public GradeCategory()
     {
-        GradeItems = new HashSet<GradeItem>();
+        GradeCategoryModules = new HashSet<GradeCategoryModule>();
     }
 
     [Key] 
@@ -18,5 +18,5 @@ public class GradeCategory
     [Column("name")]
     public string Name { get; set; }
     
-    public virtual ICollection<GradeItem> GradeItems { get; set; }
+    public virtual ICollection<GradeCategoryModule> GradeCategoryModules { get; set; }
 }

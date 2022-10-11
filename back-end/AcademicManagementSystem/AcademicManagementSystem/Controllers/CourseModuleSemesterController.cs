@@ -8,6 +8,7 @@ using AcademicManagementSystem.Models.CourseFamilyController;
 using AcademicManagementSystem.Models.CourseModuleSemester;
 using AcademicManagementSystem.Models.ModuleController;
 using AcademicManagementSystem.Models.SemesterController;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,7 @@ public class CourseModuleSemesterController : ControllerBase
     // get all course module semesters
     [HttpGet]
     [Route("api/courses_modules_semesters")]
+    [Authorize(Roles = "admin,sro,teacher,student")]
     public IActionResult GetCourseModuleSemesters()
     {
         var courseModuleSemesters = _context.CoursesModulesSemesters
@@ -98,6 +100,7 @@ public class CourseModuleSemesterController : ControllerBase
     // get course module semester by course code
     [HttpGet]
     [Route("api/courses_modules_semesters/courses/{courseCode}")]
+    [Authorize(Roles = "admin,sro,teacher,student")]
     public IActionResult GetCourseModuleSemesterByCourseCode(string courseCode)
     {
         var courseModuleSemester = _context.CoursesModulesSemesters
@@ -175,7 +178,8 @@ public class CourseModuleSemesterController : ControllerBase
 
     // get course module semester by semester id
     [HttpGet]
-    [Route("api/courses_modules_semesters/semesters/{semesterId}")]
+    [Route("api/courses_modules_semesters/semesters/{semesterId:int}")]
+    [Authorize(Roles = "admin,sro,teacher,student")]
     public IActionResult GetCourseModuleSemesterBySemesterId(int semesterId)
     {
         var courseModuleSemester = _context.CoursesModulesSemesters
@@ -251,9 +255,10 @@ public class CourseModuleSemesterController : ControllerBase
         return Ok(CustomResponse.Ok("Get course module semesters by semesterId successfully", courseModuleSemester));
     }
     
-        // get course module semester by semester id
+    // get course module semester by semester id
     [HttpGet]
     [Route("api/courses_modules_semesters/modules/{moduleId}")]
+    [Authorize(Roles = "admin,sro")]
     public IActionResult GetCourseModuleSemesterByModuleId(int moduleId)
     {
         var courseModuleSemester = _context.CoursesModulesSemesters
