@@ -70,4 +70,10 @@ public class AmsContext : DbContext
     public DbSet<ClassStatus> ClassStatuses { get; set; }
     
     public DbSet<Class> Classes { get; set; }
+    
+    public DbSet<GradeCategory> GradeCategories { get; set; }
+    
+    public DbSet<GradeCategoryModule> GradeCategoryModules { get; set; }
+
+    public DbSet<GradeItem> GradeItems { get; set; }
 }
