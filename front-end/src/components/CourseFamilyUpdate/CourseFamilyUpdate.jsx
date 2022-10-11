@@ -1,13 +1,15 @@
 import { Card, Grid, Text } from '@nextui-org/react';
-import { Form, Select, Input, Button, Spin } from 'antd';
+import { Form, Select, DatePicker, Input, Button, Spin } from 'antd';
 import { Fragment } from 'react';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
 import { CourseFamilyApis } from '../../apis/ListApi';
 import classes from './CourseFamilyUpdate.module.css';
+import { Validater } from '../../validater/Validater';
+import moment from 'moment';
 
 const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
-  // console.log(data);
+
   const [isUpdating, setIsUpdating] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const [IsLoading, setIsLoading] = useState(true);
@@ -15,15 +17,13 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
   const [listCourseFamily, setlistCourseFamily] = useState([]);
 
   const getData = () => {
+
     setIsLoading(true);
     const apiCourseFamily = CourseFamilyApis.getAllCourseFamily;
     console.log(apiCourseFamily);
 
     FetchApi(apiCourseFamily).then((res) => {
       setlistCourseFamily(res.data);
-
-
-
 
     });
 
@@ -40,7 +40,7 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
     const body = {
       name: e.coursefamilyname.trim(),
       code: e.codefamily,
-      published_year: e.codefamilyyear,
+      published_year: e.codefamilyyear.year(),
       is_active: true,
 
     };
@@ -72,7 +72,7 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
           initialValues={{
             coursefamilyname: data?.namecoursefamily,
             codefamily: data?.codefamily,
-            codefamilyyear: data?.codefamilyyear,
+            codefamilyyear: moment(data?.codefamilyyear),
 
 
           }}
@@ -110,11 +110,15 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
               rules={[
                 {
                   required: true,
-                  message: 'Hãy nhập năm áp dụng',
+                  message: 'Hãy chọn năm áp dụng',
                 },
               ]}
             >
-              <Input />
+              <DatePicker
+                popupStyle={{ zIndex: 999999}}
+                placeholder="Năm áp dụng"
+                picker="year" />
+             
             </Form.Item>
 
           </Fragment>

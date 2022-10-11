@@ -239,22 +239,16 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                         >
 
                             <Select
-                                // showSearch
+
                                 style={{ width: '100%' }}
                                 dropdownStyle={{ zIndex: 9999 }}
-                                // disabled={listSemesterid.length === 0}
                                 placeholder="Chọn học kỳ"
                                 optionFilterProp="children"
-                            // onChange={getListDistrict}
                             >
                                 <Select.Option key="1" value="1">Học kỳ 1</Select.Option>
                                 <Select.Option key="2" value="2">Học kỳ 2</Select.Option>
                                 <Select.Option key="3" value="3">Học kỳ 3</Select.Option>
                                 <Select.Option key="4" value="4">Học kỳ 4</Select.Option>
-
-
-
-
 
 
                             </Select>
