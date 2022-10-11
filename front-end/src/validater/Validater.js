@@ -29,4 +29,12 @@ export const Validater = {
     const re = /^(\d{9}|\d{12})$/;
     return re.test(String(citizenId.trim()));
   },
+  isTaxCode: (taxCode) => {
+    if (taxCode == null) {
+      return false;
+    }
+    // check length of taxCode is 10 characters and is number only
+    const re = /^\d{10}$/;
+    return re.test(String(taxCode.trim()));
+  },
 };

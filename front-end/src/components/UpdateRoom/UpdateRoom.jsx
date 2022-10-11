@@ -5,6 +5,7 @@ import FetchApi from '../../apis/FetchApi';
 import { useState, useEffect } from 'react';
 import { ErrorCodeApi } from '../../apis/ErrorCodeApi';
 import { Fragment } from 'react';
+import { Validater } from '../../validater/Validater';
 
 const UpdateRoom = ({ data, onUpdateSuccess }) => {
   const [listCenters, setListCenters] = useState([]);
