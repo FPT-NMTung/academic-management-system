@@ -16,6 +16,8 @@ import SroScreen from './screens/Admin/Sro/SroScreen';
 import SroDetail from './screens/Admin/Sro/SroDetail/SroDetail';
 import SroCreate from './screens/Admin/Sro/SroCreate/SroCreate';
 import ModuleUpdate from './components/ModuleUpdate/ModuleUpdate';
+import TeacherScreen from './screens/Admin/Teacher/TeacherScreen';
+import TeacherDetail from './screens/Admin/Teacher/TeacherDetail/TeacherDetail';
 
 const App = () => {
   return (
@@ -54,7 +56,8 @@ const App = () => {
         <Route path='/admin/account/sro/:id' element={<SroDetail />}/>
         <Route path='/admin/account/sro/create' element={<SroCreate modeUpdate={false}/>}/>
         <Route path='/admin/account/sro/:id/update' element={<SroCreate modeUpdate={true}/>}/>
-        <Route path='/admin/account/teacher' element={<p>Teacher screen</p>}/>
+        <Route path='/admin/account/teacher' element={<TeacherScreen />}/>
+        <Route path='/admin/account/teacher/:id' element={<TeacherDetail />}/>
       </Route>
       <Route path="*" element={<NotFoundScreen />} />
     </Routes>

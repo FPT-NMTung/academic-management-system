@@ -48,6 +48,7 @@ export const SemesterApis = {
     contextType: 'application/json',
   },
 };
+
 export const CourseFamilyApis = {
   getAllCourseFamily: {
     url: 'api/course-families',
@@ -183,6 +184,19 @@ export const ManageSroApis = {
 export const GenderApis = {
   getAllGender: {
     url: 'api/genders',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+}
+
+export const ManageTeacherApis = {
+  searchTeacher: {
+    url: 'api/teachers/search',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  detailTeacher: {
+    url: 'api/teachers/{0}',
     method: 'GET',
     contextType: 'application/json',
   },
