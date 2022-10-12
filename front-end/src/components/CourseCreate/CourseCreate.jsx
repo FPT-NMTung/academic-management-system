@@ -5,7 +5,7 @@ import FetchApi from '../../apis/FetchApi';
 import { AddressApis, CenterApis } from '../../apis/ListApi';
 import mergeCourseFamilyres from '../../screens/Admin/Course Family/CourseFamily';
 import { CourseFamilyApis, CourseApis } from '../../apis/ListApi';
-
+import { Validater } from '../../validater/Validater';
 const CourseCreate = ({ onCreateSuccess }) => {
     const [listCourseFamily, setListCourseFamily] = useState([]);
 
@@ -142,10 +142,19 @@ const CourseCreate = ({ onCreateSuccess }) => {
                             label={'Học Kỳ'}
                             rules={[
                                 {
-                                    required: true,
-                                    message: 'Hãy điền học kỳ',
+                                    // message: 'Hãy nhập học kỳ',
+                                  required: true,
+                                  validator: (_, value) => {
+                                    // check regex phone number viet nam
+                                    if (Validater.isNumber(value)) {
+                                      return Promise.resolve();
+                                    }
+                                    return Promise.reject(
+                                      new Error('Học kỳ không hợp lệ')
+                                    );
+                                  },
                                 },
-                            ]}
+                              ]}
                         >
 
                             <Input />

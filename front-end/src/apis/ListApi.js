@@ -97,7 +97,11 @@ export const ModulesApis = {
     method: 'GET',
     contextType: 'application/json',
   },
-
+  searchModules: {
+    url: 'api/modules/search',
+    method: 'GET',
+    contextType: 'application/json',
+  },
   createModules: {
     url: 'api/modules',
     method: 'POST',
