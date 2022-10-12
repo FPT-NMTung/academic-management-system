@@ -25,7 +25,7 @@ public class GradeCategoryModuleController : ControllerBase
     }
 
     [HttpGet]
-    [Route("api/grade-categories-modules/{moduleId:int}")]
+    [Route("api/modules/{moduleId:int}/grades")]
     [Authorize(Roles = "admin, sro")]
     public IActionResult GetGradeCategoriesDetailByModuleId(int moduleId)
     {
@@ -40,23 +40,11 @@ public class GradeCategoryModuleController : ControllerBase
     }
 
     [HttpPost]
-    [Route("api/grade-categories-modules")]
+    [Route("api/modules/{moduleId:int}/grades")]
     [Authorize(Roles = "admin, sro")]
-    public IActionResult CreateGradeCategoryModule([FromBody] CreateGradeCategoryModuleRequest request)
+    public IActionResult CreateGradeCategoryModule(int moduleId, [FromBody] CreateGradeCategoryModuleRequest request)
     {
-        // delete all grade items by the grade category module id
-        var gradeItems =
-            _context.GradeItems
-                .Include(gi => gi.GradeCategoryModule)
-                .ThenInclude(gcd => gcd.Module)
-                .Where(gi => gi.GradeCategoryModule.ModuleId == request.ModuleId);
-        _context.GradeItems.RemoveRange(gradeItems);
-
-        // delete all grade category module by module id
-        var gradeCategoryModules =
-            _context.GradeCategoryModules.Where(gcm => gcm.ModuleId == request.ModuleId);
-        _context.GradeCategoryModules.RemoveRange(gradeCategoryModules);
-
+        RemoveDataGradeCategoryAndGradeItem(moduleId);
         if (request.GradeCategoryDetails != null)
         {
             var eachWeight = request.GradeCategoryDetails.Sum(gcd => gcd.TotalWeight);
@@ -67,14 +55,30 @@ public class GradeCategoryModuleController : ControllerBase
                 return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
             }
 
+            var module = _context.Modules.FirstOrDefault(m => m.Id == moduleId);
+            if (module == null)
+            {
+                var error = ErrorDescription.Error["E0062"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+
+            //check list request have practice exam and final exam
+            var pe = request.GradeCategoryDetails.FirstOrDefault(gcd => gcd.GradeCategoryId == PracticeExam);
+            var fe = request.GradeCategoryDetails.FirstOrDefault(gcd => gcd.GradeCategoryId == FinalExam);
+            // both PE & FE are required
+            if (module.ExamType == 3 && (pe == null || fe == null))
+            {
+                var error = ErrorDescription.Error["E0067"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+
             foreach (var gcd in request.GradeCategoryDetails)
             {
                 var gradeCategoryName = _context.GradeCategories.Find(gcd.GradeCategoryId)!.Name;
 
-                var module = _context.Modules.FirstOrDefault(m => m.Id == request.ModuleId);
-                if (module == null)
+                if (gcd.GradeCategoryId is PracticeExamResit or FinalExamResit)
                 {
-                    var error = ErrorDescription.Error["E0062"];
+                    var error = ErrorDescription.Error["E0066"];
                     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
                 }
 
@@ -87,6 +91,7 @@ public class GradeCategoryModuleController : ControllerBase
                             var error = ErrorDescription.Error["E0063"];
                             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
                         }
+
                         break;
                     // practical exam
                     case 2:
@@ -95,6 +100,7 @@ public class GradeCategoryModuleController : ControllerBase
                             var error = ErrorDescription.Error["E0064"];
                             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
                         }
+
                         break;
                     // not take exam
                     case 4:
@@ -103,6 +109,7 @@ public class GradeCategoryModuleController : ControllerBase
                             var error = ErrorDescription.Error["E0065"];
                             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
                         }
+
                         break;
                 }
 
@@ -122,7 +129,7 @@ public class GradeCategoryModuleController : ControllerBase
 
                 var gradeCategoryModule = new GradeCategoryModule()
                 {
-                    ModuleId = request.ModuleId,
+                    ModuleId = moduleId,
                     GradeCategoryId = gcd.GradeCategoryId,
                     TotalWeight = gcd.TotalWeight,
                     QuantityGradeItem = gcd.QuantityGradeItem,
@@ -148,11 +155,10 @@ public class GradeCategoryModuleController : ControllerBase
 
                 _context.GradeCategoryModules.Add(gradeCategoryModule);
 
-
                 // auto create grade category module resit and its grade items
                 var gradeCategoryModuleResit = new GradeCategoryModule()
                 {
-                    ModuleId = request.ModuleId,
+                    ModuleId = moduleId,
                     GradeCategoryId = gcd.GradeCategoryId,
                     TotalWeight = gcd.TotalWeight,
                     QuantityGradeItem = 1,
@@ -191,8 +197,7 @@ public class GradeCategoryModuleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var response = GetGradeCategoryModuleResponsesByModuleId(request.ModuleId);
-
+        var response = GetGradeCategoryModuleResponsesByModuleId(moduleId);
 
         return Ok(CustomResponse.Ok("Create grade category module successfully", response));
     }
@@ -219,5 +224,21 @@ public class GradeCategoryModuleController : ControllerBase
                     Name = gi.Name
                 }).ToList()
             });
+    }
+
+    private void RemoveDataGradeCategoryAndGradeItem(int moduleId)
+    {
+        // delete all grade items by the grade category module id
+        var gradeItems =
+            _context.GradeItems
+                .Include(gi => gi.GradeCategoryModule)
+                .ThenInclude(gcd => gcd.Module)
+                .Where(gi => gi.GradeCategoryModule.ModuleId == moduleId);
+        _context.GradeItems.RemoveRange(gradeItems);
+
+        // delete all grade category module by module id
+        var gradeCategoryModules =
+            _context.GradeCategoryModules.Where(gcm => gcm.ModuleId == moduleId);
+        _context.GradeCategoryModules.RemoveRange(gradeCategoryModules);
     }
 }

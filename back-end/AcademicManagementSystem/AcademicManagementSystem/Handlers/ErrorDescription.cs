@@ -131,6 +131,8 @@ public static class ErrorDescription
         { "E0063", new ErrorModel() { Message = "Can't add PE because Module Exam Type is TE/FE", Type = "grade-error-0008" } },
         { "E0064", new ErrorModel() { Message = "Can't add FE because Module Exam Type is PE", Type = "grade-error-0009" } },
         { "E0065", new ErrorModel() { Message = "This module not take exam", Type = "grade-error-0010" } },
+        { "E0066", new ErrorModel() { Message = "Can't add Resit Exam", Type = "grade-error-0011" } },
+        { "E0067", new ErrorModel() { Message = "This module must have both PE and FE", Type = "grade-error-0012" } },
 
     };
 }

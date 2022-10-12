@@ -4,9 +4,6 @@ namespace AcademicManagementSystem.Models.GradeCategoryModule;
 
 public class CreateGradeCategoryModuleRequest
 {
-    [JsonPropertyName("module_id")]
-    public int ModuleId { get; set; }
-    
     [JsonPropertyName("grade_category_details")]
     public List<CreateGradeCategoryDetailRequest>? GradeCategoryDetails { get; set; }
 }
