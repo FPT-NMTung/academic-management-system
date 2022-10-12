@@ -1,11 +1,11 @@
 import { Card, Grid, Text } from '@nextui-org/react';
-import { Form, Select, Input, Button, Radio } from 'antd';
+import { Form, DatePicker, Select, Input, Button, Radio } from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
-import { CourseFamilyApis} from '../../apis/ListApi';
+import { CourseFamilyApis } from '../../apis/ListApi';
+import { Validater } from '../../validater/Validater';
 
-
-const CouseFamilyCreate = ({onCreateSuccess}) => {
+const CouseFamilyCreate = ({ onCreateSuccess }) => {
 
 
     const [isCreating, setIsCreating] = useState(false);
@@ -15,25 +15,25 @@ const CouseFamilyCreate = ({onCreateSuccess}) => {
     const handleSubmitForm = (e) => {
         setIsCreating(true);
         FetchApi(
-            CourseFamilyApis.createCourseFamily ,
-          {
-            name: e.coursefamilyname,
-            code: e.coursefamilycode,
-            published_year: e.year,
-            is_active: true,
-            
-          },
-          null,
-          null
+            CourseFamilyApis.createCourseFamily,
+            {
+                name: e.coursefamilyname,
+                code: e.coursefamilycode,
+                published_year: e.year.year(),
+                is_active: true,
+
+            },
+            null,
+            null
         )
-          .then(() => {
-            onCreateSuccess();
-          })
-          .catch(() => {
-            setIsCreating(false);
-            setIsFailed(true);
-          });
-      };
+            .then(() => {
+                onCreateSuccess();
+            })
+            .catch(() => {
+                setIsCreating(false);
+                setIsFailed(true);
+            });
+    };
     return (
         <Grid xs={4}>
             <Card
@@ -45,7 +45,7 @@ const CouseFamilyCreate = ({onCreateSuccess}) => {
                 <Card.Header>
                     <Text size={14
                     }
-                
+
                     >
                         Tạo thêm chương trình học mới: <b></b>
                     </Text>
@@ -53,22 +53,22 @@ const CouseFamilyCreate = ({onCreateSuccess}) => {
                 <Card.Divider />
                 <Card.Body>
                     <Form
-                        
+
                         // labelCol={{ span: 6 }}
                         // wrapperCol={{ span: 14 }}
-                        layout="horizontal"                      
-                        labelCol={{ flex: '110px' , span: 6 }}                   
+                        layout="horizontal"
+                        labelCol={{ flex: '110px', span: 6 }}
                         labelAlign="left"
                         labelWrap
-                       
-                      onFinish={handleSubmitForm}
-                      form={form}
+
+                        onFinish={handleSubmitForm}
+                        form={form}
                     >
-                        <Form.Item 
-                           
+                        <Form.Item
+
                             name={'coursefamilyname'}
                             label={'Tên'}
-                            
+
                             rules={[
                                 {
                                     required: true,
@@ -97,23 +97,23 @@ const CouseFamilyCreate = ({onCreateSuccess}) => {
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Hãy điền năm áp dụng',
+                                    message: 'Hãy chọn năm áp dụng',
                                 },
                             ]}
                         >
 
-                            <Input />
+                            <DatePicker placeholder="Năm áp dụng" picker="year" />
                         </Form.Item>
 
                         <Form.Item wrapperCol={{ offset: 6, span: 10 }}>
-                            <Button 
-                             type="primary" htmlType="submit" loading={isCreating}>
+                            <Button
+                                type="primary" htmlType="submit" loading={isCreating}>
                                 Tạo mới
                             </Button>
 
-                          
+
                         </Form.Item>
-                        
+
                     </Form>
                     {!isCreating && isFailed && (
                         <Text

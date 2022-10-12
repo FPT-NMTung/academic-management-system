@@ -97,7 +97,11 @@ export const ModulesApis = {
     method: 'GET',
     contextType: 'application/json',
   },
-
+  searchModules: {
+    url: 'api/modules/search',
+    method: 'GET',
+    contextType: 'application/json',
+  },
   createModules: {
     url: 'api/modules',
     method: 'POST',
@@ -232,6 +236,27 @@ export const UserApis = {
   getInformationUser: {
     url: 'api/users/information',
     method: 'GET',
+    contextType: 'application/json',
+  },
+};
+
+export const GradeType = {
+  getAllGradeType: {
+    url: 'api/grade-categories',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+};
+
+export const GradeModuleSemesterApis = {
+  getListGradeByModuleId: {
+    url: 'api/modules/{0}/grades',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  updateGradeModule: {
+    url: 'api/modules/{0}/grades',
+    method: 'POST',
     contextType: 'application/json',
   },
 };
