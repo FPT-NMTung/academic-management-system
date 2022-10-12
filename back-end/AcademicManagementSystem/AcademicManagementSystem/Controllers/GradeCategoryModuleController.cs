@@ -14,6 +14,10 @@ namespace AcademicManagementSystem.Controllers;
 public class GradeCategoryModuleController : ControllerBase
 {
     private readonly AmsContext _context;
+    private const int PracticeExam = 5;
+    private const int FinalExam = 6;
+    private const int PracticeExamResit = 7;
+    private const int FinalExamResit = 8;
 
     public GradeCategoryModuleController(AmsContext context)
     {
@@ -65,7 +69,56 @@ public class GradeCategoryModuleController : ControllerBase
 
             foreach (var gcd in request.GradeCategoryDetails)
             {
-                var categoryName = _context.GradeCategories.Find(gcd.GradeCategoryId)!.Name;
+                var gradeCategoryName = _context.GradeCategories.Find(gcd.GradeCategoryId)!.Name;
+
+                var module = _context.Modules.FirstOrDefault(m => m.Id == request.ModuleId);
+                if (module == null)
+                {
+                    var error = ErrorDescription.Error["E0062"];
+                    return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+                }
+
+                switch (module.ExamType)
+                {
+                    // theory exam(final exam)
+                    case 1:
+                        if (gcd.GradeCategoryId is PracticeExam or PracticeExamResit)
+                        {
+                            var error = ErrorDescription.Error["E0063"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+                        }
+                        break;
+                    // practical exam
+                    case 2:
+                        if (gcd.GradeCategoryId is FinalExam or FinalExamResit)
+                        {
+                            var error = ErrorDescription.Error["E0064"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+                        }
+                        break;
+                    // not take exam
+                    case 4:
+                        if (gcd.GradeCategoryId is PracticeExam or PracticeExamResit or FinalExam or FinalExamResit)
+                        {
+                            var error = ErrorDescription.Error["E0065"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+                        }
+                        break;
+                }
+
+                // final exam must have only one
+                if (gcd.GradeCategoryId is PracticeExam or FinalExam or PracticeExamResit or FinalExamResit &&
+                    gcd.QuantityGradeItem != 1)
+                {
+                    var error = ErrorDescription.Error["E0060"];
+                    return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+                }
+
+                if (gcd.QuantityGradeItem is < 1 or > 10)
+                {
+                    var error = ErrorDescription.Error["E0061"];
+                    return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+                }
 
                 var gradeCategoryModule = new GradeCategoryModule()
                 {
@@ -82,17 +135,49 @@ public class GradeCategoryModuleController : ControllerBase
                     var gradeItem = new GradeItem()
                     {
                         GradeCategoryModuleId = gradeCategoryModule.Id,
-                        Name = categoryName,
+                        Name = gradeCategoryName,
                     };
-                    if (!categoryName.Contains("Exam"))
+                    if (!gradeCategoryName.Contains("Exam") ||
+                        !gradeCategoryName.Contains("Final"))
                     {
-                        gradeItem.Name = categoryName + $" {i + 1}";
+                        gradeItem.Name = gradeCategoryName + $" {i + 1}";
                     }
 
                     gradeCategoryModule.GradeItems.Add(gradeItem);
                 }
 
                 _context.GradeCategoryModules.Add(gradeCategoryModule);
+
+
+                // auto create grade category module resit and its grade items
+                var gradeCategoryModuleResit = new GradeCategoryModule()
+                {
+                    ModuleId = request.ModuleId,
+                    GradeCategoryId = gcd.GradeCategoryId,
+                    TotalWeight = gcd.TotalWeight,
+                    QuantityGradeItem = 1,
+                    GradeItems = new List<GradeItem>()
+                    {
+                        new GradeItem()
+                        {
+                            Name = gradeCategoryName + " Resit"
+                        }
+                    }
+                };
+
+                switch (gcd.GradeCategoryId)
+                {
+                    // practice exam
+                    case PracticeExam:
+                        gradeCategoryModuleResit.GradeCategoryId = PracticeExamResit;
+                        _context.GradeCategoryModules.Add(gradeCategoryModuleResit);
+                        break;
+                    // final exam
+                    case FinalExam:
+                        gradeCategoryModuleResit.GradeCategoryId = FinalExamResit;
+                        _context.GradeCategoryModules.Add(gradeCategoryModuleResit);
+                        break;
+                }
             }
         }
 
