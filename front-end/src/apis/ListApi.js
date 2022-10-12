@@ -246,13 +246,13 @@ export const GradeType = {
 
 export const GradeModuleSemesterApis = {
   getListGradeByModuleId: {
-    url: 'api/grade-categories-modules/{0}',
+    url: 'api/modules/{0}/grades',
     method: 'GET',
     contextType: 'application/json',
   },
   updateGradeModule: {
-    url: 'api/grade-categories-modules/{0}',
-    method: 'PUT',
+    url: 'api/modules/{0}/grades',
+    method: 'POST',
     contextType: 'application/json',
   },
 };
