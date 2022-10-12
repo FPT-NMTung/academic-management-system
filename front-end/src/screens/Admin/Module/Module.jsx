@@ -22,6 +22,7 @@ const TYPE_MODULE = {
   2: 'Thực hành',
   3: 'Thực hành và Lý thuyết',
 };
+
 const Module = () => {
   const [listModules, setlistModules] = useState([]);
   const [selectedModuleId, setselectedModuleId] = useState(null);
