@@ -235,3 +235,24 @@ export const UserApis = {
     contextType: 'application/json',
   },
 };
+
+export const GradeType = {
+  getAllGradeType: {
+    url: 'api/grade-categories',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+};
+
+export const GradeModuleSemesterApis = {
+  getListGradeByModuleId: {
+    url: 'api/grade-categories-modules/{0}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  updateGradeModule: {
+    url: 'api/grade-categories-modules/{0}',
+    method: 'PUT',
+    contextType: 'application/json',
+  },
+};

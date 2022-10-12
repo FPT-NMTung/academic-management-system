@@ -1,8 +1,21 @@
 import { Card, Grid, Text } from '@nextui-org/react';
-import { Form, Select, Input, Button, Spin, Divider, InputNumber, message  } from 'antd';
+import {
+  Form,
+  Select,
+  Input,
+  Button,
+  Spin,
+  Divider,
+  InputNumber,
+  message,
+} from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
-import { ModulesApis, CenterApis, CourseApis } from '../../apis/ListApi';
+import {
+  ModulesApis,
+  CenterApis,
+  GradeModuleSemesterApis,
+} from '../../apis/ListApi';
 import classes from './ModuleUpdate.module.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import ModuleGradeType from '../ModuleGradeType/ModuleGradeType';
@@ -12,11 +25,12 @@ const TYPE_MODULE = {
   'Thực hành và Lý thuyết': 3,
 };
 
-const ModuleUpdate = ({ onUpdateSuccess }) => {
+const ModuleUpdate = () => {
   const [isLoading, setisLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [form] = Form.useForm();
   const [listCenters, setListCenters] = useState([]);
+  const [listGrade, setListGrade] = useState([]);
   const [isFailed, setIsFailed] = useState(false);
   const [typeExam, setTypeExam] = useState(4);
 
@@ -46,6 +60,7 @@ const ModuleUpdate = ({ onUpdateSuccess }) => {
       .then((res) => {
         message.success('Cập nhật thành công');
         setIsUpdating(false);
+        getListGrade();
       })
       .catch((err) => {
         setIsUpdating(false);
@@ -90,9 +105,49 @@ const ModuleUpdate = ({ onUpdateSuccess }) => {
       });
   };
 
+  const handleTypeExamChange = (value) => {
+    setTypeExam(value);
+
+    console.log(value === 1 || value === 4);
+    console.log(value === 2 || value === 4);
+
+    if (value === 1 || value === 4) {
+      form.setFieldsValue({
+        max_practical_grade: null,
+      });
+    }
+
+    if (value === 2 || value === 4) {
+      form.setFieldsValue({
+        max_theory_grade: null,
+      });
+    }
+  };
+
+  const getListGrade = () => {
+    FetchApi(GradeModuleSemesterApis.getListGradeByModuleId, null, null, [
+      String(id),
+    ])
+      .then((res) => {
+        setListGrade(
+          res.data.map((item) => {
+            return {
+              key: item.id,
+              grade_id: item.grade_category.id,
+              grade_name: item.grade_category.name,
+              quantity: item.quantity_grade_item,
+              weight: item.total_weight,
+            };
+          })
+        );
+      })
+      .catch(() => {});
+  };
+
   useEffect(() => {
     getModulebyid();
     getListCenter();
+    getListGrade();
   }, []);
 
   return (
@@ -181,9 +236,11 @@ const ModuleUpdate = ({ onUpdateSuccess }) => {
                       loading={listCenters.length === 0}
                       placeholder="Chọn cơ sở"
                     >
-                      {listCenters.map((e) => {
+                      {listCenters.map((e, index) => {
                         return (
-                          <Select.Option value={e.key}>{e.name}</Select.Option>
+                          <Select.Option key={index} value={e.key}>
+                            {e.name}
+                          </Select.Option>
                         );
                       })}
                     </Select>
@@ -278,7 +335,7 @@ const ModuleUpdate = ({ onUpdateSuccess }) => {
                     <Select
                       placeholder="Chọn hình thức thi"
                       onChange={(value) => {
-                        setTypeExam(value);
+                        handleTypeExamChange(value);
                       }}
                     >
                       <Select.Option value={1}>Lý thuyết</Select.Option>
@@ -402,7 +459,11 @@ const ModuleUpdate = ({ onUpdateSuccess }) => {
                   }}
                 >
                   <Form.Item>
-                    <Button type="primary" htmlType="submit" loading={isUpdating}>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      loading={isUpdating}
+                    >
                       Cập nhật
                     </Button>
                   </Form.Item>
@@ -443,7 +504,7 @@ const ModuleUpdate = ({ onUpdateSuccess }) => {
             </Text>
           </Card.Header>
           <Card.Body>
-            <ModuleGradeType />
+            <ModuleGradeType moduleId={id} listGrade={listGrade} />
           </Card.Body>
         </Card>
       </Grid>

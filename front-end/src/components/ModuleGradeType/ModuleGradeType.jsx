@@ -1,32 +1,14 @@
-import { Form, InputNumber, Select, Button, Table } from 'antd';
+import { Form, InputNumber, Select, Button, Table, message } from 'antd';
+import { useEffect } from 'react';
 import { useState } from 'react';
 import { IoMdTrash } from 'react-icons/io';
+import FetchApi from '../../apis/FetchApi';
+import { GradeModuleSemesterApis, GradeType } from '../../apis/ListApi';
 // import { Table } from '@nextui-org/react';
 
-const ModuleGradeType = () => {
+const ModuleGradeType = ({ moduleId, listGrade }) => {
   const [dataTable, setDataTable] = useState([]);
-  const [listType, setListType] = useState([
-    {
-      id: 1,
-      name: 'Assignment',
-    },
-    {
-      id: 2,
-      name: 'Lab',
-    },
-    {
-      id: 3,
-      name: 'Quiz',
-    },
-    {
-      id: 5,
-      name: 'Practice Exam',
-    },
-    {
-      id: 6,
-      name: 'Final Exam',
-    },
-  ]);
+  const [listType, setListType] = useState([]);
 
   const [form] = Form.useForm();
 
@@ -57,7 +39,7 @@ const ModuleGradeType = () => {
   };
 
   const handleChangeSelectType = (value) => {
-    const select = dataTable.find((e) => e.grade_type === value);
+    const select = listGrade.find((e) => e.grade_id === value);
     if (select) {
       form.setFieldsValue({
         weight: select.weight,
@@ -70,6 +52,22 @@ const ModuleGradeType = () => {
       });
     }
   };
+
+  const getGradeType = () => {
+    FetchApi(GradeType.getAllGradeType, null, null, null)
+      .then((res) => {
+        setListType(res.data);
+      })
+      .catch((err) => {});
+  };
+
+  useEffect(() => {
+    getGradeType();
+  }, []);
+
+  useEffect(() => {
+    form.resetFields(['grade_type', 'weight', 'quantity']);
+  }, [listGrade]);
 
   return (
     <div>
@@ -141,17 +139,12 @@ const ModuleGradeType = () => {
           <Button type="primary" htmlType="submit">
             Thêm hoặc cập nhật
           </Button>
-          <Button
-            type="primary"
-            htmlType="submit"
-            disabled
-            style={{ marginLeft: 10 }}
-          >
+          <Button type="primary" htmlType="submit" style={{ marginLeft: 10 }}>
             Lưu
           </Button>
         </Form.Item>
       </Form>
-      <Table dataSource={dataTable} rowKey={'grade_type'}>
+      <Table dataSource={listGrade} size={'middle'}>
         <Table.Column
           title="Loại điểm"
           dataIndex="grade_name"
@@ -170,6 +163,10 @@ const ModuleGradeType = () => {
           dataIndex="action"
           key="action"
           render={(_, data) => {
+            if (data.grade_id >= 5 && data.grade_id <= 8) {
+              return null
+            }
+
             return (
               <IoMdTrash
                 size={20}
