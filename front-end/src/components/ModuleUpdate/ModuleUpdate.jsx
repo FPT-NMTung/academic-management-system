@@ -19,6 +19,7 @@ import {
 import classes from './ModuleUpdate.module.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import ModuleGradeType from '../ModuleGradeType/ModuleGradeType';
+
 const TYPE_MODULE = {
   'Lý thuyết': 1,
   'Thực hành': 2,
@@ -53,9 +54,6 @@ const ModuleUpdate = () => {
       days: data.days,
       exam_type: data.exam_type,
     };
-
-    console.log(123);
-
     FetchApi(ModulesApis.updateModule, body, null, [`${id}`])
       .then((res) => {
         message.success('Cập nhật thành công');
@@ -130,18 +128,61 @@ const ModuleUpdate = () => {
     ])
       .then((res) => {
         setListGrade(
-          res.data.map((item) => {
-            return {
-              key: item.id,
-              grade_id: item.grade_category.id,
-              grade_name: item.grade_category.name,
-              quantity: item.quantity_grade_item,
-              weight: item.total_weight,
-            };
-          })
+          res.data
+            .filter(
+              (item) =>
+                item.grade_category.id !== 7 && item.grade_category.id !== 8
+            )
+            .map((item) => {
+              return {
+                key: item.grade_category.id,
+                grade_id: item.grade_category.id,
+                grade_name: item.grade_category.name,
+                quantity: item.quantity_grade_item,
+                weight: item.total_weight,
+              };
+            })
         );
       })
       .catch(() => {});
+  };
+
+  const handleAddRow = (data) => {
+    let temp = listGrade.filter((item) => item.grade_id !== data.grade_id);
+
+    temp.push(data);
+
+    setListGrade(temp.sort((a, b) => a.grade_id - b.grade_id));
+  };
+
+  const handleDeleteRow = (id) => {
+    const temp = listGrade.filter((item) => {
+      return item.grade_id !== id;
+    });
+
+    setListGrade(temp.sort((a, b) => a.grade_id - b.grade_id));
+  };
+
+  const handleSave = () => {
+    console.log(123);
+
+    const data = listGrade.map((item) => {
+      return {
+        grade_category_id: item.grade_id,
+        total_weight: item.weight,
+        quantity_grade_item: item.quantity,
+      };
+    });
+
+    const body = {
+      grade_category_details: data,
+    }
+
+    FetchApi(GradeModuleSemesterApis.updateGradeModule, body, null, [String(id)])
+    .then(() => {
+      message.success('Cập nhật điểm thành công');
+    })
+    .catch(() => {});
   };
 
   useEffect(() => {
@@ -504,7 +545,13 @@ const ModuleUpdate = () => {
             </Text>
           </Card.Header>
           <Card.Body>
-            <ModuleGradeType moduleId={id} listGrade={listGrade} />
+            <ModuleGradeType
+              typeExam={typeExam}
+              listGrade={listGrade}
+              onAddRow={handleAddRow}
+              onDeleteRow={handleDeleteRow}
+              onSave={handleSave}
+            />
           </Card.Body>
         </Card>
       </Grid>
