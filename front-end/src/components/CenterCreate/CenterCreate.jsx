@@ -3,8 +3,9 @@ import { Form, Select, Input, Button } from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
 import { AddressApis, CenterApis } from '../../apis/ListApi';
+import { Validater } from '../../validater/Validater';
 
-const CenterCreate = ({onCreateSuccess}) => {
+const CenterCreate = ({ onCreateSuccess }) => {
   const [listProvince, setListProvince] = useState([]);
   const [listDistrict, setListDistrict] = useState([]);
   const [listWard, setListWard] = useState([]);
@@ -102,7 +103,24 @@ const CenterCreate = ({onCreateSuccess}) => {
               rules={[
                 {
                   required: true,
-                  message: 'Hãy nhập tên cơ sở',
+                  validator: (_, value) => {
+                    if (value === null || value === undefined) {
+                      return Promise.reject('Trường này không được để trống');
+                    }
+                    if (
+                      Validater.isContaintSpecialCharacterForName(value.trim())
+                    ) {
+                      return Promise.reject(
+                        'Trường này không được chứa ký tự đặc biệt'
+                      );
+                    }
+                    if (value.trim().length < 2) {
+                      return Promise.reject(
+                        new Error('Trường phải có ít nhất 2 ký tự')
+                      );
+                    }
+                    return Promise.resolve();
+                  },
                 },
               ]}
             >

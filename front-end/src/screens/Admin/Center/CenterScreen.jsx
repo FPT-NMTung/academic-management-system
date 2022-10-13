@@ -89,8 +89,6 @@ const CenterScreen = () => {
                       className={classes.editIcon}
                       onClick={() => {
                         setSelectedCenterId(data.key);
-
-                        
                       }}
                     />
                   );
@@ -117,8 +115,7 @@ const CenterScreen = () => {
           </Text>
         </Modal.Header>
         <Modal.Body>
-          <CenterUpdate data={listCenter.find((e) => e.id === selectedCenterId)} onUpdateSuccess={handleUpdateSuccess}/>
-    
+          <CenterUpdate data={listCenter.find((e) => e.id === selectedCenterId)} onUpdateSuccess={handleUpdateSuccess}/>    
         </Modal.Body>
       </Modal>
     </div>
