@@ -241,12 +241,21 @@ const SroCreate = ({ modeUpdate }) => {
                             'Trường này không được để trống'
                           );
                         }
-                        if (value.trim().length >= 2) {
-                          return Promise.resolve();
+                        if (
+                          Validater.isContaintSpecialCharacterForName(
+                            value.trim()
+                          )
+                        ) {
+                          return Promise.reject(
+                            'Trường này không được chứa ký tự đặc biệt'
+                          );
                         }
-                        return Promise.reject(
-                          new Error('Trường phải có ít nhất 2 ký tự')
-                        );
+                        if (value.trim().length < 2) {
+                          return Promise.reject(
+                            new Error('Trường phải có ít nhất 2 ký tự')
+                          );
+                        }
+                        return Promise.resolve();
                       },
                     },
                     {
@@ -269,12 +278,21 @@ const SroCreate = ({ modeUpdate }) => {
                             'Trường này không được để trống'
                           );
                         }
-                        if (value.trim().length >= 2) {
-                          return Promise.resolve();
+                        if (
+                          Validater.isContaintSpecialCharacterForName(
+                            value.trim()
+                          )
+                        ) {
+                          return Promise.reject(
+                            'Trường này không được chứa ký tự đặc biệt'
+                          );
                         }
-                        return Promise.reject(
-                          new Error('Trường phải có ít nhất 2 ký tự')
-                        );
+                        if (value.trim().length < 2) {
+                          return Promise.reject(
+                            new Error('Trường phải có ít nhất 2 ký tự')
+                          );
+                        }
+                        return Promise.resolve();
                       },
                     },
                     {
@@ -491,12 +509,21 @@ const SroCreate = ({ modeUpdate }) => {
                             'Trường này không được để trống'
                           );
                         }
-                        if (value.trim().length >= 2) {
-                          return Promise.resolve();
+                        if (
+                          Validater.isContaintSpecialCharacterForName(
+                            value.trim()
+                          )
+                        ) {
+                          return Promise.reject(
+                            'Trường này không được chứa ký tự đặc biệt'
+                          );
                         }
-                        return Promise.reject(
-                          new Error('Trường phải có ít nhất 2 ký tự')
-                        );
+                        if (value.trim().length < 2) {
+                          return Promise.reject(
+                            new Error('Trường phải có ít nhất 2 ký tự')
+                          );
+                        }
+                        return Promise.resolve();
                       },
                     },
                     {
