@@ -19,6 +19,7 @@ import {
 import classes from './ModuleUpdate.module.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import ModuleGradeType from '../ModuleGradeType/ModuleGradeType';
+import { Validater } from '../../validater/Validater';
 
 const TYPE_MODULE = {
   'Lý thuyết': 1,
@@ -176,13 +177,15 @@ const ModuleUpdate = () => {
 
     const body = {
       grade_category_details: data,
-    }
+    };
 
-    FetchApi(GradeModuleSemesterApis.updateGradeModule, body, null, [String(id)])
-    .then(() => {
-      message.success('Cập nhật điểm thành công');
-    })
-    .catch(() => {});
+    FetchApi(GradeModuleSemesterApis.updateGradeModule, body, null, [
+      String(id),
+    ])
+      .then(() => {
+        message.success('Cập nhật điểm thành công');
+      })
+      .catch(() => {});
   };
 
   useEffect(() => {
@@ -247,12 +250,21 @@ const ModuleUpdate = () => {
                               'Trường này không được để trống'
                             );
                           }
-                          if (value.trim().length >= 2) {
-                            return Promise.resolve();
+                          if (
+                            Validater.isContaintSpecialCharacterForName(
+                              value.trim()
+                            )
+                          ) {
+                            return Promise.reject(
+                              'Trường này không được chứa ký tự đặc biệt'
+                            );
                           }
-                          return Promise.reject(
-                            new Error('Trường phải có ít nhất 2 ký tự')
-                          );
+                          if (value.trim().length < 2) {
+                            return Promise.reject(
+                              new Error('Trường phải có ít nhất 2 ký tự')
+                            );
+                          }
+                          return Promise.resolve();
                         },
                       },
                       {
@@ -448,12 +460,21 @@ const ModuleUpdate = () => {
                               'Trường này không được để trống'
                             );
                           }
-                          if (value.trim().length >= 2) {
-                            return Promise.resolve();
+                          if (
+                            Validater.isContaintSpecialCharacterForName(
+                              value.trim()
+                            )
+                          ) {
+                            return Promise.reject(
+                              'Trường này không được chứa ký tự đặc biệt'
+                            );
                           }
-                          return Promise.reject(
-                            new Error('Trường phải có ít nhất 2 ký tự')
-                          );
+                          if (value.trim().length < 2) {
+                            return Promise.reject(
+                              new Error('Trường phải có ít nhất 2 ký tự')
+                            );
+                          }
+                          return Promise.resolve();
                         },
                       },
                       {
@@ -476,12 +497,21 @@ const ModuleUpdate = () => {
                               'Trường này không được để trống'
                             );
                           }
-                          if (value.trim().length >= 2) {
-                            return Promise.resolve();
+                          if (
+                            Validater.isContaintSpecialCharacterForName(
+                              value.trim()
+                            )
+                          ) {
+                            return Promise.reject(
+                              'Trường này không được chứa ký tự đặc biệt'
+                            );
                           }
-                          return Promise.reject(
-                            new Error('Trường phải có ít nhất 2 ký tự')
-                          );
+                          if (value.trim().length < 2) {
+                            return Promise.reject(
+                              new Error('Trường phải có ít nhất 2 ký tự')
+                            );
+                          }
+                          return Promise.resolve();
                         },
                       },
                       {

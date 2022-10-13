@@ -1,12 +1,5 @@
 import { Grid, Card, Text, Spacer } from '@nextui-org/react';
-import {
-  Button,
-  Form,
-  Input,
-  Select,
-  DatePicker,
-  InputNumber,
-} from 'antd';
+import { Button, Form, Input, Select, DatePicker, InputNumber } from 'antd';
 import classes from './TeacherCreate.module.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -290,12 +283,21 @@ const TeacherCreate = ({ modeUpdate }) => {
                             'Trường này không được để trống'
                           );
                         }
-                        if (value.trim().length >= 2) {
-                          return Promise.resolve();
+                        if (
+                          Validater.isContaintSpecialCharacterForName(
+                            value.trim()
+                          )
+                        ) {
+                          return Promise.reject(
+                            'Trường này không được chứa ký tự đặc biệt'
+                          );
                         }
-                        return Promise.reject(
-                          new Error('Trường phải có ít nhất 2 ký tự')
-                        );
+                        if (value.trim().length < 2) {
+                          return Promise.reject(
+                            new Error('Trường phải có ít nhất 2 ký tự')
+                          );
+                        }
+                        return Promise.resolve();
                       },
                     },
                     {
@@ -318,12 +320,21 @@ const TeacherCreate = ({ modeUpdate }) => {
                             'Trường này không được để trống'
                           );
                         }
-                        if (value.trim().length >= 2) {
-                          return Promise.resolve();
+                        if (
+                          Validater.isContaintSpecialCharacterForName(
+                            value.trim()
+                          )
+                        ) {
+                          return Promise.reject(
+                            'Trường này không được chứa ký tự đặc biệt'
+                          );
                         }
-                        return Promise.reject(
-                          new Error('Trường phải có ít nhất 2 ký tự')
-                        );
+                        if (value.trim().length < 2) {
+                          return Promise.reject(
+                            new Error('Trường phải có ít nhất 2 ký tự')
+                          );
+                        }
+                        return Promise.resolve();
                       },
                     },
                     {
@@ -537,12 +548,21 @@ const TeacherCreate = ({ modeUpdate }) => {
                             'Trường này không được để trống'
                           );
                         }
-                        if (value.trim().length >= 2) {
-                          return Promise.resolve();
+                        if (
+                          Validater.isContaintSpecialCharacterForName(
+                            value.trim()
+                          )
+                        ) {
+                          return Promise.reject(
+                            'Trường này không được chứa ký tự đặc biệt'
+                          );
                         }
-                        return Promise.reject(
-                          new Error('Trường phải có ít nhất 2 ký tự')
-                        );
+                        if (value.trim().length < 2) {
+                          return Promise.reject(
+                            new Error('Trường phải có ít nhất 2 ký tự')
+                          );
+                        }
+                        return Promise.resolve();
                       },
                     },
                     {
@@ -568,12 +588,21 @@ const TeacherCreate = ({ modeUpdate }) => {
                             'Trường này không được để trống'
                           );
                         }
-                        if (value.trim().length >= 2) {
-                          return Promise.resolve();
+                        if (
+                          Validater.isContaintSpecialCharacterForName(
+                            value.trim()
+                          )
+                        ) {
+                          return Promise.reject(
+                            'Trường này không được chứa ký tự đặc biệt'
+                          );
                         }
-                        return Promise.reject(
-                          new Error('Trường phải có ít nhất 2 ký tự')
-                        );
+                        if (value.trim().length < 2) {
+                          return Promise.reject(
+                            new Error('Trường phải có ít nhất 2 ký tự')
+                          );
+                        }
+                        return Promise.resolve();
                       },
                     },
                     {
@@ -608,12 +637,21 @@ const TeacherCreate = ({ modeUpdate }) => {
                             'Trường này không được để trống'
                           );
                         }
-                        if (value.trim().length >= 2) {
-                          return Promise.resolve();
+                        if (
+                          Validater.isContaintSpecialCharacterForName(
+                            value.trim()
+                          )
+                        ) {
+                          return Promise.reject(
+                            'Trường này không được chứa ký tự đặc biệt'
+                          );
                         }
-                        return Promise.reject(
-                          new Error('Trường phải có ít nhất 2 ký tự')
-                        );
+                        if (value.trim().length < 2) {
+                          return Promise.reject(
+                            new Error('Trường phải có ít nhất 2 ký tự')
+                          );
+                        }
+                        return Promise.resolve();
                       },
                     },
                     {
