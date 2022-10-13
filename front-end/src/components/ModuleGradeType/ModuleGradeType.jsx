@@ -1,63 +1,38 @@
-import { Form, InputNumber, Select, Button, Table } from 'antd';
+import { Form, InputNumber, Select, Button, Table, message } from 'antd';
+import { useEffect } from 'react';
 import { useState } from 'react';
 import { IoMdTrash } from 'react-icons/io';
+import FetchApi from '../../apis/FetchApi';
+import { GradeType } from '../../apis/ListApi';
+import { Spacer, Text } from '@nextui-org/react';
 // import { Table } from '@nextui-org/react';
 
-const ModuleGradeType = () => {
-  const [dataTable, setDataTable] = useState([]);
-  const [listType, setListType] = useState([
-    {
-      id: 1,
-      name: 'Assignment',
-    },
-    {
-      id: 2,
-      name: 'Lab',
-    },
-    {
-      id: 3,
-      name: 'Quiz',
-    },
-    {
-      id: 5,
-      name: 'Practice Exam',
-    },
-    {
-      id: 6,
-      name: 'Final Exam',
-    },
-  ]);
+const ModuleGradeType = ({ typeExam, listGrade, onAddRow, onDeleteRow, onSave }) => {
+  const [listType, setListType] = useState([]);
+  const [typeGrade, setTypeGrade] = useState(undefined);
 
   const [form] = Form.useForm();
 
   const handleAddRow = () => {
     const data = form.getFieldsValue();
     const newData = {
-      grade_type: data.grade_type,
+      key: data.grade_type,
+      grade_id: data.grade_type,
       grade_name: listType.find((e) => e.id === data.grade_type).name,
       weight: data.weight,
       quantity: data.quantity,
     };
 
-    const temp = dataTable.filter(
-      (item) => item.grade_type !== newData.grade_type
-    );
-
-    const newDataTable = [...temp, newData].sort(
-      (a, b) => a.grade_type - b.grade_type
-    );
-    setDataTable(newDataTable);
+    onAddRow(newData);
   };
 
   const handleDeleteRow = (data) => {
-    const newData = dataTable.filter(
-      (item) => item.grade_type !== data.grade_type
-    );
-    setDataTable(newData);
+    onDeleteRow(data.grade_id);
   };
 
   const handleChangeSelectType = (value) => {
-    const select = dataTable.find((e) => e.grade_type === value);
+    setTypeGrade(value);
+    const select = listGrade.find((e) => e.grade_id === value);
     if (select) {
       form.setFieldsValue({
         weight: select.weight,
@@ -70,6 +45,27 @@ const ModuleGradeType = () => {
       });
     }
   };
+
+  const getGradeType = () => {
+    FetchApi(GradeType.getAllGradeType, null, null, null)
+      .then((res) => {
+        setListType(res.data);
+      })
+      .catch((err) => {});
+  };
+
+  useEffect(() => {
+    getGradeType();
+  }, []);
+
+  useEffect(() => {
+    form.resetFields(['grade_type', 'weight', 'quantity']);
+    setTypeGrade(undefined);
+  }, [listGrade]);
+
+  const total = listGrade
+    .filter((item) => item.grade_id !== 7 && item.grade_id !== 8)
+    .reduce((a, b) => a + b.weight, 0);
 
   return (
     <div>
@@ -95,11 +91,25 @@ const ModuleGradeType = () => {
             placeholder="Chọn loại điểm"
             onSelect={handleChangeSelectType}
           >
-            {listType.map((e) => (
-              <Select.Option key={e.id} value={e.id}>
-                {e.name}
-              </Select.Option>
-            ))}
+            {listType
+              .filter((item) => item.id !== 7 && item.id !== 8)
+              .filter((item) => {
+                if (typeExam === 1) {
+                  return item.id !== 5;
+                }
+                if (typeExam === 2) {
+                  return item.id !== 6;
+                }
+                if (typeExam === 4) {
+                  return item.id !== 5 && item.id !== 6;
+                }
+                return true;
+              })
+              .map((e) => (
+                <Select.Option key={e.id} value={e.id}>
+                  {e.name}
+                </Select.Option>
+              ))}
           </Select>
         </Form.Item>
         <Form.Item
@@ -117,6 +127,7 @@ const ModuleGradeType = () => {
             max={10}
             style={{ width: 140 }}
             placeholder="0"
+            disabled={typeGrade === 5 || typeGrade === 6}
           ></InputNumber>
         </Form.Item>
         <Form.Item
@@ -143,15 +154,19 @@ const ModuleGradeType = () => {
           </Button>
           <Button
             type="primary"
-            htmlType="submit"
-            disabled
+            disabled={total !== 100}
             style={{ marginLeft: 10 }}
+            onClick={onSave}
           >
             Lưu
           </Button>
         </Form.Item>
       </Form>
-      <Table dataSource={dataTable} rowKey={'grade_type'}>
+      <Table
+        dataSource={listGrade.sort((a, b) => a.grade_id - b.grade_id)}
+        size={'small'}
+        pagination={false}
+      >
         <Table.Column
           title="Loại điểm"
           dataIndex="grade_name"
@@ -162,7 +177,11 @@ const ModuleGradeType = () => {
           title="Trọng số"
           dataIndex="weight"
           key="weight"
-          render={(value) => `${value}%`}
+          render={(value) => (
+            <div style={total !== 100 ? { color: 'red' } : null}>
+              <b>{value}%</b>
+            </div>
+          )}
         />
         <Table.Column
           width={50}
@@ -170,6 +189,10 @@ const ModuleGradeType = () => {
           dataIndex="action"
           key="action"
           render={(_, data) => {
+            if (data.grade_id >= 5 && data.grade_id <= 8) {
+              return null;
+            }
+
             return (
               <IoMdTrash
                 size={20}
@@ -183,6 +206,10 @@ const ModuleGradeType = () => {
           }}
         />
       </Table>
+      <Spacer y={1} />
+      <Text p size={15} css={{ float: 'right', paddingRight: 10 }}>
+        Tổng trọng số: <b>{total}%</b>
+      </Text>
     </div>
   );
 };

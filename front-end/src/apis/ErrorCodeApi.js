@@ -25,7 +25,7 @@ export const ErrorCodeApi = {
   'sro-error-0002': '',
   'sro-error-0003': '',
   'sro-error-0004': '',
-  'sro0005-error-': 'Số điện thoại đã tồn tại trong hệ thống',
+  'sro-error-0005': 'Số điện thoại đã tồn tại trong hệ thống',
   'sro-error-0006': 'Email cá nhân này đã tồn tại trong hệ thống',
   'sro-error-0007': 'Email tổ chức này đã tồn tại trong hệ thống',
   'sro-error-0008': '',
@@ -61,8 +61,23 @@ export const ErrorCodeApi = {
   'course-error-0013': '',
   'course-error-0014': '',
 
+  'teacher-error-0002': '',
+  'teacher-error-0003': '',
+  'teacher-error-0004': 'Trùng mã thuế thu nhập cá nhân',
+  'teacher-error-0005': 'Số điện thoại không hợp lệ',
+  'teacher-error-0006': 'Email cá nhân không hợp lệ',
+  'teacher-error-0007': 'Email tổ chức không hợp lệ',
+  'teacher-error-0008': 'Số CMND/CCCD phải có độ dài từ 9 hoặc 12',
+  'teacher-error-0009': '',
+  'teacher-error-0010': '',
+  'teacher-error-0011': '',
+  'teacher-error-0012': '',
+  'teacher-error-0013': 'Số điện thoại đã tồn tại trong hệ thống',
+  'teacher-error-0014': 'Email cá nhân này đã tồn tại trong hệ thống',
+  'teacher-error-0015': 'Email tổ chức này đã tồn tại trong hệ thống',
+  'teacher-error-0016': 'Số CMND/CCCD đã tồn tại trong hệ thống',
+  'teacher-error-0017': '',
+  'teacher-error-0018': '',
 
-
-
-  "module-error-00021":"Môn học với mã khóa học, học kỳ đã tồn tại",
+  'module-error-00021': 'Môn học với mã khóa học, học kỳ đã tồn tại',
 };

@@ -1,22 +1,37 @@
 import { Card, Grid, Text } from '@nextui-org/react';
-import { Form, Select, Input, Button, Spin, Divider, InputNumber, message  } from 'antd';
+import {
+  Form,
+  Select,
+  Input,
+  Button,
+  Spin,
+  Divider,
+  InputNumber,
+  message,
+} from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
-import { ModulesApis, CenterApis, CourseApis } from '../../apis/ListApi';
+import {
+  ModulesApis,
+  CenterApis,
+  GradeModuleSemesterApis,
+} from '../../apis/ListApi';
 import classes from './ModuleUpdate.module.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import ModuleGradeType from '../ModuleGradeType/ModuleGradeType';
+
 const TYPE_MODULE = {
   'Lý thuyết': 1,
   'Thực hành': 2,
   'Thực hành và Lý thuyết': 3,
 };
 
-const ModuleUpdate = ({ onUpdateSuccess }) => {
+const ModuleUpdate = () => {
   const [isLoading, setisLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [form] = Form.useForm();
   const [listCenters, setListCenters] = useState([]);
+  const [listGrade, setListGrade] = useState([]);
   const [isFailed, setIsFailed] = useState(false);
   const [typeExam, setTypeExam] = useState(4);
 
@@ -39,13 +54,11 @@ const ModuleUpdate = ({ onUpdateSuccess }) => {
       days: data.days,
       exam_type: data.exam_type,
     };
-
-    console.log(123);
-
     FetchApi(ModulesApis.updateModule, body, null, [`${id}`])
       .then((res) => {
         message.success('Cập nhật thành công');
         setIsUpdating(false);
+        getListGrade();
       })
       .catch((err) => {
         setIsUpdating(false);
@@ -90,9 +103,92 @@ const ModuleUpdate = ({ onUpdateSuccess }) => {
       });
   };
 
+  const handleTypeExamChange = (value) => {
+    setTypeExam(value);
+
+    console.log(value === 1 || value === 4);
+    console.log(value === 2 || value === 4);
+
+    if (value === 1 || value === 4) {
+      form.setFieldsValue({
+        max_practical_grade: null,
+      });
+    }
+
+    if (value === 2 || value === 4) {
+      form.setFieldsValue({
+        max_theory_grade: null,
+      });
+    }
+  };
+
+  const getListGrade = () => {
+    FetchApi(GradeModuleSemesterApis.getListGradeByModuleId, null, null, [
+      String(id),
+    ])
+      .then((res) => {
+        setListGrade(
+          res.data
+            .filter(
+              (item) =>
+                item.grade_category.id !== 7 && item.grade_category.id !== 8
+            )
+            .map((item) => {
+              return {
+                key: item.grade_category.id,
+                grade_id: item.grade_category.id,
+                grade_name: item.grade_category.name,
+                quantity: item.quantity_grade_item,
+                weight: item.total_weight,
+              };
+            })
+        );
+      })
+      .catch(() => {});
+  };
+
+  const handleAddRow = (data) => {
+    let temp = listGrade.filter((item) => item.grade_id !== data.grade_id);
+
+    temp.push(data);
+
+    setListGrade(temp.sort((a, b) => a.grade_id - b.grade_id));
+  };
+
+  const handleDeleteRow = (id) => {
+    const temp = listGrade.filter((item) => {
+      return item.grade_id !== id;
+    });
+
+    setListGrade(temp.sort((a, b) => a.grade_id - b.grade_id));
+  };
+
+  const handleSave = () => {
+    console.log(123);
+
+    const data = listGrade.map((item) => {
+      return {
+        grade_category_id: item.grade_id,
+        total_weight: item.weight,
+        quantity_grade_item: item.quantity,
+      };
+    });
+
+    const body = {
+      grade_category_details: data,
+    }
+
+    FetchApi(GradeModuleSemesterApis.updateGradeModule, body, null, [String(id)])
+    .then(() => {
+      message.success('Cập nhật điểm thành công');
+    })
+    .catch(() => {});
+  };
+
   useEffect(() => {
     getModulebyid();
     getListCenter();
+    getListGrade();
   }, []);
 
   return (
@@ -181,9 +277,11 @@ const ModuleUpdate = ({ onUpdateSuccess }) => {
                       loading={listCenters.length === 0}
                       placeholder="Chọn cơ sở"
                     >
-                      {listCenters.map((e) => {
+                      {listCenters.map((e, index) => {
                         return (
-                          <Select.Option value={e.key}>{e.name}</Select.Option>
+                          <Select.Option key={index} value={e.key}>
+                            {e.name}
+                          </Select.Option>
                         );
                       })}
                     </Select>
@@ -278,7 +376,7 @@ const ModuleUpdate = ({ onUpdateSuccess }) => {
                     <Select
                       placeholder="Chọn hình thức thi"
                       onChange={(value) => {
-                        setTypeExam(value);
+                        handleTypeExamChange(value);
                       }}
                     >
                       <Select.Option value={1}>Lý thuyết</Select.Option>
@@ -402,7 +500,11 @@ const ModuleUpdate = ({ onUpdateSuccess }) => {
                   }}
                 >
                   <Form.Item>
-                    <Button type="primary" htmlType="submit" loading={isUpdating}>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      loading={isUpdating}
+                    >
                       Cập nhật
                     </Button>
                   </Form.Item>
@@ -443,7 +545,13 @@ const ModuleUpdate = ({ onUpdateSuccess }) => {
             </Text>
           </Card.Header>
           <Card.Body>
-            <ModuleGradeType />
+            <ModuleGradeType
+              typeExam={typeExam}
+              listGrade={listGrade}
+              onAddRow={handleAddRow}
+              onDeleteRow={handleDeleteRow}
+              onSave={handleSave}
+            />
           </Card.Body>
         </Card>
       </Grid>
