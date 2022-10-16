@@ -16,7 +16,7 @@ public class RoomType
     public int Id { get; set; }
 
     [Column("value")]
-    [StringLength(100)]
+    [StringLength(50)]
     public string Value { get; set; }
     
     // relationships
