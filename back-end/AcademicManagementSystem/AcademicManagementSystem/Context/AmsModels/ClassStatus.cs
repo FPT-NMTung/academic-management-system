@@ -16,6 +16,7 @@ public class ClassStatus
     public int Id { get; set; }
     
     [Column("value")]
+    [StringLength(50)]
     public string Value { get; set; }
     
     public ICollection<Class> Classes { get; set; }
