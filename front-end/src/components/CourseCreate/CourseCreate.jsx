@@ -1,17 +1,19 @@
 import { Card, Grid, Text } from '@nextui-org/react';
-import { Form, Select, Input, Button } from 'antd';
+import { Form, Select, Input, Button, message } from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
 import { AddressApis, CenterApis } from '../../apis/ListApi';
 import mergeCourseFamilyres from '../../screens/Admin/Course Family/CourseFamily';
 import { CourseFamilyApis, CourseApis } from '../../apis/ListApi';
 import { Validater } from '../../validater/Validater';
+import { ErrorCodeApi } from '../../apis/ErrorCodeApi';
 const CourseCreate = ({ onCreateSuccess }) => {
   const [listCourseFamily, setListCourseFamily] = useState([]);
 
   const [isCreating, setIsCreating] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const [form] = Form.useForm();
+  const [errorValue, setErrorValue] = useState(undefined);
 
   const getListCourseFamily = () => {
     FetchApi(CourseFamilyApis.getAllCourseFamily).then((res) => {
@@ -34,9 +36,11 @@ const CourseCreate = ({ onCreateSuccess }) => {
       null
     )
       .then(() => {
+        message.success('Tạo khóa học thành công');
         onCreateSuccess();
       })
-      .catch(() => {
+      .catch((err) => {
+        setErrorValue(ErrorCodeApi[err.type_error]);
         setIsCreating(false);
         setIsFailed(true);
       });
@@ -170,7 +174,7 @@ const CourseCreate = ({ onCreateSuccess }) => {
                 textAlign: 'center',
               }}
             >
-              Tạo khóa học thất bại, kiểm tra lại thông tin và thử lại
+              {errorValue}, vui lòng thử lại
             </Text>
           )}
         </Card.Body>
