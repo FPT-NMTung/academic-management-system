@@ -37,12 +37,12 @@ const App = () => {
 
       {/* Routers for role teacher */}
       <Route path={'/teacher'}>
-        <Route index element={<RequireAuth role={'teacher'}><Text p>Teacher</Text></RequireAuth>} />
+        <Route index element={<ThirdLayout><RequireAuth role={'teacher'}><Text p>Teacher</Text></RequireAuth></ThirdLayout>} />
       </Route>
 
       {/* Routers for role sro */}
       <Route path={'/sro'}>
-        <Route index element={<RequireAuth role={'sro'}><Text p>SRO</Text></RequireAuth>} />
+        <Route index element={<ThirdLayout><RequireAuth role={'sro'}><Text p>SRO</Text></RequireAuth></ThirdLayout>} />
       </Route>
 
       {/* Routers for role admin */}

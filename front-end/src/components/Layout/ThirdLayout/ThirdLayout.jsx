@@ -3,10 +3,12 @@ import Logo from '../../../images/logo_1.webp';
 import { NavLink } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { IoHome } from 'react-icons/io5';
-import { Dropdown, User } from '@nextui-org/react';
+import { Dropdown, Spacer, User } from '@nextui-org/react';
 import { useNavigate } from 'react-router-dom';
 import FetchApi from '../../../apis/FetchApi';
 import { UserApis } from '../../../apis/ListApi';
+import { Fragment } from 'react';
+import { FaPowerOff } from 'react-icons/fa';
 
 const ROLE = {
   1: 'Admin',
@@ -15,26 +17,31 @@ const ROLE = {
   4: 'Student',
 };
 
-const menu = [
-  {
-    key: '1',
-    label: 'Quản lý cơ sở',
-    icon: <IoHome size={16} />,
-    url: '/admin/center',
-  },
-  {
-    key: '2',
-    label: 'Quản lý tài khoản',
-    icon: <IoHome size={16} />,
-    url: '/admin/account/teacher',
-  },
-  {
-    key: '3',
-    label: 'Quản lý khoá học',
-    icon: <IoHome size={16} />,
-    url: '/admin/manage-course/course-family',
-  },
-];
+const menu = {
+  admin: [
+    {
+      key: '1',
+      label: 'Quản lý cơ sở',
+      icon: <IoHome size={16} />,
+      url: '/admin/center',
+    },
+    {
+      key: '2',
+      label: 'Quản lý tài khoản',
+      icon: <IoHome size={16} />,
+      url: '/admin/account/teacher',
+    },
+    {
+      key: '3',
+      label: 'Quản lý khoá học',
+      icon: <IoHome size={16} />,
+      url: '/admin/manage-course/course-family',
+    },
+  ],
+  sro: [],
+  teacher: [],
+  student: [],
+};
 
 const ThirdLayout = ({ children }) => {
   const [dataUser, setDataUser] = useState({});
@@ -74,7 +81,7 @@ const ThirdLayout = ({ children }) => {
             <img src={Logo} alt="logo" />
           </div>
           <div className={classes.menu}>
-            {menu.map((item) => (
+            {menu[localStorage.getItem('role')].map((item) => (
               <NavLink
                 to={item.url}
                 className={({ isActive }) => {
@@ -93,21 +100,50 @@ const ThirdLayout = ({ children }) => {
         </div>
         <div className={classes.rightSide}>
           <div className={classes.header}>
-            <Dropdown placement="bottom-left">
+            <Dropdown placement="bottom">
               <Dropdown.Trigger css={{ cursor: 'pointer' }}>
                 <User
                   size="lg"
-                  src="https://i.pravatar.cc/150?u=a092581d4ef9026700d"
-                  color="error"
+                  src={dataUser.avatar}
+                  color={
+                    dataUser.role === 'Admin'
+                      ? 'error'
+                      : dataUser.role === 'SRO'
+                      ? 'warning'
+                      : dataUser.role === 'Teacher'
+                      ? 'secondary'
+                      : 'success'
+                  }
                   bordered
                   squared
                   name={dataUser.name}
-                  description={dataUser.role}
+                  description={
+                    <Fragment>
+                      <b>{dataUser.role}</b> của @Aptech
+                    </Fragment>
+                  }
                 />
               </Dropdown.Trigger>
-              <Dropdown.Menu color="secondary" aria-label="Avatar Actions">
-                <Dropdown.Item key="logout" color="error">
-                  Log Out
+              <Dropdown.Menu
+                onAction={(e) => {
+                  switch (e) {
+                    case 'logout':
+                      handleLogout();
+                      break;
+                    default:
+                      break;
+                  }
+                }}
+                color="secondary"
+                aria-label="Avatar Actions"
+              >
+                <Dropdown.Item
+                  key="logout"
+                  color="error"
+                  icon={<FaPowerOff />}
+                  description={'Đăng xuất tài khoản'}
+                >
+                  Đăng xuất
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>

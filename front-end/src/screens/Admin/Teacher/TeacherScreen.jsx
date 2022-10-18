@@ -1,4 +1,12 @@
-import { Grid, Card, Text, Tooltip, Button, Table } from '@nextui-org/react';
+import {
+  Grid,
+  Card,
+  Text,
+  Tooltip,
+  Button,
+  Table,
+  Badge,
+} from '@nextui-org/react';
 import { Form, Input, message } from 'antd';
 import FetchApi from '../../../apis/FetchApi';
 import { useNavigate } from 'react-router-dom';
@@ -60,6 +68,34 @@ const TeacherScreen = () => {
   useEffect(() => {
     getListTeacher();
   }, []);
+
+  const renderGender = (id) => {
+    if (id === 1) {
+      return (
+        <Badge variant="flat" color="success">
+          Nam
+        </Badge>
+      );
+    } else if (id === 2) {
+      return (
+        <Badge variant="flat" color="error">
+          Nữ
+        </Badge>
+      );
+    } else if (id === 3) {
+      return (
+        <Badge variant="flat" color="default">
+          Khác
+        </Badge>
+      );
+    } else {
+      return (
+        <Badge variant="flat" color="default">
+          Không xác định
+        </Badge>
+      );
+    }
+  };
 
   return (
     <Grid.Container gap={2}>
@@ -366,13 +402,15 @@ const TeacherScreen = () => {
                 <Table.Row key={data.user_id}>
                   <Table.Cell>{index + 1}</Table.Cell>
                   <Table.Cell>
-                    <b>{data.first_name} {data.last_name}</b>
+                    <b>
+                      {data.first_name} {data.last_name}
+                    </b>
                   </Table.Cell>
                   <Table.Cell>{data.nickname}</Table.Cell>
                   <Table.Cell>{data.email}</Table.Cell>
                   <Table.Cell>{data.email_organization}</Table.Cell>
                   <Table.Cell>{data.mobile_phone}</Table.Cell>
-                  <Table.Cell>{data.gender.value}</Table.Cell>
+                  <Table.Cell>{renderGender(data.gender.id)}</Table.Cell>
                   <Table.Cell>
                     <RiEyeFill
                       size={20}
