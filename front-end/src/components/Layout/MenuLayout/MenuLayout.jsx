@@ -108,7 +108,7 @@ const MenuLayout = () => {
   return (
     <Menu
       inlineIndent={15}
-      theme="dark"
+      theme="light"
       style={{
         width: '100%',
       }}

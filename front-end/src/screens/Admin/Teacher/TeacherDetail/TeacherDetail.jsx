@@ -1,7 +1,7 @@
-import { Grid, Spacer, Text, Badge, Card } from '@nextui-org/react';
+import { Grid, Spacer, Text, Badge, Card, Button } from '@nextui-org/react';
 import classes from './TeacherDetail.module.css';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Descriptions, Spin, Button } from 'antd';
+import { Descriptions, Spin } from 'antd';
 import { useState, useEffect } from 'react';
 import { AiFillPhone } from 'react-icons/ai';
 import { MdEmail } from 'react-icons/md';
@@ -87,7 +87,7 @@ const TeacherDetail = () => {
               </div>
             </Grid>
             <Grid sm={8.5} direction="column" css={{ rowGap: 20 }}>
-              <Card>
+              <Card variant='bordered'>
                 <Card.Body>
                   <Descriptions
                     title="Thông tin cơ bản"
@@ -95,8 +95,10 @@ const TeacherDetail = () => {
                     column={{ md: 2, lg: 2, xl: 2, xxl: 2 }}
                     extra={
                       <Button
+                        flat
+                        auto
                         type="primary"
-                        onClick={() => {
+                        onPress={() => {
                           navigate(`/admin/account/teacher/${id}/update`);
                         }}
                       >
@@ -138,7 +140,7 @@ const TeacherDetail = () => {
                   </Descriptions>
                 </Card.Body>
               </Card>
-              <Card>
+              <Card variant='bordered'>
                 <Card.Body>
                   <Descriptions
                     title="Thông tin bổ sung"
@@ -185,7 +187,7 @@ const TeacherDetail = () => {
                   </Descriptions>
                 </Card.Body>
               </Card>
-              <Card>
+              <Card variant='bordered'>
                 <Card.Body>
                   <Descriptions
                     title="Thông tin CMND/CCCD"

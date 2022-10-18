@@ -1,0 +1,147 @@
+.foundation {
+  width : 100vw;
+  height: 100vh;
+
+  padding: 20px;
+
+  background-color: #F1E0E8;
+}
+
+.main {
+  width : 100%;
+  height: 100%;
+
+  background-color: white;
+
+  border-radius: 26px;
+
+  display              : grid;
+  grid-template-columns: 16% 84%;
+}
+
+
+
+/* ----- Begin left side ----- */
+.logo {
+  height         : 140px;
+  display        : flex;
+  align-items    : center;
+  justify-content: center;
+}
+
+.logo img {
+  width: 90px;
+}
+
+.leftSide {
+  height: 100%;
+  width : 100%;
+}
+
+.menuItem {
+  width : 100%;
+  height: 60px;
+
+  color          : #8B8F9A;
+  display        : flex;
+  align-items    : center;
+  justify-content: center;
+
+  position: relative;
+}
+
+.menuItem.menuItemActive {
+  color: #F31260;
+}
+
+.menuItem.menuItemActive::before {
+  content: '';
+
+  width : 5px;
+  height: 48px;
+
+  background-color: #F31260;
+
+  border-radius: 10px;
+
+  position: absolute;
+  left    : 0;
+}
+
+.menuContent {
+  width : 78%;
+  height: 48px;
+
+  display       : flex;
+  align-items   : center;
+  flex-direction: row;
+  column-gap    : 10px;
+
+  padding      : 0 22px;
+  border-radius: 12px;
+}
+
+.menuItemActive .menuContent {
+  background-color: #FDD8E5;
+}
+
+.menuItem:hover {
+  color: #8B8F9A;
+}
+
+.menuItemIcon svg {
+  display: block;
+}
+
+.menuItemActive .menuItemIcon svg {
+  color: #F31260;
+}
+
+.menuItemLabel {
+  font-size  : 12px;
+  font-weight: 600;
+}
+
+.menuItemActive .menuItemLabel {
+  color: #F31260;
+}
+
+/* ----- End left side ----- */
+
+
+
+/* ----- Begin right side ----- */
+.rightSide {
+  width : 100%;
+  height: calc(100vh - 40px);
+
+  position: relative;
+
+  display       : flex;
+  flex-direction: column;
+}
+
+.header {
+  min-height: 75px;
+  width     : 100%;
+
+  padding: 0 20px;
+
+  display        : flex;
+  align-items    : center;
+  justify-content: flex-end;
+}
+
+.foundationContain {
+  margin : 0 20px 20px 0;
+  padding: 20px;
+  height: 100%;
+
+  overflow: auto;
+
+  background-color: #FFF9F9;
+
+  border-radius: 20px;
+}
+
+/* ----- End right side ----- */

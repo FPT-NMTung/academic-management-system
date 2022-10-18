@@ -1,5 +1,5 @@
-import { Grid, Card, Text, Tooltip } from '@nextui-org/react';
-import { Form, Input, Button, message, Table } from 'antd';
+import { Grid, Card, Text, Tooltip, Button, Table } from '@nextui-org/react';
+import { Form, Input, message } from 'antd';
 import FetchApi from '../../../apis/FetchApi';
 import { useNavigate } from 'react-router-dom';
 import { ManageTeacherApis } from '../../../apis/ListApi';
@@ -64,8 +64,12 @@ const TeacherScreen = () => {
   return (
     <Grid.Container gap={2}>
       <Grid sm={12}>
-        <Card>
-          <Card.Body>
+        <Card variant="bordered">
+          <Card.Body
+            css={{
+              padding: '10px',
+            }}
+          >
             <Form
               name="basic"
               layout="inline"
@@ -109,20 +113,24 @@ const TeacherScreen = () => {
               </Form.Item>
               <Form.Item style={{ width: 'calc(9% - 16px)' }}>
                 <Button
+                  flat
+                  auto
                   type="primary"
                   htmlType="submit"
-                  style={{ width: '100%' }}
+                  css={{ width: '100%' }}
                 >
                   Tìm kiếm
                 </Button>
               </Form.Item>
               <Form.Item style={{ width: '6%', marginRight: 0 }}>
                 <Button
-                  type="default"
-                  style={{
+                  flat
+                  auto
+                  color={'error'}
+                  css={{
                     width: '100%',
                   }}
-                  onClick={handleClearInput}
+                  onPress={handleClearInput}
                 >
                   Huỷ
                 </Button>
@@ -132,7 +140,7 @@ const TeacherScreen = () => {
         </Card>
       </Grid>
       <Grid sm={12}>
-        <Card>
+        <Card variant="bordered">
           <Card.Header>
             <Grid.Container>
               <Grid sm={1}></Grid>
@@ -151,11 +159,13 @@ const TeacherScreen = () => {
               </Grid>
               <Grid sm={1}>
                 <Button
-                  type="primary"
-                  style={{
+                  flat
+                  auto
+                  css={{
                     width: '100%',
                   }}
-                  onClick={() => {
+                  type="primary"
+                  onPress={() => {
                     navigate('/admin/account/teacher/create');
                   }}
                 >
@@ -164,7 +174,7 @@ const TeacherScreen = () => {
               </Grid>
             </Grid.Container>
           </Card.Header>
-          <Table
+          {/* <Table
             loading={isGetData}
             dataSource={dataSource}
             scroll={{
@@ -339,6 +349,44 @@ const TeacherScreen = () => {
                 );
               }}
             />
+          </Table> */}
+          <Table aria-label="">
+            <Table.Header>
+              <Table.Column width={60}>STT</Table.Column>
+              <Table.Column width={320}>Họ và tên</Table.Column>
+              <Table.Column width={160}>Biệt danh</Table.Column>
+              <Table.Column width={250}>Email cá nhân</Table.Column>
+              <Table.Column width={250}>Email tổ chức</Table.Column>
+              <Table.Column>Số điện thoại</Table.Column>
+              <Table.Column>Giới tính</Table.Column>
+              <Table.Column width={20}></Table.Column>
+            </Table.Header>
+            <Table.Body>
+              {dataSource.map((data, index) => (
+                <Table.Row key={data.user_id}>
+                  <Table.Cell>{index + 1}</Table.Cell>
+                  <Table.Cell>
+                    <b>{data.first_name} {data.last_name}</b>
+                  </Table.Cell>
+                  <Table.Cell>{data.nickname}</Table.Cell>
+                  <Table.Cell>{data.email}</Table.Cell>
+                  <Table.Cell>{data.email_organization}</Table.Cell>
+                  <Table.Cell>{data.mobile_phone}</Table.Cell>
+                  <Table.Cell>{data.gender.value}</Table.Cell>
+                  <Table.Cell>
+                    <RiEyeFill
+                      size={20}
+                      color="5EA2EF"
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        navigate(`/admin/account/teacher/${data.user_id}`);
+                      }}
+                    />
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+            <Table.Pagination shadow noMargin align="center" rowsPerPage={10} />
           </Table>
         </Card>
       </Grid>
