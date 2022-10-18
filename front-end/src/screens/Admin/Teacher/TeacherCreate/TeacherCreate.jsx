@@ -1,13 +1,13 @@
 import { Grid, Card, Text, Spacer } from '@nextui-org/react';
-import { Button, Form, Input, Select, Divider, DatePicker } from 'antd';
-import classes from './SroCreate.module.css';
+import { Button, Form, Input, Select, DatePicker, InputNumber } from 'antd';
+import classes from './TeacherCreate.module.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import {
   CenterApis,
   GenderApis,
   AddressApis,
-  ManageSroApis,
+  ManageTeacherApis,
 } from '../../../../apis/ListApi';
 import FetchApi from '../../../../apis/FetchApi';
 import { Validater } from '../../../../validater/Validater';
@@ -15,22 +15,34 @@ import moment from 'moment';
 import { ErrorCodeApi } from '../../../../apis/ErrorCodeApi';
 import { Fragment } from 'react';
 
-const SroCreate = ({ modeUpdate }) => {
+const translateWorkingTime = {
+  1: 'Sáng',
+  2: 'Chiều',
+  3: 'Tối',
+  4: 'Sáng, Chiều',
+  5: 'Sáng, Tối',
+  6: 'Chiều, Tối',
+};
+
+const TeacherCreate = ({ modeUpdate }) => {
   const [listCenter, setListCenter] = useState([]);
   const [listGender, setListGender] = useState([]);
   const [listProvince, setListProvince] = useState([]);
   const [listDistrict, setListDistrict] = useState([]);
   const [listWard, setListWard] = useState([]);
-  const [isGetDateUser, setIsGetDateUser] = useState(modeUpdate);
+  const [listWorkingTime, setListWorkingTime] = useState([]);
+  const [listTeacherType, setListTeacherType] = useState([]);
   const [isCreatingOrUpdating, setIsCreatingOrUpdating] = useState(false);
   const [messageFailed, setMessageFailed] = useState(undefined);
+  const [isGettingInformationTeacher, setIsGettingInformationTeacher] =
+    useState(true);
 
+  const [form] = Form.useForm();
   const navigate = useNavigate();
   const { id } = useParams();
-  const [form] = Form.useForm();
 
   const getListCenter = () => {
-    FetchApi(CenterApis.getAllCenter).then((res) => {
+    FetchApi(CenterApis.getAllCenter, null, null, null).then((res) => {
       setListCenter(res.data);
     });
   };
@@ -75,6 +87,25 @@ const SroCreate = ({ modeUpdate }) => {
     form.setFieldsValue({ ward_id: null });
   };
 
+  const getListWorkingTime = () => {
+    FetchApi(ManageTeacherApis.getWorkingTime).then((res) => {
+      setListWorkingTime(
+        res.data.map((item) => {
+          return {
+            id: item.id,
+            value: translateWorkingTime[item.id],
+          };
+        })
+      );
+    });
+  };
+
+  const getListTeacherType = () => {
+    FetchApi(ManageTeacherApis.getTeacherType).then((res) => {
+      setListTeacherType(res.data);
+    });
+  };
+
   const getListDistrictForUpdate = () => {
     const provinceId = form.getFieldValue('province_id');
 
@@ -97,11 +128,52 @@ const SroCreate = ({ modeUpdate }) => {
     });
   };
 
+  const getInformationTeacher = () => {
+    setIsGettingInformationTeacher(true);
+
+    FetchApi(ManageTeacherApis.getInformationTeacher, null, null, [
+      `${id}`,
+    ]).then((res) => {
+      const data = res.data;
+
+      form.setFieldsValue({
+        first_name: data.first_name,
+        last_name: data.last_name,
+        mobile_phone: data.mobile_phone,
+        email: data.email,
+        email_organization: data.email_organization,
+        province_id: data.province.id,
+        district_id: data.district.id,
+        ward_id: data.ward.id,
+        gender_id: data.gender.id,
+        birthday: moment(data.birthday),
+        center_id: data.center_id,
+        citizen_identity_card_no: data.citizen_identity_card_no,
+        citizen_identity_card_published_date: moment(
+          data.citizen_identity_card_published_date
+        ),
+        citizen_identity_card_published_place:
+          data.citizen_identity_card_published_place,
+        teacher_type_id: data.teacher_type.id,
+        working_time_id: data.working_time.id,
+        nickname: data.nickname,
+        company_address: data.company_address,
+        start_working_date: moment(data.start_working_date),
+        salary: data.salary,
+        tax_code: data.tax_code,
+      });
+
+      setIsGettingInformationTeacher(false);
+      getListDistrictForUpdate();
+      getListWardForUpdate();
+    });
+  };
+
   const handleSubmitForm = () => {
+    const data = form.getFieldsValue();
     setIsCreatingOrUpdating(true);
     setMessageFailed(undefined);
-    const data = form.getFieldsValue();
-    console.log(data.birthday.add(7, 'hours'));
+
     const body = {
       first_name: data.first_name.trim(),
       last_name: data.last_name.trim(),
@@ -119,14 +191,22 @@ const SroCreate = ({ modeUpdate }) => {
         data.citizen_identity_card_published_date.add(7, 'hours').toDate(),
       citizen_identity_card_published_place:
         data.citizen_identity_card_published_place.trim(),
+      teacher_type_id: data.teacher_type_id,
+      working_time_id: data.working_time_id,
+      nickname: data.nickname.trim(),
+      company_address: data.company_address.trim(),
+      start_working_date: data.start_working_date.add(7, 'hours').toDate(),
+      salary: data.salary,
+      tax_code: data.tax_code.trim(),
     };
 
-    const api = modeUpdate ? ManageSroApis.updateSro : ManageSroApis.createSro;
+    const api = modeUpdate
+      ? ManageTeacherApis.updateTeacher
+      : ManageTeacherApis.createTeacher;
     const params = modeUpdate ? [`${id}`] : null;
     FetchApi(api, body, null, params)
       .then((res) => {
-        const user_id = res.data.user_id;
-        navigate(`/admin/account/sro/${user_id}`, { replace: true });
+        navigate(`/admin/account/teacher/${res.data.user_id}`);
       })
       .catch((err) => {
         setIsCreatingOrUpdating(false);
@@ -134,46 +214,15 @@ const SroCreate = ({ modeUpdate }) => {
       });
   };
 
-  const getInformationSro = () => {
-    FetchApi(ManageSroApis.getDetailSro, null, null, [`${id}`])
-      .then((res) => {
-        const data = res.data;
-        form.setFieldsValue({
-          first_name: data.first_name,
-          last_name: data.last_name,
-          mobile_phone: data.mobile_phone,
-          email: data.email,
-          email_organization: data.email_organization,
-          province_id: data.province.id,
-          district_id: data.district.id,
-          ward_id: data.ward.id,
-          gender_id: data.gender.id,
-          birthday: moment(data.birthday),
-          center_id: data.center_id,
-          citizen_identity_card_no: data.citizen_identity_card_no,
-          citizen_identity_card_published_date: moment(
-            data.citizen_identity_card_published_date
-          ),
-          citizen_identity_card_published_place:
-            data.citizen_identity_card_published_place,
-        });
-        setIsGetDateUser(false);
-        getListCenter();
-        getListGender();
-        getListDistrictForUpdate();
-        getListWardForUpdate();
-      })
-      .catch((err) => {
-        navigate('/admin/account/sro');
-      });
-  };
-
   useEffect(() => {
     getListCenter();
     getListGender();
     getListProvince();
+    getListWorkingTime();
+    getListTeacherType();
+
     if (modeUpdate) {
-      getInformationSro();
+      getInformationTeacher();
     }
   }, []);
 
@@ -183,7 +232,7 @@ const SroCreate = ({ modeUpdate }) => {
       wrapperCol={{ span: 15 }}
       form={form}
       onFinish={handleSubmitForm}
-      disabled={isGetDateUser}
+      disabled={modeUpdate && isGettingInformationTeacher}
     >
       <Grid.Container justify="center">
         <Grid xs={7} direction={'column'} css={{ rowGap: 20 }}>
@@ -198,8 +247,8 @@ const SroCreate = ({ modeUpdate }) => {
                   textAlign: 'center',
                 }}
               >
-                {!modeUpdate && 'Tạo mới SRO'}
-                {modeUpdate && 'Cập nhật SRO'}
+                {!modeUpdate && 'Tạo giáo viên mới'}
+                {modeUpdate && 'Cập nhật thông tin giáo viên'}
               </Text>
             </Card.Header>
             <Card.Body>
@@ -214,20 +263,13 @@ const SroCreate = ({ modeUpdate }) => {
                     },
                   ]}
                 >
-                  <Select
-                    disabled={modeUpdate}
-                    placeholder="Cơ sở"
-                    loading={listCenter.length === 0}
-                  >
-                    {listCenter.map((e) => (
-                      <Select.Option key={e.id} value={e.id}>
-                        {e.name}
-                      </Select.Option>
+                  <Select placeholder="Cơ sở">
+                    {listCenter.map((item) => (
+                      <Select.Option value={item.id}>{item.name}</Select.Option>
                     ))}
                   </Select>
                 </Form.Item>
               </div>
-              <Spacer y={1.5} />
               <div className={classes.layout}>
                 <Form.Item
                   label="Họ, tên đệm"
@@ -313,13 +355,10 @@ const SroCreate = ({ modeUpdate }) => {
                     },
                   ]}
                 >
-                  <Select
-                    placeholder="Giới tính"
-                    loading={listGender.length === 0}
-                  >
-                    {listGender.map((e) => (
-                      <Select.Option key={e.id} value={e.id}>
-                        {e.value}
+                  <Select placeholder="Giới tính">
+                    {listGender.map((item) => (
+                      <Select.Option value={item.id}>
+                        {item.value}
                       </Select.Option>
                     ))}
                   </Select>
@@ -536,6 +575,169 @@ const SroCreate = ({ modeUpdate }) => {
                 </Form.Item>
               </div>
               <Spacer y={1.5} />
+              <div className={classes.layout}>
+                <Form.Item
+                  label="Biệt danh"
+                  name="nickname"
+                  rules={[
+                    {
+                      required: true,
+                      validator: (_, value) => {
+                        if (value === null || value === undefined) {
+                          return Promise.reject(
+                            'Trường này không được để trống'
+                          );
+                        }
+                        if (
+                          Validater.isContaintSpecialCharacterForName(
+                            value.trim()
+                          )
+                        ) {
+                          return Promise.reject(
+                            'Trường này không được chứa ký tự đặc biệt'
+                          );
+                        }
+                        if (value.trim().length < 2) {
+                          return Promise.reject(
+                            new Error('Trường phải có ít nhất 2 ký tự')
+                          );
+                        }
+                        return Promise.resolve();
+                      },
+                    },
+                    {
+                      whitespace: true,
+                      message: 'Trường không được chứa khoảng trắng',
+                    },
+                  ]}
+                >
+                  <Input placeholder="Biệt danh" />
+                </Form.Item>
+                <Form.Item
+                  label="Ngày bắt đầu"
+                  name="start_working_date"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Hãy nhập ngày bắt đầu',
+                    },
+                  ]}
+                >
+                  <DatePicker format={'DD/MM/YYYY'} />
+                </Form.Item>
+                <Form.Item
+                  label="Nơi công tác"
+                  name="company_address"
+                  rules={[
+                    {
+                      required: true,
+                      validator: (_, value) => {
+                        if (value === null || value === undefined) {
+                          return Promise.reject(
+                            'Trường này không được để trống'
+                          );
+                        }
+                        if (
+                          Validater.isContaintSpecialCharacterForName(
+                            value.trim()
+                          )
+                        ) {
+                          return Promise.reject(
+                            'Trường này không được chứa ký tự đặc biệt'
+                          );
+                        }
+                        if (value.trim().length < 2) {
+                          return Promise.reject(
+                            new Error('Trường phải có ít nhất 2 ký tự')
+                          );
+                        }
+                        return Promise.resolve();
+                      },
+                    },
+                    {
+                      whitespace: true,
+                      message: 'Trường không được chứa khoảng trắng',
+                    },
+                  ]}
+                >
+                  <Input placeholder="Nơi công tác" />
+                </Form.Item>
+                <Form.Item
+                  label="Loại hợp đồng"
+                  name="teacher_type_id"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Hãy chọn loại hợp đồng',
+                    },
+                  ]}
+                >
+                  <Select placeholder="Loại hợp đồng">
+                    {listTeacherType.map((e) => (
+                      <Select.Option key={e.id} value={e.id}>
+                        {e.value}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+                <Form.Item
+                  label="Mã số thuế"
+                  name="tax_code"
+                  rules={[
+                    {
+                      required: true,
+                      validator: (_, value) => {
+                        if (Validater.isTaxCode(value)) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(
+                          new Error('Mã số thuế không hợp lệ')
+                        );
+                      },
+                    },
+                  ]}
+                >
+                  <Input placeholder="Mã số thuế" />
+                </Form.Item>
+                <Form.Item
+                  label="Thời gian dạy"
+                  name="working_time_id"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Hãy chọn thời gian dạy',
+                    },
+                  ]}
+                >
+                  <Select placeholder="Thời gian dạy">
+                    {listWorkingTime.map((item) => (
+                      <Select.Option key={item.id} value={item.id}>
+                        {item.value}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+                <Form.Item
+                  label="Mức lương"
+                  name="salary"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Hãy nhập mức lương',
+                    },
+                  ]}
+                >
+                  <InputNumber
+                    placeholder="Mức lương"
+                    formatter={(value) =>
+                      `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                    }
+                    parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
+                    style={{ width: '100%' }}
+                    addonAfter="VNĐ"
+                  />
+                </Form.Item>
+              </div>
               <div className={classes.buttonCreate}>
                 <Button
                   type="primary"
@@ -562,4 +764,4 @@ const SroCreate = ({ modeUpdate }) => {
   );
 };
 
-export default SroCreate;
+export default TeacherCreate;

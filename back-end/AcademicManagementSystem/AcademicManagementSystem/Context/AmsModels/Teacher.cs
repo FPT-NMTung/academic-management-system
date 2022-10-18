@@ -18,6 +18,7 @@ public class Teacher
     public int WorkingTimeId { get; set; }
     
     [Column("nickname")]
+    [StringLength(255)]
     public string? Nickname { get; set; }
     
     [Column("company_address")]
@@ -31,6 +32,7 @@ public class Teacher
     
     //Unique Key
     [Column("tax_code")]
+    [StringLength(10)]
     public string? TaxCode { get; set; }
 
     // relationships

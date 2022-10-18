@@ -125,8 +125,14 @@ public static class ErrorDescription
         { "E0057", new ErrorModel() { Message = "Total Weight must be 100 for all grade category", Type = "grade-error-0002" } },
         { "E0058", new ErrorModel() { Message = "Invalid data for create grade category details", Type = "grade-error-0003" } },
         { "E0059", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0004" } },
-
-        
+        { "E0060", new ErrorModel() { Message = "Exam must have only 1 item", Type = "grade-error-0005" } },
+        { "E0061", new ErrorModel() { Message = "QuantityGradeItem out of range [1-10]", Type = "grade-error-0006" } },
+        { "E0062", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0007" } },
+        { "E0063", new ErrorModel() { Message = "Can't add PE because Module Exam Type is TE/FE", Type = "grade-error-0008" } },
+        { "E0064", new ErrorModel() { Message = "Can't add FE because Module Exam Type is PE", Type = "grade-error-0009" } },
+        { "E0065", new ErrorModel() { Message = "This module not take exam", Type = "grade-error-0010" } },
+        { "E0066", new ErrorModel() { Message = "Can't add Resit Exam", Type = "grade-error-0011" } },
+        { "E0067", new ErrorModel() { Message = "This module must have both PE and FE", Type = "grade-error-0012" } },
 
     };
 }

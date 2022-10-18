@@ -25,8 +25,30 @@ export const Validater = {
     if (citizenId == null) {
       return false;
     }
-    // check length of citizenId is 9 or 12 characters and is number only
     const re = /^(\d{9}|\d{12})$/;
     return re.test(String(citizenId.trim()));
+  },
+  isTaxCode: (taxCode) => {
+    if (taxCode == null) {
+      return false;
+    }
+    const re = /^\d{10}$/;
+    return re.test(String(taxCode.trim()));
+  },
+  isContaintSpecialCharacterForName: (str) => {
+    console.log(str);
+    if (str == null) {
+      return false;
+    }
+    const re = /[~`!#$%\^&*+=\-\[\]\\;,./{}|\\":<>\?]/;
+    return re.test(String(str.trim()));
+  },
+  isContaintSpecialCharacter: (str) => {
+    console.log(str);
+    if (str == null) {
+      return false;
+    }
+    const re = /[~`!#$%\^&*+=\-\[\]\\';,./{}|\\":<>\?]/;
+    return re.test(String(str.trim()));
   },
 };

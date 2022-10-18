@@ -9,7 +9,6 @@ import { Validater } from '../../validater/Validater';
 import moment from 'moment';
 
 const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
-
   const [isUpdating, setIsUpdating] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const [IsLoading, setIsLoading] = useState(true);
@@ -17,22 +16,17 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
   const [listCourseFamily, setlistCourseFamily] = useState([]);
 
   const getData = () => {
-
     setIsLoading(true);
     const apiCourseFamily = CourseFamilyApis.getAllCourseFamily;
     console.log(apiCourseFamily);
 
     FetchApi(apiCourseFamily).then((res) => {
       setlistCourseFamily(res.data);
-
     });
-
-  }
+  };
   useEffect(() => {
     setIsLoading(false);
     // getData();
-
-
   }, []);
   const handleSubmitForm = (e) => {
     setIsUpdating(true);
@@ -42,10 +36,11 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
       code: e.codefamily,
       published_year: e.codefamilyyear.year(),
       is_active: true,
-
     };
 
-    FetchApi(CourseFamilyApis.updateCourseFamily, body, null, [`${data.codefamily}`])
+    FetchApi(CourseFamilyApis.updateCourseFamily, body, null, [
+      `${data.codefamily}`,
+    ])
       .then((res) => {
         onUpdateSuccess();
       })
@@ -56,7 +51,7 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
   };
   return (
     <Fragment>
-      {(IsLoading) && (
+      {IsLoading && (
         <div className={classes.loading}>
           <Spin />
         </div>
@@ -73,8 +68,6 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
             coursefamilyname: data?.namecoursefamily,
             codefamily: data?.codefamily,
             codefamilyyear: moment(data?.codefamilyyear),
-
-
           }}
         >
           <Form.Item
@@ -83,18 +76,33 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
             rules={[
               {
                 required: true,
-                message: 'Hãy nhập tên',
+                validator: (_, value) => {
+                  if (value === null || value === undefined) {
+                    return Promise.reject('Trường này không được để trống');
+                  }
+                  if (
+                    Validater.isContaintSpecialCharacterForName(value.trim())
+                  ) {
+                    return Promise.reject(
+                      'Trường này không được chứa ký tự đặc biệt'
+                    );
+                  }
+                  if (value.trim().length < 2) {
+                    return Promise.reject(
+                      new Error('Trường phải có ít nhất 2 ký tự')
+                    );
+                  }
+                  return Promise.resolve();
+                },
               },
             ]}
           >
             <Input />
           </Form.Item>
-
           <Fragment>
             <Form.Item
               name={'codefamily'}
               label={'Mã chương trình học'}
-
               rules={[
                 {
                   required: true,
@@ -115,12 +123,11 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
               ]}
             >
               <DatePicker
-                popupStyle={{ zIndex: 999999}}
+                popupStyle={{ zIndex: 999999 }}
                 placeholder="Năm áp dụng"
-                picker="year" />
-             
+                picker="year"
+              />
             </Form.Item>
-
           </Fragment>
 
           <Form.Item wrapperCol={{ offset: 7, span: 99 }}>
@@ -128,7 +135,6 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
               Cập nhật
             </Button>
             <Button
-
               style={{ marginLeft: 10 }}
               type="primary"
               htmlType="button"
@@ -151,7 +157,6 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
           Cập nhật thất bại, vui lòng thử lại
         </Text>
       )}
-
     </Fragment>
   );
 };

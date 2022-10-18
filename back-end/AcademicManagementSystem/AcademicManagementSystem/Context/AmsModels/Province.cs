@@ -21,6 +21,7 @@ public class Province
     public string Code { get; set; }
     
     [Column("name")]
+    [StringLength(255)]
     public string Name { get; set; }
     
     // relationships
