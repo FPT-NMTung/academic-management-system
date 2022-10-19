@@ -1,4 +1,5 @@
 import {
+  Input,
   Grid,
   Card,
   Text,
@@ -7,7 +8,7 @@ import {
   Table,
   Badge,
 } from "@nextui-org/react";
-import { Form, Input, message } from "antd";
+import { Form, message } from 'antd';
 import FetchApi from "../../../apis/FetchApi";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -20,7 +21,7 @@ import { RiEyeFill } from "react-icons/ri";
 const ManageClass = () => {
   const [dataSource, setDataSource] = useState([]);
   const [isGetData, setIsGetData] = useState(true);
-
+ 
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
@@ -30,7 +31,24 @@ const ManageClass = () => {
     form.resetFields();
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    setDataSource([
+      {
+        course_code: "A123",
+        class_days_id: 1,
+        class_status_id: 1,
+        class_name:"a",
+        start_date:"2022-10-09 16:45:24.0000000",
+        completion_date:"2022-12-09 16:45:28.0000000",
+        graduation_date:'2022-12-15 16:45:32.0000000',
+        class_hour_start:"12:30:30",
+        class_hour_end:"16:30:30",
+        created_at:"2022-10-09 16:45:56.0000000",
+        updated_at:"2022-10-09 16:45:57.0000000",
+      },
+
+    ]);
+  }, []);
 
   const renderStatus = (id) => {
     if (id === 1) {
