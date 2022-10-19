@@ -26,7 +26,8 @@ public static class ErrorDescription
         { "E1002", new ErrorModel() { Message = "Input cannot be null or white space", Type = "center-error-0002" } },
         { "E1003", new ErrorModel() { Message = "Center name not match with name format", Type = "center-error-0003" } },
         { "E1004", new ErrorModel() { Message = "Center name must be less or equal than 100 characters", Type = "center-error-0004" } },
-        { "E1005", new ErrorModel() { Message = "This center already exists", Type = "center-error-0005" } },
+        { "E1005", new ErrorModel() { Message = "Center with this address already exists", Type = "center-error-0005" } },
+        { "E1047", new ErrorModel() { Message = "Center with this name already exists", Type = "center-error-0006" } },
         
         // sro
         { "E0016", new ErrorModel() { Message = "centerId for GET SROs not found", Type = "sro-error-0001" } },
