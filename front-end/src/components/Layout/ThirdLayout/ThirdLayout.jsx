@@ -1,0 +1,158 @@
+import classes from './ThirdLayout.module.css';
+import Logo from '../../../images/logo_1.webp';
+import { NavLink } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { IoHome } from 'react-icons/io5';
+import { Dropdown, Spacer, User } from '@nextui-org/react';
+import { useNavigate } from 'react-router-dom';
+import FetchApi from '../../../apis/FetchApi';
+import { UserApis } from '../../../apis/ListApi';
+import { Fragment } from 'react';
+import { FaPowerOff } from 'react-icons/fa';
+
+const ROLE = {
+  1: 'Admin',
+  2: 'SRO',
+  3: 'Teacher',
+  4: 'Student',
+};
+
+const menu = {
+  admin: [
+    {
+      key: '1',
+      label: 'Quản lý cơ sở',
+      icon: <IoHome size={16} />,
+      url: '/admin/center',
+    },
+    {
+      key: '2',
+      label: 'Quản lý tài khoản',
+      icon: <IoHome size={16} />,
+      url: '/admin/account/teacher',
+    },
+    {
+      key: '3',
+      label: 'Quản lý khoá học',
+      icon: <IoHome size={16} />,
+      url: '/admin/manage-course/course-family',
+    },
+  ],
+  sro: [],
+  teacher: [],
+  student: [],
+};
+
+const ThirdLayout = ({ children }) => {
+  const [dataUser, setDataUser] = useState({});
+  const [isOpenDropdown, setIsOpenDropdown] = useState(true);
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('role');
+    navigate('/login');
+  };
+
+  useEffect(() => {
+    FetchApi(UserApis.getInformationUser, null, null, null)
+      .then((res) => {
+        const data = res.data;
+        setDataUser({
+          name: data.first_name + ' ' + data.last_name,
+          role: ROLE[data.role.id],
+          avatar: data.avatar,
+          emailOrganization: data.email_organization,
+          mobilePhone: data.mobile_phone,
+        });
+      })
+      .catch(() => {
+        handleLogout();
+      });
+  }, []);
+
+  return (
+    <div className={classes.foundation}>
+      <div className={classes.main}>
+        <div className={classes.leftSide}>
+          <div className={classes.logo}>
+            <img src={Logo} alt="logo" />
+          </div>
+          <div className={classes.menu}>
+            {menu[localStorage.getItem('role')].map((item) => (
+              <NavLink
+                to={item.url}
+                className={({ isActive }) => {
+                  return isActive
+                    ? `${classes.menuItem} ${classes.menuItemActive}`
+                    : classes.menuItem;
+                }}
+              >
+                <div className={classes.menuContent}>
+                  <div className={classes.menuItemIcon}>{item.icon}</div>
+                  <div className={classes.menuItemLabel}>{item.label}</div>
+                </div>
+              </NavLink>
+            ))}
+          </div>
+        </div>
+        <div className={classes.rightSide}>
+          <div className={classes.header}>
+            <Dropdown placement="bottom">
+              <Dropdown.Trigger css={{ cursor: 'pointer' }}>
+                <User
+                  size="lg"
+                  src={dataUser.avatar}
+                  color={
+                    dataUser.role === 'Admin'
+                      ? 'error'
+                      : dataUser.role === 'SRO'
+                      ? 'warning'
+                      : dataUser.role === 'Teacher'
+                      ? 'secondary'
+                      : 'success'
+                  }
+                  bordered
+                  squared
+                  name={dataUser.name}
+                  description={
+                    <Fragment>
+                      <b>{dataUser.role}</b> của @Aptech
+                    </Fragment>
+                  }
+                />
+              </Dropdown.Trigger>
+              <Dropdown.Menu
+                onAction={(e) => {
+                  switch (e) {
+                    case 'logout':
+                      handleLogout();
+                      break;
+                    default:
+                      break;
+                  }
+                }}
+                color="secondary"
+                aria-label="Avatar Actions"
+              >
+                <Dropdown.Item
+                  key="logout"
+                  color="error"
+                  icon={<FaPowerOff />}
+                  description={'Đăng xuất tài khoản'}
+                >
+                  Đăng xuất
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
+          <div className={classes.foundationContain}>{children}</div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ThirdLayout;
