@@ -54,8 +54,47 @@ p {
 
 /* custom input antd */
 .ant-input {
-  border-radius: 10px !important;
-  padding      : 10px !important;
+  border-radius   : 10px !important;
+  padding         : 10px !important;
   background-color: rgb(244, 245, 247) !important;
-  border: none !important;
+  border          : none !important;
+}
+
+.ant-select .ant-select-selector {
+  padding-top   : 4px !important;
+  padding-bottom: 4px !important;
+  height        : 40px !important;
+
+  border-radius   : 0.75rem !important;
+  background-color: #f1f3f5 !important;
+  color           : #11181c !important;
+  border          : none !important;
+}
+
+.ant-select-focused .ant-select-selector,
+.ant-select-selector:focus,
+.ant-select-selector:active,
+.ant-select-open .ant-select-selector {
+  box-shadow: none !important;
+}
+
+.ant-select-status-error .ant-select-selector {
+  background-color: #fdd8e5 !important;
+  color           : #f31260 !important;
+}
+
+.ant-select-status-warning .ant-select-selector {
+  background-color: #f9cb80 !important;
+  color           : #f5a524 !important;
+}
+
+.ant-picker-input {
+  border-radius   : 10px !important;
+  padding         : 10px !important;
+  background-color: rgb(244, 245, 247) !important;
+}
+
+.ant-picker {
+  padding: 0 !important;
+  border : none !important;
 }
