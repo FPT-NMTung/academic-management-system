@@ -26,8 +26,14 @@ public static class ErrorDescription
         { "E1002", new ErrorModel() { Message = "Input cannot be null or white space", Type = "center-error-0002" } },
         { "E1003", new ErrorModel() { Message = "Center name not match with name format", Type = "center-error-0003" } },
         { "E1004", new ErrorModel() { Message = "Center name must be less or equal than 100 characters", Type = "center-error-0004" } },
-        { "E1005", new ErrorModel() { Message = "This center already exists", Type = "center-error-0005" } },
-        
+        { "E1005", new ErrorModel() { Message = "Center with this address already exists", Type = "center-error-0005" } },
+        { "E1047", new ErrorModel() { Message = "Center with this name already exists", Type = "center-error-0006" } },
+        { "E1048", new ErrorModel() { Message = "Different Center with this name already exists", Type = "center-error-0007" } },
+        { "E1049", new ErrorModel() { Message = "Different Center with this address already exists", Type = "center-error-0008" } },
+        { "E1050", new ErrorModel() { Message = "Fail to SaveChange when Create Center", Type = "center-error-0009" } },
+        { "E1051", new ErrorModel() { Message = "Fail to SaveChange when Update Center", Type = "center-error-0010" } },
+        { "E1052", new ErrorModel() { Message = "Fail to SaveChange when Delete Center", Type = "center-error-0011" } },
+
         // sro
         { "E0016", new ErrorModel() { Message = "centerId for GET SROs not found", Type = "sro-error-0001" } },
         { "E0017", new ErrorModel() { Message = "SRO not found", Type = "sro-error-0002" } },
