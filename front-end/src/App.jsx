@@ -40,8 +40,8 @@ const App = () => {
       </Route>
 
       {/* Routers for role sro */}
-      <Route path={'/sro'}>
-        <Route index element={<RequireAuth role={'sro'}><Text p>SRO</Text></RequireAuth>} />
+      <Route path={'/sro'}element={<SecondLayout><RequireAuth role={'sro'} /></SecondLayout>} >
+        <Route index element={<p>Hello sro</p>} />        
       </Route>
 
       {/* Routers for role admin */}

@@ -14,6 +14,7 @@ public class Class
     public int CenterId { get; set; }
     
     [Column("course_code")]
+    [StringLength(100)]
     public string CourseCode { get; set; }
     
     [Column("class_days_id")]   
@@ -23,6 +24,7 @@ public class Class
     public int ClassStatusId { get; set; }
     
     [Column("name")]
+    [StringLength(255)]
     public string Name { get; set; }
     
     [Column("start_date")]

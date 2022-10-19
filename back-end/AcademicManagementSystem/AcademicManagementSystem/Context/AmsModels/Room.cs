@@ -17,7 +17,7 @@ public class Room
     public int RoomTypeId { get; set; }
 
     [Column("name")]
-    [StringLength(100)]
+    [StringLength(255)]
     public string Name { get; set; }
     
     [Column("capacity")]
