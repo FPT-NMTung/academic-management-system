@@ -28,6 +28,8 @@ public static class ErrorDescription
         { "E1004", new ErrorModel() { Message = "Center name must be less or equal than 100 characters", Type = "center-error-0004" } },
         { "E1005", new ErrorModel() { Message = "Center with this address already exists", Type = "center-error-0005" } },
         { "E1047", new ErrorModel() { Message = "Center with this name already exists", Type = "center-error-0006" } },
+        { "E1048", new ErrorModel() { Message = "Different Center with this name already exists", Type = "center-error-0007" } },
+        { "E1049", new ErrorModel() { Message = "Different Center with this address already exists", Type = "center-error-0008" } },
         
         // sro
         { "E0016", new ErrorModel() { Message = "centerId for GET SROs not found", Type = "sro-error-0001" } },

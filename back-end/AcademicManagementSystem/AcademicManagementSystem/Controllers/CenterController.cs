@@ -71,6 +71,12 @@ public class CenterController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        var centerResponse = GetCenterResponse(center);
+        return Ok(CustomResponse.Ok("Get center by id success", centerResponse));
+    }
+
+    private static CenterResponse GetCenterResponse(Center center)
+    {
         var centerResponse = new CenterResponse()
         {
             Id = center.Id,
@@ -96,7 +102,7 @@ public class CenterController : ControllerBase
                 Prefix = center.Ward.Prefix,
             }
         };
-        return Ok(CustomResponse.Ok("Get center by id success", centerResponse));
+        return centerResponse;
     }
 
     // create center
@@ -200,6 +206,18 @@ public class CenterController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        if (IsCenterNameWithDifferentIdExists(id, request.Name))
+        {
+            var error = ErrorDescription.Error["E1048"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsCenterAddressWithDifferentIdExists(id, request))
+        {
+            var error = ErrorDescription.Error["E1049"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         if (request.ProvinceId is < 0 or > 63 || request.DistrictId is < 0 or > 709 ||
             request.WardId is < 0 or > 11283)
         {
@@ -255,11 +273,27 @@ public class CenterController : ControllerBase
     {
         return _context.Centers.Any(c => string.Equals(c.Name.ToLower(), request.Name.Trim().ToLower()));
     }
-    
+
     // is center address exists
     private bool IsCenterAddressExists(CreateCenterRequest request)
     {
         return _context.Centers.Any(c => c.ProvinceId == request.ProvinceId
+                                         && c.DistrictId == request.DistrictId
+                                         && c.WardId == request.WardId);
+    }
+
+    // is center name with different id exists
+    private bool IsCenterNameWithDifferentIdExists(int id, string name)
+    {
+        return _context.Centers.Any(c => c.Id != id
+                                         && string.Equals(c.Name.ToLower(), name.Trim().ToLower()));
+    }
+
+    // is center address with different id exists
+    private bool IsCenterAddressWithDifferentIdExists(int id, UpdateCenterRequest request)
+    {
+        return _context.Centers.Any(c => c.Id != id
+                                         && c.ProvinceId == request.ProvinceId
                                          && c.DistrictId == request.DistrictId
                                          && c.WardId == request.WardId);
     }
