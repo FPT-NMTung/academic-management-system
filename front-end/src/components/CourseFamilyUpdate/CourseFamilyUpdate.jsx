@@ -1,5 +1,5 @@
 import { Card, Grid, Text } from '@nextui-org/react';
-import { Form, Select, DatePicker, Input, Button, Spin } from 'antd';
+import { Form, Select, DatePicker, Input, Button, Spin, message } from 'antd';
 import { Fragment } from 'react';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
@@ -42,6 +42,7 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
       `${data.codefamily}`,
     ])
       .then((res) => {
+        message.success('Cập nhật chương trình học thành công');
         onUpdateSuccess();
       })
       .catch((err) => {

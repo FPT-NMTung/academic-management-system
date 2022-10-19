@@ -89,6 +89,14 @@ const items = {
       '/sro',
       '/sro'
     ),
+    getItem(
+      'Quản lý lớp học',
+      'main2',
+      <MdMeetingRoom />,
+      undefined,
+      '/sro/manage-class/*',
+      '/sro/manage-class'
+    ),
   ]
 };
 

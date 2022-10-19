@@ -56,7 +56,7 @@ const Module = () => {
       const mergeModuleRes = data
         .sort(
           (a, b) =>
-            -(new Date(a.module.center_id) - new Date(b.module.center_id))
+            -(new Date(a.module.updated_at) - new Date(b.module.updated_at))
         )
         .map((e, index) => {
           return {
