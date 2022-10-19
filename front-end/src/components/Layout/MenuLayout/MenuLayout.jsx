@@ -17,75 +17,88 @@ const getItem = (label, key, icon, children, url, link) => {
   };
 };
 
-const itemsAdmin = [
-  getItem(
-    'Quản lý cơ sở',
-    'main2',
-    <IoHome />,
-    undefined,
-    '/admin/center/*',
-    '/admin/center'
-  ),
-  getItem('Quản lý tài khoản', 'main3', <MdManageAccounts />, [
+const items = {
+  admin: [
     getItem(
-      'Người quản lý lớp (SRO)',
-      'main3-sub1',
+      'Quản lý cơ sở',
+      'main2',
+      <IoHome />,
       undefined,
+      '/admin/center/*',
+      '/admin/center'
+    ),
+    getItem('Quản lý tài khoản', 'main3', <MdManageAccounts />, [
+      getItem(
+        'Người quản lý lớp (SRO)',
+        'main3-sub1',
+        undefined,
+        undefined,
+        '/admin/account/sro/*',
+        '/admin/account/sro'
+      ),
+      getItem(
+        'Giáo viên',
+        'main3-sub2',
+        undefined,
+        undefined,
+        '/admin/account/teacher/*',
+        '/admin/account/teacher'
+      ),
+    ]),
+    getItem('Quản lý khoá học', 'main4', <ImBooks />, [
+      getItem(
+        'Chương trình học gốc',
+        'main4-sub1',
+        undefined,
+        undefined,
+        '/admin/manage-course/course-family/*',
+        '/admin/manage-course/course-family'
+      ),
+      getItem(
+        'Khoá học',
+        'main4-sub2',
+        undefined,
+        undefined,
+        '/admin/manage-course/course/*',
+        '/admin/manage-course/course'
+      ),
+      getItem(
+        'Môn học',
+        'main4-sub3',
+        undefined,
+        undefined,
+        '/admin/manage-course/module/*',
+        '/admin/manage-course/module'
+      ),
+    ]),
+    getItem(
+      'Quản lý phòng học',
+      'main5',
+      <MdMeetingRoom />,
       undefined,
-      '/admin/account/sro/*',
-      '/admin/account/sro'
+      '/admin/room/*',
+      '/admin/room'
+    ),
+  ],
+  sro: [
+    getItem(
+      'Trang chủ',
+      'sro1',
+      <IoHome />,
+      undefined,
+      '/sro',
+      '/sro'
     ),
     getItem(
-      'Giáo viên',
-      'main3-sub2',
+      'Quản lý lớp học',
+      'main2',
+      <MdMeetingRoom />,
       undefined,
-      undefined,
-      '/admin/account/teacher/*',
-      '/admin/account/teacher'
+      '/sro/manage-class/*',
+      '/sro/manage-class'
     ),
-  ]),
-  getItem('Quản lý khoá học', 'main4', <ImBooks />, [
-    getItem(
-      'Chương trình học gốc',
-      'main4-sub1',
-      undefined,
-      undefined,
-      '/admin/manage-course/course-family/*',
-      '/admin/manage-course/course-family'
-    ),
-    getItem(
-      'Khoá học',
-      'main4-sub2',
-      undefined,
-      undefined,
-      '/admin/manage-course/course/*',
-      '/admin/manage-course/course'
-    ),
-    getItem(
-      'Môn học',
-      'main4-sub3',
-      undefined,
-      undefined,
-      '/admin/manage-course/module/*',
-      '/admin/manage-course/module'
-    ),
-  ]),
-  getItem(
-    'Quản lý phòng học',
-    'main5',
-    <MdMeetingRoom />,
-    undefined,
-    '/admin/room/*',
-    '/admin/room'
-  ),
-];
-
-const flatItemsAdmin = itemsAdmin.flatMap((item) => {
-  if (item.children) {
-    return [item, ...item.children];
-  }
-  return item;
-});
+  ]
+};
 
 const MenuLayout = () => {
   const [itemMatched, setItemMatched] = useState(null);
@@ -94,11 +107,20 @@ const MenuLayout = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  const itemMatch = flatItemsAdmin.find((item) => {
-    if (item.url) {
-      return matchPath(item.url, pathname);
-    }
-  });
+  const role = localStorage.getItem('role');
+
+  const itemMatch = items[role]
+    .flatMap((item) => {
+      if (item.children) {
+        return [item, ...item.children];
+      }
+      return item;
+    })
+    .find((item) => {
+      if (item.url) {
+        return matchPath(item.url, pathname);
+      }
+    });
 
   const handleChangeTab = (e) => {
     setItemMatched(e.key);
@@ -113,13 +135,15 @@ const MenuLayout = () => {
         width: '100%',
       }}
       selectedKeys={[itemMatch?.key]}
-      openKeys={openKeys.length === 0 ? [itemMatch?.key.split('-')[0]] : openKeys}
+      openKeys={
+        openKeys.length === 0 ? [itemMatch?.key.split('-')[0]] : openKeys
+      }
       onSelect={handleChangeTab}
       onOpenChange={(openKeys) => {
         setOpenKeys(openKeys);
       }}
       mode="inline"
-      items={itemsAdmin}
+      items={items[role]}
       onClick={handleChangeTab}
     />
   );

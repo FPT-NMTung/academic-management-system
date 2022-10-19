@@ -20,6 +20,7 @@ import ModuleUpdate from './components/ModuleUpdate/ModuleUpdate';
 import TeacherScreen from './screens/Admin/Teacher/TeacherScreen';
 import TeacherDetail from './screens/Admin/Teacher/TeacherDetail/TeacherDetail';
 import TeacherCreate from './screens/Admin/Teacher/TeacherCreate/TeacherCreate';
+import ManageClass from './screens/Sro/Manage Class/ManageClass';
 
 const App = () => {
   return (
@@ -41,8 +42,9 @@ const App = () => {
       </Route>
 
       {/* Routers for role sro */}
-      <Route path={'/sro'}>
-        <Route index element={<ThirdLayout><RequireAuth role={'sro'}><Text p>SRO</Text></RequireAuth></ThirdLayout>} />
+      <Route path={'/sro'}element={<SecondLayout><RequireAuth role={'sro'} /></SecondLayout>} >
+        <Route index element={<p>Hello sro</p>} />  
+        <Route path="/sro/manage-class" element={<ManageClass/>} />      
       </Route>
 
       {/* Routers for role admin */}

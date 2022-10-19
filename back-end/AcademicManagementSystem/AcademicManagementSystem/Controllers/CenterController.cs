@@ -71,6 +71,12 @@ public class CenterController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        var centerResponse = GetCenterResponse(center);
+        return Ok(CustomResponse.Ok("Get center by id success", centerResponse));
+    }
+
+    private static CenterResponse GetCenterResponse(Center center)
+    {
         var centerResponse = new CenterResponse()
         {
             Id = center.Id,
@@ -96,7 +102,7 @@ public class CenterController : ControllerBase
                 Prefix = center.Ward.Prefix,
             }
         };
-        return Ok(CustomResponse.Ok("Get center by id success", centerResponse));
+        return centerResponse;
     }
 
     // create center
@@ -107,7 +113,7 @@ public class CenterController : ControllerBase
         request.Name = request.Name.Trim();
 
         // is null or white space input
-        if (string.IsNullOrWhiteSpace(request.Name.Trim()))
+        if (string.IsNullOrWhiteSpace(request.Name))
         {
             var error = ErrorDescription.Error["E1002"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -135,7 +141,13 @@ public class CenterController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (IsCenterExists(request))
+        if (IsCenterNameExists(request))
+        {
+            var error = ErrorDescription.Error["E1047"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsCenterAddressExists(request))
         {
             var error = ErrorDescription.Error["E1005"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -153,7 +165,8 @@ public class CenterController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+            var error = ErrorDescription.Error["E1050"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         return Ok(CustomResponse.Ok("Center created successfully", center));
@@ -194,6 +207,18 @@ public class CenterController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        if (IsCenterNameWithDifferentIdExists(id, request.Name))
+        {
+            var error = ErrorDescription.Error["E1048"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsCenterAddressWithDifferentIdExists(id, request))
+        {
+            var error = ErrorDescription.Error["E1049"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         if (request.ProvinceId is < 0 or > 63 || request.DistrictId is < 0 or > 709 ||
             request.WardId is < 0 or > 11283)
         {
@@ -213,7 +238,8 @@ public class CenterController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+            var error = ErrorDescription.Error["E1051"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         return Ok(CustomResponse.Ok("Center updated successfully", center));
@@ -238,18 +264,40 @@ public class CenterController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+            var error = ErrorDescription.Error["E1052"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         return Ok(CustomResponse.Ok("Center deleted successfully", null!));
     }
 
-    // is center exists
-    private bool IsCenterExists(CreateCenterRequest request)
+    // is center name exists
+    private bool IsCenterNameExists(CreateCenterRequest request)
+    {
+        return _context.Centers.Any(c => string.Equals(c.Name.ToLower(), request.Name.Trim().ToLower()));
+    }
+
+    // is center address exists
+    private bool IsCenterAddressExists(CreateCenterRequest request)
     {
         return _context.Centers.Any(c => c.ProvinceId == request.ProvinceId
                                          && c.DistrictId == request.DistrictId
-                                         && c.WardId == request.WardId
-                                         && c.Name == request.Name.Trim());
+                                         && c.WardId == request.WardId);
+    }
+
+    // is center name with different id exists
+    private bool IsCenterNameWithDifferentIdExists(int id, string name)
+    {
+        return _context.Centers.Any(c => c.Id != id
+                                         && string.Equals(c.Name.ToLower(), name.Trim().ToLower()));
+    }
+
+    // is center address with different id exists
+    private bool IsCenterAddressWithDifferentIdExists(int id, UpdateCenterRequest request)
+    {
+        return _context.Centers.Any(c => c.Id != id
+                                         && c.ProvinceId == request.ProvinceId
+                                         && c.DistrictId == request.DistrictId
+                                         && c.WardId == request.WardId);
     }
 }

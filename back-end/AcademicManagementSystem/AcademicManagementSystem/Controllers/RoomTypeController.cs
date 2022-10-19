@@ -27,7 +27,7 @@ public class RoomTypeController : ControllerBase
         {
             Id = rt.Id,
             Value = rt.Value
-        });
+        }).ToList();
 
         return Ok(CustomResponse.Ok("Get all room type success", roomTypes));
     }
