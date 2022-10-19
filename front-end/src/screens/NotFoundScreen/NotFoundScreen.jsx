@@ -7,15 +7,15 @@ const NotFoundScreen = () => {
   const [time, setTime] = useState(9);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (time - 1 < 0) {
-        navigate('/');
-      }
-      setTime(time - 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [time]);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     if (time - 1 < 0) {
+  //       navigate('/');
+  //     }
+  //     setTime(time - 1);
+  //   }, 1000);
+  //   return () => clearInterval(interval);
+  // }, [time]);
 
   return (
     <div className={classes.main}>

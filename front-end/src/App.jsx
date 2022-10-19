@@ -7,6 +7,7 @@ import NotFoundScreen from './screens/NotFoundScreen/NotFoundScreen';
 import FirstLayout from './components/Layout/FirstLayout/FirstLayout';
 import Schedule from './screens/Student/ScheduleScreen/ScheduleScreen';
 import SecondLayout from './components/Layout/SecondLayout/SecondLayout';
+import ThirdLayout from './components/Layout/ThirdLayout/ThirdLayout';
 import CenterScreen from './screens/Admin/Center/CenterScreen';
 import RoomScreen from './screens/Admin/Room/RoomScreen';
 import CourseFamily from './screens/Admin/Course Family/CourseFamily';
@@ -37,17 +38,17 @@ const App = () => {
 
       {/* Routers for role teacher */}
       <Route path={'/teacher'}>
-        <Route index element={<RequireAuth role={'teacher'}><Text p>Teacher</Text></RequireAuth>} />
+        <Route index element={<ThirdLayout><RequireAuth role={'teacher'}><Text p>Teacher</Text></RequireAuth></ThirdLayout>} />
       </Route>
 
       {/* Routers for role sro */}
-      <Route path={'/sro'}element={<SecondLayout><RequireAuth role={'sro'} /></SecondLayout>} >
+      <Route path={'/sro'}element={<ThirdLayout><RequireAuth role={'sro'} /></ThirdLayout>} >
         <Route index element={<p>Hello sro</p>} />  
         <Route path="/sro/manage-class" element={<ManageClass/>} />      
       </Route>
 
       {/* Routers for role admin */}
-      <Route path={'/admin'} element={<SecondLayout><RequireAuth role={'admin'} /></SecondLayout>} >
+      <Route path={'/admin'} element={<ThirdLayout><RequireAuth role={'admin'} /></ThirdLayout>} >
         <Route index element={<Navigate to="/admin/center"/>} />
         <Route path='/admin/center' element={<CenterScreen/>}/>
         <Route path="/admin/room" element={<RoomScreen />} />
