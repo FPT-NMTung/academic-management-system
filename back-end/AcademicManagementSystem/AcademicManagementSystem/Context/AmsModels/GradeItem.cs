@@ -14,6 +14,7 @@ public class GradeItem
     public int GradeCategoryModuleId { get; set; }
     
     [Column("name")]
+    [StringLength(255)]
     public string Name { get; set; }
 
     // relationships

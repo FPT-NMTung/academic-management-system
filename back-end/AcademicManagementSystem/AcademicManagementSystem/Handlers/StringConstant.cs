@@ -64,13 +64,13 @@ public struct StringConstant
     public const string RegexSpecialCharacters = @"[!@#$%^&*()_+=\[{\]};:<>|./?,-]";
 
     // 10 digits starting with 0
-    public const string RegexMobilePhone = @"^0[1-9]{9}$";
-    
-    // 10 digits
-    public const string RegexTenDigits = @"^[0-9]{10}$";
+    public const string RegexMobilePhone = @"^0[0-9]{9}$";
     
     // Match all mobile network operators in Vietnam
-    public const string RegexVietNamMobilePhone = @"^(0?|\+84|84)(3[2-9]|5[2|5|6|8|9]|7[0|6-9]|8[1-9]|9[0-4|6-9])[0-9]{7}$";
+    public const string RegexVietNamMobilePhone = @"^(0|\+84|84)(3[2-9]|5[2|5|6|8|9]|7[0|6-9]|8[1-9]|9[0-4|6-9])[0-9]{7}$";
+
+    // 10 digits
+    public const string RegexTenDigits = @"^[0-9]{10}$";
     
     // 9 or 12 digits
     public const string RegexCitizenIdCardNo = @"^(\d{9}|\d{12})$";

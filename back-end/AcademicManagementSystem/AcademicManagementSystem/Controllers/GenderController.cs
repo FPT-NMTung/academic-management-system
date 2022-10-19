@@ -27,6 +27,6 @@ public class GenderController : ControllerBase
             Value = g.Value
         });
 
-        return Ok(CustomResponse.Ok("Get all room type successfully", genderResponses));
+        return Ok(CustomResponse.Ok("Get all genders successfully", genderResponses));
     }
 }
