@@ -42,7 +42,7 @@ const App = () => {
       </Route>
 
       {/* Routers for role sro */}
-      <Route path={'/sro'}element={<SecondLayout><RequireAuth role={'sro'} /></SecondLayout>} >
+      <Route path={'/sro'}element={<ThirdLayout><RequireAuth role={'sro'} /></ThirdLayout>} >
         <Route index element={<p>Hello sro</p>} />  
         <Route path="/sro/manage-class" element={<ManageClass/>} />      
       </Route>
