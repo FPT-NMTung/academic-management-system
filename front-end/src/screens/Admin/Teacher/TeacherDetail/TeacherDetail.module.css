@@ -7,7 +7,7 @@
   align-items    : center;
 
   border-radius   : 10em;
-  background-color: rgb(224, 224, 224);
+  background-color: rgb(238, 238, 238);
 }
 
 .loading {
@@ -36,4 +36,8 @@
 
 .avatar {
   border-radius: 10em;
+}
+
+.avatarMini {
+  width : 70%;
 }
