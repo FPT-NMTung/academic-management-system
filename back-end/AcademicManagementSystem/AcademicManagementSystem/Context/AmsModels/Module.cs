@@ -59,6 +59,5 @@ public class Module
     // relationships
     public virtual Center Center { get; set; }
     public virtual ICollection<CourseModuleSemester> CoursesModulesSemesters { get; set; }
-    
     public virtual ICollection<GradeCategoryModule> GradeCategoryModule { get; set; }
 }

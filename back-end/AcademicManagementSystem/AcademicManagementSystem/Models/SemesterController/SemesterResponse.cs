@@ -10,7 +10,4 @@ public class SemesterResponse
     
     [JsonPropertyName("name")]
     public string Name { get; set; }
-    
-    [JsonPropertyName("courses_modules_semesters")]
-    public ICollection<CourseModuleSemesterResponse> CoursesModulesSemesters { get; set; }
 }
