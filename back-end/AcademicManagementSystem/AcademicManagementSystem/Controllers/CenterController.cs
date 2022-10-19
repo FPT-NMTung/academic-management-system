@@ -165,7 +165,8 @@ public class CenterController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+            var error = ErrorDescription.Error["E1050"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         return Ok(CustomResponse.Ok("Center created successfully", center));
@@ -237,7 +238,8 @@ public class CenterController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+            var error = ErrorDescription.Error["E1051"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         return Ok(CustomResponse.Ok("Center updated successfully", center));
@@ -262,7 +264,8 @@ public class CenterController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+            var error = ErrorDescription.Error["E1052"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         return Ok(CustomResponse.Ok("Center deleted successfully", null!));
