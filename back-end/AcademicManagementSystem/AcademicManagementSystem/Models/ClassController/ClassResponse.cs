@@ -3,6 +3,7 @@ using AcademicManagementSystem.Models.CenterController;
 using AcademicManagementSystem.Models.ClassDaysController;
 using AcademicManagementSystem.Models.ClassStatusController;
 using AcademicManagementSystem.Models.CourseController;
+using AcademicManagementSystem.Models.UserController.SroController;
 
 namespace AcademicManagementSystem.Models.ClassController;
 
@@ -58,4 +59,13 @@ public class ClassResponse
     
     [JsonPropertyName("class_status")]
     public ClassStatusResponse? ClassStatus { get; set; }
+    
+    [JsonPropertyName("sro_id")]
+    public int SroId{ get; set; }
+    
+    [JsonPropertyName("sro_first_name")]
+    public string? SroFirstName { get; set; }
+    
+    [JsonPropertyName("sro_last_name")]
+    public string? SroLastName { get; set; }
 }
