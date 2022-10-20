@@ -65,6 +65,7 @@ const CenterScreen = () => {
             css={{
               width: '100%',
               height: 'fit-content',
+              minHeight: '200px',
             }}
           >
             <Card.Header>

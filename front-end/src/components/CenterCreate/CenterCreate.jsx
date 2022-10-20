@@ -215,7 +215,7 @@ const CenterCreate = ({ onCreateSuccess }) => {
                 }}
                 type="primary"
                 htmlType="submit"
-                loading={isCreating}
+                disabled={isCreating}
               >
                 {!isCreating && 'Tạo mới'}
                 {isCreating && <Loading size="xs" />}

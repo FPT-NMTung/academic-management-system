@@ -17,6 +17,7 @@ const SroScreen = () => {
   const [form] = Form.useForm();
 
   const getAllSro = () => {
+    setIsLoading(true);
     const param = {
       firstName: form.getFieldValue('first_name'),
       lastName: form.getFieldValue('last_name'),

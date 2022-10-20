@@ -6,6 +6,7 @@ import {
   Button,
   Table,
   Badge,
+  Loading,
 } from '@nextui-org/react';
 import { Form, Input, message } from 'antd';
 import FetchApi from '../../../apis/FetchApi';
@@ -176,7 +177,12 @@ const TeacherScreen = () => {
         </Card>
       </Grid>
       <Grid sm={12}>
-        <Card variant="bordered">
+        <Card
+          variant="bordered"
+          css={{
+            minHeight: '300px',
+          }}
+        >
           <Card.Header>
             <Grid.Container>
               <Grid sm={1}></Grid>
@@ -209,47 +215,55 @@ const TeacherScreen = () => {
                 </Button>
               </Grid>
             </Grid.Container>
-          </Card.Header>          
-          <Table aria-label="">
-            <Table.Header>
-              <Table.Column width={60}>STT</Table.Column>
-              <Table.Column width={320}>Họ và tên</Table.Column>
-              <Table.Column width={160}>Biệt danh</Table.Column>
-              <Table.Column width={250}>Email cá nhân</Table.Column>
-              <Table.Column width={250}>Email tổ chức</Table.Column>
-              <Table.Column>Số điện thoại</Table.Column>
-              <Table.Column>Giới tính</Table.Column>
-              <Table.Column width={20}></Table.Column>
-            </Table.Header>
-            <Table.Body>
-              {dataSource.map((data, index) => (
-                <Table.Row key={data.user_id}>
-                  <Table.Cell>{index + 1}</Table.Cell>
-                  <Table.Cell>
-                    <b>
-                      {data.first_name} {data.last_name}
-                    </b>
-                  </Table.Cell>
-                  <Table.Cell>{data.nickname}</Table.Cell>
-                  <Table.Cell>{data.email}</Table.Cell>
-                  <Table.Cell>{data.email_organization}</Table.Cell>
-                  <Table.Cell>{data.mobile_phone}</Table.Cell>
-                  <Table.Cell>{renderGender(data.gender.id)}</Table.Cell>
-                  <Table.Cell>
-                    <RiEyeFill
-                      size={20}
-                      color="5EA2EF"
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        navigate(`/admin/account/teacher/${data.user_id}`);
-                      }}
-                    />
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-            <Table.Pagination shadow noMargin align="center" rowsPerPage={10} />
-          </Table>
+          </Card.Header>
+          {isGetData && <Loading />}
+          {!isGetData && (
+            <Table aria-label="">
+              <Table.Header>
+                <Table.Column width={60}>STT</Table.Column>
+                <Table.Column width={320}>Họ và tên</Table.Column>
+                <Table.Column width={160}>Biệt danh</Table.Column>
+                <Table.Column width={250}>Email cá nhân</Table.Column>
+                <Table.Column width={250}>Email tổ chức</Table.Column>
+                <Table.Column>Số điện thoại</Table.Column>
+                <Table.Column>Giới tính</Table.Column>
+                <Table.Column width={20}></Table.Column>
+              </Table.Header>
+              <Table.Body>
+                {dataSource.map((data, index) => (
+                  <Table.Row key={data.user_id}>
+                    <Table.Cell>{index + 1}</Table.Cell>
+                    <Table.Cell>
+                      <b>
+                        {data.first_name} {data.last_name}
+                      </b>
+                    </Table.Cell>
+                    <Table.Cell>{data.nickname}</Table.Cell>
+                    <Table.Cell>{data.email}</Table.Cell>
+                    <Table.Cell>{data.email_organization}</Table.Cell>
+                    <Table.Cell>{data.mobile_phone}</Table.Cell>
+                    <Table.Cell>{renderGender(data.gender.id)}</Table.Cell>
+                    <Table.Cell>
+                      <RiEyeFill
+                        size={20}
+                        color="5EA2EF"
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => {
+                          navigate(`/admin/account/teacher/${data.user_id}`);
+                        }}
+                      />
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+              <Table.Pagination
+                shadow
+                noMargin
+                align="center"
+                rowsPerPage={10}
+              />
+            </Table>
+          )}
         </Card>
       </Grid>
     </Grid.Container>

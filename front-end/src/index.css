@@ -88,3 +88,10 @@ p {
   padding: 0 !important;
   border : none !important;
 }
+
+.ant-input-number {
+  border-radius   : 10px !important;
+  padding         : 5px 0 !important;
+  background-color: rgb(244, 245, 247) !important;
+  border          : none !important;
+}
