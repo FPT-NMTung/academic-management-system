@@ -1,5 +1,5 @@
-import { Card, Grid, Text } from '@nextui-org/react';
-import { Form, Select, Input, Button, Spin } from 'antd';
+import { Card, Grid, Text, Button, Loading } from '@nextui-org/react';
+import { Form, Select, Input, Spin } from 'antd';
 import { Fragment } from 'react';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
@@ -221,20 +221,37 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
               </Select>
             </Form.Item>
           </Fragment>
-
           <Form.Item wrapperCol={{ offset: 7, span: 99 }}>
-            <Button type="primary" htmlType="submit" loading={isUpdating}>
-              Cập nhật
-            </Button>
-            <Button
-              style={{ marginLeft: 10 }}
-              type="primary"
-              htmlType="button"
-              danger
-              disabled
+            <div
+              style={{
+                display: 'flex',
+                gap: '10px',
+              }}
             >
-              Xoá
-            </Button>
+              <Button
+                flat
+                auto
+                css={{
+                  width: '150px',
+                }}
+                type="primary"
+                htmlType="submit"
+                disabled={isUpdating}
+              >
+                {!isUpdating && 'Cập nhật'}
+                {isUpdating && <Loading size="xs" />}
+              </Button>
+              <Button
+                flat
+                auto
+                type="primary"
+                htmlType="button"
+                color={'error'}
+                disabled
+              >
+                Xoá
+              </Button>
+            </div>
           </Form.Item>
         </Form>
       )}

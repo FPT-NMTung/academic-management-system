@@ -1,5 +1,5 @@
-import { Card, Grid, Text } from '@nextui-org/react';
-import { Form, Select, Input, Button } from 'antd';
+import { Card, Grid, Text, Button, Loading } from '@nextui-org/react';
+import { Form, Select, Input } from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
 import { AddressApis, CenterApis } from '../../apis/ListApi';
@@ -82,16 +82,24 @@ const CenterCreate = ({ onCreateSuccess }) => {
           width: '100%',
           height: 'fit-content',
         }}
+        variant="bordered"
       >
         <Card.Header>
-          <Text size={14}>
+          <Text
+            b
+            p
+            size={14}
+            css={{
+              width: '100%',
+              textAlign: 'center',
+            }}
+          >
             Thông tin cơ sở: <b></b>
           </Text>
         </Card.Header>
-        <Card.Divider />
         <Card.Body>
           <Form
-            labelCol={{ span: 6 }}
+            labelCol={{ span: 8 }}
             wrapperCol={{ span: 14 }}
             layout="horizontal"
             onFinish={handleSubmitForm}
@@ -198,9 +206,19 @@ const CenterCreate = ({ onCreateSuccess }) => {
                 ))}
               </Select>
             </Form.Item>
-            <Form.Item wrapperCol={{ offset: 6, span: 10 }}>
-              <Button type="primary" htmlType="submit" loading={isCreating}>
-                Tạo mới
+            <Form.Item wrapperCol={{ offset: 8, span: 10 }}>
+              <Button
+                auto
+                flat
+                css={{
+                  width: '120px',
+                }}
+                type="primary"
+                htmlType="submit"
+                loading={isCreating}
+              >
+                {!isCreating && 'Tạo mới'}
+                {isCreating && <Loading size="xs" />}
               </Button>
             </Form.Item>
           </Form>

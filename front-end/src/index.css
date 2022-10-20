@@ -78,16 +78,6 @@ p {
   box-shadow: none !important;
 }
 
-.ant-select-status-error .ant-select-selector {
-  background-color: #fdd8e5 !important;
-  color           : #f31260 !important;
-}
-
-.ant-select-status-warning .ant-select-selector {
-  background-color: #f9cb80 !important;
-  color           : #f5a524 !important;
-}
-
 .ant-picker-input {
   border-radius   : 10px !important;
   padding         : 10px !important;
