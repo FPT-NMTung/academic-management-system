@@ -1,13 +1,15 @@
-import { Grid, Spacer, Text, Badge, Card } from '@nextui-org/react';
+import { Grid, Spacer, Text, Badge, Card, Button } from '@nextui-org/react';
 import classes from './TeacherDetail.module.css';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Descriptions, Spin, Button } from 'antd';
+import { Descriptions, Spin } from 'antd';
 import { useState, useEffect } from 'react';
 import { AiFillPhone } from 'react-icons/ai';
 import { MdEmail } from 'react-icons/md';
 import { HiOfficeBuilding } from 'react-icons/hi';
 import FetchApi from '../../../../apis/FetchApi';
 import { ManageTeacherApis } from '../../../../apis/ListApi';
+import ManImage from '../../../../images/3d-fluency-businessman-1.png';
+import WomanImage from '../../../../images/3d-fluency-businesswoman-1.png';
 
 const TeacherDetail = () => {
   const [dataUser, setDataUser] = useState({});
@@ -60,6 +62,18 @@ const TeacherDetail = () => {
                   {dataUser.avatar && (
                     <img className={classes.avatar} src={dataUser.avatar} />
                   )}
+                  {!dataUser.avatar && (
+                    <img
+                      className={classes.avatarMini}
+                      src={
+                        dataUser.gender.id === 1
+                          ? ManImage
+                          : dataUser.gender.id === 2
+                          ? WomanImage
+                          : ''
+                      }
+                    />
+                  )}
                 </div>
                 <Spacer y={0.7} />
                 <Text h3 size={20} b>
@@ -87,7 +101,7 @@ const TeacherDetail = () => {
               </div>
             </Grid>
             <Grid sm={8.5} direction="column" css={{ rowGap: 20 }}>
-              <Card>
+              <Card variant="bordered">
                 <Card.Body>
                   <Descriptions
                     title="Thông tin cơ bản"
@@ -95,8 +109,10 @@ const TeacherDetail = () => {
                     column={{ md: 2, lg: 2, xl: 2, xxl: 2 }}
                     extra={
                       <Button
+                        flat
+                        auto
                         type="primary"
-                        onClick={() => {
+                        onPress={() => {
                           navigate(`/admin/account/teacher/${id}/update`);
                         }}
                       >
@@ -138,7 +154,7 @@ const TeacherDetail = () => {
                   </Descriptions>
                 </Card.Body>
               </Card>
-              <Card>
+              <Card variant="bordered">
                 <Card.Body>
                   <Descriptions
                     title="Thông tin bổ sung"
@@ -185,7 +201,7 @@ const TeacherDetail = () => {
                   </Descriptions>
                 </Card.Body>
               </Card>
-              <Card>
+              <Card variant="bordered">
                 <Card.Body>
                   <Descriptions
                     title="Thông tin CMND/CCCD"

@@ -1,5 +1,5 @@
 import { Card, Grid, Text } from '@nextui-org/react';
-import { Form, Select, Input, Button, Spin } from 'antd';
+import { Form, Select, Input, Button, Spin, message } from 'antd';
 import { Fragment } from 'react';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
@@ -46,6 +46,7 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
 
     FetchApi(CourseApis.updateCourse, body, null, [`${e.codecourse}`])
       .then((res) => {
+        message.success('Cập nhật khóa học thành công');
         onUpdateSuccess();
       })
       .catch((err) => {
