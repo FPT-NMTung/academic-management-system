@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
@@ -10,15 +10,17 @@ import { ConfigProvider } from 'antd';
 import viVN from 'antd/lib/locale/vi_VN';
 import './i18n';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <NextUIProvider>
-    <ConfigProvider locale={viVN}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </ConfigProvider>
-  </NextUIProvider>
+ReactDOM.render(
+  <React.StrictMode>
+    <NextUIProvider>
+      <ConfigProvider locale={viVN}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ConfigProvider>
+    </NextUIProvider>
+  </React.StrictMode>,
+  document.getElementById('root')
 );
 
 // If you want to start measuring performance in your app, pass a function

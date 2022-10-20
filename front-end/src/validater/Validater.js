@@ -11,7 +11,8 @@ export const Validater = {
     if (phone == null) {
       return false;
     }
-    const re = /^(03|07|08|09|01[2|6|8|9])+([0-9]{8})$/g;
+    const re =
+      /^0(32|33|34|35|36|37|38|39|52|56|58|59|70|76|77|78|79|81|82|83|84|85|86|87|88|89|90|91|92|93|94|96|97|98|99)+([0-9]{7})$/g;
     return re.test(String(phone.trim()));
   },
   isNumber: (number) => {
@@ -25,8 +26,30 @@ export const Validater = {
     if (citizenId == null) {
       return false;
     }
-    // check length of citizenId is 9 or 12 characters and is number only
     const re = /^(\d{9}|\d{12})$/;
     return re.test(String(citizenId.trim()));
+  },
+  isTaxCode: (taxCode) => {
+    if (taxCode == null) {
+      return false;
+    }
+    const re = /^\d{10}$/;
+    return re.test(String(taxCode.trim()));
+  },
+  isContaintSpecialCharacterForName: (str) => {
+    console.log(str);
+    if (str == null) {
+      return false;
+    }
+    const re = /[~`!#$%\^&*+=\-\[\]\\;,./{}|\\":<>\?]/;
+    return re.test(String(str.trim()));
+  },
+  isContaintSpecialCharacter: (str) => {
+    console.log(str);
+    if (str == null) {
+      return false;
+    }
+    const re = /[~`!#$%\^&*+=\-\[\]\\';,./{}|\\":<>\?]/;
+    return re.test(String(str.trim()));
   },
 };

@@ -41,7 +41,6 @@ public class Course
     // relationship
     public virtual CourseFamily CourseFamily { get; set; }
     public virtual ICollection<CourseModuleSemester> CoursesModulesSemesters { get; set; }
-    
     public virtual ICollection<Class> Classes { get; set; }
 
 }

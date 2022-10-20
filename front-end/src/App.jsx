@@ -7,6 +7,7 @@ import NotFoundScreen from './screens/NotFoundScreen/NotFoundScreen';
 import FirstLayout from './components/Layout/FirstLayout/FirstLayout';
 import Schedule from './screens/Student/ScheduleScreen/ScheduleScreen';
 import SecondLayout from './components/Layout/SecondLayout/SecondLayout';
+import ThirdLayout from './components/Layout/ThirdLayout/ThirdLayout';
 import CenterScreen from './screens/Admin/Center/CenterScreen';
 import RoomScreen from './screens/Admin/Room/RoomScreen';
 import CourseFamily from './screens/Admin/Course Family/CourseFamily';
@@ -15,6 +16,11 @@ import Module from './screens/Admin/Module/Module';
 import SroScreen from './screens/Admin/Sro/SroScreen';
 import SroDetail from './screens/Admin/Sro/SroDetail/SroDetail';
 import SroCreate from './screens/Admin/Sro/SroCreate/SroCreate';
+import ModuleUpdate from './components/ModuleUpdate/ModuleUpdate';
+import TeacherScreen from './screens/Admin/Teacher/TeacherScreen';
+import TeacherDetail from './screens/Admin/Teacher/TeacherDetail/TeacherDetail';
+import TeacherCreate from './screens/Admin/Teacher/TeacherCreate/TeacherCreate';
+import ManageClass from './screens/Sro/Manage Class/ManageClass';
 
 const App = () => {
   return (
@@ -32,27 +38,32 @@ const App = () => {
 
       {/* Routers for role teacher */}
       <Route path={'/teacher'}>
-        <Route index element={<RequireAuth role={'teacher'}><Text p>Teacher</Text></RequireAuth>} />
+        <Route index element={<ThirdLayout><RequireAuth role={'teacher'}><Text p>Teacher</Text></RequireAuth></ThirdLayout>} />
       </Route>
 
       {/* Routers for role sro */}
-      <Route path={'/sro'}>
-        <Route index element={<RequireAuth role={'sro'}><Text p>SRO</Text></RequireAuth>} />
+      <Route path={'/sro'}element={<ThirdLayout><RequireAuth role={'sro'} /></ThirdLayout>} >
+        <Route index element={<p>Hello sro</p>} />  
+        <Route path="/sro/manage-class" element={<ManageClass/>} />      
       </Route>
 
       {/* Routers for role admin */}
-      <Route path={'/admin'} element={<SecondLayout><RequireAuth role={'admin'} /></SecondLayout>} >
+      <Route path={'/admin'} element={<ThirdLayout><RequireAuth role={'admin'} /></ThirdLayout>} >
         <Route index element={<Navigate to="/admin/center"/>} />
         <Route path='/admin/center' element={<CenterScreen/>}/>
         <Route path="/admin/room" element={<RoomScreen />} />
         <Route path='/admin/manage-course/course-family' element={<CourseFamily/>}/>
-        <Route path='/admin/manage-course/course' element={<Course/>}/>
+        <Route path='/admin/manage-course/courses' element={<Course/>}/>
         <Route path='/admin/manage-course/module' element={<Module/>}/>
+        <Route path='/admin/manage-course/module/:id/update' element={<ModuleUpdate/>}/>
         <Route path='/admin/account/sro' element={<SroScreen />}/>
         <Route path='/admin/account/sro/:id' element={<SroDetail />}/>
         <Route path='/admin/account/sro/create' element={<SroCreate modeUpdate={false}/>}/>
         <Route path='/admin/account/sro/:id/update' element={<SroCreate modeUpdate={true}/>}/>
-        <Route path='/admin/account/teacher' element={<p>Teacher screen</p>}/>
+        <Route path='/admin/account/teacher' element={<TeacherScreen />}/>
+        <Route path='/admin/account/teacher/:id' element={<TeacherDetail />}/>
+        <Route path='/admin/account/teacher/create' element={<TeacherCreate modeUpdate={false}/>}/>
+        <Route path='/admin/account/teacher/:id/update' element={<TeacherCreate modeUpdate={true}/>}/>
       </Route>
       <Route path="*" element={<NotFoundScreen />} />
     </Routes>

@@ -1,502 +1,591 @@
 import { Card, Grid, Text } from '@nextui-org/react';
-import { Form, Select, Input, Button, Spin, Table, Tooltip, Space, Typography } from 'antd';
+import {
+  Form,
+  Select,
+  Input,
+  Button,
+  Spin,
+  Divider,
+  InputNumber,
+  message,
+} from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
-import { ModulesApis, CenterApis, CourseApis, SemesterApis } from '../../apis/ListApi';
+import {
+  ModulesApis,
+  CenterApis,
+  GradeModuleSemesterApis,
+} from '../../apis/ListApi';
 import classes from './ModuleUpdate.module.css';
-import { Fragment } from 'react';
-import { MdEdit } from 'react-icons/md';
-import ColumnGroup from 'antd/lib/table/ColumnGroup';
+import { useParams, useNavigate } from 'react-router-dom';
+import ModuleGradeType from '../ModuleGradeType/ModuleGradeType';
+import { Validater } from '../../validater/Validater';
+
 const TYPE_MODULE = {
-    'Lý thuyết': 1,
-    'Thực hành': 2,
-    'Thực hành và Lý thuyết': 3,
+  'Lý thuyết': 1,
+  'Thực hành': 2,
+  'Thực hành và Lý thuyết': 3,
+};
 
-}
+const ModuleUpdate = () => {
+  const [isLoading, setisLoading] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [form] = Form.useForm();
+  const [listCenters, setListCenters] = useState([]);
+  const [listGrade, setListGrade] = useState([]);
+  const [isFailed, setIsFailed] = useState(false);
+  const [typeExam, setTypeExam] = useState(4);
 
-const ModuleUpdate = ({ data, onUpdateSuccess }) => {
+  const { id } = useParams();
+  const navigate = useNavigate();
 
+  const handleSubmitForm = () => {
+    setIsUpdating(true);
+    const data = form.getFieldsValue();
 
-    const [isLoading, setisLoading] = useState(true);
-    const [isUpdating, setIsUpdating] = useState(false);
-    const [form] = Form.useForm();
-    const [listCenters, setListCenters] = useState([]);
-    const [listCourses, setListCourses] = useState([]);
-    const [listSemesterid, setListSemesterid] = useState([]);
-    const [isFailed, setIsFailed] = useState(false);
-    const [exam_type, setExam_type] = useState(3);
-    const handleChangeExamType = () => {
-        const examtype = form.getFieldValue('exam_type');
-        setExam_type(examtype);
-
+    const body = {
+      center_id: data.center_id,
+      semester_name_portal: data.portal_semester_name,
+      module_type: data.module_type,
+      module_name: data.module_name,
+      module_exam_name_portal: data.portal_exam_name,
+      max_theory_grade: data.max_theory_grade,
+      max_practical_grade: data.max_practical_grade,
+      hours: data.hours,
+      days: data.days,
+      exam_type: data.exam_type,
     };
-    const handleSubmitForm = (e) => {
-        setIsUpdating(true);
+    FetchApi(ModulesApis.updateModule, body, null, [`${id}`])
+      .then((res) => {
+        message.success('Cập nhật thành công');
+        setIsUpdating(false);
+        getListGrade();
+      })
+      .catch((err) => {
+        setIsUpdating(false);
+        setIsFailed(true);
+      });
+  };
 
-        const body = {
-            center_id: e.centerid,
-            semester_name_portal: e.semester_name_portal.trim(),
-            module_name: e.module_name.trim(),
-            module_exam_name_portal: e.module_exam_name_portal.trim(),
-            module_type: TYPE_MODULE[e.module_type],
-            max_theory_grade: Number(`${e.max_theory_grade}`),
-            max_practical_grade: Number(`${e.max_practical_grade}`),
-            hours: e.hours,
-            days: e.days,
-            exam_type: e.exam_type,
-            course_code: e.course_code,
-            semester_id: e.semesterid,
+  const getListCenter = () => {
+    FetchApi(CenterApis.getAllCenter).then((res) => {
+      const data = res.data.map((e) => {
+        return {
+          key: e.id,
+          ...e,
         };
+      });
+      setListCenters(data);
+    });
+  };
 
-
-        FetchApi(ModulesApis.updateModule, body, null, [`${data.id}`])
-            .then((res) => {
-                onUpdateSuccess();
-                alert('Cập nhật thành công');
-
-            })
-            .catch((err) => {
-                setIsUpdating(false);
-                setIsFailed(true);
-
-            });
-    };
-    const getListCenter = () => {
-
-        FetchApi(CenterApis.getAllCenter).then((res) => {
-            const data = res.data.map((e) => {
-                return {
-                    key: e.id,
-
-                };
-            });
-            setListCenters(data);
-            setisLoading(false);
-
+  const getModulebyid = () => {
+    setisLoading(true);
+    FetchApi(ModulesApis.getModuleByID, null, null, [`${id}`])
+      .then((res) => {
+        const data = res.data;
+        form.setFieldsValue({
+          center_id: data.center.id,
+          portal_semester_name: data.semester_name_portal,
+          module_type: data.module_type,
+          module_name: data.module_name,
+          portal_exam_name: data.module_exam_name_portal,
+          max_theory_grade: data.max_theory_grade,
+          max_practical_grade: data.max_practical_grade,
+          hours: data.hours,
+          days: data.days,
+          exam_type: data.exam_type,
         });
-    };
-    const getListCourse = () => {
-
-        FetchApi(CourseApis.getAllCourse).then((res) => {
-            const data = res.data.map((e) => {
-                return {
-                    coursename: e.code,
-                };
-            });
-            setListCourses(data);
-            setisLoading(false);
-
-
-        });
-        setListSemesterid([]);
-    };
-    const GetListSemesterid = () => {
-        const coursecode = form.getFieldValue('course_code').trim();
-
-        FetchApi(CourseApis.getCourseByCode, null, null, [`${coursecode}`]).then((res) => {
-            const data = res.data.semester_count
-
-            setListSemesterid(data);
-
-
-        });
+        setTypeExam(data.exam_type);
         setisLoading(false);
+      })
+      .catch(() => {
+        navigate('/404');
+      });
+  };
+
+  const handleTypeExamChange = (value) => {
+    setTypeExam(value);
+
+    console.log(value === 1 || value === 4);
+    console.log(value === 2 || value === 4);
+
+    if (value === 1 || value === 4) {
+      form.setFieldsValue({
+        max_practical_grade: null,
+      });
+    }
+
+    if (value === 2 || value === 4) {
+      form.setFieldsValue({
+        max_theory_grade: null,
+      });
+    }
+  };
+
+  const getListGrade = () => {
+    FetchApi(GradeModuleSemesterApis.getListGradeByModuleId, null, null, [
+      String(id),
+    ])
+      .then((res) => {
+        setListGrade(
+          res.data
+            .filter(
+              (item) =>
+                item.grade_category.id !== 7 && item.grade_category.id !== 8
+            )
+            .map((item) => {
+              return {
+                key: item.grade_category.id,
+                grade_id: item.grade_category.id,
+                grade_name: item.grade_category.name,
+                quantity: item.quantity_grade_item,
+                weight: item.total_weight,
+              };
+            })
+        );
+      })
+      .catch(() => {});
+  };
+
+  const handleAddRow = (data) => {
+    let temp = listGrade.filter((item) => item.grade_id !== data.grade_id);
+
+    temp.push(data);
+
+    setListGrade(temp.sort((a, b) => a.grade_id - b.grade_id));
+  };
+
+  const handleDeleteRow = (id) => {
+    const temp = listGrade.filter((item) => {
+      return item.grade_id !== id;
+    });
+
+    setListGrade(temp.sort((a, b) => a.grade_id - b.grade_id));
+  };
+
+  const handleSave = () => {
+    console.log(123);
+
+    const data = listGrade.map((item) => {
+      return {
+        grade_category_id: item.grade_id,
+        total_weight: item.weight,
+        quantity_grade_item: item.quantity,
+      };
+    });
+
+    const body = {
+      grade_category_details: data,
     };
-    const getModulebyid = () => {
 
-        const apiModulebyid = ModulesApis.getModuleByID;
-        FetchApi(apiModulebyid, null, null, [`${data.id}`]).then((res) => {
-            const data = res.data;
-            setisLoading(true);
-            form.setFieldsValue({
-                id: data.id,
-                center_id: data.center.name,
-                semester_name_portal: data.semester_name_portal,
-                module_name: data.module_name,
-                module_exam_name_portal: data.module_exam_name_portal,
+    FetchApi(GradeModuleSemesterApis.updateGradeModule, body, null, [
+      String(id),
+    ])
+      .then(() => {
+        message.success('Cập nhật điểm thành công');
+      })
+      .catch(() => {});
+  };
 
-                max_theory_grade: data.max_theory_grade,
-                max_practical_grade: data.max_practical_grade,
-                hours: data.hours,
-                days: data.days,
-                exam_type: data.exam_type,
-                // course_code: data.course_code,
-                // semesterid: data.semester_id,
-            });
-            setExam_type(data.exam_type);
+  useEffect(() => {
+    getModulebyid();
+    getListCenter();
+    getListGrade();
+  }, []);
 
-            setisLoading(false);
-        });
-
-
-    };
-
-
-
-    useEffect(() => {
-        getModulebyid();
-        getListCenter();
-        getListCourse();
-
-
-    }, []);
-    return (
-        <Fragment>
-            {(isLoading) && (
-                <div className={classes.loading}>
-                    <Spin />
-
-                </div>
+  return (
+    <Grid.Container justify="center" gap={2}>
+      <Grid xs={6}>
+        <Card
+          css={{
+            height: 'fit-content',
+          }}
+        >
+          <Card.Header>
+            <Text
+              p
+              b
+              size={15}
+              css={{
+                width: '100%',
+                textAlign: 'center',
+              }}
+            >
+              Thông tin tổng quan môn học
+            </Text>
+          </Card.Header>
+          <Card.Body>
+            {isLoading && (
+              <div className={classes.loading}>
+                <Spin />
+              </div>
             )}
             {!isLoading && (
-                <Form
-
-                    // labelCol={{ span: 6 }}
-                    labelCol={{
-                        span: 7,
+              <Form
+                labelCol={{
+                  span: 7,
+                }}
+                wrapperCol={{
+                  span: 16,
+                }}
+                layout="horizontal"
+                labelAlign="right"
+                onFinish={handleSubmitForm}
+                form={form}
+                initialValues={{
+                  exam_type: typeExam,
+                }}
+              >
+                <div className={classes.layout}>
+                  <Form.Item
+                    name={'module_name'}
+                    label="Môn học"
+                    rules={[
+                      {
+                        required: true,
+                        validator: (_, value) => {
+                          if (value === null || value === undefined) {
+                            return Promise.reject(
+                              'Trường này không được để trống'
+                            );
+                          }
+                          if (
+                            Validater.isContaintSpecialCharacterForName(
+                              value.trim()
+                            )
+                          ) {
+                            return Promise.reject(
+                              'Trường này không được chứa ký tự đặc biệt'
+                            );
+                          }
+                          if (value.trim().length < 2) {
+                            return Promise.reject(
+                              new Error('Trường phải có ít nhất 2 ký tự')
+                            );
+                          }
+                          return Promise.resolve();
+                        },
+                      },
+                      {
+                        whitespace: true,
+                        message: 'Trường không được chứa khoảng trắng',
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Nhập tên môn học" />
+                  </Form.Item>
+                  <Form.Item
+                    name={'center_id'}
+                    label="Cơ sở"
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng chọn cơ sở',
+                      },
+                    ]}
+                  >
+                    <Select
+                      loading={listCenters.length === 0}
+                      placeholder="Chọn cơ sở"
+                    >
+                      {listCenters.map((e, index) => {
+                        return (
+                          <Select.Option key={index} value={e.key}>
+                            {e.name}
+                          </Select.Option>
+                        );
+                      })}
+                    </Select>
+                  </Form.Item>
+                </div>
+                <Divider orientation="left">
+                  <Text
+                    p
+                    b
+                    size={15}
+                    css={{
+                      width: '100%',
+                      textAlign: 'center',
                     }}
-                    wrapperCol={{
-                        span: 16,
+                  >
+                    Thông tin thời gian
+                  </Text>
+                </Divider>
+                <div className={classes.layout}>
+                  <Form.Item
+                    name={'hours'}
+                    label="Số giờ học"
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng nhập số giờ học',
+                      },
+                    ]}
+                  >
+                    <InputNumber
+                      placeholder="0"
+                      min={1}
+                      max={200}
+                    ></InputNumber>
+                  </Form.Item>
+                  <div></div>
+                  <Form.Item
+                    name={'days'}
+                    label="Số buổi học"
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng nhập số buổi học',
+                      },
+                    ]}
+                  >
+                    <InputNumber placeholder="0" min={1} max={50}></InputNumber>
+                  </Form.Item>
+                </div>
+                <Divider orientation="left">
+                  <Text
+                    p
+                    b
+                    size={15}
+                    css={{
+                      width: '100%',
+                      textAlign: 'center',
                     }}
-                    layout="horizontal"
-                    labelAlign="right"
-                    labelWrap
-                    initialValues={{
-                        exam_type: 3,
-                        course_code: data?.coursecode,
-                        semesterid: data?.semester_id,
-                        max_theory_grade: data?.max_theory_grade,
-                        max_practical_grade: data?.max_practical_grade,
-                        module_type: data?.module_type,
-                        centerid: data?.center_id,
-
+                  >
+                    Thông tin điểm thi tối đa
+                  </Text>
+                </Divider>
+                <div className={classes.layout}>
+                  <Form.Item
+                    name={'module_type'}
+                    label="Hình thức học"
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng chọn hình thức học',
+                      },
+                    ]}
+                  >
+                    <Select placeholder="Chọn hình thức học">
+                      <Select.Option value={1}>Lý thuyết</Select.Option>
+                      <Select.Option value={2}>Thực hành</Select.Option>
+                      <Select.Option value={3}>
+                        Lý thuyết và Thực hành
+                      </Select.Option>
+                    </Select>
+                  </Form.Item>
+                  <Form.Item
+                    name={'exam_type'}
+                    label="Hình thức thi"
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng chọn hình thức thi',
+                      },
+                    ]}
+                  >
+                    <Select
+                      placeholder="Chọn hình thức thi"
+                      onChange={(value) => {
+                        handleTypeExamChange(value);
+                      }}
+                    >
+                      <Select.Option value={1}>Lý thuyết</Select.Option>
+                      <Select.Option value={2}>Thực hành</Select.Option>
+                      <Select.Option value={3}>
+                        Lý thuyết và Thực hành
+                      </Select.Option>
+                      <Select.Option value={4}>Không thi</Select.Option>
+                    </Select>
+                  </Form.Item>
+                  <Form.Item
+                    name={'max_theory_grade'}
+                    label="Lý thuyết"
+                    rules={[
+                      {
+                        required: typeExam === 1 || typeExam === 3,
+                        message: 'Vui lòng nhập điểm tối đa lý thuyết',
+                      },
+                    ]}
+                  >
+                    <InputNumber
+                      disabled={typeExam === 2 || typeExam === 4}
+                      placeholder="0"
+                      min={1}
+                      max={100}
+                    ></InputNumber>
+                  </Form.Item>
+                  <Form.Item
+                    name={'max_practical_grade'}
+                    label="Thực hành"
+                    rules={[
+                      {
+                        required: typeExam === 2 || typeExam === 3,
+                        message: 'Vui lòng nhập điểm tối đa thực hành',
+                      },
+                    ]}
+                  >
+                    <InputNumber
+                      disabled={typeExam === 1 || typeExam === 4}
+                      placeholder="0"
+                      min={1}
+                      max={100}
+                    ></InputNumber>
+                  </Form.Item>
+                </div>
+                <Divider orientation="left">
+                  <Text
+                    p
+                    b
+                    size={15}
+                    css={{
+                      width: '100%',
+                      textAlign: 'center',
                     }}
-
-                    onFinish={handleSubmitForm}
-                    form={form}
+                  >
+                    Thông tin liên quan đến Aptech Ấn độ
+                  </Text>
+                </Divider>
+                <div className={classes.layout}>
+                  <Form.Item
+                    name={'portal_semester_name'}
+                    label="Semester"
+                    rules={[
+                      {
+                        required: true,
+                        validator: (_, value) => {
+                          if (value === null || value === undefined) {
+                            return Promise.reject(
+                              'Trường này không được để trống'
+                            );
+                          }
+                          if (
+                            Validater.isContaintSpecialCharacterForName(
+                              value.trim()
+                            )
+                          ) {
+                            return Promise.reject(
+                              'Trường này không được chứa ký tự đặc biệt'
+                            );
+                          }
+                          if (value.trim().length < 2) {
+                            return Promise.reject(
+                              new Error('Trường phải có ít nhất 2 ký tự')
+                            );
+                          }
+                          return Promise.resolve();
+                        },
+                      },
+                      {
+                        whitespace: true,
+                        message: 'Trường không được chứa khoảng trắng',
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Nhập tên semester"></Input>
+                  </Form.Item>
+                  <Form.Item
+                    name={'portal_exam_name'}
+                    label="Exam name"
+                    rules={[
+                      {
+                        required: true,
+                        validator: (_, value) => {
+                          if (value === null || value === undefined) {
+                            return Promise.reject(
+                              'Trường này không được để trống'
+                            );
+                          }
+                          if (
+                            Validater.isContaintSpecialCharacterForName(
+                              value.trim()
+                            )
+                          ) {
+                            return Promise.reject(
+                              'Trường này không được chứa ký tự đặc biệt'
+                            );
+                          }
+                          if (value.trim().length < 2) {
+                            return Promise.reject(
+                              new Error('Trường phải có ít nhất 2 ký tự')
+                            );
+                          }
+                          return Promise.resolve();
+                        },
+                      },
+                      {
+                        whitespace: true,
+                        message: 'Trường không được chứa khoảng trắng',
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Nhập tên exam"></Input>
+                  </Form.Item>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                  }}
                 >
-
-                    <Form.Item
-                        name={'module_name'}
-                        label={'Môn học'}
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Hãy điền mã chương trình',
-                            },
-                        ]}
+                  <Form.Item>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      loading={isUpdating}
                     >
-
-                        <Input placeholder='Tên môn học' style={{
-                            width: 300,
-                        }} />
-                    </Form.Item>
-                    <Form.Item
-                        name={'centerid'}
-                        label={'Cơ sở'}
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Hãy điền mã chương trình',
-                            },
-                        ]}
-                    >
-
-                        <Select
-                            placeholder="Chọn cơ sở"
-                            style={{ width: '100%' }}
-                            dropdownStyle={{ zIndex: 9999 }}
-                            loading={isLoading}
-                        >
-                            {listCenters.map((e) => (
-                                <Select.Option key={e.key} value={e.key}>
-                                    Cơ sở {e.key}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                    <Form.Item
-                        label="Mã khóa học"
-                        style={{
-                            marginBottom: 0,
-                        }}
-                        rules={[
-                            {
-                                required: true,
-
-                            },
-                        ]}
-                    >
-                        <Space></Space>
-                        <Form.Item
-                            name="course_code"
-                            rules={[
-                                {
-                                    required: true,
-                                },
-                            ]}
-                            style={{
-                                display: 'inline-block',
-                                width: 'calc(50% - 8px)',
-                            }}
-                        >
-                            <Select
-                                placeholder="Chọn mã khóa học"
-                                style={{ width: '100%' }}
-                                dropdownStyle={{ zIndex: 9999 }}
-                                loading={isLoading}
-                                onChange={GetListSemesterid}
-
-                            >
-                                {listCourses.map((e, index) => (
-                                    <Select.Option key={index} value={e.coursename}>
-                                        {e.coursename}
-                                    </Select.Option>
-                                ))}
-                            </Select>
-                        </Form.Item>
-                        <Form.Item
-                            name="semesterid"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'Hãy chọc học kỳ',
-                                },
-                            ]}
-                            style={{
-                                display: 'inline-block',
-                                width: 'calc(50% - 8px)',
-                                margin: '0 8px',
-                            }}
-                        >
-
-                            <Select
-                                // showSearch
-                                style={{ width: '100%' }}
-                                dropdownStyle={{ zIndex: 9999 }}
-                                // disabled={listSemesterid.length === 0}
-                                placeholder="Chọn học kỳ"
-                                optionFilterProp="children"
-                            // onChange={getListDistrict}
-                            >
-                                <Select.Option key="1" value={1}>Học kỳ 1</Select.Option>
-                                <Select.Option key="2" value={2}>Học kỳ 2</Select.Option>
-                                <Select.Option key="3" value={3}>Học kỳ 3</Select.Option>
-                                <Select.Option key="4" value={4}>Học kỳ 4</Select.Option>
-
-
-
-
-
-
-                            </Select>
-                        </Form.Item>
-                    </Form.Item>
-                    <Form.Item
-                        label="Thời lượng học"
-                        style={{
-                            marginBottom: 0,
-                        }}
-                        rules={[
-                            {
-                                required: true,
-
-                            },
-                        ]}
-                    >
-                        <Space></Space>
-                        <Form.Item
-                            name="hours"
-                            rules={[
-                                {
-                                    required: true,
-                                },
-                            ]}
-                            style={{
-                                display: 'inline-block',
-                                width: 'calc(50% - 8px)',
-                            }}
-                        >
-                            <Input placeholder="Số tiếng" />
-                        </Form.Item>
-                        <Form.Item
-                            name="days"
-                            rules={[
-                                {
-                                    required: true,
-                                },
-                            ]}
-                            style={{
-                                display: 'inline-block',
-                                width: 'calc(50% - 8px)',
-                                margin: '0 8px',
-                            }}
-                        >
-                            <Input placeholder="Số buổi" />
-                        </Form.Item>
-                    </Form.Item>
-
-                    <Form.Item
-
-                        label="Hình thức môn học"
-                        style={{
-                            marginBottom: 0,
-                        }}
-                    >
-                        <Form.Item
-                            name="module_type"
-
-                            style={{
-                                display: 'inline-block',
-                                width: 'calc(50% - 8px)',
-                            }}
-                        >
-                            <Select
-                                style={{ width: '100%' }}
-                                dropdownStyle={{ zIndex: 9999 }}
-                                placeholder="Hình thức học">
-                                <Select.Option key="1" value='Lý thuyết'>Lý thuyết</Select.Option>
-                                <Select.Option key="2" value='Thực hành'>Thực hành</Select.Option>
-                                <Select.Option key="3" value='Thực hành và Lý thuyết'>Lý thuyết và Thực hành</Select.Option>
-                            </Select>
-                        </Form.Item>
-                        <Form.Item
-                            name="exam_type"
-
-                            style={{
-                                display: 'inline-block',
-                                width: 'calc(50% - 8px)',
-                                margin: '0 8px',
-                            }}
-                        >
-                            <Select
-                                onChange={handleChangeExamType}
-                                style={{ width: '100%' }}
-                                dropdownStyle={{ zIndex: 9999 }}
-                                placeholder="Hình thức thi">
-                                <Select.Option key="4" value={1}>Lý thuyết</Select.Option>
-                                <Select.Option key="5" value={2}>Thực hành</Select.Option>
-                                <Select.Option key="6" value={3}>Lý thuyết và Thực hành</Select.Option>
-                                <Select.Option key="7" value={4}>Không thi</Select.Option>
-                                {/* <Select.Option key="4" value="Lý thuyết">Lý thuyết</Select.Option>
-                            <Select.Option key="5" value="Thực hành">Thực hành</Select.Option>
-                            <Select.Option key="6" value="Lý thuyết và thực hành">Lý thuyết và Thực hành</Select.Option>
-                            <Select.Option key="7" value="Không thi">Không thi</Select.Option> */}
-                            </Select>
-                        </Form.Item>
-                    </Form.Item>
-                    <Form.Item
-                        label="Điểm thi tối đa"
-                        style={{
-                            marginBottom: 0,
-                        }}
-                    >
-                        <Form.Item
-                            name="max_theory_grade"
-
-                            style={{
-                                display: 'inline-block',
-                                width: 'calc(50% - 8px)',
-                            }}
-                        >
-                            <Input
-
-                                disabled={exam_type !== 1 && exam_type !== 3}
-                                value={exam_type === 1 && exam_type === 3 && form.setFieldValue('max_practical_grade') === null}
-                                placeholder='Lý thuyết'>
-
-                            </Input>
-                        </Form.Item>
-                        <Form.Item
-                            name="max_practical_grade"
-
-                            style={{
-                                display: 'inline-block',
-                                width: 'calc(50% - 8px)',
-                                margin: '0 8px',
-                            }}
-                        >
-                            <Input
-                                value={exam_type === 2 && exam_type === 3 && form.setFieldValue('max_theory_grade') === null}
-                                disabled={exam_type !== 2 && exam_type !== 3}
-
-                                placeholder='Thực hành' />
-
-                        </Form.Item>
-                    </Form.Item>
-                    <Form.Item
-                        label="Ấn Độ"
-                        style={{
-                            marginBottom: 0,
-                        }}
-                    >
-                        <Form.Item
-                            name="semester_name_portal"
-                            rules={[
-                                {
-                                    required: true,
-                                },
-                            ]}
-                            style={{
-                                display: 'inline-block',
-                                width: 'calc(50% - 8px)',
-                            }}
-                        >
-                            <Input placeholder='Tên kỳ học'></Input>
-                        </Form.Item>
-                        <Form.Item
-                            name="module_exam_name_portal"
-                            rules={[
-                                {
-                                    required: true,
-                                },
-                            ]}
-                            style={{
-                                display: 'inline-block',
-                                width: 'calc(50% - 8px)',
-                                margin: '0 8px',
-                            }}
-                        >
-                            <Input placeholder='Tên khóa học'></Input>
-                        </Form.Item>
-                    </Form.Item>
-                    <Card.Divider />
-                    <Form.Item
-                        wrapperCol={{ offset: 19, span: 10 }}
-                        style={{
-
-                            margin: '10px 0 0 0',
-                        }}
-                    >
-                        <Button type="primary" htmlType="submit" loading={isLoading}>
-                            Cập nhật
-                        </Button>
-
-                    </Form.Item>
-
-
-
-
-
-
-
-
-
-                </Form>
+                      Cập nhật
+                    </Button>
+                  </Form.Item>
+                </div>
+              </Form>
             )}
             {!isUpdating && isFailed && (
-                <Text
-                    size={14}
-                    css={{
-                        color: 'red',
-                        textAlign: 'center',
-                    }}
-                >
-                    Cập nhật môn học thất bại, vui lòng thử lại
-                </Text>
+              <Text
+                size={14}
+                css={{
+                  color: 'red',
+                  textAlign: 'center',
+                }}
+              >
+                Cập nhật môn học thất bại, vui lòng thử lại
+              </Text>
             )}
-        </Fragment>
-
-    );
+          </Card.Body>
+        </Card>
+      </Grid>
+      <Grid xs={4}>
+        <Card
+          css={{
+            height: 'fit-content',
+          }}
+        >
+          <Card.Header>
+            <Text
+              p
+              b
+              size={15}
+              css={{
+                width: '100%',
+                textAlign: 'center',
+              }}
+            >
+              Thông tin điểm thành phần
+            </Text>
+          </Card.Header>
+          <Card.Body>
+            <ModuleGradeType
+              typeExam={typeExam}
+              listGrade={listGrade}
+              onAddRow={handleAddRow}
+              onDeleteRow={handleDeleteRow}
+              onSave={handleSave}
+            />
+          </Card.Body>
+        </Card>
+      </Grid>
+    </Grid.Container>
+  );
 };
 export default ModuleUpdate;

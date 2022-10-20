@@ -6,9 +6,22 @@ import { FaPowerOff } from 'react-icons/fa';
 import { BsPersonFill } from 'react-icons/bs';
 import { useNavigate, useLocation, useMatch } from 'react-router-dom';
 import MenuLayout from '../MenuLayout/MenuLayout';
+import { useEffect, useState } from 'react';
+import FetchApi from '../../../apis/FetchApi';
+import { UserApis } from '../../../apis/ListApi';
+import { Fragment } from 'react';
 const { Sider } = Layout;
 
+const ROLE = {
+  1: 'Admin',
+  2: 'SRO',
+  3: 'Teacher',
+  4: 'Student',
+};
+
 const SecondLayout = ({ children }) => {
+  const [dataUser, setDataUser] = useState({});
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -19,15 +32,34 @@ const SecondLayout = ({ children }) => {
     navigate('/login');
   };
 
+  useEffect(() => {
+    FetchApi(UserApis.getInformationUser, null, null, null)
+      .then((res) => {
+        const data = res.data;
+        setDataUser({
+          name: data.first_name + ' ' + data.last_name,
+          role: ROLE[data.role.id],
+          avatar: data.avatar,
+          emailOrganization: data.email_organization,
+          mobilePhone: data.mobile_phone,
+        });
+      })
+      .catch(() => {
+        handleLogout();
+      });
+  }, []);
+
   const menuAccount = (
     <Menu
       items={[
         {
           key: '1',
           label: (
-            <Text p size={14}>
-              <strong>Admin:</strong> Nguyễn Mạnh Tùng
-            </Text>
+            <div>
+              <Text p size={14}>
+                <strong>{dataUser.role}:</strong> {dataUser.name}
+              </Text>
+            </div>
           ),
         },
         {
@@ -66,12 +98,13 @@ const SecondLayout = ({ children }) => {
           left: 0,
           top: 0,
           bottom: 0,
+          backgroundColor: '#fff',
         }}
       >
         <div className={classes.containterLogo}>
           <img className={classes.logoMain} src={Logo} />
         </div>
-        <MenuLayout/>
+        <MenuLayout />
       </Sider>
       <Layout
         className="site-layout"
@@ -90,7 +123,11 @@ const SecondLayout = ({ children }) => {
             arrow
             trigger={['click']}
           >
-            <Avatar size={40} icon={<BsPersonFill size={20} />} />
+            <Avatar
+              src={dataUser.avatar}
+              size={40}
+              icon={<BsPersonFill size={20} />}
+            />
           </Dropdown>
         </div>
         <div className={classes.content}>{children}</div>

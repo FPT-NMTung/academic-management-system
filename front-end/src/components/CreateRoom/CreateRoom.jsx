@@ -4,6 +4,7 @@ import { CenterApis, RoomApis, RoomTypeApis } from '../../apis/ListApi';
 import FetchApi from '../../apis/FetchApi';
 import { useState, useEffect } from 'react';
 import { ErrorCodeApi } from '../../apis/ErrorCodeApi';
+import { Validater } from '../../validater/Validater';
 
 const CreateRoom = ({ onCreateRoomSuccess }) => {
   const [listCenters, setListCenters] = useState([]);
@@ -114,16 +115,23 @@ const CreateRoom = ({ onCreateRoomSuccess }) => {
         rules={[
           {
             required: true,
-            message: 'Hãy nhập tên phòng',
-          },
-          {
             validator: (_, value) => {
-              if (value.trim().length >= 2) {
-                return Promise.resolve();
+              if (value === null || value === undefined) {
+                return Promise.reject('Trường này không được để trống');
               }
-              return Promise.reject(
-                new Error('Tên phòng phải có ít nhất 2 ký tự')
-              );
+              if (
+                Validater.isContaintSpecialCharacterForName(value.trim())
+              ) {
+                return Promise.reject(
+                  'Trường này không được chứa ký tự đặc biệt'
+                );
+              }
+              if (value.trim().length < 2) {
+                return Promise.reject(
+                  new Error('Trường phải có ít nhất 2 ký tự')
+                );
+              }
+              return Promise.resolve();
             },
           },
           {

@@ -1,13 +1,14 @@
 import { Card, Grid, Text } from '@nextui-org/react';
-import { Form, Select, Input, Button, Spin } from 'antd';
+import { Form, Select, DatePicker, Input, Button, Spin, message } from 'antd';
 import { Fragment } from 'react';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
 import { CourseFamilyApis } from '../../apis/ListApi';
 import classes from './CourseFamilyUpdate.module.css';
+import { Validater } from '../../validater/Validater';
+import moment from 'moment';
 
 const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
-  // console.log(data);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const [IsLoading, setIsLoading] = useState(true);
@@ -21,18 +22,11 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
 
     FetchApi(apiCourseFamily).then((res) => {
       setlistCourseFamily(res.data);
-
-
-
-
     });
-
-  }
+  };
   useEffect(() => {
     setIsLoading(false);
     // getData();
-
-
   }, []);
   const handleSubmitForm = (e) => {
     setIsUpdating(true);
@@ -40,13 +34,15 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
     const body = {
       name: e.coursefamilyname.trim(),
       code: e.codefamily,
-      published_year: e.codefamilyyear,
+      published_year: e.codefamilyyear.year(),
       is_active: true,
-
     };
 
-    FetchApi(CourseFamilyApis.updateCourseFamily, body, null, [`${data.codefamily}`])
+    FetchApi(CourseFamilyApis.updateCourseFamily, body, null, [
+      `${data.codefamily}`,
+    ])
       .then((res) => {
+        message.success('Cập nhật chương trình học thành công');
         onUpdateSuccess();
       })
       .catch((err) => {
@@ -56,7 +52,7 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
   };
   return (
     <Fragment>
-      {(IsLoading) && (
+      {IsLoading && (
         <div className={classes.loading}>
           <Spin />
         </div>
@@ -72,9 +68,7 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
           initialValues={{
             coursefamilyname: data?.namecoursefamily,
             codefamily: data?.codefamily,
-            codefamilyyear: data?.codefamilyyear,
-
-
+            codefamilyyear: moment(data?.codefamilyyear),
           }}
         >
           <Form.Item
@@ -83,18 +77,33 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
             rules={[
               {
                 required: true,
-                message: 'Hãy nhập tên',
+                validator: (_, value) => {
+                  if (value === null || value === undefined) {
+                    return Promise.reject('Trường này không được để trống');
+                  }
+                  if (
+                    Validater.isContaintSpecialCharacterForName(value.trim())
+                  ) {
+                    return Promise.reject(
+                      'Trường này không được chứa ký tự đặc biệt'
+                    );
+                  }
+                  if (value.trim().length < 2) {
+                    return Promise.reject(
+                      new Error('Trường phải có ít nhất 2 ký tự')
+                    );
+                  }
+                  return Promise.resolve();
+                },
               },
             ]}
           >
             <Input />
           </Form.Item>
-
           <Fragment>
             <Form.Item
               name={'codefamily'}
               label={'Mã chương trình học'}
-
               rules={[
                 {
                   required: true,
@@ -110,13 +119,16 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
               rules={[
                 {
                   required: true,
-                  message: 'Hãy nhập năm áp dụng',
+                  message: 'Hãy chọn năm áp dụng',
                 },
               ]}
             >
-              <Input />
+              <DatePicker
+                popupStyle={{ zIndex: 999999 }}
+                placeholder="Năm áp dụng"
+                picker="year"
+              />
             </Form.Item>
-
           </Fragment>
 
           <Form.Item wrapperCol={{ offset: 7, span: 99 }}>
@@ -124,7 +136,6 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
               Cập nhật
             </Button>
             <Button
-
               style={{ marginLeft: 10 }}
               type="primary"
               htmlType="button"
@@ -147,7 +158,6 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
           Cập nhật thất bại, vui lòng thử lại
         </Text>
       )}
-
     </Fragment>
   );
 };
