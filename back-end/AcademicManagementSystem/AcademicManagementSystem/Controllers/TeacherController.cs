@@ -176,6 +176,12 @@ public class TeacherController : ControllerBase
         {
             var error = ErrorDescription.Error["E0051"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }        
+        
+        if(IsEmailExists(request.EmailOrganization, false, 0))
+        {
+            var error = ErrorDescription.Error["E0052_1"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         // if (!Regex.IsMatch(request.Email!, StringConstant.RegexEmail))
@@ -187,6 +193,18 @@ public class TeacherController : ControllerBase
         if (IsEmailOrganizationExists(request.EmailOrganization, false, 0))
         {
             var error = ErrorDescription.Error["E0052"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
+        if(IsEmailOrganizationExists(request.Email, false, 0))
+        {
+            var error = ErrorDescription.Error["E0051_1"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
+        if (request.Email == request.EmailOrganization)
+        {
+            var error = ErrorDescription.Error["E0052_2"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -326,6 +344,12 @@ public class TeacherController : ControllerBase
             var error = ErrorDescription.Error["E0051"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
+        
+        if(IsEmailExists(request.EmailOrganization, true, id))
+        {
+            var error = ErrorDescription.Error["E0052_1"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         // if (!Regex.IsMatch(request.Email!, StringConstant.RegexEmail))
         // {
@@ -336,6 +360,18 @@ public class TeacherController : ControllerBase
         if (IsEmailOrganizationExists(request.EmailOrganization, true, id))
         {
             var error = ErrorDescription.Error["E0052"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
+        if(IsEmailOrganizationExists(request.Email, true, id))
+        {
+            var error = ErrorDescription.Error["E0051_1"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
+        if (request.Email == request.EmailOrganization)
+        {
+            var error = ErrorDescription.Error["E0052_2"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
