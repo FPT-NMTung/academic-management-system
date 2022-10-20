@@ -8,7 +8,10 @@ import { useNavigate } from 'react-router-dom';
 import FetchApi from '../../../apis/FetchApi';
 import { UserApis } from '../../../apis/ListApi';
 import { Fragment } from 'react';
-import { FaPowerOff } from 'react-icons/fa';
+import { FaPowerOff,FaDoorOpen } from 'react-icons/fa';
+import { MdManageAccounts } from 'react-icons/md';
+import { ImBooks,ImBook,ImLibrary } from 'react-icons/im';
+import { MdMeetingRoom, MdSupervisedUserCircle,MdMenuBook } from 'react-icons/md';
 
 const ROLE = {
   1: 'Admin',
@@ -21,24 +24,60 @@ const menu = {
   admin: [
     {
       key: '1',
-      label: 'Quản lý cơ sở',
+      label: 'Thông tin các cơ sở',
       icon: <IoHome size={16} />,
       url: '/admin/center',
     },
     {
       key: '2',
-      label: 'Quản lý tài khoản',
-      icon: <IoHome size={16} />,
-      url: '/admin/account/teacher',
+      label: 'Tài khoản giáo viên',
+      icon: <MdManageAccounts size={20} />,
+      url: '/admin/account/teacher', 
     },
     {
       key: '3',
-      label: 'Quản lý khoá học',
-      icon: <IoHome size={16} />,
+      label: 'Tài khoản SRO',
+      icon: <MdSupervisedUserCircle size={20} />,
+      url: '/admin/account/sro', 
+    },
+
+    {
+      key: '4',
+      label: 'Chương Trình Học',
+      icon: <ImLibrary size={18} />,
       url: '/admin/manage-course/course-family',
     },
+    {
+      key: '5',
+      label: 'Thông Tin Khóa Học',
+      icon: <ImBook size={18} />,
+      url: '/admin/manage-course/courses',
+    },
+    {
+      key: '6',
+      label: 'Thông Tin Môn Học',
+      icon: <MdMenuBook size={18} />,
+      url: '/admin/manage-course/module',
+    },
+
+    {
+      key: '7',
+      label: 'Quản lý phòng học',
+      icon: <FaDoorOpen size={18} />,
+      url: '/admin/room',
+    },
+    
+
   ],
-  sro: [],
+  sro: [
+
+    {
+      key: '8',
+      label: 'Quản lý lớp học',
+      icon: <IoHome size={16} />,
+      url: '/sro/manage-class',
+    },
+  ],
   teacher: [],
   student: [],
 };

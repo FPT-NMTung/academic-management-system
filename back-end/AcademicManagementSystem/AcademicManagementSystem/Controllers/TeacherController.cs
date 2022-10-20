@@ -100,27 +100,26 @@ public class TeacherController : ControllerBase
             ? string.Empty
             : RemoveDiacritics(emailOrganization.Trim().ToLower());
 
-        //check empty
+        var teachers = GetAllUserRoleTeacher();
+
+        // if user didn't input any search condition, return all teachers
         if (sFirstName == string.Empty && sLastName == string.Empty
                                        && sNickname == string.Empty && sMobilePhone == string.Empty
                                        && sEmail == string.Empty && sEmailOrganization == string.Empty)
         {
-            var teachers = GetAllUserRoleTeacher();
             return Ok(CustomResponse.Ok("Search teachers successfully", teachers));
         }
-
-        var listSro = GetAllUserRoleTeacher();
-
-        var sroResponse = new List<TeacherResponse>();
-        foreach (var s in listSro)
+        
+        var teacherResponses = new List<TeacherResponse>();
+        foreach (var t in teachers)
         {
-            var s1 = RemoveDiacritics(s.FirstName!.ToLower());
-            var s2 = RemoveDiacritics(s.LastName!.ToLower());
-            s.Nickname ??= string.Empty;
-            var s3 = RemoveDiacritics(s.Nickname.ToLower());
-            var s4 = RemoveDiacritics(s.MobilePhone!.ToLower());
-            var s5 = RemoveDiacritics(s.Email!.ToLower());
-            var s6 = RemoveDiacritics(s.EmailOrganization!.ToLower());
+            var s1 = RemoveDiacritics(t.FirstName!.ToLower());
+            var s2 = RemoveDiacritics(t.LastName!.ToLower());
+            t.Nickname ??= string.Empty;
+            var s3 = RemoveDiacritics(t.Nickname.ToLower());
+            var s4 = RemoveDiacritics(t.MobilePhone!.ToLower());
+            var s5 = RemoveDiacritics(t.Email!.ToLower());
+            var s6 = RemoveDiacritics(t.EmailOrganization!.ToLower());
 
             if (s1.Contains(sFirstName)
                 && s2.Contains(sLastName)
@@ -129,11 +128,11 @@ public class TeacherController : ControllerBase
                 && s5.Contains(sEmail)
                 && s6.Contains(sEmailOrganization))
             {
-                sroResponse.Add(s);
+                teacherResponses.Add(t);
             }
         }
 
-        return Ok(CustomResponse.Ok("Search Teacher successfully", sroResponse));
+        return Ok(CustomResponse.Ok("Search Teacher successfully", teacherResponses));
     }
 
     // create teacher

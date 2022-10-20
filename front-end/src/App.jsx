@@ -53,7 +53,7 @@ const App = () => {
         <Route path='/admin/center' element={<CenterScreen/>}/>
         <Route path="/admin/room" element={<RoomScreen />} />
         <Route path='/admin/manage-course/course-family' element={<CourseFamily/>}/>
-        <Route path='/admin/manage-course/course' element={<Course/>}/>
+        <Route path='/admin/manage-course/courses' element={<Course/>}/>
         <Route path='/admin/manage-course/module' element={<Module/>}/>
         <Route path='/admin/manage-course/module/:id/update' element={<ModuleUpdate/>}/>
         <Route path='/admin/account/sro' element={<SroScreen />}/>
