@@ -4,6 +4,7 @@ using AcademicManagementSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    partial class AmsContextModelSnapshot : ModelSnapshot
+    [Migration("20221020134837_Add Student And StudentClass")]
+    partial class AddStudentAndStudentClass
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -161,10 +163,6 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("name");
 
-                    b.Property<int>("SroId")
-                        .HasColumnType("int")
-                        .HasColumnName("sro_id");
-
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("start_date");
@@ -182,8 +180,6 @@ namespace AcademicManagementSystem.Migrations
                     b.HasIndex("ClassStatusId");
 
                     b.HasIndex("CourseCode");
-
-                    b.HasIndex("SroId");
 
                     b.ToTable("class");
                 });
@@ -1140,12 +1136,6 @@ namespace AcademicManagementSystem.Migrations
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
-                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Sro", "Sro")
-                        .WithMany("Classes")
-                        .HasForeignKey("SroId")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
-
                     b.Navigation("Center");
 
                     b.Navigation("ClassDays");
@@ -1153,8 +1143,6 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("ClassStatus");
 
                     b.Navigation("Course");
-
-                    b.Navigation("Sro");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Course", b =>
@@ -1506,11 +1494,6 @@ namespace AcademicManagementSystem.Migrations
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Semester", b =>
                 {
                     b.Navigation("CoursesModuleSemesters");
-                });
-
-            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Sro", b =>
-                {
-                    b.Navigation("Classes");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Student", b =>
