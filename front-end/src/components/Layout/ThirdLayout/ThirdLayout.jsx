@@ -72,7 +72,7 @@ const menu = {
   sro: [
 
     {
-      key: '2',
+      key: '8',
       label: 'Quản lý lớp học',
       icon: <IoHome size={16} />,
       url: '/sro/manage-class',
