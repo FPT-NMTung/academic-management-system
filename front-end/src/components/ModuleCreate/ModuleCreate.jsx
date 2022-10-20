@@ -9,6 +9,7 @@ import {
   Tooltip,
   Space,
   Typography,
+  message,
 } from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
@@ -109,7 +110,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
       null
     )
       .then(() => {
-        alert('Tạo môn học thành công');
+        message.success('Tạo môn học thành công');
         setIsCreating(false);
         setIsFailed(false);
         onCreateSuccess();

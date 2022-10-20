@@ -25,11 +25,7 @@ public class SemesterController : ControllerBase
             .Include(s => s.CoursesModuleSemesters)
             .Select(s => new SemesterResponse()
             {
-                Id = s.Id, Name = s.Name,
-                CoursesModulesSemesters = s.CoursesModuleSemesters.Select(cms => new CourseModuleSemesterResponse()
-                {
-                    CourseCode = cms.CourseCode, ModuleId = cms.ModuleId, SemesterId = cms.SemesterId
-                }).ToList()
+                Id = s.Id, Name = s.Name
             }).ToList();
         return Ok(semesters);
     }
@@ -48,11 +44,7 @@ public class SemesterController : ControllerBase
         }
         var semesterResponse = new SemesterResponse()
         {
-            Id = semester.Id, Name = semester.Name,
-            CoursesModulesSemesters = semester.CoursesModuleSemesters.Select(cms => new CourseModuleSemesterResponse()
-            {
-                CourseCode = cms.CourseCode, ModuleId = cms.ModuleId, SemesterId = cms.SemesterId
-            }).ToList()
+            Id = semester.Id, Name = semester.Name
         };
         return Ok(semesterResponse);
     }

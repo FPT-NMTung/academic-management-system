@@ -26,8 +26,14 @@ public static class ErrorDescription
         { "E1002", new ErrorModel() { Message = "Input cannot be null or white space", Type = "center-error-0002" } },
         { "E1003", new ErrorModel() { Message = "Center name not match with name format", Type = "center-error-0003" } },
         { "E1004", new ErrorModel() { Message = "Center name must be less or equal than 100 characters", Type = "center-error-0004" } },
-        { "E1005", new ErrorModel() { Message = "This center already exists", Type = "center-error-0005" } },
-        
+        { "E1005", new ErrorModel() { Message = "Center with this address already exists", Type = "center-error-0005" } },
+        { "E1047", new ErrorModel() { Message = "Center with this name already exists", Type = "center-error-0006" } },
+        { "E1048", new ErrorModel() { Message = "Different Center with this name already exists", Type = "center-error-0007" } },
+        { "E1049", new ErrorModel() { Message = "Different Center with this address already exists", Type = "center-error-0008" } },
+        { "E1050", new ErrorModel() { Message = "Fail to SaveChange when Create Center", Type = "center-error-0009" } },
+        { "E1051", new ErrorModel() { Message = "Fail to SaveChange when Update Center", Type = "center-error-0010" } },
+        { "E1052", new ErrorModel() { Message = "Fail to SaveChange when Delete Center", Type = "center-error-0011" } },
+
         // sro
         { "E0016", new ErrorModel() { Message = "centerId for GET SROs not found", Type = "sro-error-0001" } },
         { "E0017", new ErrorModel() { Message = "SRO not found", Type = "sro-error-0002" } },
@@ -53,6 +59,9 @@ public static class ErrorDescription
         { "E0036", new ErrorModel() { Message = "User role SRO Not found", Type = "sro-error-0021" } },
         { "E0037", new ErrorModel() { Message = "Invalid Data for create/update user", Type = "sro-error-0022" } },
         { "E0038", new ErrorModel() { Message = "Invalid Data for create/update sro", Type = "sro-error-0023" } },
+        { "E0021_1", new ErrorModel() { Message = "Email Already Belong To Another EmailOrganization", Type = "sro-error-0021-1" } },
+        { "E0022_1", new ErrorModel() { Message = "EmailOrganization Already Belong To Another Email", Type = "sro-error-0022-1" } },
+        { "E0022_2", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "sro-error-0022-2" } },
 
         // address
         { "E1006", new ErrorModel() { Message = "Do not exist provinceId, DistrictId or WardId", Type = "address-error-0001" } },
@@ -119,7 +128,9 @@ public static class ErrorDescription
         { "E0053", new ErrorModel() { Message = "Duplicated citizenIdentityCardNo for CREATE/UPDATE Teacher", Type = "teacher-error-0016" } },
         { "E0054", new ErrorModel() { Message = "Tax Code must be 10 digits", Type = "teacher-error-0017" } },
         { "E0055", new ErrorModel() { Message = "Teacher Not Found", Type = "teacher-error-0018" } },
-
+        { "E0051_1", new ErrorModel() { Message = "Email Already Belong To Another EmailOrganization", Type = "teacher-error-0051-1" } },
+        { "E0052_1", new ErrorModel() { Message = "EmailOrganization Already Belong To Another Email", Type = "teacher-error-0052-1" } },
+        { "E0052_2", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "teacher-error-0052-2" } },
         //grade
         { "E0056", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0001" } },
         { "E0057", new ErrorModel() { Message = "Total Weight must be 100 for all grade category", Type = "grade-error-0002" } },
