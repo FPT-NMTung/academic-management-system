@@ -43,6 +43,7 @@ export const ErrorCodeApi = {
   'sro-error-0020': '',
   'sro-error-0021': '',
   'sro-error-0022': '',
+  'sro-error-0022-2': 'Email cá nhân và email tổ chức không được trùng nhau',
 
   'address-error-0001': '',
 
@@ -78,6 +79,7 @@ export const ErrorCodeApi = {
   'teacher-error-0016': 'Số CMND/CCCD đã tồn tại trong hệ thống',
   'teacher-error-0017': '',
   'teacher-error-0018': '',
+  'teacher-error-0052-2': 'Email cá nhân và email tổ chức không được trùng nhau',
 
   'module-error-00021': 'Môn học với mã khóa học, học kỳ đã tồn tại',
 };

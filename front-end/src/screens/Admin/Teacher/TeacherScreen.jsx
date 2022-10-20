@@ -221,8 +221,9 @@ const TeacherScreen = () => {
             <Table aria-label="">
               <Table.Header>
                 <Table.Column width={60}>STT</Table.Column>
-                <Table.Column width={320}>Họ và tên</Table.Column>
-                <Table.Column width={160}>Biệt danh</Table.Column>
+                <Table.Column width={270}>Họ và tên</Table.Column>
+                <Table.Column width={150}>Biệt danh</Table.Column>
+                <Table.Column width={150}>Cơ sở</Table.Column>
                 <Table.Column width={250}>Email cá nhân</Table.Column>
                 <Table.Column width={250}>Email tổ chức</Table.Column>
                 <Table.Column>Số điện thoại</Table.Column>
@@ -239,6 +240,7 @@ const TeacherScreen = () => {
                       </b>
                     </Table.Cell>
                     <Table.Cell>{data.nickname}</Table.Cell>
+                    <Table.Cell>{data.center_name}</Table.Cell>
                     <Table.Cell>{data.email}</Table.Cell>
                     <Table.Cell>{data.email_organization}</Table.Cell>
                     <Table.Cell>{data.mobile_phone}</Table.Cell>
@@ -260,7 +262,7 @@ const TeacherScreen = () => {
                 shadow
                 noMargin
                 align="center"
-                rowsPerPage={10}
+                rowsPerPage={9}
               />
             </Table>
           )}
