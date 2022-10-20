@@ -4,7 +4,7 @@
 
 namespace AcademicManagementSystem.Migrations
 {
-    public partial class UpdateStringlengthforcolums : Migration
+    public partial class UpdateStringLength : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
