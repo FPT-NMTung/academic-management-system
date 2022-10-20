@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AcademicManagementSystem.Context.AmsModels;
 
-[Table("admin")]
+[Table("student")]
 public class Student
 {
     public Student()
@@ -18,10 +18,7 @@ public class Student
     
     [Column("enroll_number")]
     [StringLength(255)]
-    public string? EnrollNumber { get; set; }
-    
-    [Column("sro_id")]
-    public int SroId { get; set; }
+    public string EnrollNumber { get; set; }
 
     [Column("course_id")]
     public int CourseId { get; set; }
@@ -38,23 +35,23 @@ public class Student
     
     [Column("contact_phone")]
     [StringLength(15)]
-    public string? ContactPhone { get; set; }
+    public string ContactPhone { get; set; }
     
     [Column("parental_name")]
     [StringLength(255)]
-    public string? ParentalName { get; set; }
+    public string ParentalName { get; set; }
     
     [Column("parental_relationship")]
     [StringLength(50)]
-    public string? ParentalRelationship { get; set; }
+    public string ParentalRelationship { get; set; }
     
     [Column("contact_address")]
     [StringLength(255)]
-    public string? ContactAddress { get; set; }
+    public string ContactAddress { get; set; }
     
     [Column("parental_phone")]
     [StringLength(15)]
-    public string? ParentalPhone { get; set; }
+    public string ParentalPhone { get; set; }
     
     [Column("application_date")]
     public DateTime ApplicationDate { get; set; }
@@ -84,7 +81,7 @@ public class Student
     public string? WorkingCompany { get; set; }
     
     [Column("company_salary")]
-    public int CompanySalary { get; set; }
+    public int? CompanySalary { get; set; }
     
     [Column("company_position")]
     [StringLength(255)]
@@ -105,7 +102,6 @@ public class Student
     
     // relationships
     public virtual User User { get; set; }
-    public virtual Sro Sro { get; set; }
     public virtual Course Course { get; set; }
     public virtual ICollection<StudentClass> StudentsClasses { get; set; }
 }
