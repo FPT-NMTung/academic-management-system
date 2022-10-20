@@ -85,14 +85,13 @@ public class SroController : ControllerBase
             ? string.Empty
             : RemoveDiacritics(emailOrganization.Trim().ToLower());
 
+        var listSro = GetAllUserRoleSro();
+
         if (sFirstName == string.Empty && sLastName == string.Empty && sMobilePhone == string.Empty
             && sEmail == string.Empty && sEmailOrganization == string.Empty)
         {
-            var sros = GetAllUserRoleSro();
-            return Ok(CustomResponse.Ok("Search sros successfully", sros));
+            return Ok(CustomResponse.Ok("Search sros successfully", listSro));
         }
-
-        var listSro = GetAllUserRoleSro();
 
         var sroResponse = new List<SroResponse>();
         foreach (var s in listSro)
