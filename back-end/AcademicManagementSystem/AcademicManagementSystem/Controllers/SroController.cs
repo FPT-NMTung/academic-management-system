@@ -158,6 +158,13 @@ public class SroController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        // email organization cannot be the same as email
+        if (IsEmailExists(request.EmailOrganization, false, 0))
+        {
+            var error = ErrorDescription.Error["E0022_1"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         // if (!Regex.IsMatch(request.Email!, StringConstant.RegexEmail))
         // {
         //     var error = ErrorDescription.Error["E0031"];
@@ -167,6 +174,19 @@ public class SroController : ControllerBase
         if (IsEmailOrganizationExists(request.EmailOrganization, false, 0))
         {
             var error = ErrorDescription.Error["E0022"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // email cannot be the same as emailOrganization
+        if (IsEmailOrganizationExists(request.Email, false, 0))
+        {
+            var error = ErrorDescription.Error["E0021_1"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.Email == request.EmailOrganization)
+        {
+            var error = ErrorDescription.Error["E0022_2"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -264,7 +284,7 @@ public class SroController : ControllerBase
             var error = ErrorDescription.Error["E0036"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         request.FirstName = Regex.Replace(request.FirstName!, StringConstant.RegexWhiteSpaces, " ");
         // function replace string ex: H ' Hen Nie => H'Hen Nie
         request.FirstName = request.FirstName.Replace(" ' ", "'").Trim();
@@ -301,6 +321,13 @@ public class SroController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        // email organization cannot be the same as email
+        if (IsEmailExists(request.EmailOrganization, true, id))
+        {
+            var error = ErrorDescription.Error["E0022_1"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         // if (!Regex.IsMatch(request.Email!, StringConstant.RegexEmail))
         // {
         //     var error = ErrorDescription.Error["E0031"];
@@ -310,6 +337,19 @@ public class SroController : ControllerBase
         if (IsEmailOrganizationExists(request.EmailOrganization, true, id))
         {
             var error = ErrorDescription.Error["E0022"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // email cannot be the same as email organization
+        if (IsEmailOrganizationExists(request.Email, true, id))
+        {
+            var error = ErrorDescription.Error["E0021_1"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.Email == request.EmailOrganization)
+        {
+            var error = ErrorDescription.Error["E0022_2"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
