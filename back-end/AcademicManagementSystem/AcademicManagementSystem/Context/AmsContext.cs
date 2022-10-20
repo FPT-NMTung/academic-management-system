@@ -7,7 +7,6 @@ public class AmsContext : DbContext
 {
     public AmsContext(DbContextOptions options) : base(options)
     {
-        
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -16,7 +15,7 @@ public class AmsContext : DbContext
         {
             relationship.DeleteBehavior = DeleteBehavior.ClientNoAction;
         }
-        
+
         // Indexes User model
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
@@ -33,18 +32,22 @@ public class AmsContext : DbContext
         modelBuilder.Entity<Teacher>()
             .HasIndex(t => t.TaxCode)
             .IsUnique();
+        modelBuilder.Entity<Student>()
+            .HasIndex(s => s.EnrollNumber)
+            .IsUnique();
 
         modelBuilder.Entity<CourseModuleSemester>()
             .HasKey(cms => new { cms.CourseCode, cms.ModuleId, cms.SemesterId });
+        modelBuilder.Entity<StudentClass>()
+            .HasKey(sc => new { sc.StudentId, sc.ClassId });
+
     }
-    
+
     public DbSet<Province> Provinces { get; set; }
     public DbSet<District> Districts { get; set; }
     public DbSet<Ward> Wards { get; set; }
     public DbSet<Center> Centers { get; set; }
-    
     public DbSet<Gender> Genders { get; set; }
-    
     public DbSet<Role> Roles { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<ActiveRefreshToken> ActiveRefreshTokens { get; set; }
@@ -58,22 +61,16 @@ public class AmsContext : DbContext
     public DbSet<Module> Modules { get; set; }
     public DbSet<Semester> Semesters { get; set; }
     public DbSet<CourseModuleSemester> CoursesModulesSemesters { get; set; }
-    
     public DbSet<TeacherType> TeacherTypes { get; set; }
-    
     public DbSet<WorkingTime> WorkingTimes { get; set; }
-    
     public DbSet<Teacher> Teachers { get; set; }
-    
     public DbSet<ClassDays> ClassDays { get; set; }
-    
     public DbSet<ClassStatus> ClassStatuses { get; set; }
-    
     public DbSet<Class> Classes { get; set; }
-    
     public DbSet<GradeCategory> GradeCategories { get; set; }
-    
     public DbSet<GradeCategoryModule> GradeCategoryModules { get; set; }
-
     public DbSet<GradeItem> GradeItems { get; set; }
+    public DbSet<Student> Students { get; set; }
+    public DbSet<StudentClass> StudentsClasses { get; set; }
+    
 }

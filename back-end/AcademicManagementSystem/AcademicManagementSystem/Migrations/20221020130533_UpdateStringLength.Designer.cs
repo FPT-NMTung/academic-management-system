@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    [Migration("20221016094652_Update Stringlength for colums")]
-    partial class UpdateStringlengthforcolums
+    [Migration("20221020130533_UpdateStringLength")]
+    partial class UpdateStringLength
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

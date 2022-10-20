@@ -6,6 +6,11 @@ namespace AcademicManagementSystem.Context.AmsModels;
 [Table("class")]
 public class Class
 {
+    public Class()
+    {
+        this.StudentsClasses = new HashSet<StudentClass>();
+    }
+
     [Key]
     [Column("id")]
     public int Id { get; set; }
@@ -22,6 +27,10 @@ public class Class
     
     [Column("class_status_id")]
     public int ClassStatusId { get; set; }
+    
+    [Column("sro_id")]
+    [ForeignKey("Sro")]
+    public int SroId { get; set; }
     
     [Column("name")]
     [StringLength(255)]
@@ -53,4 +62,6 @@ public class Class
     public virtual Course Course { get; set; }
     public virtual ClassDays ClassDays { get; set; }
     public virtual ClassStatus ClassStatus { get; set; }
+    public virtual Sro Sro { get; set; }
+    public virtual ICollection<StudentClass> StudentsClasses { get; set; }
 }
