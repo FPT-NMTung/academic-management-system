@@ -1,4 +1,5 @@
 using AcademicManagementSystem.Context;
+using AcademicManagementSystem.Context.AmsModels;
 using AcademicManagementSystem.Models.AddressController.DistrictModel;
 using AcademicManagementSystem.Models.AddressController.ProvinceModel;
 using AcademicManagementSystem.Models.AddressController.WardModel;
@@ -34,6 +35,10 @@ public class ClassController : ControllerBase
             .Include(c => c.Course)
             .Include(c => c.ClassDays)
             .Include(c => c.ClassStatus)
+            .Include(c => c.Center.Province)
+            .Include(c => c.Center.District)
+            .Include(c => c.Center.Ward)
+            .Include(c => c.Course.CourseFamily)
             .Select(c => new ClassResponse()
             {
                 Id = c.Id, Name = c.Name, CenterId = c.CenterId, CourseCode = c.CourseCode, ClassDaysId = c.ClassDaysId,
@@ -79,6 +84,84 @@ public class ClassController : ControllerBase
                 }
             }).ToList();
         return Ok(CustomResponse.Ok("Classes retrieved successfully", classes));
+    }
+
+    // get class by id
+    [HttpGet]
+    [Route("api/classes/{id:int}")]
+    [Authorize(Roles = "admin,sro")]
+    public IActionResult GetClassById(int id)
+    {
+        var clazz = _context.Classes.Include(c => c.Center)
+            .Include(c => c.Course)
+            .Include(c => c.ClassDays)
+            .Include(c => c.ClassStatus)
+            .Include(c => c.Center.Province)
+            .Include(c => c.Center.District)
+            .Include(c => c.Center.Ward)
+            .Include(c => c.Course.CourseFamily)
+            .FirstOrDefault(c => c.Id == id);
+        if (clazz == null)
+        {
+            return NotFound(CustomResponse.NotFound("Class not found"));
+        }
+
+        var classResponse = GetClassResponse(clazz);
+        return Ok(CustomResponse.Ok("Class retrieved successfully", classResponse));
+    }
+
+    private static ClassResponse GetClassResponse(Class clazz)
+    {
+        var classResponse = new ClassResponse()
+        {
+            Id = clazz.Id, Name = clazz.Name, CenterId = clazz.CenterId, CourseCode = clazz.CourseCode,
+            ClassDaysId = clazz.ClassDaysId,
+            ClassStatusId = clazz.ClassStatusId, StartDate = clazz.StartDate, CompletionDate = clazz.CompletionDate,
+            GraduationDate = clazz.GraduationDate, ClassHourStart = clazz.ClassHourStart,
+            ClassHourEnd = clazz.ClassHourEnd,
+            CreatedAt = clazz.CreatedAt, UpdatedAt = clazz.UpdatedAt,
+            Center = new CenterResponse()
+            {
+                Id = clazz.Center.Id, Name = clazz.Center.Name, CreatedAt = clazz.Center.CreatedAt,
+                UpdatedAt = clazz.Center.UpdatedAt,
+                Province = new ProvinceResponse()
+                {
+                    Id = clazz.Center.Province.Id, Code = clazz.Center.Province.Code,
+                    Name = clazz.Center.Province.Name,
+                },
+                District = new DistrictResponse()
+                {
+                    Id = clazz.Center.District.Id, Name = clazz.Center.District.Name,
+                    Prefix = clazz.Center.District.Prefix
+                },
+                Ward = new WardResponse()
+                {
+                    Id = clazz.Center.Ward.Id, Name = clazz.Center.Ward.Name, Prefix = clazz.Center.Ward.Prefix
+                }
+            },
+            Course = new CourseResponse()
+            {
+                Code = clazz.Course.Code, Name = clazz.Course.Name, IsActive = clazz.Course.IsActive,
+                SemesterCount = clazz.Course.SemesterCount, CourseFamilyCode = clazz.Course.CourseFamilyCode,
+                CreatedAt = clazz.Course.CreatedAt, UpdatedAt = clazz.Course.UpdatedAt,
+                CourseFamily = new CourseFamilyResponse()
+                {
+                    Code = clazz.Course.CourseFamily.Code, Name = clazz.Course.CourseFamily.Name,
+                    IsActive = clazz.Course.CourseFamily.IsActive,
+                    PublishedYear = clazz.Course.CourseFamily.PublishedYear,
+                    CreatedAt = clazz.Course.CourseFamily.CreatedAt, UpdatedAt = clazz.Course.CourseFamily.UpdatedAt
+                }
+            },
+            ClassDays = new ClassDaysResponse()
+            {
+                Id = clazz.ClassDays.Id, Value = clazz.ClassDays.Value
+            },
+            ClassStatus = new ClassStatusResponse()
+            {
+                Id = clazz.ClassStatus.Id, Value = clazz.ClassStatus.Value
+            }
+        };
+        return classResponse;
     }
     
     
