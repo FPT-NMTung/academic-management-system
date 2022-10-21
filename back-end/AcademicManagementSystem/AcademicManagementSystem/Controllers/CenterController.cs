@@ -13,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 namespace AcademicManagementSystem.Controllers;
 
 [ApiController]
-[Authorize(Roles = "admin")]
 public class CenterController : ControllerBase
 {
     private readonly AmsContext _context;
@@ -25,6 +24,7 @@ public class CenterController : ControllerBase
 
     [HttpGet]
     [Route("api/centers")]
+    [Authorize(Roles = "admin")]
     public IActionResult GetCenters()
     {
         var centers = _context.Centers.Include(e => e.Province)
@@ -59,6 +59,7 @@ public class CenterController : ControllerBase
     //get center by id
     [HttpGet]
     [Route("api/centers/{id:int}")]
+    [Authorize(Roles = "admin")]
     public IActionResult GetCenterById(int id)
     {
         var center = _context.Centers.Include(e => e.Province)
@@ -108,6 +109,7 @@ public class CenterController : ControllerBase
     // create center
     [HttpPost]
     [Route("api/centers")]
+    [Authorize(Roles = "admin")]
     public IActionResult CreateCenter([FromBody] CreateCenterRequest request)
     {
         request.Name = request.Name.Trim();
@@ -175,6 +177,7 @@ public class CenterController : ControllerBase
     // update center
     [HttpPut]
     [Route("api/centers/{id:int}")]
+    [Authorize(Roles = "admin")]
     public IActionResult UpdateCenter(int id, [FromBody] UpdateCenterRequest request)
     {
         request.Name = request.Name.Trim();
@@ -248,6 +251,7 @@ public class CenterController : ControllerBase
     // delete center
     [HttpDelete]
     [Route("api/centers/{id:int}")]
+    [Authorize(Roles = "admin")]
     public IActionResult DeleteCenter(int id)
     {
         try

@@ -69,10 +69,8 @@ public class CreateTeacherRequest
     public DateTime StartWorkingDate { get; set; }
     
     [JsonPropertyName("salary")]
-    [DefaultValue(null)]
-    public decimal? Salary { get; set; }
+    public decimal Salary { get; set; }
     
     [JsonPropertyName("tax_code")]
-    [DefaultValue(null)]
-    public string? TaxCode { get; set; }
+    public string TaxCode { get; set; }
 }

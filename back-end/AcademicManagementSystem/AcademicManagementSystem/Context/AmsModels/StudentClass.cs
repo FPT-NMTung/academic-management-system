@@ -6,6 +6,7 @@ namespace AcademicManagementSystem.Context.AmsModels;
 public class StudentClass
 {
     [Column("student_id")]
+    [ForeignKey("Student")]
     public int StudentId { get; set; }
     
     [Column("class_id")]

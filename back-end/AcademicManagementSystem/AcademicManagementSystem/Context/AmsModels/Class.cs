@@ -18,15 +18,19 @@ public class Class
     [Column("center_id")]
     public int CenterId { get; set; }
     
-    [Column("course_code")]
+    [Column("course_family_code")]
     [StringLength(100)]
-    public string CourseCode { get; set; }
+    public string CourseFamilyCode { get; set; }
     
     [Column("class_days_id")]   
     public int ClassDaysId { get; set; }
     
     [Column("class_status_id")]
     public int ClassStatusId { get; set; }
+    
+    [Column("sro_id")]
+    [ForeignKey("Sro")]
+    public int SroId { get; set; }
     
     [Column("name")]
     [StringLength(255)]
@@ -55,8 +59,9 @@ public class Class
     
     // relationships
     public virtual Center Center { get; set; }
-    public virtual Course Course { get; set; }
+    public virtual CourseFamily CourseFamily { get; set; }
     public virtual ClassDays ClassDays { get; set; }
     public virtual ClassStatus ClassStatus { get; set; }
+    public virtual Sro Sro { get; set; }
     public virtual ICollection<StudentClass> StudentsClasses { get; set; }
 }
