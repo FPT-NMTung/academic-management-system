@@ -1,6 +1,8 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using AcademicManagementSystem.Context;
+using AcademicManagementSystem.Context.AmsModels;
+using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.AddressController.DistrictModel;
 using AcademicManagementSystem.Models.AddressController.ProvinceModel;
 using AcademicManagementSystem.Models.AddressController.WardModel;
@@ -9,6 +11,7 @@ using AcademicManagementSystem.Models.ClassController;
 using AcademicManagementSystem.Models.ClassDaysController;
 using AcademicManagementSystem.Models.ClassStatusController;
 using AcademicManagementSystem.Models.CourseFamilyController;
+using AcademicManagementSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,35 +22,41 @@ namespace AcademicManagementSystem.Controllers;
 public class ClassController : ControllerBase
 {
     private readonly AmsContext _context;
+    private readonly IUserService _userService;
+    private readonly int _userId;
+    private readonly User _user;
 
-    public ClassController(AmsContext context)
+    public ClassController(AmsContext context, IUserService userService)
     {
         _context = context;
+        _userService = userService;
+        _userId = Convert.ToInt32(_userService.GetUserId());
+        _user = _context.Users.FirstOrDefault(u => u.Id == _userId)!;
     }
 
     // get all classes
     [HttpGet]
     [Route("api/classes")]
-    [Authorize(Roles = "admin,sro")]
-    public IActionResult GetClasses()
+    [Authorize(Roles = "sro")]
+    public IActionResult GetClassesByCurrentSroCenter()
     {
-        var classes = GetAllClassesByContext().ToList();
+        var classes = GetAllClassesInThisCenterByContext().ToList();
         return Ok(CustomResponse.Ok("Classes retrieved successfully", classes));
     }
 
     // get class by id
     [HttpGet]
     [Route("api/classes/{id:int}")]
-    [Authorize(Roles = "admin,sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult GetClassById(int id)
     {
-        var classResponse = GetAllClassesByContext().FirstOrDefault(c => c.Id == id);
+        var classResponse = GetAllClassesInThisCenterByContext().FirstOrDefault(c => c.Id == id);
         if (classResponse == null)
         {
-            return NotFound(CustomResponse.NotFound("Class not found"));
+            return NotFound(CustomResponse.NotFound("Class not found in this center"));
         }
 
-        return Ok(CustomResponse.Ok("Get Class by id successfully", classResponse));
+        return Ok(CustomResponse.Ok("Get class by id successfully", classResponse));
     }
 
     /*
@@ -55,10 +64,9 @@ public class ClassController : ControllerBase
      */
     [HttpGet]
     [Route("api/classes/search")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult SearchClasses([FromQuery] int? classDaysId, [FromQuery] int? classStatusId,
-        [FromQuery] string? className, [FromQuery] string? courseFamilyCode, [FromQuery] int? centerId,
-        [FromQuery] string? sroName)
+        [FromQuery] string? className, [FromQuery] string? courseFamilyCode, [FromQuery] string? sroName)
     {
         var sClassName = className == null ? string.Empty : RemoveDiacritics(className.Trim().ToLower());
         var sCourseFamilyCode = courseFamilyCode == null
@@ -66,11 +74,11 @@ public class ClassController : ControllerBase
             : RemoveDiacritics(courseFamilyCode.Trim().ToLower());
         var sSroName = sroName == null ? string.Empty : RemoveDiacritics(sroName.Trim().ToLower());
 
-        var allClasses = GetAllClassesByContext();
+        var allClasses = GetAllClassesInThisCenterByContext();
 
         //if user didn't input any search condition, return all classes
-        if (classDaysId == null && classStatusId == null && sClassName == string.Empty &&
-            sCourseFamilyCode == string.Empty && centerId == null && sSroName == string.Empty)
+        if (classDaysId == null && classStatusId == null && sClassName == string.Empty
+            && sCourseFamilyCode == string.Empty && sSroName == string.Empty)
         {
             return Ok(CustomResponse.Ok("Search classes successfully", allClasses));
         }
@@ -89,8 +97,7 @@ public class ClassController : ControllerBase
                 && s2.Contains(sCourseFamilyCode)
                 && fullName.Contains(sSroName)
                 && (classDaysId == null || c.ClassDaysId == classDaysId)
-                && (classStatusId == null || c.ClassStatusId == classStatusId)
-                && (centerId == null || c.CenterId == centerId))
+                && (classStatusId == null || c.ClassStatusId == classStatusId))
             {
                 classesResponse.Add(c);
             }
@@ -99,7 +106,165 @@ public class ClassController : ControllerBase
         return Ok(CustomResponse.Ok("Search classes successfully", classesResponse));
     }
 
-    private IQueryable<ClassResponse> GetAllClassesByContext()
+    // create new class
+    [HttpPost]
+    [Route("api/classes")]
+    [Authorize(Roles = "sro")]
+    public IActionResult CreateClass([FromBody] CreateClassRequest request)
+    {
+        request.Name = Regex.Replace(request.Name, StringConstant.RegexWhiteSpaces, " ").Trim();
+
+        var errorCode = GetCodeIfOccuredErrorWhenCreate(request);
+
+        if (errorCode != null)
+        {
+            var error = ErrorDescription.Error[errorCode];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var newClass = new Class()
+        {
+            CenterId = _user.CenterId,
+            CourseFamilyCode = request.CourseFamilyCode,
+            ClassDaysId = request.ClassDaysId,
+            ClassStatusId = request.ClassStatusId,
+            SroId = _user.Id,
+            Name = request.Name,
+            StartDate = request.StartDate,
+            CompletionDate = request.CompletionDate,
+            GraduationDate = request.GraduationDate,
+            ClassHourStart = request.ClassHourStart,
+            ClassHourEnd = request.ClassHourEnd,
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now
+        };
+
+        _context.Classes.Add(newClass);
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (DbUpdateException)
+        {
+            var error = ErrorDescription.Error["E0071"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        catch (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().FullName!));
+        }
+
+        // get new class by id
+        var classResponse = GetAllClassesInThisCenterByContext().FirstOrDefault(c => c.Id == newClass.Id);
+
+        if (classResponse == null)
+        {
+            return BadRequest(CustomResponse.BadRequest("Cannot find created class", "error-not-found"));
+        }
+
+        return Ok(CustomResponse.Ok("Create class successfully", classResponse));
+    }
+
+    // update class
+    [HttpPut]
+    [Route("api/classes/{classId:int}")]
+    [Authorize(Roles = "sro")]
+    public IActionResult UpdateClass(int classId, [FromBody] UpdateClassRequest request)
+    {
+        request.Name = Regex.Replace(request.Name, StringConstant.RegexWhiteSpaces, " ").Trim();
+
+        var errorCode = GetCodeIfOccuredErrorWhenUpdate(classId, request);
+
+        if (errorCode != null)
+        {
+            var error = ErrorDescription.Error[errorCode];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var classToUpdate = _context.Classes.FirstOrDefault(c => c.Id == classId && c.CenterId == _user.CenterId);
+
+        if (classToUpdate == null)
+        {
+            return NotFound(CustomResponse.NotFound("Class not found in this center"));
+        }
+
+        classToUpdate.CourseFamilyCode = request.CourseFamilyCode;
+        classToUpdate.ClassDaysId = request.ClassDaysId;
+        classToUpdate.ClassStatusId = request.ClassStatusId;
+        classToUpdate.Name = request.Name;
+        classToUpdate.StartDate = request.StartDate;
+        classToUpdate.CompletionDate = request.CompletionDate;
+        classToUpdate.GraduationDate = request.GraduationDate;
+        classToUpdate.ClassHourStart = request.ClassHourStart;
+        classToUpdate.ClassHourEnd = request.ClassHourEnd;
+        classToUpdate.UpdatedAt = DateTime.Now;
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (DbUpdateException)
+        {
+            var error = ErrorDescription.Error["E0071"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        catch (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest(e.GetType().FullName!, e.Message));
+        }
+
+        // get updated class by id
+        var classResponse = GetAllClassesInThisCenterByContext().FirstOrDefault(c => c.Id == classToUpdate.Id);
+
+        if (classResponse == null)
+        {
+            return BadRequest(CustomResponse.BadRequest("Cannot find updated class", "error-not-found"));
+        }
+
+        return Ok(CustomResponse.Ok("Update class successfully", classResponse));
+    }
+
+    private string? GetCodeIfOccuredErrorWhenCreate(CreateClassRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Name))
+        {
+            return "E0068";
+        }
+
+        // allow special characters: ()-_
+        if (Regex.IsMatch(request.Name, StringConstant.RegexSpecialCharactersNotAllowForClassName))
+        {
+            return "E0069";
+        }
+
+        return IsClassExist(request.Name, _user.CenterId, false, 0) ? "E0070" : null;
+    }
+
+    private string? GetCodeIfOccuredErrorWhenUpdate(int classId, UpdateClassRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Name))
+        {
+            return "E0068";
+        }
+
+        // allow special characters: ()-_
+        if (Regex.IsMatch(request.Name, StringConstant.RegexSpecialCharactersNotAllowForClassName))
+        {
+            return "E0069";
+        }
+
+        return IsClassExist(request.Name, _user.CenterId, true, classId) ? "E0070" : null;
+    }
+
+    private bool IsClassExist(string className, int centerId, bool isUpdate, int classId)
+    {
+        return isUpdate
+            ? _context.Classes.Any(c =>
+                c.Name.ToLower().Equals(className.ToLower()) && c.CenterId == centerId && c.Id != classId)
+            : _context.Classes.Any(c => c.Name.ToLower().Equals(className.ToLower()) && c.CenterId == centerId);
+    }
+
+    private IQueryable<ClassResponse> GetAllClassesInThisCenterByContext()
     {
         return _context.Classes.Include(c => c.Center)
             .Include(c => c.ClassDays)
@@ -172,7 +337,7 @@ public class ClassController : ControllerBase
                 SroId = c.Sro.UserId,
                 SroFirstName = c.Sro.User.FirstName,
                 SroLastName = c.Sro.User.LastName
-            });
+            }).Where(c => c.CenterId == _user.CenterId);
     }
 
     private static string RemoveDiacritics(string text)
