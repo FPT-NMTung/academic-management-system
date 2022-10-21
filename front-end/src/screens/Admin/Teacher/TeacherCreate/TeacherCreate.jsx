@@ -25,6 +25,7 @@ const translateWorkingTime = {
 };
 
 const TeacherCreate = ({ modeUpdate }) => {
+  console.log('modeUpdate', modeUpdate);
   const [listCenter, setListCenter] = useState([]);
   const [listGender, setListGender] = useState([]);
   const [listProvince, setListProvince] = useState([]);
