@@ -236,6 +236,11 @@ public class ClassController : ControllerBase
         {
             return "E0069";
         }
+        
+        if (request.ClassHourStart >= request.ClassHourEnd)
+        {
+            return "E0072";
+        }
 
         return IsClassExist(request.Name, _user.CenterId, false, 0) ? "E0070" : null;
     }
@@ -251,6 +256,11 @@ public class ClassController : ControllerBase
         if (Regex.IsMatch(request.Name, StringConstant.RegexSpecialCharactersNotAllowForClassName))
         {
             return "E0069";
+        }
+        
+        if (request.ClassHourStart >= request.ClassHourEnd)
+        {
+            return "E0072";
         }
 
         return IsClassExist(request.Name, _user.CenterId, true, classId) ? "E0070" : null;
