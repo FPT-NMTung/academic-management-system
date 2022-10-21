@@ -24,7 +24,7 @@ public class CenterController : ControllerBase
 
     [HttpGet]
     [Route("api/centers")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult GetCenters()
     {
         var centers = _context.Centers.Include(e => e.Province)

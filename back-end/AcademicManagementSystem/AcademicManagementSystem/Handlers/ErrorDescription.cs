@@ -131,6 +131,7 @@ public static class ErrorDescription
         { "E0051_1", new ErrorModel() { Message = "Email Already Belong To Another EmailOrganization", Type = "teacher-error-0051-1" } },
         { "E0052_1", new ErrorModel() { Message = "EmailOrganization Already Belong To Another Email", Type = "teacher-error-0052-1" } },
         { "E0052_2", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "teacher-error-0052-2" } },
+        
         //grade
         { "E0056", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0001" } },
         { "E0057", new ErrorModel() { Message = "Total Weight must be 100 for all grade category", Type = "grade-error-0002" } },
@@ -144,7 +145,12 @@ public static class ErrorDescription
         { "E0065", new ErrorModel() { Message = "This module not take exam", Type = "grade-error-0010" } },
         { "E0066", new ErrorModel() { Message = "Can't add Resit Exam", Type = "grade-error-0011" } },
         { "E0067", new ErrorModel() { Message = "This module must have both PE and FE", Type = "grade-error-0012" } },
-
+        
+        //class
+        { "E0068", new ErrorModel() { Message = "Class name can't be empty", Type = "class-error-0068" } },
+        { "E0069", new ErrorModel() { Message = "Class name must match with format(allow characters: ( ) _ - ", Type = "class-error-0069" } },
+        { "E0070", new ErrorModel() { Message = "Class already exist", Type = "class-error-0070" } },
+        { "E0071", new ErrorModel() { Message = "Add class failed, data not valid", Type = "class-error-0071" } }
     };
 }
 
