@@ -16,7 +16,7 @@ import { useEffect } from "react";
 import ColumnGroup from "antd/lib/table/ColumnGroup";
 import { Fragment } from "react";
 import classes from "./ManageClass.module.css";
-import { RiEyeFill, RiRecycleFill } from "react-icons/ri";
+import { RiEyeFill, RiPencilFill } from "react-icons/ri";
 import { ManageClassApis, CenterApis } from "../../../apis/ListApi";
 
 const ManageClass = () => {
@@ -34,15 +34,15 @@ const ManageClass = () => {
     };
 
     const classStatusName = form.getFieldValue("class_status_name");
-    const center_Id = form.getFieldValue("center_id");
+    // const center_Id = form.getFieldValue("center_id");
     const class_days = form.getFieldValue("class_days");
 
     if (classStatusName !== null) {
       param.classStatusId = classStatusName;
     }
-    if (center_Id !== null) {
-      param.centerId = center_Id;
-    }
+    // if (center_Id !== null) {
+    //   param.centerId = center_Id;
+    // }
     if (class_days !== null) {
       param.classDaysId = class_days;
     }
@@ -69,8 +69,8 @@ const ManageClass = () => {
             graduation_date: e.graduation_date,
             class_hour_start: e.class_hour_start,
             class_hour_end: e.class_hour_end,
-            class_days: e.class_days.Value,
-            // class_days: e.class_days.value,
+            // class_days: e.class_days.Value,
+            class_days: e.class_days.value,
           };
         });
 
@@ -130,7 +130,7 @@ const ManageClass = () => {
       );
     } else {
       return (
-        <Badge variant="flat" color="primary ">
+        <Badge variant="flat" color="primary">
           Chưa lên lịch
         </Badge>
       );
@@ -171,7 +171,7 @@ const ManageClass = () => {
                 class_status_name: null,
                 class_days: null,
                 course_family_code: "",
-                center_id: null,
+                // center_id: null,
               }}
               onFinish={handleSubmitForm}
             >
@@ -203,17 +203,17 @@ const ManageClass = () => {
               </Form.Item>
               <Form.Item
                 name="class_name"
-                style={{ width: "calc(16% - 16px)" }}
+                style={{ width: "calc(15% - 16px)" }}
               >
                 <Input placeholder="Tên lớp" />
               </Form.Item>
               <Form.Item
                 name="course_family_code"
-                style={{ width: "calc(15% - 16px)" }}
+                style={{ width: "calc(20% - 16px)" }}
               >
                 <Input placeholder="Mã Chương Trình Học" />
               </Form.Item>
-              <Form.Item name="center_id" style={{ width: "calc(12% - 16px)" }}>
+              {/* <Form.Item name="center_id" style={{ width: "calc(12% - 16px)" }}>
                 <Select
                   placeholder="Cơ Sở"
                   style={{ width: "100%" }}
@@ -226,13 +226,13 @@ const ManageClass = () => {
                     </Select.Option>
                   ))}
                 </Select>
-              </Form.Item>
-              <Form.Item name="sro_name" style={{ width: "calc(15% - 16px)" }}>
+              </Form.Item> */}
+              <Form.Item name="sro_name" style={{ width: "calc(20% - 16px)" }}>
                 <Input placeholder="Người phụ trách" />
               </Form.Item>
               <Form.Item
                 name="class_days"
-                style={{ width: "calc(12% - 16px)" }}
+                style={{ width: "calc(15% - 16px)" }}
               >
                 <Select
                   placeholder="Ngày học"
@@ -304,7 +304,7 @@ const ManageClass = () => {
                   }}
                   type="primary"
                   onPress={() => {
-                    navigate("/admin/account/teacher/create");
+                    navigate("/sro/manage-class/create");
                   }}
                 >
                   + Tạo mới
@@ -321,13 +321,14 @@ const ManageClass = () => {
             <Table aria-label="" disabledKeys={["4"]}>
               <Table.Header>
                 <Table.Column width={60}>STT</Table.Column>
-                <Table.Column width={250}>Tên lớp học</Table.Column>
+                <Table.Column width={200}>Tên lớp học</Table.Column>
                 <Table.Column width={100}>Cơ Sở</Table.Column>
-                <Table.Column width={250}>Mã Chương Trình Học</Table.Column>
-                <Table.Column width={250}>Người Phụ Trách</Table.Column>
-                <Table.Column width={250}>Ngày Học</Table.Column>
-                <Table.Column width={250}>Trạng Thái Lớp Học</Table.Column>
-                <Table.Column width={150}>Xem Chi Tiết</Table.Column>
+                <Table.Column width={200}>Mã Chương Trình Học</Table.Column>
+                <Table.Column width={200}>Người Phụ Trách</Table.Column>
+                <Table.Column width={150}>Ngày Học</Table.Column>
+                <Table.Column width={200}>Trạng Thái Lớp Học</Table.Column>
+                <Table.Column width={200}>Chỉnh Sửa</Table.Column>
+                <Table.Column width={200}>Xem Chi Tiết</Table.Column>
               </Table.Header>
               <Table.Body>
                 {dataSource.map((data, index) => (
@@ -346,6 +347,16 @@ const ManageClass = () => {
                       {renderStatus(data.class_status_id)}
                     </Table.Cell>
                     <Table.Cell css={{ textAlign: "center" }}>
+                      <RiPencilFill
+                        size={20}
+                        color="f42a70"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          navigate(`/sro/manage-class/${data.key}/update/`);
+                        }}
+                      />
+                    </Table.Cell>
+                    <Table.Cell css={{ textAlign: "center" }}>
                       <RiEyeFill
                         size={20}
                         color="5EA2EF"
@@ -359,7 +370,7 @@ const ManageClass = () => {
                 shadow
                 noMargin
                 align="center"
-                rowsPerPage={8}
+                rowsPerPage={9}
                 color="error"
               />
             </Table>

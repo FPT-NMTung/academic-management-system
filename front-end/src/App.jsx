@@ -21,6 +21,7 @@ import TeacherScreen from './screens/Admin/Teacher/TeacherScreen';
 import TeacherDetail from './screens/Admin/Teacher/TeacherDetail/TeacherDetail';
 import TeacherCreate from './screens/Admin/Teacher/TeacherCreate/TeacherCreate';
 import ManageClass from './screens/Sro/Manage Class/ManageClass';
+import ClassCreate from './screens/Sro/Manage Class/ClassCreate/ClassCreate';
 
 const App = () => {
   return (
@@ -44,7 +45,9 @@ const App = () => {
       {/* Routers for role sro */}
       <Route path={'/sro'}element={<ThirdLayout><RequireAuth role={'sro'} /></ThirdLayout>} >
         <Route index element={<p>Hello sro</p>} />  
-        <Route path="/sro/manage-class" element={<ManageClass/>} />      
+        <Route path="/sro/manage-class" element={<ManageClass/>} />  
+        <Route path="/sro/manage-class/create" element={<ClassCreate modeUpdate={false}/>} />  
+        <Route path='/sro/manage-class/:id/update' element={<ClassCreate modeUpdate={true}/>}/>  
       </Route>
 
       {/* Routers for role admin */}
