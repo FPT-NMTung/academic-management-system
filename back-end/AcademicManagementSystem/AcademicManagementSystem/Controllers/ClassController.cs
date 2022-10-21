@@ -8,7 +8,6 @@ using AcademicManagementSystem.Models.CenterController;
 using AcademicManagementSystem.Models.ClassController;
 using AcademicManagementSystem.Models.ClassDaysController;
 using AcademicManagementSystem.Models.ClassStatusController;
-using AcademicManagementSystem.Models.CourseController;
 using AcademicManagementSystem.Models.CourseFamilyController;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -58,18 +57,20 @@ public class ClassController : ControllerBase
     [Route("api/classes/search")]
     [Authorize(Roles = "admin, sro")]
     public IActionResult SearchClasses([FromQuery] int? classDaysId, [FromQuery] int? classStatusId,
-        [FromQuery] string? className, [FromQuery] string? courseCode, [FromQuery] int? centerId,
+        [FromQuery] string? className, [FromQuery] string? courseFamilyCode, [FromQuery] int? centerId,
         [FromQuery] string? sroName)
     {
         var sClassName = className == null ? string.Empty : RemoveDiacritics(className.Trim().ToLower());
-        var sCourseCode = courseCode == null ? string.Empty : RemoveDiacritics(courseCode.Trim().ToLower());
+        var sCourseFamilyCode = courseFamilyCode == null
+            ? string.Empty
+            : RemoveDiacritics(courseFamilyCode.Trim().ToLower());
         var sSroName = sroName == null ? string.Empty : RemoveDiacritics(sroName.Trim().ToLower());
 
         var allClasses = GetAllClassesByContext();
 
         //if user didn't input any search condition, return all classes
-        if (classDaysId == null && classStatusId == null && sClassName == string.Empty && sCourseCode == string.Empty
-            && centerId == null && sSroName == string.Empty)
+        if (classDaysId == null && classStatusId == null && sClassName == string.Empty &&
+            sCourseFamilyCode == string.Empty && centerId == null && sSroName == string.Empty)
         {
             return Ok(CustomResponse.Ok("Search classes successfully", allClasses));
         }
@@ -78,12 +79,15 @@ public class ClassController : ControllerBase
         foreach (var c in allClasses)
         {
             var s1 = RemoveDiacritics(c.Name!.ToLower());
-            var s2 = RemoveDiacritics(c.CourseCode!.ToLower());
+            var s2 = RemoveDiacritics(c.CourseFamilyCode!.ToLower());
             var s3 = RemoveDiacritics(c.SroFirstName!.ToLower());
+            var s4 = RemoveDiacritics(c.SroLastName!.ToLower());
+
+            var fullName = s3 + " " + s4;
 
             if (s1.Contains(sClassName)
-                && s2.Contains(sCourseCode)
-                && s3.Contains(sSroName)
+                && s2.Contains(sCourseFamilyCode)
+                && fullName.Contains(sSroName)
                 && (classDaysId == null || c.ClassDaysId == classDaysId)
                 && (classStatusId == null || c.ClassStatusId == classStatusId)
                 && (centerId == null || c.CenterId == centerId))
@@ -98,13 +102,12 @@ public class ClassController : ControllerBase
     private IQueryable<ClassResponse> GetAllClassesByContext()
     {
         return _context.Classes.Include(c => c.Center)
-            .Include(c => c.Course)
             .Include(c => c.ClassDays)
             .Include(c => c.ClassStatus)
             .Include(c => c.Center.Province)
             .Include(c => c.Center.District)
             .Include(c => c.Center.Ward)
-            .Include(c => c.Course.CourseFamily)
+            .Include(c => c.CourseFamily)
             .Include(c => c.Sro)
             .ThenInclude(s => s.User)
             .Select(c => new ClassResponse()
@@ -112,7 +115,7 @@ public class ClassController : ControllerBase
                 Id = c.Id,
                 Name = c.Name,
                 CenterId = c.CenterId,
-                CourseCode = c.CourseCode,
+                CourseFamilyCode = c.CourseFamilyCode,
                 ClassDaysId = c.ClassDaysId,
                 ClassStatusId = c.ClassStatusId,
                 StartDate = c.StartDate,
@@ -147,24 +150,14 @@ public class ClassController : ControllerBase
                         Prefix = c.Center.Ward.Prefix
                     }
                 },
-                Course = new CourseResponse()
+                CourseFamily = new CourseFamilyResponse()
                 {
-                    Code = c.Course.Code,
-                    Name = c.Course.Name,
-                    IsActive = c.Course.IsActive,
-                    SemesterCount = c.Course.SemesterCount,
-                    CourseFamilyCode = c.Course.CourseFamilyCode,
-                    CreatedAt = c.Course.CreatedAt,
-                    UpdatedAt = c.Course.UpdatedAt,
-                    CourseFamily = new CourseFamilyResponse()
-                    {
-                        Code = c.Course.CourseFamily.Code,
-                        Name = c.Course.CourseFamily.Name,
-                        IsActive = c.Course.CourseFamily.IsActive,
-                        PublishedYear = c.Course.CourseFamily.PublishedYear,
-                        CreatedAt = c.Course.CourseFamily.CreatedAt,
-                        UpdatedAt = c.Course.CourseFamily.UpdatedAt
-                    }
+                    Code = c.CourseFamily.Code,
+                    Name = c.CourseFamily.Name,
+                    IsActive = c.CourseFamily.IsActive,
+                    PublishedYear = c.CourseFamily.PublishedYear,
+                    CreatedAt = c.CourseFamily.CreatedAt,
+                    UpdatedAt = c.CourseFamily.UpdatedAt
                 },
                 ClassDays = new ClassDaysResponse()
                 {
