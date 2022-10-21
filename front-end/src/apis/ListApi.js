@@ -260,3 +260,11 @@ export const GradeModuleSemesterApis = {
     contextType: 'application/json',
   },
 };
+
+export const ManageClassApis = {
+  searchClass: {
+    url: 'api/classes/search',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+};
