@@ -4,6 +4,7 @@ using AcademicManagementSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    partial class AmsContextModelSnapshot : ModelSnapshot
+    [Migration("20221020142901_Add Relationship Between Sro And Class")]
+    partial class AddRelationshipBetweenSroAndClass
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -141,11 +143,11 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("completion_date");
 
-                    b.Property<string>("CourseFamilyCode")
+                    b.Property<string>("CourseCode")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)")
-                        .HasColumnName("course_family_code");
+                        .HasColumnName("course_code");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2")
@@ -181,7 +183,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasIndex("ClassStatusId");
 
-                    b.HasIndex("CourseFamilyCode");
+                    b.HasIndex("CourseCode");
 
                     b.HasIndex("SroId");
 
@@ -1134,9 +1136,9 @@ namespace AcademicManagementSystem.Migrations
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
-                    b.HasOne("AcademicManagementSystem.Context.AmsModels.CourseFamily", "CourseFamily")
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Course", "Course")
                         .WithMany("Classes")
-                        .HasForeignKey("CourseFamilyCode")
+                        .HasForeignKey("CourseCode")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
@@ -1152,7 +1154,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.Navigation("ClassStatus");
 
-                    b.Navigation("CourseFamily");
+                    b.Navigation("Course");
 
                     b.Navigation("Sro");
                 });
@@ -1439,6 +1441,8 @@ namespace AcademicManagementSystem.Migrations
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Course", b =>
                 {
+                    b.Navigation("Classes");
+
                     b.Navigation("CoursesModulesSemesters");
 
                     b.Navigation("Students");
@@ -1446,8 +1450,6 @@ namespace AcademicManagementSystem.Migrations
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.CourseFamily", b =>
                 {
-                    b.Navigation("Classes");
-
                     b.Navigation("Courses");
                 });
 
