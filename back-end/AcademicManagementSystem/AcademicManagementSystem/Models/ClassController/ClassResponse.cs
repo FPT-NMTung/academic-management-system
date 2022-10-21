@@ -3,6 +3,7 @@ using AcademicManagementSystem.Models.CenterController;
 using AcademicManagementSystem.Models.ClassDaysController;
 using AcademicManagementSystem.Models.ClassStatusController;
 using AcademicManagementSystem.Models.CourseController;
+using AcademicManagementSystem.Models.CourseFamilyController;
 using AcademicManagementSystem.Models.UserController.SroController;
 
 namespace AcademicManagementSystem.Models.ClassController;
@@ -15,8 +16,8 @@ public class ClassResponse
     [JsonPropertyName("center_id")]
     public int CenterId { get; set; }
     
-    [JsonPropertyName("course_code")]
-    public string? CourseCode{ get; set; }
+    [JsonPropertyName("course_family_code")]
+    public string? CourseFamilyCode{ get; set; }
     
     [JsonPropertyName("class_days_id")]
     public int ClassDaysId { get; set; }
@@ -42,6 +43,15 @@ public class ClassResponse
     [JsonPropertyName("class_hour_end")]
     public TimeSpan ClassHourEnd { get; set; }
     
+    [JsonPropertyName("sro_id")]
+    public int SroId{ get; set; }
+    
+    [JsonPropertyName("sro_first_name")]
+    public string? SroFirstName { get; set; }
+    
+    [JsonPropertyName("sro_last_name")]
+    public string? SroLastName { get; set; }
+    
     [JsonPropertyName("created_at")]
     public DateTime CreatedAt { get; set; }
     
@@ -51,21 +61,12 @@ public class ClassResponse
     [JsonPropertyName("center")]
     public CenterResponse? Center { get; set; }
     
-    [JsonPropertyName("course")]
-    public CourseResponse? Course { get; set; }
+    [JsonPropertyName("course_family")]
+    public CourseFamilyResponse? CourseFamily { get; set; }
     
     [JsonPropertyName("class_days")]
     public ClassDaysResponse? ClassDays { get; set; }
     
     [JsonPropertyName("class_status")]
     public ClassStatusResponse? ClassStatus { get; set; }
-    
-    [JsonPropertyName("sro_id")]
-    public int SroId{ get; set; }
-    
-    [JsonPropertyName("sro_first_name")]
-    public string? SroFirstName { get; set; }
-    
-    [JsonPropertyName("sro_last_name")]
-    public string? SroLastName { get; set; }
 }
