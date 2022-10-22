@@ -22,16 +22,13 @@ namespace AcademicManagementSystem.Controllers;
 public class ClassController : ControllerBase
 {
     private readonly AmsContext _context;
-    private readonly IUserService _userService;
-    private readonly int _userId;
     private readonly User _user;
 
     public ClassController(AmsContext context, IUserService userService)
     {
         _context = context;
-        _userService = userService;
-        _userId = Convert.ToInt32(_userService.GetUserId());
-        _user = _context.Users.FirstOrDefault(u => u.Id == _userId)!;
+        var userId = Convert.ToInt32(userService.GetUserId());
+        _user = _context.Users.FirstOrDefault(u => u.Id == userId)!;
     }
 
     // get all classes
@@ -236,7 +233,7 @@ public class ClassController : ControllerBase
         {
             return "E0069";
         }
-        
+
         if (request.ClassHourStart >= request.ClassHourEnd)
         {
             return "E0072";
@@ -257,7 +254,7 @@ public class ClassController : ControllerBase
         {
             return "E0069";
         }
-        
+
         if (request.ClassHourStart >= request.ClassHourEnd)
         {
             return "E0072";

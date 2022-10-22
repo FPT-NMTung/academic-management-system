@@ -4,9 +4,7 @@ using AcademicManagementSystem.Models.AddressController.ProvinceModel;
 using AcademicManagementSystem.Models.AddressController.WardModel;
 using AcademicManagementSystem.Models.GenderController;
 using AcademicManagementSystem.Models.RoleController;
-using AcademicManagementSystem.Models.TeacherTypeController;
 using AcademicManagementSystem.Models.UserController;
-using AcademicManagementSystem.Models.WorkingTime;
 using AcademicManagementSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,11 +29,15 @@ public class UserController : ControllerBase
     public IActionResult GetUsersInformation()
     {
         var id = _userService.GetUserId();
-        var user = getAllUsers().FirstOrDefault(u => u.UserId.ToString() == id);
+        var user = GetAllUsers().FirstOrDefault(u => u.UserId.ToString() == id);
+        if (user == null)
+        {
+            return NotFound(CustomResponse.NotFound("User not found"));
+        }
         return Ok(CustomResponse.Ok("Get user by id successfully", user));
     }
 
-    private IQueryable<UserResponse> getAllUsers()
+    private IQueryable<UserResponse> GetAllUsers()
     {
         return _context.Users.Select(u => new UserResponse()
         {
