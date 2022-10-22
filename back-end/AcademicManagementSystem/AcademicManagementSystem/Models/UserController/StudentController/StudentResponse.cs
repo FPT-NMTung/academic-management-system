@@ -77,7 +77,7 @@ public class StudentResponse
     public int CourseId { get; set; }
 
     [JsonPropertyName("status")]
-    public bool Status { get; set; }
+    public int Status { get; set; }
     
     [JsonPropertyName("status_date")]
     public DateTime StatusDate { get; set; }
