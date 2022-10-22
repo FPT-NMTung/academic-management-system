@@ -115,6 +115,9 @@ public static class ErrorDescription
         { "E1046", new ErrorModel() { Message = "Set null for max grade by exam type fail", Type = "module-error-00026" } },
         { "E1053", new ErrorModel() { Message = "Module name is existed", Type = "module-error-00027" } },
         { "E1054", new ErrorModel() { Message = "Different Module with this name already exists", Type = "module-error-0028" } },
+        { "E1059", new ErrorModel() { Message = "Max Theory Grade should not be empty due to ExamType", Type = "module-error-0029" } },
+        { "E1060", new ErrorModel() { Message = "Max Practical Grade should not be empty due to ExamType", Type = "module-error-0030" } },
+        { "E1061", new ErrorModel() { Message = "Max Theory Grade and Max Practical Grade should not be empty due to ExamType", Type = "module-error-0031" } },
 
         // teacher
         { "E0039", new ErrorModel() { Message = "Please enter at least one search criteria", Type = "teacher-error-0002" } },
