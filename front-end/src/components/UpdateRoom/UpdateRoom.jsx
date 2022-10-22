@@ -1,5 +1,5 @@
-import { Modal, Text } from '@nextui-org/react';
-import { Button, Form, Select, Spin, Table, Input, InputNumber } from 'antd';
+import { Modal, Text, Button, Loading } from '@nextui-org/react';
+import { Form, Select, Spin, Table, Input, InputNumber } from 'antd';
 import { CenterApis, RoomApis, RoomTypeApis } from '../../apis/ListApi';
 import FetchApi from '../../apis/FetchApi';
 import { useState, useEffect } from 'react';
@@ -187,20 +187,22 @@ const UpdateRoom = ({ data, onUpdateSuccess }) => {
           />
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 6, span: 99 }}>
-          <Button type="primary" htmlType="submit">
-            Cập nhật
-          </Button>
-          <Button
+          <div
             style={{
-              marginLeft: '10px',
+              display: 'flex',
+              gap: '10px',
             }}
-            disabled
-            danger
-            type="primary"
-            htmlType="submit"
           >
-            Xoá
-          </Button>
+            <Button css={{
+              width: '130px',
+            }} flat auto type="primary" htmlType="submit">
+              {isCreatingRoom && <Loading size="xs" />}
+              {!isCreatingRoom && 'Cập nhật'}
+            </Button>
+            <Button flat auto disabled danger type="primary" htmlType="submit">
+              Xoá
+            </Button>
+          </div>
         </Form.Item>
         {!isCreatingRoom && isFailedCreateRoom && (
           <Text

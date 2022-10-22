@@ -44,6 +44,14 @@ export const Validater = {
     const re = /[~`!#$%\^&*+=\-\[\]\\;,./{}|\\":<>\?]/;
     return re.test(String(str.trim()));
   },
+  isContaintSpecialCharacterForNameModule: (str) => {
+    console.log(str);
+    if (str == null) {
+      return false;
+    }
+    const re = /[~`!$%\^*+=\[\]\\;/{}|\\":<>\?]/;
+    return re.test(String(str.trim()));
+  },
   isContaintSpecialCharacter: (str) => {
     console.log(str);
     if (str == null) {

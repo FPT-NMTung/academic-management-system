@@ -114,7 +114,9 @@ const Login = () => {
               </Text>
               <Spacer y={1.5} />
               <GoogleLogin
+                fetchBasicProfile={false}
                 clientId="518989199582-9ul4cerv67mgmg777fpl0jl4lb4nsnji.apps.googleusercontent.com"
+                isSignedIn={false}
                 render={(propsButton) => {
                   return (
                     <Button
@@ -124,11 +126,13 @@ const Login = () => {
                       }}
                       icon={<FcGoogle />}
                       auto
+                      disabled={propsButton.disabled}
                       flat
                       color={isLoginFail ? 'error' : 'primary'}
                       onPress={() => {
                         setIsLogining(true);
                         setIsLoginFail(false);
+                        console.log(propsButton);
                         propsButton.onClick();
                       }}
                     >
