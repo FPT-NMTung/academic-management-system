@@ -115,6 +115,9 @@ public static class ErrorDescription
         { "E1046", new ErrorModel() { Message = "Set null for max grade by exam type fail", Type = "module-error-00026" } },
         { "E1053", new ErrorModel() { Message = "Module name is existed", Type = "module-error-00027" } },
         { "E1054", new ErrorModel() { Message = "Different Module with this name already exists", Type = "module-error-0028" } },
+        { "E1059", new ErrorModel() { Message = "Max Theory Grade should not be empty due to ExamType", Type = "module-error-0029" } },
+        { "E1060", new ErrorModel() { Message = "Max Practical Grade should not be empty due to ExamType", Type = "module-error-0030" } },
+        { "E1061", new ErrorModel() { Message = "Max Theory Grade and Max Practical Grade should not be empty due to ExamType", Type = "module-error-0031" } },
 
         // teacher
         { "E0039", new ErrorModel() { Message = "Please enter at least one search criteria", Type = "teacher-error-0002" } },
@@ -137,6 +140,18 @@ public static class ErrorDescription
         { "E0051_1", new ErrorModel() { Message = "Email Already Belong To Another EmailOrganization", Type = "teacher-error-0051-1" } },
         { "E0052_1", new ErrorModel() { Message = "EmailOrganization Already Belong To Another Email", Type = "teacher-error-0052-1" } },
         { "E0052_2", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "teacher-error-0052-2" } },
+        
+        // skill
+        { "E1062", new ErrorModel() { Message = "Skill Name is not match with format", Type = "skill-error-0001" } },
+        { "E1063", new ErrorModel() { Message = "Skill Name must less or equal than 255 character", Type = "skill-error-0002" } },
+        { "E1064", new ErrorModel() { Message = "Skill Name is existed", Type = "skill-error-0003" } },
+        { "E1065", new ErrorModel() { Message = "Skill is not exists", Type = "skill-error-0004" } },
+        { "E1066", new ErrorModel() { Message = "Skill Name with different id is existed", Type = "skill-error-0005" } },
+        { "E1066_1", new ErrorModel() { Message = "Save change failed", Type = "skill-error-0006" } },
+
+        // teacher_skill
+        { "E1067", new ErrorModel() { Message = "Not Found Teacher_Skill with TeacherID", Type = "teacher-skill-error-0001" } },
+        { "E1068", new ErrorModel() { Message = "Not Found Teacher_Skill with SkillID", Type = "teacher-skill-error-0002" } },
         
         //grade
         { "E0056", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0001" } },

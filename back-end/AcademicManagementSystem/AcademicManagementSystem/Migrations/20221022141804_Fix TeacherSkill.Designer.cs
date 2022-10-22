@@ -4,6 +4,7 @@ using AcademicManagementSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    partial class AmsContextModelSnapshot : ModelSnapshot
+    [Migration("20221022141804_Fix TeacherSkill")]
+    partial class FixTeacherSkill
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,7 +50,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("active_refresh_token", (string)null);
+                    b.ToTable("active_refresh_token");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Admin", b =>
@@ -59,7 +61,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("admin", (string)null);
+                    b.ToTable("admin");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Center", b =>
@@ -105,7 +107,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasIndex("WardId");
 
-                    b.ToTable("center", (string)null);
+                    b.ToTable("center");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Class", b =>
@@ -185,7 +187,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasIndex("SroId");
 
-                    b.ToTable("class", (string)null);
+                    b.ToTable("class");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.ClassDays", b =>
@@ -205,7 +207,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("class_days", (string)null);
+                    b.ToTable("class_days");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.ClassStatus", b =>
@@ -225,7 +227,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("class_status", (string)null);
+                    b.ToTable("class_status");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Course", b =>
@@ -267,7 +269,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasIndex("CourseFamilyCode");
 
-                    b.ToTable("course", (string)null);
+                    b.ToTable("course");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.CourseFamily", b =>
@@ -301,7 +303,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasKey("Code");
 
-                    b.ToTable("course_family", (string)null);
+                    b.ToTable("course_family");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.CourseModuleSemester", b =>
@@ -325,7 +327,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasIndex("SemesterId");
 
-                    b.ToTable("course_module_semester", (string)null);
+                    b.ToTable("course_module_semester");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.District", b =>
@@ -355,7 +357,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasIndex("ProvinceId");
 
-                    b.ToTable("district", (string)null);
+                    b.ToTable("district");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Gender", b =>
@@ -375,7 +377,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("gender", (string)null);
+                    b.ToTable("gender");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.GradeCategory", b =>
@@ -395,7 +397,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("grade_category", (string)null);
+                    b.ToTable("grade_category");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.GradeCategoryModule", b =>
@@ -429,7 +431,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasIndex("ModuleId");
 
-                    b.ToTable("grade_category_module", (string)null);
+                    b.ToTable("grade_category_module");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.GradeItem", b =>
@@ -455,7 +457,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasIndex("GradeCategoryModuleId");
 
-                    b.ToTable("grade_item", (string)null);
+                    b.ToTable("grade_item");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Module", b =>
@@ -525,7 +527,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasIndex("CenterId");
 
-                    b.ToTable("module", (string)null);
+                    b.ToTable("module");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Province", b =>
@@ -550,7 +552,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("province", (string)null);
+                    b.ToTable("province");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Role", b =>
@@ -570,7 +572,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("role", (string)null);
+                    b.ToTable("role");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Room", b =>
@@ -606,7 +608,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasIndex("RoomTypeId");
 
-                    b.ToTable("room", (string)null);
+                    b.ToTable("room");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.RoomType", b =>
@@ -626,7 +628,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("room_type", (string)null);
+                    b.ToTable("room_type");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Semester", b =>
@@ -646,7 +648,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("semester", (string)null);
+                    b.ToTable("semester");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Skill", b =>
@@ -666,7 +668,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("skill", (string)null);
+                    b.ToTable("skill");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Sro", b =>
@@ -677,7 +679,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("sro", (string)null);
+                    b.ToTable("sro");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Student", b =>
@@ -809,7 +811,7 @@ namespace AcademicManagementSystem.Migrations
                     b.HasIndex("EnrollNumber")
                         .IsUnique();
 
-                    b.ToTable("student", (string)null);
+                    b.ToTable("student");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.StudentClass", b =>
@@ -834,7 +836,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasIndex("ClassId");
 
-                    b.ToTable("student_class", (string)null);
+                    b.ToTable("student_class");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Teacher", b =>
@@ -884,7 +886,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasIndex("WorkingTimeId");
 
-                    b.ToTable("teacher", (string)null);
+                    b.ToTable("teacher");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.TeacherType", b =>
@@ -904,7 +906,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("teacher_type", (string)null);
+                    b.ToTable("teacher_type");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.User", b =>
@@ -1029,7 +1031,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasIndex("WardId");
 
-                    b.ToTable("user", (string)null);
+                    b.ToTable("user");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Ward", b =>
@@ -1065,7 +1067,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasIndex("ProvinceId");
 
-                    b.ToTable("ward", (string)null);
+                    b.ToTable("ward");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.WorkingTime", b =>
@@ -1085,7 +1087,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("working_time", (string)null);
+                    b.ToTable("working_time");
                 });
 
             modelBuilder.Entity("SkillTeacher", b =>
@@ -1100,7 +1102,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasIndex("TeachersUserId");
 
-                    b.ToTable("SkillTeacher", (string)null);
+                    b.ToTable("SkillTeacher");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.ActiveRefreshToken", b =>
