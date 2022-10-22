@@ -116,7 +116,7 @@ public class ModuleController : ControllerBase
         if (CheckIntegerNumberRequestCreate(request, out var badRequestObjectResult)) return badRequestObjectResult;
 
         // moduleName existed
-        if (_context.Modules.Any(m => string.Equals(m.ModuleName.ToLower(), request.ModuleName.ToLower())))
+        if (IsModuleNameExisted(request.ModuleName))
         {
             var error = ErrorDescription.Error["E1053"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -189,6 +189,11 @@ public class ModuleController : ControllerBase
         AddDataToGradeCategoryModule(module.Id, request.ExamType);
 
         return Ok(CustomResponse.Ok("Module created successfully", createdModule));
+    }
+
+    private bool IsModuleNameExisted(string moduleName)
+    {
+        return _context.Modules.Any(m => string.Equals(m.ModuleName.ToLower(), moduleName.ToLower()));
     }
 
     private bool IsCourseCenterSemesterExisted(CreateModuleRequest request, List<string> listCourseCodes,
@@ -414,6 +419,13 @@ public class ModuleController : ControllerBase
 
         if (CheckStringNameRequestUpdate(request, out var actionResult)) return actionResult;
 
+        // check string name
+        if (IsModuleNameWithDifferentIdExisted(request.ModuleName, id))
+        {
+            var error = ErrorDescription.Error["E1054"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         if (CheckIntegerNumberRequestUpdate(request, out var badRequest)) return badRequest;
 
         // update
@@ -450,6 +462,13 @@ public class ModuleController : ControllerBase
         AddDataToGradeCategoryModule(module.Id, request.ExamType);
 
         return Ok(CustomResponse.Ok("Module updated successfully", updatedModule));
+    }
+
+    // is module name with different id existed
+    private bool IsModuleNameWithDifferentIdExisted(string moduleName, int id)
+    {
+        return _context.Modules.Any(m => m.Id != id
+                                         && string.Equals(m.ModuleName.ToLower(), moduleName.ToLower()));
     }
 
     private bool CheckIntegerNumberRequestUpdate(UpdateModuleRequest request, out IActionResult badRequest)
@@ -538,7 +557,7 @@ public class ModuleController : ControllerBase
         //check module name
         request.ModuleName = Regex.Replace(request.ModuleName, StringConstant.RegexWhiteSpaces, " ");
         request.ModuleName = request.ModuleName.Replace(" ' ", "'").Trim();
-        if (Regex.IsMatch(request.ModuleName, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        if (Regex.IsMatch(request.ModuleName, StringConstant.RegexSpecialCharacterNotAllowForModuleName))
         {
             var error = ErrorDescription.Error["E1024"];
             actionResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -556,7 +575,7 @@ public class ModuleController : ControllerBase
         request.ModuleExamNamePortal =
             Regex.Replace(request.ModuleExamNamePortal, StringConstant.RegexWhiteSpaces, " ");
         request.ModuleExamNamePortal = request.ModuleExamNamePortal.Replace(" ' ", "'").Trim();
-        if (Regex.IsMatch(request.ModuleExamNamePortal, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        if (Regex.IsMatch(request.ModuleExamNamePortal, StringConstant.RegexSpecialCharacterNotAllowForModuleName))
         {
             var error = ErrorDescription.Error["E1028"];
             actionResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));

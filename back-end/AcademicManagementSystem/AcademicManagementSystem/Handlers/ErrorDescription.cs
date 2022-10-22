@@ -109,7 +109,8 @@ public static class ErrorDescription
         { "E1044", new ErrorModel() { Message = "Update module success but cannot get response", Type = "module-error-00024" } },
         { "E1045", new ErrorModel() { Message = "Create module success but cannot get response", Type = "module-error-00025" } },
         { "E1046", new ErrorModel() { Message = "Set null for max grade by exam type fail", Type = "module-error-00026" } },
-        { "E1053", new ErrorModel() { Message = "Module name existed", Type = "module-error-00027" } },
+        { "E1053", new ErrorModel() { Message = "Module name is existed", Type = "module-error-00027" } },
+        { "E1054", new ErrorModel() { Message = "Different Module with this name already exists", Type = "module-error-0028" } },
 
         // teacher
         { "E0039", new ErrorModel() { Message = "Please enter at least one search criteria", Type = "teacher-error-0002" } },
