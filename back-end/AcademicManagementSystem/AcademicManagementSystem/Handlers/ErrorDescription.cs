@@ -141,6 +141,13 @@ public static class ErrorDescription
         { "E0052_1", new ErrorModel() { Message = "EmailOrganization Already Belong To Another Email", Type = "teacher-error-0052-1" } },
         { "E0052_2", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "teacher-error-0052-2" } },
         
+        // skill
+        { "E1062", new ErrorModel() { Message = "Skill Name is not match with format", Type = "skill-error-0001" } },
+        { "E1063", new ErrorModel() { Message = "Skill Name must less or equal than 255 character", Type = "skill-error-0002" } },
+        { "E1064", new ErrorModel() { Message = "Skill Name is existed", Type = "skill-error-0003" } },
+        { "E1065", new ErrorModel() { Message = "Skill is not exists", Type = "skill-error-0004" } },
+        { "E1066", new ErrorModel() { Message = "Skill Name with different id is existed", Type = "skill-error-0005" } },
+        
         //grade
         { "E0056", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0001" } },
         { "E0057", new ErrorModel() { Message = "Total Weight must be 100 for all grade category", Type = "grade-error-0002" } },
