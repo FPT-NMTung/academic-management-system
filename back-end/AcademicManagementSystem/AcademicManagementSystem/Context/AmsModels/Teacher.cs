@@ -21,19 +21,20 @@ public class Teacher
     [StringLength(255)]
     public string? Nickname { get; set; }
     
-    [Column("company_address")]
+    [Column("company_address")]  
+    [StringLength(255)]
     public string? CompanyAddress { get; set; }
     
     [Column("start_working_date")]
     public DateTime StartWorkingDate { get; set; }
     
     [Column("salary")]
-    public decimal? Salary { get; set; }
+    public decimal Salary { get; set; }
     
     //Unique Key
     [Column("tax_code")]
     [StringLength(10)]
-    public string? TaxCode { get; set; }
+    public string TaxCode { get; set; }
 
     // relationships
     public virtual User User { get; set; }

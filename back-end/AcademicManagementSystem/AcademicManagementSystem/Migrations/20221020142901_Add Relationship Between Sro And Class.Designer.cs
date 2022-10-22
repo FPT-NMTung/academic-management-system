@@ -4,6 +4,7 @@ using AcademicManagementSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    partial class AmsContextModelSnapshot : ModelSnapshot
+    [Migration("20221020142901_Add Relationship Between Sro And Class")]
+    partial class AddRelationshipBetweenSroAndClass
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -141,11 +143,11 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("completion_date");
 
-                    b.Property<string>("CourseFamilyCode")
+                    b.Property<string>("CourseCode")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)")
-                        .HasColumnName("course_family_code");
+                        .HasColumnName("course_code");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2")
@@ -181,7 +183,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasIndex("ClassStatusId");
 
-                    b.HasIndex("CourseFamilyCode");
+                    b.HasIndex("CourseCode");
 
                     b.HasIndex("SroId");
 
@@ -496,7 +498,6 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("max_theory_grade");
 
                     b.Property<string>("ModuleExamNamePortal")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("module_exam_name_portal");
@@ -512,7 +513,6 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("module_type");
 
                     b.Property<string>("SemesterNamePortal")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("semester_name_portal");
@@ -824,8 +824,7 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("user_id");
 
                     b.Property<string>("CompanyAddress")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("company_address");
 
                     b.Property<string>("Nickname")
@@ -833,7 +832,7 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("nickname");
 
-                    b.Property<decimal>("Salary")
+                    b.Property<decimal?>("Salary")
                         .HasColumnType("decimal(18,2)")
                         .HasColumnName("salary");
 
@@ -842,7 +841,6 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("start_working_date");
 
                     b.Property<string>("TaxCode")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)")
                         .HasColumnName("tax_code");
@@ -858,7 +856,8 @@ namespace AcademicManagementSystem.Migrations
                     b.HasKey("UserId");
 
                     b.HasIndex("TaxCode")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[tax_code] IS NOT NULL");
 
                     b.HasIndex("TeacherTypeId");
 
@@ -1137,9 +1136,9 @@ namespace AcademicManagementSystem.Migrations
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
-                    b.HasOne("AcademicManagementSystem.Context.AmsModels.CourseFamily", "CourseFamily")
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Course", "Course")
                         .WithMany("Classes")
-                        .HasForeignKey("CourseFamilyCode")
+                        .HasForeignKey("CourseCode")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
@@ -1155,7 +1154,7 @@ namespace AcademicManagementSystem.Migrations
 
                     b.Navigation("ClassStatus");
 
-                    b.Navigation("CourseFamily");
+                    b.Navigation("Course");
 
                     b.Navigation("Sro");
                 });
@@ -1442,6 +1441,8 @@ namespace AcademicManagementSystem.Migrations
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Course", b =>
                 {
+                    b.Navigation("Classes");
+
                     b.Navigation("CoursesModulesSemesters");
 
                     b.Navigation("Students");
@@ -1449,8 +1450,6 @@ namespace AcademicManagementSystem.Migrations
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.CourseFamily", b =>
                 {
-                    b.Navigation("Classes");
-
                     b.Navigation("Courses");
                 });
 

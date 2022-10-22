@@ -103,12 +103,14 @@ public static class ErrorDescription
         { "E1038", new ErrorModel() { Message = "Course Code is not existed", Type = "module-error-00018" } },
         { "E1039", new ErrorModel() { Message = "Center Id is not existed", Type = "module-error-00019" } },
         { "E1040", new ErrorModel() { Message = "Semester Id is not existed", Type = "module-error-00020" } },
-        { "E1041", new ErrorModel() { Message = "Module with course code, semester id existed", Type = "module-error-00021" } },
+        { "E1041", new ErrorModel() { Message = "Module in Course and Semester existed", Type = "module-error-00021" } },
         { "E1042", new ErrorModel() { Message = "Fail to SaveChange when Update Module", Type = "module-error-00022" } },
         { "E1043", new ErrorModel() { Message = "Max Grade must be ignore or greater than 0", Type = "module-error-00023" } },
         { "E1044", new ErrorModel() { Message = "Update module success but cannot get response", Type = "module-error-00024" } },
         { "E1045", new ErrorModel() { Message = "Create module success but cannot get response", Type = "module-error-00025" } },
         { "E1046", new ErrorModel() { Message = "Set null for max grade by exam type fail", Type = "module-error-00026" } },
+        { "E1053", new ErrorModel() { Message = "Module name is existed", Type = "module-error-00027" } },
+        { "E1054", new ErrorModel() { Message = "Different Module with this name already exists", Type = "module-error-0028" } },
 
         // teacher
         { "E0039", new ErrorModel() { Message = "Please enter at least one search criteria", Type = "teacher-error-0002" } },
@@ -131,6 +133,7 @@ public static class ErrorDescription
         { "E0051_1", new ErrorModel() { Message = "Email Already Belong To Another EmailOrganization", Type = "teacher-error-0051-1" } },
         { "E0052_1", new ErrorModel() { Message = "EmailOrganization Already Belong To Another Email", Type = "teacher-error-0052-1" } },
         { "E0052_2", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "teacher-error-0052-2" } },
+        
         //grade
         { "E0056", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0001" } },
         { "E0057", new ErrorModel() { Message = "Total Weight must be 100 for all grade category", Type = "grade-error-0002" } },
@@ -139,11 +142,18 @@ public static class ErrorDescription
         { "E0060", new ErrorModel() { Message = "Exam must have only 1 item", Type = "grade-error-0005" } },
         { "E0061", new ErrorModel() { Message = "QuantityGradeItem out of range [1-10]", Type = "grade-error-0006" } },
         { "E0062", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0007" } },
-        { "E0063", new ErrorModel() { Message = "Can't add PE because Module Exam Type is TE/FE", Type = "grade-error-0008" } },
-        { "E0064", new ErrorModel() { Message = "Can't add FE because Module Exam Type is PE", Type = "grade-error-0009" } },
+        { "E0063", new ErrorModel() { Message = "Can't add PE because Module Exam Type is TE", Type = "grade-error-0008" } },
+        { "E0064", new ErrorModel() { Message = "Can't add TE because Module Exam Type is PE", Type = "grade-error-0009" } },
         { "E0065", new ErrorModel() { Message = "This module not take exam", Type = "grade-error-0010" } },
         { "E0066", new ErrorModel() { Message = "Can't add Resit Exam", Type = "grade-error-0011" } },
-        { "E0067", new ErrorModel() { Message = "This module must have both PE and FE", Type = "grade-error-0012" } },
+        { "E0067", new ErrorModel() { Message = "This module must have both PE and TE", Type = "grade-error-0012" } },
+        
+        //class
+        { "E0068", new ErrorModel() { Message = "Class name can't be empty", Type = "class-error-0068" } },
+        { "E0069", new ErrorModel() { Message = "Class name must match with format(allow characters: ( ) _ - ", Type = "class-error-0069" } },
+        { "E0070", new ErrorModel() { Message = "Class already exist", Type = "class-error-0070" } },
+        { "E0071", new ErrorModel() { Message = "Add class failed, data not valid", Type = "class-error-0071" } },
+        { "E0072", new ErrorModel() { Message = "Class hour start must less than hour end ", Type = "class-error-0072" } },
 
     };
 }

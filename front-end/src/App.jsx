@@ -23,6 +23,7 @@ import TeacherCreate from './screens/Admin/Teacher/TeacherCreate/TeacherCreate';
 import ManageClass from './screens/Sro/Manage Class/ManageClass';
 import DetailClass from './screens/Sro/Manage Class/DetailClass/DetailClass';
 import StudentScreen from './screens/Sro/Student/StudentScreen';
+import ClassCreate from './screens/Sro/Manage Class/ClassCreate/ClassCreate';
 
 const App = () => {
   return (
@@ -48,6 +49,8 @@ const App = () => {
         <Route index element={<Navigate to="/sro/manage-class"/>} />  
         <Route path="/sro/manage-class" element={<ManageClass/>} />
         <Route path="/sro/manage-class/:id" element={<DetailClass/>} />
+        <Route path="/sro/manage-class/create" element={<ClassCreate modeUpdate={false}/>} />  
+        <Route path='/sro/manage-class/:id/update' element={<ClassCreate modeUpdate={true}/>}/>  
         <Route path="/sro/manage/student" element={<StudentScreen/>} />
       </Route>
 

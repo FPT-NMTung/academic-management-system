@@ -4,6 +4,7 @@ using AcademicManagementSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    partial class AmsContextModelSnapshot : ModelSnapshot
+    [Migration("20221021113312_Set not nullable for TaxCode and Salary")]
+    partial class SetnotnullableforTaxCodeandSalary
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -496,7 +498,6 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("max_theory_grade");
 
                     b.Property<string>("ModuleExamNamePortal")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("module_exam_name_portal");
@@ -512,7 +513,6 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("module_type");
 
                     b.Property<string>("SemesterNamePortal")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("semester_name_portal");
