@@ -22,6 +22,12 @@ public class CenterResponse
     [JsonPropertyName("name")]
     public string? Name { get; set; }
     
+    [JsonPropertyName("can_delete")]
+    public bool? CanDelete { get; set; }
+    
+    [JsonPropertyName("is_active")]
+    public bool? IsActive { get; set; }
+    
     [JsonPropertyName("created_at")]
     public DateTime CreatedAt { get; set; }
     

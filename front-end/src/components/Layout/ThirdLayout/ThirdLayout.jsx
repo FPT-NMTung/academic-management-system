@@ -16,6 +16,7 @@ import {
   MdSupervisedUserCircle,
   MdMenuBook,
 } from 'react-icons/md';
+import { Toaster } from 'react-hot-toast';
 
 const ROLE = {
   1: 'Admin',
@@ -122,6 +123,9 @@ const ThirdLayout = ({ children }) => {
 
   return (
     <div className={classes.foundation}>
+      <Toaster containerStyle={{
+        zIndex: 99999999,
+      }}/>
       <div className={classes.main}>
         <div className={classes.leftSide}>
           <div className={classes.logo}>
