@@ -147,7 +147,8 @@ public static class ErrorDescription
         { "E1064", new ErrorModel() { Message = "Skill Name is existed", Type = "skill-error-0003" } },
         { "E1065", new ErrorModel() { Message = "Skill is not exists", Type = "skill-error-0004" } },
         { "E1066", new ErrorModel() { Message = "Skill Name with different id is existed", Type = "skill-error-0005" } },
-        
+        { "E1066_1", new ErrorModel() { Message = "Save change failed", Type = "skill-error-0006" } },
+
         // teacher_skill
         { "E1067", new ErrorModel() { Message = "Not Found Teacher_Skill with TeacherID", Type = "teacher-skill-error-0001" } },
         { "E1068", new ErrorModel() { Message = "Not Found Teacher_Skill with SkillID", Type = "teacher-skill-error-0002" } },

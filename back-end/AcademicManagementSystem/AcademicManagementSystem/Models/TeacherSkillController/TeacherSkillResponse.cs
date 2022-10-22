@@ -8,13 +8,11 @@ public class TeacherSkillResponse
 {
     [JsonPropertyName("teacher_id")]
     public int TeacherId { get; set; }
-    
-    [JsonPropertyName("skill_id")]
-    public int SkillId { get; set; }
-    
+
     [JsonPropertyName("teacher_name")]
     public string? TeacherName { get; set; }
     
-    [JsonPropertyName("skill_name")]
-    public string? SkillName { get; set; }
+    [JsonPropertyName("skills")]
+    public List<SkillResponse> Skills { get; set; }
+    
 }

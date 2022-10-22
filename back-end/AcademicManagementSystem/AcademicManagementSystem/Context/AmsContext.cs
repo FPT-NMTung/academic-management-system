@@ -40,8 +40,6 @@ public class AmsContext : DbContext
             .HasKey(cms => new { cms.CourseCode, cms.ModuleId, cms.SemesterId });
         modelBuilder.Entity<StudentClass>()
             .HasKey(sc => new { sc.StudentId, sc.ClassId });
-        modelBuilder.Entity<TeacherSkill>()
-            .HasKey(ts => new { ts.TeacherId, ts.SkillId });
     }
 
     public DbSet<Province> Provinces { get; set; }
@@ -74,5 +72,4 @@ public class AmsContext : DbContext
     public DbSet<Student> Students { get; set; }
     public DbSet<StudentClass> StudentsClasses { get; set; }
     public DbSet<Skill> Skills { get; set; }
-    public DbSet<TeacherSkill> TeachersSkills { get; set; }
 }
