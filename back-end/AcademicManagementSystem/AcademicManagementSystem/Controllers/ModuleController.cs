@@ -112,8 +112,10 @@ public class ModuleController : ControllerBase
         if (CheckCourseCenterSemesterExisted(request, listCourseCodes, out var notFound)) return notFound;
 
         if (CheckStringNameRequestCreate(request, out var badRequest)) return badRequest;
+        
+        if (CheckModuleTypeAndExamTypeRequestCreate(request, out var badRequest1)) return badRequest1;
 
-        if (CheckIntegerNumberRequestCreate(request, out var badRequestObjectResult)) return badRequestObjectResult;
+        if (CheckDayAndHourRequest(request.Days, request.Hours, out var badRequest2)) return badRequest2;
 
         // moduleName existed
         if (IsModuleNameExisted(request.ModuleName))
@@ -230,33 +232,76 @@ public class ModuleController : ControllerBase
         return false;
     }
 
-    private bool CheckIntegerNumberRequestCreate(CreateModuleRequest request, out IActionResult badRequestObjectResult)
+    private bool CheckDayAndHourRequest(int days, int hours, out IActionResult badRequestObjectResult)
+    {
+        // check days
+        if (days < 1)
+        {
+            var error = ErrorDescription.Error["E1036"];
+            badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
+
+        // check hours
+        if (hours < 1)
+        {
+            var error = ErrorDescription.Error["E1037"];
+            badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
+        
+        badRequestObjectResult = null!;
+        return false;
+    }
+    
+    private bool CheckModuleTypeAndExamTypeRequestCreate(CreateModuleRequest request, out IActionResult badRequest)
     {
         // module type and exam type
         if (request.ModuleType is < 1 or > 3)
         {
             var error = ErrorDescription.Error["E1031"];
-            badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            badRequest = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
             return true;
         }
 
         if (request.ExamType is < 1 or > 4)
         {
             var error = ErrorDescription.Error["E1033"];
-            badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            badRequest = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
             return true;
         }
 
-        // set null for max grade
+        // set null for max grade with exam type
         switch (request.ExamType)
         {
             case 1:
                 request.MaxPracticalGrade = null;
+                if (request.MaxTheoryGrade == null)
+                {
+                    var error1 = ErrorDescription.Error["E1059"];
+                    badRequest = BadRequest(CustomResponse.BadRequest(error1.Message, error1.Type));
+                    return true;
+                }
+
                 break;
             case 2:
                 request.MaxTheoryGrade = null;
+                if (request.MaxPracticalGrade == null)
+                {
+                    var error2 = ErrorDescription.Error["E1060"];
+                    badRequest = BadRequest(CustomResponse.BadRequest(error2.Message, error2.Type));
+                    return true;
+                }
+
                 break;
             case 3:
+                if (request.MaxTheoryGrade == null || request.MaxPracticalGrade == null)
+                {
+                    var error3 = ErrorDescription.Error["E1061"];
+                    badRequest = BadRequest(CustomResponse.BadRequest(error3.Message, error3.Type));
+                    return true;
+                }
+
                 break;
             case 4:
                 request.MaxPracticalGrade = null;
@@ -265,36 +310,20 @@ public class ModuleController : ControllerBase
             default:
                 var error = ErrorDescription.Error["E1045"];
             {
-                badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+                badRequest = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
                 return true;
             }
-        }
-
-        // check days
-        if (request.Days < 1)
-        {
-            var error = ErrorDescription.Error["E1036"];
-            badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-            return true;
-        }
-
-        // check hours
-        if (request.Hours < 1)
-        {
-            var error = ErrorDescription.Error["E1037"];
-            badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-            return true;
         }
 
         // check max grade
         if (request.MaxTheoryGrade is < 1 || request.MaxPracticalGrade is < 1)
         {
             var error = ErrorDescription.Error["E1043"];
-            badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            badRequest = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
             return true;
         }
 
-        badRequestObjectResult = null!;
+        badRequest = null!;
         return false;
     }
 
@@ -426,7 +455,9 @@ public class ModuleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (CheckIntegerNumberRequestUpdate(request, out var badRequest)) return badRequest;
+        if (CheckModuleTypeAndExamTypeRequestUpdate(request, out var badRequest)) return badRequest;
+        
+        if (CheckDayAndHourRequest(request.Days, request.Hours, out var badRequest1)) return badRequest1;
 
         // update
         try
@@ -471,7 +502,7 @@ public class ModuleController : ControllerBase
                                          && string.Equals(m.ModuleName.ToLower(), moduleName.ToLower()));
     }
 
-    private bool CheckIntegerNumberRequestUpdate(UpdateModuleRequest request, out IActionResult badRequest)
+    private bool CheckModuleTypeAndExamTypeRequestUpdate(UpdateModuleRequest request, out IActionResult badRequest)
     {
         // module type and exam type
         if (request.ModuleType is < 1 or > 3)
@@ -488,16 +519,37 @@ public class ModuleController : ControllerBase
             return true;
         }
 
-        // set null for max grade
+        // set null for max grade with exam type
         switch (request.ExamType)
         {
             case 1:
                 request.MaxPracticalGrade = null;
+                if (request.MaxTheoryGrade == null)
+                {
+                    var error1 = ErrorDescription.Error["E1059"];
+                    badRequest = BadRequest(CustomResponse.BadRequest(error1.Message, error1.Type));
+                    return true;
+                }
+
                 break;
             case 2:
                 request.MaxTheoryGrade = null;
+                if (request.MaxPracticalGrade == null)
+                {
+                    var error2 = ErrorDescription.Error["E1060"];
+                    badRequest = BadRequest(CustomResponse.BadRequest(error2.Message, error2.Type));
+                    return true;
+                }
+
                 break;
             case 3:
+                if (request.MaxTheoryGrade == null || request.MaxPracticalGrade == null)
+                {
+                    var error3 = ErrorDescription.Error["E1061"];
+                    badRequest = BadRequest(CustomResponse.BadRequest(error3.Message, error3.Type));
+                    return true;
+                }
+
                 break;
             case 4:
                 request.MaxPracticalGrade = null;
@@ -509,22 +561,6 @@ public class ModuleController : ControllerBase
                 badRequest = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
                 return true;
             }
-        }
-
-        // check days
-        if (request.Days < 1)
-        {
-            var error = ErrorDescription.Error["E1036"];
-            badRequest = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-            return true;
-        }
-
-        // check hours
-        if (request.Hours < 1)
-        {
-            var error = ErrorDescription.Error["E1037"];
-            badRequest = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-            return true;
         }
 
         // check max grade
