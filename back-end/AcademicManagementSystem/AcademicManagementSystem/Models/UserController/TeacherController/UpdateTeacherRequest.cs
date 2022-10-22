@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Text.Json.Serialization;
+using AcademicManagementSystem.Models.TeacherSkillController.Skill;
 
 namespace AcademicManagementSystem.Models.UserController.TeacherController;
 
@@ -50,8 +51,8 @@ public class UpdateTeacherRequest
     [JsonPropertyName("working_time_id")]
     public int WorkingTimeId { get; set; }
     
-    [JsonPropertyName("skills_id")]
-    public List<int>? SkillsId { get; set; }
+    [JsonPropertyName("skills")]
+    public List<UpdateSkillRequest>? Skills { get; set; }
     
     [JsonPropertyName("nickname")]
     [DefaultValue(null)]

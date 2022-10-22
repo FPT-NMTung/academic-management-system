@@ -193,7 +193,7 @@ public class SkillController : ControllerBase
     // is skill name exists
     private bool IsSkillNameExists(string name)
     {
-        return _context.Skills.Any(s => s.Name == name);
+        return _context.Skills.Any(s => s.Name.ToLower().Equals(name.ToLower()));
     }
 
     // is skill name with different id exists

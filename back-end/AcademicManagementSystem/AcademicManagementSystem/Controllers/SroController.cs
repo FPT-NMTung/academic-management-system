@@ -121,79 +121,11 @@ public class SroController : ControllerBase
     [Authorize(Roles = "admin")]
     public IActionResult CreateSro([FromBody] CreateSroRequest request)
     {
-        request.FirstName = Regex.Replace(request.FirstName!, StringConstant.RegexWhiteSpaces, " ");
-        // function replace string ex: H ' Hen Nie => H'Hen Nie
-        request.FirstName = request.FirstName.Replace(" ' ", "'").Trim();
-        if (Regex.IsMatch(request.FirstName, RegexSpecialCharacters))
-        {
-            var error = ErrorDescription.Error["E0034"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
+        if (CheckSroNameForCreate(request, out var badRequest)) return badRequest;
 
-        request.LastName = Regex.Replace(request.LastName!, StringConstant.RegexWhiteSpaces, " ");
-        request.LastName = request.LastName.Replace(" ' ", "'").Trim();
+        if (CheckMobilePhoneForCreate(request, out var badRequestObjectResult)) return badRequestObjectResult;
 
-        if (Regex.IsMatch(request.LastName, RegexSpecialCharacters))
-        {
-            var error = ErrorDescription.Error["E0035"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (IsMobilePhoneExists(request.MobilePhone, false, 0))
-        {
-            var error = ErrorDescription.Error["E0020"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (!Regex.IsMatch(request.MobilePhone!, StringConstant.RegexMobilePhone))
-        {
-            var error = ErrorDescription.Error["E0030"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (IsEmailExists(request.Email, false, 0))
-        {
-            var error = ErrorDescription.Error["E0021"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        // email organization cannot be the same as email
-        if (IsEmailExists(request.EmailOrganization, false, 0))
-        {
-            var error = ErrorDescription.Error["E0022_1"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        // if (!Regex.IsMatch(request.Email!, StringConstant.RegexEmail))
-        // {
-        //     var error = ErrorDescription.Error["E0031"];
-        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        // }
-
-        if (IsEmailOrganizationExists(request.EmailOrganization, false, 0))
-        {
-            var error = ErrorDescription.Error["E0022"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        // email cannot be the same as emailOrganization
-        if (IsEmailOrganizationExists(request.Email, false, 0))
-        {
-            var error = ErrorDescription.Error["E0021_1"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (request.Email == request.EmailOrganization)
-        {
-            var error = ErrorDescription.Error["E0022_2"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        // if (!Regex.IsMatch(request.EmailOrganization!, StringConstant.RegexEmail))
-        // {
-        //     var error = ErrorDescription.Error["E0032"];
-        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        // }
+        if (CheckEmailAndEmailOrganizationForCreate(request, out var actionResult1)) return actionResult1;
 
         if (IsCitizenIdentityCardNoExists(request.CitizenIdentityCardNo, false, 0))
         {
@@ -201,7 +133,7 @@ public class SroController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (!Regex.IsMatch(request.CitizenIdentityCardNo!, StringConstant.RegexCitizenIdCardNo))
+        if (!Regex.IsMatch(request.CitizenIdentityCardNo, StringConstant.RegexCitizenIdCardNo))
         {
             var error = ErrorDescription.Error["E0033"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -215,16 +147,16 @@ public class SroController : ControllerBase
             CenterId = request.CenterId,
             GenderId = request.GenderId,
             RoleId = SroRoleId,
-            FirstName = request.FirstName!,
-            LastName = request.LastName!,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
             Avatar = request.Avatar,
-            MobilePhone = request.MobilePhone!,
-            Email = request.Email!,
-            EmailOrganization = request.EmailOrganization!,
+            MobilePhone = request.MobilePhone,
+            Email = request.Email,
+            EmailOrganization = request.EmailOrganization,
             Birthday = request.Birthday,
-            CitizenIdentityCardNo = request.CitizenIdentityCardNo!,
+            CitizenIdentityCardNo = request.CitizenIdentityCardNo,
             CitizenIdentityCardPublishedDate = request.CitizenIdentityCardPublishedDate,
-            CitizenIdentityCardPublishedPlace = request.CitizenIdentityCardPublishedPlace!,
+            CitizenIdentityCardPublishedPlace = request.CitizenIdentityCardPublishedPlace,
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now
         };
@@ -284,79 +216,12 @@ public class SroController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        request.FirstName = Regex.Replace(request.FirstName!, StringConstant.RegexWhiteSpaces, " ");
-        // function replace string ex: H ' Hen Nie => H'Hen Nie
-        request.FirstName = request.FirstName.Replace(" ' ", "'").Trim();
-        if (Regex.IsMatch(request.FirstName, RegexSpecialCharacters))
-        {
-            var error = ErrorDescription.Error["E0034"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
+        if (CheckSroNameForUpdate(request, out var badRequest)) return badRequest;
 
-        request.LastName = Regex.Replace(request.LastName!, StringConstant.RegexWhiteSpaces, " ");
-        request.LastName = request.LastName.Replace(" ' ", "'").Trim();
+        if (CheckMobilePhoneForUpdate(id, request, out var updateSro)) return updateSro;
 
-        if (Regex.IsMatch(request.LastName, RegexSpecialCharacters))
-        {
-            var error = ErrorDescription.Error["E0035"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (IsMobilePhoneExists(request.MobilePhone, true, id))
-        {
-            var error = ErrorDescription.Error["E0020"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (!Regex.IsMatch(request.MobilePhone!, StringConstant.RegexMobilePhone))
-        {
-            var error = ErrorDescription.Error["E0030"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (IsEmailExists(request.Email, true, id))
-        {
-            var error = ErrorDescription.Error["E0021"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        // email organization cannot be the same as email
-        if (IsEmailExists(request.EmailOrganization, true, id))
-        {
-            var error = ErrorDescription.Error["E0022_1"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        // if (!Regex.IsMatch(request.Email!, StringConstant.RegexEmail))
-        // {
-        //     var error = ErrorDescription.Error["E0031"];
-        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        // }
-
-        if (IsEmailOrganizationExists(request.EmailOrganization, true, id))
-        {
-            var error = ErrorDescription.Error["E0022"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        // email cannot be the same as email organization
-        if (IsEmailOrganizationExists(request.Email, true, id))
-        {
-            var error = ErrorDescription.Error["E0021_1"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (request.Email == request.EmailOrganization)
-        {
-            var error = ErrorDescription.Error["E0022_2"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        // if (!Regex.IsMatch(request.EmailOrganization!, StringConstant.RegexEmail))
-        // {
-        //     var error = ErrorDescription.Error["E0032"];
-        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        // }
+        if (CheckEmailAndEmailOrganizationForUpdate(id, request, out var badRequestObjectResult))
+            return badRequestObjectResult;
 
         if (IsCitizenIdentityCardNoExists(request.CitizenIdentityCardNo, true, id))
         {
@@ -364,7 +229,7 @@ public class SroController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (!Regex.IsMatch(request.CitizenIdentityCardNo!, StringConstant.RegexCitizenIdCardNo))
+        if (!Regex.IsMatch(request.CitizenIdentityCardNo, StringConstant.RegexCitizenIdCardNo))
         {
             var error = ErrorDescription.Error["E0033"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -375,15 +240,15 @@ public class SroController : ControllerBase
         user.WardId = request.WardId;
         user.GenderId = request.GenderId;
         user.RoleId = SroRoleId;
-        user.FirstName = request.FirstName!;
-        user.LastName = request.LastName!;
-        user.MobilePhone = request.MobilePhone!;
-        user.Email = request.Email!;
-        user.EmailOrganization = request.EmailOrganization!;
+        user.FirstName = request.FirstName;
+        user.LastName = request.LastName;
+        user.MobilePhone = request.MobilePhone;
+        user.Email = request.Email;
+        user.EmailOrganization = request.EmailOrganization;
         user.Birthday = request.Birthday;
-        user.CitizenIdentityCardNo = request.CitizenIdentityCardNo!;
+        user.CitizenIdentityCardNo = request.CitizenIdentityCardNo;
         user.CitizenIdentityCardPublishedDate = request.CitizenIdentityCardPublishedDate;
-        user.CitizenIdentityCardPublishedPlace = request.CitizenIdentityCardPublishedPlace!;
+        user.CitizenIdentityCardPublishedPlace = request.CitizenIdentityCardPublishedPlace;
         user.UpdatedAt = DateTime.Now;
 
         try
@@ -503,5 +368,223 @@ public class SroController : ControllerBase
                 UpdatedAt = s.UpdatedAt
             });
         return allSro;
+    }
+
+
+    private bool CheckEmailAndEmailOrganizationForCreate(CreateSroRequest request, out IActionResult actionResult1)
+    {
+        if (IsEmailExists(request.Email, false, 0))
+        {
+            var error = ErrorDescription.Error["E0021"];
+            actionResult1 = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
+
+        // email organization cannot be the same as email
+        if (IsEmailExists(request.EmailOrganization, false, 0))
+        {
+            var error = ErrorDescription.Error["E0022_1"];
+            actionResult1 = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
+
+        // if (!Regex.IsMatch(request.Email!, StringConstant.RegexEmail))
+        // {
+        //     var error = ErrorDescription.Error["E0031"];
+        //     actionResult1 = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        //     return true;
+        // }
+
+        if (IsEmailOrganizationExists(request.EmailOrganization, false, 0))
+        {
+            var error = ErrorDescription.Error["E0022"];
+            actionResult1 = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
+
+        // email cannot be the same as emailOrganization
+        if (IsEmailOrganizationExists(request.Email, false, 0))
+        {
+            var error = ErrorDescription.Error["E0021_1"];
+            actionResult1 = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
+
+        if (request.Email == request.EmailOrganization)
+        {
+            var error = ErrorDescription.Error["E0022_2"];
+            actionResult1 = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
+
+        // if (!Regex.IsMatch(request.EmailOrganization!, StringConstant.RegexEmail))
+        // {
+        //     actionResult1 = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        //     return true;
+        // }
+        actionResult1 = null!;
+        return false;
+    }
+
+    private bool CheckMobilePhoneForCreate(CreateSroRequest request, out IActionResult badRequestObjectResult)
+    {
+        if (IsMobilePhoneExists(request.MobilePhone, false, 0))
+        {
+            var error = ErrorDescription.Error["E0020"];
+            badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
+
+        if (!Regex.IsMatch(request.MobilePhone, StringConstant.RegexMobilePhone))
+        {
+            var error = ErrorDescription.Error["E0030"];
+            badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
+
+        badRequestObjectResult = null!;
+        return false;
+    }
+
+    private bool CheckSroNameForCreate(CreateSroRequest request, out IActionResult badRequest)
+    {
+        if (request.FirstName.Trim().Equals(string.Empty) || request.LastName.Trim().Equals(string.Empty))
+        {
+            badRequest =
+                BadRequest(CustomResponse.BadRequest("firstName, lastName cannot be empty", "error-sro-01"));
+            return true;
+        }
+
+        request.FirstName = Regex.Replace(request.FirstName, StringConstant.RegexWhiteSpaces, " ");
+        // function replace string ex: H ' Hen Nie => H'Hen Nie
+        request.FirstName = request.FirstName.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.FirstName, RegexSpecialCharacters))
+        {
+            var error = ErrorDescription.Error["E0034"];
+            badRequest = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
+
+        request.LastName = Regex.Replace(request.LastName, StringConstant.RegexWhiteSpaces, " ");
+        request.LastName = request.LastName.Replace(" ' ", "'").Trim();
+
+        if (Regex.IsMatch(request.LastName, RegexSpecialCharacters))
+        {
+            var error = ErrorDescription.Error["E0035"];
+            badRequest = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
+
+        badRequest = null!;
+        return false;
+    }
+    
+    private bool CheckEmailAndEmailOrganizationForUpdate(int id, UpdateSroRequest request,
+        out IActionResult badRequestObjectResult)
+    {
+        if (IsEmailExists(request.Email, true, id))
+        {
+            var error = ErrorDescription.Error["E0021"];
+            badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
+
+        // email organization cannot be the same as email
+        if (IsEmailExists(request.EmailOrganization, true, id))
+        {
+            var error = ErrorDescription.Error["E0022_1"];
+            badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
+
+        // if (!Regex.IsMatch(request.Email!, StringConstant.RegexEmail))
+        // {
+        //     var error = ErrorDescription.Error["E0031"];
+        //     badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        //     return true;        
+        // }
+
+        if (IsEmailOrganizationExists(request.EmailOrganization, true, id))
+        {
+            var error = ErrorDescription.Error["E0022"];
+            badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
+
+        // email cannot be the same as email organization
+        if (IsEmailOrganizationExists(request.Email, true, id))
+        {
+            var error = ErrorDescription.Error["E0021_1"];
+            badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
+
+        if (request.Email == request.EmailOrganization)
+        {
+            var error = ErrorDescription.Error["E0022_2"];
+            badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
+
+        // if (!Regex.IsMatch(request.EmailOrganization!, StringConstant.RegexEmail))
+        // {
+        //     var error = ErrorDescription.Error["E0032"];
+        //     badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        //     return true;   
+        // }
+        badRequestObjectResult = null!;
+        return false;
+    }
+
+    private bool CheckMobilePhoneForUpdate(int id, UpdateSroRequest request, out IActionResult updateSro)
+    {
+        if (IsMobilePhoneExists(request.MobilePhone, true, id))
+        {
+            var error = ErrorDescription.Error["E0020"];
+            updateSro = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
+
+        if (!Regex.IsMatch(request.MobilePhone, StringConstant.RegexMobilePhone))
+        {
+            var error = ErrorDescription.Error["E0030"];
+            updateSro = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
+
+        updateSro = null!;
+        return false;
+    }
+
+    private bool CheckSroNameForUpdate(UpdateSroRequest request, out IActionResult badRequest)
+    {
+        if (request.FirstName.Trim().Equals(string.Empty) || request.LastName.Trim().Equals(string.Empty))
+        {
+            badRequest = BadRequest(CustomResponse.BadRequest("firstName, lastName cannot be empty", "error-sro-01"));
+            return true;
+        }
+
+        request.FirstName = Regex.Replace(request.FirstName, StringConstant.RegexWhiteSpaces, " ");
+        // function replace string ex: H ' Hen Nie => H'Hen Nie
+        request.FirstName = request.FirstName.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.FirstName, RegexSpecialCharacters))
+        {
+            var error = ErrorDescription.Error["E0034"];
+            badRequest = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
+
+        request.LastName = Regex.Replace(request.LastName, StringConstant.RegexWhiteSpaces, " ");
+        request.LastName = request.LastName.Replace(" ' ", "'").Trim();
+
+        if (Regex.IsMatch(request.LastName, RegexSpecialCharacters))
+        {
+            var error = ErrorDescription.Error["E0035"];
+            badRequest = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
+
+        badRequest = null!;
+        return false;
     }
 }
