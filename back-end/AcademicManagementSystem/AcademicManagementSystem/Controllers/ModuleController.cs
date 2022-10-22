@@ -174,7 +174,7 @@ public class ModuleController : ControllerBase
             {
                 _context.SaveChanges();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 var error = ErrorDescription.Error["E1022"];
                 return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -477,7 +477,7 @@ public class ModuleController : ControllerBase
 
             _context.SaveChanges();
         }
-        catch (Exception e)
+        catch (Exception)
         {
             var error = ErrorDescription.Error["E1042"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));

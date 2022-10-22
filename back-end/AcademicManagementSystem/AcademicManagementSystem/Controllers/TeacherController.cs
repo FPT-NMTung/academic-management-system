@@ -109,7 +109,7 @@ public class TeacherController : ControllerBase
         {
             return Ok(CustomResponse.Ok("Search teachers successfully", teachers));
         }
-        
+
         var teacherResponses = new List<TeacherResponse>();
         foreach (var t in teachers)
         {
@@ -175,9 +175,9 @@ public class TeacherController : ControllerBase
         {
             var error = ErrorDescription.Error["E0051"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }        
-        
-        if(IsEmailExists(request.EmailOrganization, false, 0))
+        }
+
+        if (IsEmailExists(request.EmailOrganization, false, 0))
         {
             var error = ErrorDescription.Error["E0052_1"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -194,13 +194,13 @@ public class TeacherController : ControllerBase
             var error = ErrorDescription.Error["E0052"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
-        if(IsEmailOrganizationExists(request.Email, false, 0))
+
+        if (IsEmailOrganizationExists(request.Email, false, 0))
         {
             var error = ErrorDescription.Error["E0051_1"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         if (request.Email == request.EmailOrganization)
         {
             var error = ErrorDescription.Error["E0052_2"];
@@ -225,19 +225,16 @@ public class TeacherController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (request.TaxCode != null)
+        if (IsTaxCodeExists(request.TaxCode, false, 0))
         {
-            if (IsTaxCodeExists(request.TaxCode, false, 0))
-            {
-                var error = ErrorDescription.Error["E0041"];
-                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-            }
+            var error = ErrorDescription.Error["E0041"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
-            if (!Regex.IsMatch(request.TaxCode!, StringConstant.RegexTenDigits))
-            {
-                var error = ErrorDescription.Error["E0054"];
-                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-            }
+        if (!Regex.IsMatch(request.TaxCode, StringConstant.RegexTenDigits))
+        {
+            var error = ErrorDescription.Error["E0054"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         var user = new User()
@@ -307,7 +304,7 @@ public class TeacherController : ControllerBase
             var error = ErrorDescription.Error["E0055"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         request.FirstName = Regex.Replace(request.FirstName!, StringConstant.RegexWhiteSpaces, " ");
         // function replace string ex: H ' Hen Nie => H'Hen Nie
         request.FirstName = request.FirstName.Replace(" ' ", "'").Trim();
@@ -343,8 +340,8 @@ public class TeacherController : ControllerBase
             var error = ErrorDescription.Error["E0051"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
-        if(IsEmailExists(request.EmailOrganization, true, id))
+
+        if (IsEmailExists(request.EmailOrganization, true, id))
         {
             var error = ErrorDescription.Error["E0052_1"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -361,13 +358,13 @@ public class TeacherController : ControllerBase
             var error = ErrorDescription.Error["E0052"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
-        if(IsEmailOrganizationExists(request.Email, true, id))
+
+        if (IsEmailOrganizationExists(request.Email, true, id))
         {
             var error = ErrorDescription.Error["E0051_1"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         if (request.Email == request.EmailOrganization)
         {
             var error = ErrorDescription.Error["E0052_2"];
@@ -392,30 +389,25 @@ public class TeacherController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (request.TaxCode != null)
+        if (IsTaxCodeExists(request.TaxCode, true, id))
         {
-            if (IsTaxCodeExists(request.TaxCode, true, id))
-            {
-                var error = ErrorDescription.Error["E0041"];
-                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-            }
+            var error = ErrorDescription.Error["E0041"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
-            if (!Regex.IsMatch(request.TaxCode!, StringConstant.RegexTenDigits))
-            {
-                var error = ErrorDescription.Error["E0054"];
-                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-            }
+        if (!Regex.IsMatch(request.TaxCode, StringConstant.RegexTenDigits))
+        {
+            var error = ErrorDescription.Error["E0054"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         user.ProvinceId = request.ProvinceId;
         user.DistrictId = request.DistrictId;
         user.WardId = request.WardId;
-        // user.CenterId = request.CenterId;
         user.GenderId = request.GenderId;
         user.RoleId = RoleIdTeacher;
         user.FirstName = request.FirstName!;
         user.LastName = request.LastName!;
-        // user.Avatar = request.Avatar;
         user.MobilePhone = request.MobilePhone!;
         user.Email = request.Email!;
         user.EmailOrganization = request.EmailOrganization!;
@@ -429,7 +421,7 @@ public class TeacherController : ControllerBase
         user.Teacher.CompanyAddress = request.CompanyAddress;
         user.Teacher.StartWorkingDate = request.StartWorkingDate;
         user.Teacher.Salary = request.Salary;
-        user.Teacher.TaxCode = request.TaxCode!;
+        user.Teacher.TaxCode = request.TaxCode;
         user.UpdatedAt = DateTime.Now;
 
         try
