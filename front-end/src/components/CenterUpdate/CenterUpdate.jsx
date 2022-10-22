@@ -1,11 +1,12 @@
-import { Card, Grid, Text } from '@nextui-org/react';
-import { Form, Select, Input, Button, Spin } from 'antd';
+import { Card, Grid, Text, Button, Loading } from '@nextui-org/react';
+import { Form, Select, Input, Spin } from 'antd';
 import { Fragment } from 'react';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
 import { AddressApis, CenterApis } from '../../apis/ListApi';
 import classes from './CenterUpdate.module.css';
 import { Validater } from '../../validater/Validater';
+import toast from 'react-hot-toast';
 
 const CenterUpdate = ({ data, onUpdateSuccess }) => {
   const [listProvince, setListProvince] = useState([]);
@@ -13,7 +14,7 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
   const [listWard, setListWard] = useState([]);
 
   const [isUpdating, setIsUpdating] = useState(false);
-  const [isFailed, setIsFailed] = useState(false);
+  const [canDelete, setCanDelete] = useState(false);
 
   const [isLoadingProvince, setIsLoadingProvince] = useState(true);
   const [isLoadingDistrict, setIsLoadingDistrict] = useState(true);
@@ -71,6 +72,15 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
       setListWard(res.data);
       setIsLoadingWard(false);
     });
+    FetchApi(CenterApis.checkCanDeleteCenter, null, null, [String(data.id)])
+      .then((res) => {
+        setCanDelete(res.data.can_delete);
+      })
+      .catch((err) => {
+        toast.error(
+          'Không thể kiểm tra xem có thể xóa trung tâm này hay không'
+        );
+      });
   }, []);
 
   const handleSubmitForm = (e) => {
@@ -83,14 +93,35 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
       ward_id: e.ward,
     };
 
-    FetchApi(CenterApis.updateCenter, body, null, [`${data.id}`])
-      .then((res) => {
-        onUpdateSuccess();
-      })
-      .catch((err) => {
-        setIsUpdating(false);
-        setIsFailed(true);
-      });
+    toast.promise(
+      FetchApi(CenterApis.updateCenter, body, null, [`${data.id}`]),
+      {
+        loading: 'Đang cập nhật...',
+        success: (res) => {
+          onUpdateSuccess();
+          return 'Cập nhật thành công';
+        }, 
+        error: (err) => {
+          return 'Cập nhật thất bại';
+        },
+      }
+    );
+  };
+
+  const handleDeleteCenter = () => {
+    toast.promise(
+      FetchApi(CenterApis.deleteCenter, null, null, [`${data.id}`]),
+      {
+        loading: 'Đang xóa...',
+        success: (res) => {
+          onUpdateSuccess();
+          return 'Xóa thành công';
+        },
+        error: (err) => {
+          return 'Xóa thất bại';
+        },
+      }
+    )
   };
 
   return (
@@ -221,33 +252,43 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
               </Select>
             </Form.Item>
           </Fragment>
-
           <Form.Item wrapperCol={{ offset: 7, span: 99 }}>
-            <Button type="primary" htmlType="submit" loading={isUpdating}>
-              Cập nhật
-            </Button>
-            <Button
-              style={{ marginLeft: 10 }}
-              type="primary"
-              htmlType="button"
-              danger
-              disabled
+            <div
+              style={{
+                display: 'flex',
+                gap: '10px',
+              }}
             >
-              Xoá
-            </Button>
+              <Button
+                flat
+                auto
+                css={{
+                  width: '120px',
+                }}
+                type="primary"
+                htmlType="submit"
+                disabled={isUpdating}
+              >
+                Cập nhật
+              </Button>
+              <Button
+                flat
+                auto
+                css={{
+                  width: '80px',
+                }}
+                color={'error'}
+                disabled={
+                  canDelete === false || canDelete === undefined || isUpdating
+                }
+                onPress={handleDeleteCenter}
+              >
+                {canDelete === undefined && <Loading size="xs" />}
+                {canDelete !== undefined && 'Xoá'}
+              </Button>
+            </div>
           </Form.Item>
         </Form>
-      )}
-      {!isUpdating && isFailed && (
-        <Text
-          size={14}
-          css={{
-            color: 'red',
-            textAlign: 'center',
-          }}
-        >
-          Cập nhật thất bại, vui lòng thử lại
-        </Text>
       )}
     </Fragment>
   );

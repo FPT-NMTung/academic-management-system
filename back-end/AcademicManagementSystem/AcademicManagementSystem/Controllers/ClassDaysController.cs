@@ -1,6 +1,5 @@
 ﻿using AcademicManagementSystem.Context;
 using AcademicManagementSystem.Models.ClassDaysController;
-using AcademicManagementSystem.Models.ClassStatusController;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +18,6 @@ public class ClassDaysController : ControllerBase
     [HttpGet]
     [Route("api/class-days")]
     [Authorize(Roles = "admin, sro")]
-
     public IActionResult GetClassStatuses()
     {
         var classDays =

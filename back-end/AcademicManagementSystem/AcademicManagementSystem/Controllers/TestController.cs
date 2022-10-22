@@ -36,18 +36,30 @@ public class TestController : ControllerBase
         return Ok("Hello World");
     }
     
-    [HttpGet]
+    [HttpPost]
     [Route("api/test/read-file-excel")]
     public IActionResult Test2()
-    {
-        // get location of file Template1.xlsx
-        var path = Path.Combine(Directory.GetCurrentDirectory(), "GeneratedExcel/HelloWorld.xlsx");
-        using (var workbook = new XLWorkbook(path))
+    {   
+        // get file from request 
+        var file = Request.Form.Files[0];
+        using (var stream = new MemoryStream())
         {
-            var worksheet = workbook.Worksheets.Worksheet(1);
-            var value = worksheet.Cell("B2").Value;
-            return Ok(value);
+            file.CopyTo(stream);
+            using (var workbook = new XLWorkbook(stream))
+            {
+                var worksheet = workbook.Worksheets.Worksheet(1);
+                var cell = worksheet.Cell("B1").Value;
+                return Ok(cell);
+            }
         }
+        // get location of file Template1.xlsx
+        // var path = Path.Combine(Directory.GetCurrentDirectory(), "GeneratedExcel/HelloWorld.xlsx");
+        // using (var workbook = new XLWorkbook(path))
+        // {
+        //     var worksheet = workbook.Worksheets.Worksheet(1);
+        //     var value = worksheet.Cell("B2").Value;
+        //     return Ok(value);
+        // }
     }
     
     [HttpGet]

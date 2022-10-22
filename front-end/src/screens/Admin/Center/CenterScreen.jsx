@@ -1,12 +1,23 @@
-import { Card, Grid, Text, Modal } from '@nextui-org/react';
-import { Form, Select, Input, Divider, Button, Table } from 'antd';
+import {
+  Card,
+  Grid,
+  Text,
+  Modal,
+  Button,
+  Table,
+  Loading,
+  Badge,
+  Switch,
+} from '@nextui-org/react';
+import { Form, Select, Input, Divider } from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../../apis/FetchApi';
 import { AddressApis, CenterApis } from '../../../apis/ListApi';
 import classes from './CenterScreen.module.css';
-import { MdEdit } from 'react-icons/md';
+import { FaPen } from 'react-icons/fa';
 import CenterCreate from '../../../components/CenterCreate/CenterCreate';
 import CenterUpdate from '../../../components/CenterUpdate/CenterUpdate';
+import { toast } from 'react-hot-toast';
 
 const CenterScreen = () => {
   const [listCenter, setListCenter] = useState([]);
@@ -28,7 +39,7 @@ const CenterScreen = () => {
           address: `${e.ward.prefix} ${e.ward.name}, ${e.district.prefix} ${e.district.name}, ${e.province.name}`,
         };
       });
-     
+
       setListCenter(mergeAddressRes);
       setIsLoading(false);
     });
@@ -44,6 +55,16 @@ const CenterScreen = () => {
     getData();
   };
 
+  const handleChangeStatus = (status, id) => {
+    FetchApi(CenterApis.changeStatusCenter, null, null, [String(id)])
+      .then((res) => {
+        toast.success('Thay đổi trạng thái thành công');
+      })
+      .catch((err) => {
+        toast.error('Có lỗi xảy ra khi thay đổi trạng thái');
+      });
+  }
+
   useEffect(() => {
     getData();
   }, []);
@@ -51,50 +72,89 @@ const CenterScreen = () => {
   return (
     <div>
       <Grid.Container gap={2} justify="center">
-        <Grid xs={5}>
+        <Grid xs={6.5}>
           <Card
+            variant="bordered"
             css={{
               width: '100%',
               height: 'fit-content',
+              minHeight: '200px',
             }}
           >
             <Card.Header>
               <div className={classes.headerTable}>
-                <Text size={14}>Danh sách các cơ sở</Text>
-                <Button
-                  type="primary"
-                  onClick={() => {
-                    setIsCreate(!isCreate);
-                  }}
-                >
-                  Thêm cơ sở
-                </Button>
+                <Grid.Container justify="space-between">
+                  <Grid xs={4}></Grid>
+                  <Grid xs={4}>
+                    <Text
+                      b
+                      size={14}
+                      p
+                      css={{
+                        width: '100%',
+                        textAlign: 'center',
+                      }}
+                    >
+                      Danh sách các cơ sở
+                    </Text>
+                  </Grid>
+                  <Grid xs={4} justify="flex-end">
+                    <Button
+                      type="primary"
+                      onPress={() => {
+                        setIsCreate(!isCreate);
+                      }}
+                      auto
+                      flat
+                    >
+                      + Thêm cơ sở
+                    </Button>
+                  </Grid>
+                </Grid.Container>
               </div>
             </Card.Header>
-            <Card.Divider />
-            <Table
-              pagination={{ position: ['bottomCenter'] }}
-              dataSource={listCenter}
-              loading={isLoading}
-            >
-              <Table.Column title="Tên" dataIndex="name" key="name" />
-              <Table.Column title="Địa chỉ" dataIndex="address" key="address" />
-              <Table.Column
-                title=""
-                dataIndex="action"
-                key="action"
-                render={(_, data) => {
-                  return (
-                    <MdEdit
-                      className={classes.editIcon}
-                      onClick={() => {
-                        setSelectedCenterId(data.key);
-                      }}
-                    />
-                  );
-                }}
-              />
-            </Table>
+            {isLoading && <Loading />}
+            {!isLoading && (
+              <Table>
+                <Table.Header>
+                  <Table.Column>STT</Table.Column>
+                  <Table.Column>Tên</Table.Column>
+                  <Table.Column>Địa chỉ</Table.Column>
+                  <Table.Column>Trạng thái</Table.Column>
+                  <Table.Column width={30}></Table.Column>
+                </Table.Header>
+                <Table.Body>
+                  {listCenter.map((data, index) => (
+                    <Table.Row key={data.id}>
+                      <Table.Cell>{index + 1}</Table.Cell>
+                      <Table.Cell>{data.name}</Table.Cell>
+                      <Table.Cell>{data.address}</Table.Cell>
+                      <Table.Cell>
+                        <Switch onChange={(e) => {
+                          handleChangeStatus(e.target.checked, data.id)
+                        }} size={'xs'} color="success" checked={data.is_active} />
+                      </Table.Cell>
+                      <Table.Cell>
+                        <FaPen
+                          size={14}
+                          color="5EA2EF"
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => {
+                            setSelectedCenterId(data.id);
+                          }}
+                        />
+                      </Table.Cell>
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+                <Table.Pagination
+                  shadow
+                  noMargin
+                  align="center"
+                  rowsPerPage={5}
+                />
+              </Table>
+            )}
           </Card>
         </Grid>
         {isCreate && <CenterCreate onCreateSuccess={handleAddSuccess} />}
@@ -115,12 +175,14 @@ const CenterScreen = () => {
           </Text>
         </Modal.Header>
         <Modal.Body>
-          <CenterUpdate data={listCenter.find((e) => e.id === selectedCenterId)} onUpdateSuccess={handleUpdateSuccess}/>    
+          <CenterUpdate
+            data={listCenter.find((e) => e.id === selectedCenterId)}
+            onUpdateSuccess={handleUpdateSuccess}
+          />
         </Modal.Body>
       </Modal>
     </div>
   );
- 
 };
 
 export default CenterScreen;
