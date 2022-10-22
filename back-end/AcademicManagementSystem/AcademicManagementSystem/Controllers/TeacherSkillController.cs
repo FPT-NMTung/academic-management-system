@@ -37,13 +37,13 @@ public class TeacherSkillController : ControllerBase
 
     // get skill of teacher id
     [HttpGet]
-    [Route("api/teachers/{id:int}/skills")]
-    public IActionResult GetSkillsByTeacherId(int id)
+    [Route("api/teachers/{teacherId:int}/skills")]
+    public IActionResult GetSkillsByTeacherId(int teacherId)
     {
         var teacherSkills = _context.TeachersSkills.Include(ts => ts.Teacher)
             .Include(ts => ts.Skill)
             .Include(ts => ts.Teacher.User)
-            .Where(ts => ts.TeacherId == id)
+            .Where(ts => ts.TeacherId == teacherId)
             .Select(ts => new TeacherSkillResponse()
             {
                 TeacherId = ts.TeacherId, SkillId = ts.SkillId,
