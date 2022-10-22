@@ -251,7 +251,7 @@ const ModuleUpdate = () => {
                             );
                           }
                           if (
-                            Validater.isContaintSpecialCharacterForName(
+                            Validater.isContaintSpecialCharacterForNameModule(
                               value.trim()
                             )
                           ) {
@@ -498,7 +498,7 @@ const ModuleUpdate = () => {
                             );
                           }
                           if (
-                            Validater.isContaintSpecialCharacterForName(
+                            Validater.isContaintSpecialCharacterForNameModule(
                               value.trim()
                             )
                           ) {

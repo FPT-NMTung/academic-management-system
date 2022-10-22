@@ -12,6 +12,21 @@ export const CenterApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  getCenterById: {
+    url: 'api/centers/{0}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  checkCanDeleteCenter: {
+    url: 'api/centers/{0}/can-delete',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  changeStatusCenter: {
+    url: 'api/centers/{0}/change-activate',
+    method: 'PATCH',
+    contextType: 'application/json',
+  },
   createCenter: {
     url: 'api/centers',
     method: 'POST',
@@ -22,6 +37,11 @@ export const CenterApis = {
     method: 'PUT',
     contextType: 'application/json',
   },
+  deleteCenter: {
+    url: 'api/centers/{0}',
+    method: 'DELETE',
+    contextType: 'application/json',
+  }
 };
 
 export const AddressApis = {
@@ -257,6 +277,29 @@ export const GradeModuleSemesterApis = {
   updateGradeModule: {
     url: 'api/modules/{0}/grades',
     method: 'POST',
+    contextType: 'application/json',
+  },
+};
+
+export const ManageClassApis = {
+  searchClass: {
+    url: 'api/classes/search',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  createClass: {
+    url: 'api/classes',
+    method: 'POST',
+    contextType: 'application/json',
+  },
+  getInformationClass: {
+    url: 'api/classes/{0}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  updateClass: {
+    url: 'api/classes/{0}',
+    method: 'PUT',
     contextType: 'application/json',
   },
 };

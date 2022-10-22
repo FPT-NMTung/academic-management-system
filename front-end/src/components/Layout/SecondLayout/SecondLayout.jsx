@@ -98,6 +98,7 @@ const SecondLayout = ({ children }) => {
           left: 0,
           top: 0,
           bottom: 0,
+          backgroundColor: '#fff',
         }}
       >
         <div className={classes.containterLogo}>
@@ -122,7 +123,11 @@ const SecondLayout = ({ children }) => {
             arrow
             trigger={['click']}
           >
-            <Avatar src={dataUser.avatar} size={40} icon={<BsPersonFill size={20} />} />
+            <Avatar
+              src={dataUser.avatar}
+              size={40}
+              icon={<BsPersonFill size={20} />}
+            />
           </Dropdown>
         </div>
         <div className={classes.content}>{children}</div>

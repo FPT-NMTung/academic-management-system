@@ -1,24 +1,25 @@
 ﻿using System.ComponentModel;
 using System.Text.Json.Serialization;
+using AcademicManagementSystem.Models.TeacherSkillController.Skill;
 
 namespace AcademicManagementSystem.Models.UserController.TeacherController;
 
 public class CreateTeacherRequest
 {
     [JsonPropertyName("first_name")]
-    public string? FirstName { get; set; }
+    public string FirstName { get; set; }
     
     [JsonPropertyName("last_name")]
-    public string? LastName { get; set; }
+    public string LastName { get; set; }
     
     [JsonPropertyName("mobile_phone")]
-    public string? MobilePhone { get; set; }
+    public string MobilePhone { get; set; }
     
     [JsonPropertyName("email")]
-    public string? Email { get; set; }
+    public string Email { get; set; }
     
     [JsonPropertyName("email_organization")]
-    public string? EmailOrganization { get; set; }
+    public string EmailOrganization { get; set; }
     
     [JsonPropertyName("avatar")]
     [DefaultValue(null)]
@@ -43,13 +44,13 @@ public class CreateTeacherRequest
     public int CenterId { get; set; }
 
     [JsonPropertyName("citizen_identity_card_no")]
-    public string? CitizenIdentityCardNo { get; set; }
+    public string CitizenIdentityCardNo { get; set; }
     
     [JsonPropertyName("citizen_identity_card_published_date")]
     public DateTime CitizenIdentityCardPublishedDate { get; set; }
     
     [JsonPropertyName("citizen_identity_card_published_place")]
-    public string? CitizenIdentityCardPublishedPlace { get; set; }
+    public string CitizenIdentityCardPublishedPlace { get; set; }
     
     [JsonPropertyName("teacher_type_id")]
     public int TeacherTypeId { get; set; }
@@ -57,6 +58,9 @@ public class CreateTeacherRequest
     [JsonPropertyName("working_time_id")]
     public int WorkingTimeId { get; set; }
     
+    [JsonPropertyName("skills")]
+    public List<CreateSkillRequest>? Skills { get; set; }
+
     [JsonPropertyName("nickname")]
     [DefaultValue(null)]
     public string? Nickname { get; set; }
@@ -69,10 +73,8 @@ public class CreateTeacherRequest
     public DateTime StartWorkingDate { get; set; }
     
     [JsonPropertyName("salary")]
-    [DefaultValue(null)]
-    public decimal? Salary { get; set; }
+    public decimal Salary { get; set; }
     
     [JsonPropertyName("tax_code")]
-    [DefaultValue(null)]
-    public string? TaxCode { get; set; }
+    public string TaxCode { get; set; }
 }

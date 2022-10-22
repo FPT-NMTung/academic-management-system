@@ -8,13 +8,13 @@ public class CreateModuleRequest
     public int CenterId { get; set; }
     
     [JsonPropertyName("semester_name_portal")]
-    public string? SemesterNamePortal { get; set; }
+    public string SemesterNamePortal { get; set; }
     
     [JsonPropertyName("module_name")]
     public string ModuleName { get; set; }
     
     [JsonPropertyName("module_exam_name_portal")]
-    public string? ModuleExamNamePortal { get; set; }
+    public string ModuleExamNamePortal { get; set; }
     
     [JsonPropertyName("module_type")]
     public int ModuleType { get; set; }
@@ -35,7 +35,7 @@ public class CreateModuleRequest
     public int ExamType { get; set; }
     
     [JsonPropertyName("course_code")]
-    public string CourseCode { get; set; }
+    public List<string> CourseCode { get; set; }
     
     [JsonPropertyName("semester_id")]
     public int SemesterId { get; set; }

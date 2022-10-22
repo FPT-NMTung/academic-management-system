@@ -1,6 +1,4 @@
 ﻿using AcademicManagementSystem.Context;
-using AcademicManagementSystem.Context.AmsModels;
-using AcademicManagementSystem.Models.RoomController.RoomModel;
 using AcademicManagementSystem.Models.RoomController.RoomTypeModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

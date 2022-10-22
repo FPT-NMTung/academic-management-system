@@ -26,8 +26,14 @@ public static class ErrorDescription
         { "E1002", new ErrorModel() { Message = "Input cannot be null or white space", Type = "center-error-0002" } },
         { "E1003", new ErrorModel() { Message = "Center name not match with name format", Type = "center-error-0003" } },
         { "E1004", new ErrorModel() { Message = "Center name must be less or equal than 100 characters", Type = "center-error-0004" } },
-        { "E1005", new ErrorModel() { Message = "This center already exists", Type = "center-error-0005" } },
-        
+        { "E1005", new ErrorModel() { Message = "Center with this address already exists", Type = "center-error-0005" } },
+        { "E1047", new ErrorModel() { Message = "Center with this name already exists", Type = "center-error-0006" } },
+        { "E1048", new ErrorModel() { Message = "Different Center with this name already exists", Type = "center-error-0007" } },
+        { "E1049", new ErrorModel() { Message = "Different Center with this address already exists", Type = "center-error-0008" } },
+        { "E1050", new ErrorModel() { Message = "Fail to SaveChange when Create Center", Type = "center-error-0009" } },
+        { "E1051", new ErrorModel() { Message = "Fail to SaveChange when Update Center", Type = "center-error-0010" } },
+        { "E1052", new ErrorModel() { Message = "Fail to SaveChange when Delete Center", Type = "center-error-0011" } },
+
         // sro
         { "E0016", new ErrorModel() { Message = "centerId for GET SROs not found", Type = "sro-error-0001" } },
         { "E0017", new ErrorModel() { Message = "SRO not found", Type = "sro-error-0002" } },
@@ -53,27 +59,34 @@ public static class ErrorDescription
         { "E0036", new ErrorModel() { Message = "User role SRO Not found", Type = "sro-error-0021" } },
         { "E0037", new ErrorModel() { Message = "Invalid Data for create/update user", Type = "sro-error-0022" } },
         { "E0038", new ErrorModel() { Message = "Invalid Data for create/update sro", Type = "sro-error-0023" } },
+        { "E0021_1", new ErrorModel() { Message = "Email Already Belong To Another EmailOrganization", Type = "sro-error-0021-1" } },
+        { "E0022_1", new ErrorModel() { Message = "EmailOrganization Already Belong To Another Email", Type = "sro-error-0022-1" } },
+        { "E0022_2", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "sro-error-0022-2" } },
 
         // address
         { "E1006", new ErrorModel() { Message = "Do not exist provinceId, DistrictId or WardId", Type = "address-error-0001" } },
         
         // course family
-        { "E1007", new ErrorModel() { Message = "Input cannot be null or white space", Type = "course-error-0001" } },
-        { "E1008", new ErrorModel() { Message = "Course family name not match with name format", Type = "course-error-0002" } },
-        { "E1009", new ErrorModel() { Message = "Course family name must be less or equal than 255 characters", Type = "course-error-0003" } },
-        { "E1010", new ErrorModel() { Message = "Course family code not match with format", Type = "course-error-0005" } },
-        { "E1011", new ErrorModel() { Message = "Course family code must be less or equal than 100 characters", Type = "course-error-0006" } },
-        { "E1012", new ErrorModel() { Message = "Course family published year must be larger than 0", Type = "course-error-0007" } },
-        { "E1013", new ErrorModel() { Message = "Course family code existed", Type = "course-error-0008" } },
+        { "E1007", new ErrorModel() { Message = "Input cannot be null or white space", Type = "course-family-error-0001" } },
+        { "E1008", new ErrorModel() { Message = "Course family name not match with name format", Type = "course-family-error-0002" } },
+        { "E1009", new ErrorModel() { Message = "Course family name must be less or equal than 255 characters", Type = "course-family-error-0003" } },
+        { "E1010", new ErrorModel() { Message = "Course family code not match with format", Type = "course-family-error-0005" } },
+        { "E1011", new ErrorModel() { Message = "Course family code must be less or equal than 100 characters", Type = "course-family-error-0006" } },
+        { "E1012", new ErrorModel() { Message = "Course family published year must be larger than 0", Type = "course-family-error-0007" } },
+        { "E1013", new ErrorModel() { Message = "Course family code is existed", Type = "course-family-error-0008" } },
+        { "E1055", new ErrorModel() { Message = "Course family name is existed", Type = "course-family-error-0009" } },
+        { "E1056", new ErrorModel() { Message = "Course family name with different code is existed", Type = "course-family-error-0010" } },
         
         // course
-        { "E1014", new ErrorModel() { Message = "Course code existed", Type = "course-error-0009" } },
-        { "E1015", new ErrorModel() { Message = "Course family not found", Type = "course-error-0010" } },
-        { "E1016", new ErrorModel() { Message = "Course name not match with format", Type = "course-error-0011" } },
-        { "E1017", new ErrorModel() { Message = "Course name must be less or equal than 255 characters", Type = "course-error-0012" } },
-        { "E1018", new ErrorModel() { Message = "Course code not match with format", Type = "course-error-0013" } },
-        { "E1019", new ErrorModel() { Message = "Course code must be less or equal than 100 characters", Type = "course-error-0014" } },
-        { "E1020", new ErrorModel() { Message = "Semester count mus be between 1-10", Type = "course-error-0015" } },
+        { "E1014", new ErrorModel() { Message = "Course code existed", Type = "course-error-0001" } },
+        { "E1015", new ErrorModel() { Message = "Course family not found", Type = "course-error-0002" } },
+        { "E1016", new ErrorModel() { Message = "Course name not match with format", Type = "course-error-0003" } },
+        { "E1017", new ErrorModel() { Message = "Course name must be less or equal than 255 characters", Type = "course-error-0004" } },
+        { "E1018", new ErrorModel() { Message = "Course code not match with format", Type = "course-error-0005" } },
+        { "E1019", new ErrorModel() { Message = "Course code must be less or equal than 100 characters", Type = "course-error-0006" } },
+        { "E1020", new ErrorModel() { Message = "Semester count mus be between 1-10", Type = "course-error-0007" } },
+        { "E1057", new ErrorModel() { Message = "Course name is existed", Type = "course-error-0008" } },
+        { "E1058", new ErrorModel() { Message = "Course name with different code is existed", Type = "course-error-0009" } },
         
         // module
         { "E1021", new ErrorModel() { Message = "Fail to SaveChange when Add Module", Type = "module-error-0001" } },
@@ -94,12 +107,17 @@ public static class ErrorDescription
         { "E1038", new ErrorModel() { Message = "Course Code is not existed", Type = "module-error-00018" } },
         { "E1039", new ErrorModel() { Message = "Center Id is not existed", Type = "module-error-00019" } },
         { "E1040", new ErrorModel() { Message = "Semester Id is not existed", Type = "module-error-00020" } },
-        { "E1041", new ErrorModel() { Message = "Module with course code, semester id existed", Type = "module-error-00021" } },
+        { "E1041", new ErrorModel() { Message = "Module in Course and Semester existed", Type = "module-error-00021" } },
         { "E1042", new ErrorModel() { Message = "Fail to SaveChange when Update Module", Type = "module-error-00022" } },
         { "E1043", new ErrorModel() { Message = "Max Grade must be ignore or greater than 0", Type = "module-error-00023" } },
         { "E1044", new ErrorModel() { Message = "Update module success but cannot get response", Type = "module-error-00024" } },
         { "E1045", new ErrorModel() { Message = "Create module success but cannot get response", Type = "module-error-00025" } },
         { "E1046", new ErrorModel() { Message = "Set null for max grade by exam type fail", Type = "module-error-00026" } },
+        { "E1053", new ErrorModel() { Message = "Module name is existed", Type = "module-error-00027" } },
+        { "E1054", new ErrorModel() { Message = "Different Module with this name already exists", Type = "module-error-0028" } },
+        { "E1059", new ErrorModel() { Message = "Max Theory Grade should not be empty due to ExamType", Type = "module-error-0029" } },
+        { "E1060", new ErrorModel() { Message = "Max Practical Grade should not be empty due to ExamType", Type = "module-error-0030" } },
+        { "E1061", new ErrorModel() { Message = "Max Theory Grade and Max Practical Grade should not be empty due to ExamType", Type = "module-error-0031" } },
 
         // teacher
         { "E0039", new ErrorModel() { Message = "Please enter at least one search criteria", Type = "teacher-error-0002" } },
@@ -119,7 +137,22 @@ public static class ErrorDescription
         { "E0053", new ErrorModel() { Message = "Duplicated citizenIdentityCardNo for CREATE/UPDATE Teacher", Type = "teacher-error-0016" } },
         { "E0054", new ErrorModel() { Message = "Tax Code must be 10 digits", Type = "teacher-error-0017" } },
         { "E0055", new ErrorModel() { Message = "Teacher Not Found", Type = "teacher-error-0018" } },
+        { "E0051_1", new ErrorModel() { Message = "Email Already Belong To Another EmailOrganization", Type = "teacher-error-0051-1" } },
+        { "E0052_1", new ErrorModel() { Message = "EmailOrganization Already Belong To Another Email", Type = "teacher-error-0052-1" } },
+        { "E0052_2", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "teacher-error-0052-2" } },
+        
+        // skill
+        { "E1062", new ErrorModel() { Message = "Skill Name is not match with format", Type = "skill-error-0001" } },
+        { "E1063", new ErrorModel() { Message = "Skill Name must less or equal than 255 character", Type = "skill-error-0002" } },
+        { "E1064", new ErrorModel() { Message = "Skill Name is existed", Type = "skill-error-0003" } },
+        { "E1065", new ErrorModel() { Message = "Skill is not exists", Type = "skill-error-0004" } },
+        { "E1066", new ErrorModel() { Message = "Skill Name with different id is existed", Type = "skill-error-0005" } },
+        { "E1066_1", new ErrorModel() { Message = "Save change failed", Type = "skill-error-0006" } },
 
+        // teacher_skill
+        { "E1067", new ErrorModel() { Message = "Not Found Teacher_Skill with TeacherID", Type = "teacher-skill-error-0001" } },
+        { "E1068", new ErrorModel() { Message = "Not Found Teacher_Skill with SkillID", Type = "teacher-skill-error-0002" } },
+        
         //grade
         { "E0056", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0001" } },
         { "E0057", new ErrorModel() { Message = "Total Weight must be 100 for all grade category", Type = "grade-error-0002" } },
@@ -128,11 +161,18 @@ public static class ErrorDescription
         { "E0060", new ErrorModel() { Message = "Exam must have only 1 item", Type = "grade-error-0005" } },
         { "E0061", new ErrorModel() { Message = "QuantityGradeItem out of range [1-10]", Type = "grade-error-0006" } },
         { "E0062", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0007" } },
-        { "E0063", new ErrorModel() { Message = "Can't add PE because Module Exam Type is TE/FE", Type = "grade-error-0008" } },
-        { "E0064", new ErrorModel() { Message = "Can't add FE because Module Exam Type is PE", Type = "grade-error-0009" } },
+        { "E0063", new ErrorModel() { Message = "Can't add PE because Module Exam Type is TE", Type = "grade-error-0008" } },
+        { "E0064", new ErrorModel() { Message = "Can't add TE because Module Exam Type is PE", Type = "grade-error-0009" } },
         { "E0065", new ErrorModel() { Message = "This module not take exam", Type = "grade-error-0010" } },
         { "E0066", new ErrorModel() { Message = "Can't add Resit Exam", Type = "grade-error-0011" } },
-        { "E0067", new ErrorModel() { Message = "This module must have both PE and FE", Type = "grade-error-0012" } },
+        { "E0067", new ErrorModel() { Message = "This module must have both PE and TE", Type = "grade-error-0012" } },
+        
+        //class
+        { "E0068", new ErrorModel() { Message = "Class name can't be empty", Type = "class-error-0068" } },
+        { "E0069", new ErrorModel() { Message = "Class name must match with format(allow characters: ( ) _ - ", Type = "class-error-0069" } },
+        { "E0070", new ErrorModel() { Message = "Class already exist", Type = "class-error-0070" } },
+        { "E0071", new ErrorModel() { Message = "Add class failed, data not valid", Type = "class-error-0071" } },
+        { "E0072", new ErrorModel() { Message = "Class hour start must less than hour end ", Type = "class-error-0072" } },
 
     };
 }

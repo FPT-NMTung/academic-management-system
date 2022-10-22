@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    [Migration("20221016094652_Update Stringlength for colums")]
-    partial class UpdateStringlengthforcolums
+    [Migration("20221021064346_Change CourseCode in Class to CourseFamilyCode")]
+    partial class ChangeCourseCodeinClasstoCourseFamilyCode
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -143,11 +143,11 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("completion_date");
 
-                    b.Property<string>("CourseCode")
+                    b.Property<string>("CourseFamilyCode")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)")
-                        .HasColumnName("course_code");
+                        .HasColumnName("course_family_code");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2")
@@ -162,6 +162,10 @@ namespace AcademicManagementSystem.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("name");
+
+                    b.Property<int>("SroId")
+                        .HasColumnType("int")
+                        .HasColumnName("sro_id");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2")
@@ -179,7 +183,9 @@ namespace AcademicManagementSystem.Migrations
 
                     b.HasIndex("ClassStatusId");
 
-                    b.HasIndex("CourseCode");
+                    b.HasIndex("CourseFamilyCode");
+
+                    b.HasIndex("SroId");
 
                     b.ToTable("class");
                 });
@@ -654,6 +660,163 @@ namespace AcademicManagementSystem.Migrations
                     b.ToTable("sro");
                 });
 
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Student", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.Property<DateTime>("ApplicationDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("application_date");
+
+                    b.Property<string>("ApplicationDocument")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("application_document");
+
+                    b.Property<string>("CompanyAddress")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("company_address");
+
+                    b.Property<string>("CompanyPosition")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("company_position");
+
+                    b.Property<int?>("CompanySalary")
+                        .HasColumnType("int")
+                        .HasColumnName("company_salary");
+
+                    b.Property<string>("ContactAddress")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("contact_address");
+
+                    b.Property<string>("ContactPhone")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)")
+                        .HasColumnName("contact_phone");
+
+                    b.Property<string>("CourseCode")
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int")
+                        .HasColumnName("course_id");
+
+                    b.Property<string>("EnrollNumber")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("enroll_number");
+
+                    b.Property<string>("FacebookUrl")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnName("facebook_url");
+
+                    b.Property<int>("FeePlan")
+                        .HasColumnType("int")
+                        .HasColumnName("fee_plan");
+
+                    b.Property<string>("HighSchool")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("high_school");
+
+                    b.Property<string>("HomePhone")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)")
+                        .HasColumnName("home_phone");
+
+                    b.Property<bool>("IsDraft")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_draft");
+
+                    b.Property<string>("ParentalName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("parental_name");
+
+                    b.Property<string>("ParentalPhone")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)")
+                        .HasColumnName("parental_phone");
+
+                    b.Property<string>("ParentalRelationship")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("parental_relationship");
+
+                    b.Property<string>("PortfolioUrl")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnName("portfolio_url");
+
+                    b.Property<int>("Promotion")
+                        .HasColumnType("int")
+                        .HasColumnName("promotion");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime>("StatusDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("status_date");
+
+                    b.Property<string>("University")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("university");
+
+                    b.Property<string>("WorkingCompany")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("working_company");
+
+                    b.HasKey("UserId");
+
+                    b.HasIndex("CourseCode");
+
+                    b.HasIndex("EnrollNumber")
+                        .IsUnique();
+
+                    b.ToTable("student");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.StudentClass", b =>
+                {
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int")
+                        .HasColumnName("student_id");
+
+                    b.Property<int>("ClassId")
+                        .HasColumnType("int")
+                        .HasColumnName("class_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("StudentId", "ClassId");
+
+                    b.HasIndex("ClassId");
+
+                    b.ToTable("student_class");
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Teacher", b =>
                 {
                     b.Property<int>("UserId")
@@ -973,9 +1136,15 @@ namespace AcademicManagementSystem.Migrations
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
-                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Course", "Course")
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.CourseFamily", "CourseFamily")
                         .WithMany("Classes")
-                        .HasForeignKey("CourseCode")
+                        .HasForeignKey("CourseFamilyCode")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Sro", "Sro")
+                        .WithMany("Classes")
+                        .HasForeignKey("SroId")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
@@ -985,7 +1154,9 @@ namespace AcademicManagementSystem.Migrations
 
                     b.Navigation("ClassStatus");
 
-                    b.Navigation("Course");
+                    b.Navigation("CourseFamily");
+
+                    b.Navigation("Sro");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Course", b =>
@@ -1108,6 +1279,43 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Student", b =>
+                {
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Course", "Course")
+                        .WithMany("Students")
+                        .HasForeignKey("CourseCode")
+                        .OnDelete(DeleteBehavior.ClientNoAction);
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.StudentClass", b =>
+                {
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Class", "Class")
+                        .WithMany("StudentsClasses")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Student", "Student")
+                        .WithMany("StudentsClasses")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.Navigation("Class");
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Teacher", b =>
                 {
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.TeacherType", "TeacherType")
@@ -1216,6 +1424,11 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("Users");
                 });
 
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Class", b =>
+                {
+                    b.Navigation("StudentsClasses");
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.ClassDays", b =>
                 {
                     b.Navigation("Classes");
@@ -1228,13 +1441,15 @@ namespace AcademicManagementSystem.Migrations
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Course", b =>
                 {
-                    b.Navigation("Classes");
-
                     b.Navigation("CoursesModulesSemesters");
+
+                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.CourseFamily", b =>
                 {
+                    b.Navigation("Classes");
+
                     b.Navigation("Courses");
                 });
 
@@ -1293,6 +1508,16 @@ namespace AcademicManagementSystem.Migrations
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Semester", b =>
                 {
                     b.Navigation("CoursesModuleSemesters");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Sro", b =>
+                {
+                    b.Navigation("Classes");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Student", b =>
+                {
+                    b.Navigation("StudentsClasses");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.TeacherType", b =>

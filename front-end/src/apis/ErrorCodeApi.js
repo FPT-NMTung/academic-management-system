@@ -43,6 +43,7 @@ export const ErrorCodeApi = {
   'sro-error-0020': '',
   'sro-error-0021': '',
   'sro-error-0022': '',
+  'sro-error-0022-2': 'Email cá nhân và email tổ chức không được trùng nhau',
 
   'address-error-0001': '',
 
@@ -53,8 +54,8 @@ export const ErrorCodeApi = {
   'course-error-0005': '',
   'course-error-0006': '',
   'course-error-0007': '',
-  'course-error-0008': '',
-  'course-error-0009': '',
+  'course-error-0008': 'Mã chương trình học đã tồn tại',
+  'course-error-0009': 'Mã khóa học đã tồn tại',
   'course-error-0010': '',
   'course-error-0011': '',
   'course-error-0012': '',
@@ -78,6 +79,10 @@ export const ErrorCodeApi = {
   'teacher-error-0016': 'Số CMND/CCCD đã tồn tại trong hệ thống',
   'teacher-error-0017': '',
   'teacher-error-0018': '',
+  'teacher-error-0052-2': 'Email cá nhân và email tổ chức không được trùng nhau',
 
   'module-error-00021': 'Môn học với mã khóa học, học kỳ đã tồn tại',
+
+   'class-error-0070': "Tên lớp học đã được sử dụng",
+   'class-error-0069': "Tên lớp học chứa ký tự đặc biệt | Các ký tự cho phép: ( ) _ - ",
 };

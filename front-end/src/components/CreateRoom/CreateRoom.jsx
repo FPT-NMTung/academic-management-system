@@ -1,5 +1,5 @@
-import { Modal, Text } from '@nextui-org/react';
-import { Button, Form, Select, Spin, Table, Input, InputNumber } from 'antd';
+import { Modal, Text, Button, Loading } from '@nextui-org/react';
+import { Form, Select, Spin, Table, Input, InputNumber } from 'antd';
 import { CenterApis, RoomApis, RoomTypeApis } from '../../apis/ListApi';
 import FetchApi from '../../apis/FetchApi';
 import { useState, useEffect } from 'react';
@@ -119,9 +119,7 @@ const CreateRoom = ({ onCreateRoomSuccess }) => {
               if (value === null || value === undefined) {
                 return Promise.reject('Trường này không được để trống');
               }
-              if (
-                Validater.isContaintSpecialCharacterForName(value.trim())
-              ) {
+              if (Validater.isContaintSpecialCharacterForName(value.trim())) {
                 return Promise.reject(
                   'Trường này không được chứa ký tự đặc biệt'
                 );
@@ -184,8 +182,18 @@ const CreateRoom = ({ onCreateRoomSuccess }) => {
         />
       </Form.Item>
       <Form.Item wrapperCol={{ offset: 6, span: 99 }}>
-        <Button type="primary" htmlType="submit">
-          Thêm
+        <Button
+          auto
+          flat
+          css={{
+            width: '130px',
+          }}
+          type="primary"
+          htmlType="submit"
+          disabled={isCreatingRoom}
+        >
+          {isCreatingRoom && <Loading size='xs'/>}
+          {!isCreatingRoom && 'Thêm'}
         </Button>
       </Form.Item>
       {!isCreatingRoom && isFailedCreateRoom && (

@@ -44,7 +44,7 @@ public static class CustomResponse
     }
 }
 
-class ResponseCustom
+public class ResponseCustom
 {
     [JsonPropertyName("status_code")] 
     public HttpStatusCode StatusCode { get; set; }

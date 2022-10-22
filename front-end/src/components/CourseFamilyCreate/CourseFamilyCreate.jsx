@@ -1,14 +1,16 @@
 import { Card, Grid, Text } from '@nextui-org/react';
-import { Form, DatePicker, Select, Input, Button, Radio } from 'antd';
+import { Form, DatePicker, Select, Input, Button, Radio, message } from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
 import { CourseFamilyApis } from '../../apis/ListApi';
 import { Validater } from '../../validater/Validater';
+import { ErrorCodeApi } from '../../apis/ErrorCodeApi';
 
 const CouseFamilyCreate = ({ onCreateSuccess }) => {
   const [isCreating, setIsCreating] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const [form] = Form.useForm();
+  const [errorValue, setErrorValue] = useState(undefined);
 
   const handleSubmitForm = (e) => {
     setIsCreating(true);
@@ -24,9 +26,11 @@ const CouseFamilyCreate = ({ onCreateSuccess }) => {
       null
     )
       .then(() => {
+        message.success('Tạo chương trình học thành công');
         onCreateSuccess();
       })
-      .catch(() => {
+      .catch((err) => {
+        setErrorValue(ErrorCodeApi[err.type_error]);
         setIsCreating(false);
         setIsFailed(true);
       });
@@ -124,7 +128,7 @@ const CouseFamilyCreate = ({ onCreateSuccess }) => {
                 textAlign: 'center',
               }}
             >
-              Tạo khóa học thất bại, kiểm tra lại thông tin và thử lại
+              {errorValue}, vui lòng thử lại
             </Text>
           )}
         </Card.Body>

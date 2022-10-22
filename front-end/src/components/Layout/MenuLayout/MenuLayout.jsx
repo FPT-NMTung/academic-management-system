@@ -89,6 +89,14 @@ const items = {
       '/sro',
       '/sro'
     ),
+    getItem(
+      'Quản lý lớp học',
+      'main2',
+      <MdMeetingRoom />,
+      undefined,
+      '/sro/manage-class/*',
+      '/sro/manage-class'
+    ),
   ]
 };
 
@@ -122,7 +130,7 @@ const MenuLayout = () => {
   return (
     <Menu
       inlineIndent={15}
-      theme="dark"
+      theme="light"
       style={{
         width: '100%',
       }}

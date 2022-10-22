@@ -7,6 +7,6 @@ public class ClassDaysResponse
     [JsonPropertyName("id")]
     public int Id { get; set; }
     
-    [JsonPropertyName("Value")]
+    [JsonPropertyName("value")]
     public string Value { get; set; }
 }

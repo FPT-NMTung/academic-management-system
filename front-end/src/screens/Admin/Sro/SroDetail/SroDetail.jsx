@@ -1,4 +1,12 @@
-import { Grid, Card, Image, Text, Spacer, Badge } from '@nextui-org/react';
+import {
+  Grid,
+  Card,
+  Image,
+  Text,
+  Spacer,
+  Badge,
+  Button,
+} from '@nextui-org/react';
 import { useEffect, useState } from 'react';
 import classes from './SroDetail.module.css';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -7,7 +15,7 @@ import { ManageSroApis } from '../../../../apis/ListApi';
 import { AiFillPhone } from 'react-icons/ai';
 import { MdEmail } from 'react-icons/md';
 import { HiOfficeBuilding } from 'react-icons/hi';
-import { Spin, Descriptions, Table, Button } from 'antd';
+import { Spin, Descriptions, Table } from 'antd';
 
 const SroDetail = () => {
   const [dataUser, setDataUser] = useState({});
@@ -87,15 +95,24 @@ const SroDetail = () => {
               </div>
             </Grid>
             <Grid sm={8.5} direction="column" css={{ rowGap: 20 }}>
-              <Card>
+              <Card variant="bordered">
                 <Card.Body>
                   <Descriptions
                     title="Thông tin cơ bản"
                     bordered
                     column={{ md: 2, lg: 2, xl: 2, xxl: 2 }}
-                    extra={<Button type="primary" onClick={() => {
-                      navigate(`/admin/account/sro/${id}/update`)
-                    }}>Chỉnh sửa thông tin</Button>}
+                    extra={
+                      <Button
+                        auto
+                        flat
+                        type="primary"
+                        onPress={() => {
+                          navigate(`/admin/account/sro/${id}/update`);
+                        }}
+                      >
+                        Chỉnh sửa thông tin
+                      </Button>
+                    }
                   >
                     <Descriptions.Item label="Họ và tên đệm">
                       {dataUser.first_name}
@@ -131,7 +148,7 @@ const SroDetail = () => {
                   </Descriptions>
                 </Card.Body>
               </Card>
-              <Card>
+              <Card variant="bordered">
                 <Card.Body>
                   <Descriptions
                     title="Thông tin CMND/CCCD"
@@ -151,26 +168,6 @@ const SroDetail = () => {
                     </Descriptions.Item>
                   </Descriptions>
                 </Card.Body>
-              </Card>
-              <Card>
-                <Table
-                  dataSource={[
-                    {
-                      key: '1',
-                      name: 'John Brown',
-                      number: 32,
-                      a: 'Kỳ 1',
-                    },
-                  ]}
-                >
-                  <Table.Column title="Tên lớp" dataIndex="name" key="name" />
-                  <Table.Column
-                    title="Số lượng"
-                    dataIndex="status"
-                    key="number"
-                  />
-                  <Table.Column title="Kỳ học" dataIndex="a" key="a" />
-                </Table>{' '}
               </Card>
             </Grid>
           </Grid.Container>
