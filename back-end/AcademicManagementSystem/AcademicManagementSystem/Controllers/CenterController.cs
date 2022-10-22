@@ -34,6 +34,7 @@ public class CenterController : ControllerBase
             {
                 Id = c.Id,
                 Name = c.Name, CreatedAt = c.CreatedAt, UpdatedAt = c.UpdatedAt,
+                IsActive = c.IsActive,
                 Province = new ProvinceResponse()
                 {
                     Id = c.Province.Id,
@@ -84,6 +85,7 @@ public class CenterController : ControllerBase
             Name = center.Name,
             CreatedAt = center.CreatedAt,
             UpdatedAt = center.UpdatedAt,
+            IsActive = center.IsActive,
             Province = new ProvinceResponse()
             {
                 Id = center.Province.Id,
@@ -246,6 +248,61 @@ public class CenterController : ControllerBase
         }
 
         return Ok(CustomResponse.Ok("Center updated successfully", center));
+    }
+
+    [HttpGet]
+    [Route("api/centers/{id:int}/can-delete")]
+    [Authorize(Roles = "admin")]
+    public IActionResult CheckCanDeleteCenter(int id)
+    {
+        var center = _context.Centers
+            .Include(c => c.Classes)
+            .Include(c => c.Rooms)
+            .Include(c => c.Modules)
+            .Include(c => c.Users)
+            .FirstOrDefault(c => c.Id == id);
+        if (center == null)
+        {
+            var error = ErrorDescription.Error["E1001"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var canDelete = center.Classes.Count == 0 && center.Modules.Count == 0 && center.Users.Count == 0 &&
+                        center.Rooms.Count == 0;
+
+        return Ok(CustomResponse.Ok("Check successfully", new CenterCheckDeleteResponse()
+        {
+            CanDelete = canDelete
+        }));
+    }
+
+    // change activate center
+    [HttpPatch]
+    [Route("api/centers/{id:int}/change-activate")]
+    [Authorize(Roles = "admin")]
+    public IActionResult ChangeActivateCenter(int id)
+    {
+        try
+        {
+            var center = _context.Centers.FirstOrDefault(c => c.Id == id);
+
+            if (center == null)
+            {
+                var error = ErrorDescription.Error["E1001"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+
+            center.IsActive = !center.IsActive;
+            _context.Centers.Update(center);
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E1051"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        return Ok(CustomResponse.Ok("Center updated successfully", null!));
     }
 
     // delete center

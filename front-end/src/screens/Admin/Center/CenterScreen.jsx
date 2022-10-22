@@ -6,6 +6,8 @@ import {
   Button,
   Table,
   Loading,
+  Badge,
+  Switch,
 } from '@nextui-org/react';
 import { Form, Select, Input, Divider } from 'antd';
 import { useEffect, useState } from 'react';
@@ -15,6 +17,7 @@ import classes from './CenterScreen.module.css';
 import { FaPen } from 'react-icons/fa';
 import CenterCreate from '../../../components/CenterCreate/CenterCreate';
 import CenterUpdate from '../../../components/CenterUpdate/CenterUpdate';
+import { toast } from 'react-hot-toast';
 
 const CenterScreen = () => {
   const [listCenter, setListCenter] = useState([]);
@@ -51,6 +54,16 @@ const CenterScreen = () => {
     setSelectedCenterId(null);
     getData();
   };
+
+  const handleChangeStatus = (status, id) => {
+    FetchApi(CenterApis.changeStatusCenter, null, null, [String(id)])
+      .then((res) => {
+        toast.success('Thay đổi trạng thái thành công');
+      })
+      .catch((err) => {
+        toast.error('Có lỗi xảy ra khi thay đổi trạng thái');
+      });
+  }
 
   useEffect(() => {
     getData();
@@ -107,6 +120,7 @@ const CenterScreen = () => {
                   <Table.Column>STT</Table.Column>
                   <Table.Column>Tên</Table.Column>
                   <Table.Column>Địa chỉ</Table.Column>
+                  <Table.Column>Trạng thái</Table.Column>
                   <Table.Column width={30}></Table.Column>
                 </Table.Header>
                 <Table.Body>
@@ -115,6 +129,11 @@ const CenterScreen = () => {
                       <Table.Cell>{index + 1}</Table.Cell>
                       <Table.Cell>{data.name}</Table.Cell>
                       <Table.Cell>{data.address}</Table.Cell>
+                      <Table.Cell>
+                        <Switch onChange={(e) => {
+                          handleChangeStatus(e.target.checked, data.id)
+                        }} size={'xs'} color="success" checked={data.is_active} />
+                      </Table.Cell>
                       <Table.Cell>
                         <FaPen
                           size={14}
