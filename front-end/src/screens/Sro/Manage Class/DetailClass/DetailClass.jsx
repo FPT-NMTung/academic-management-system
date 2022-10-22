@@ -1,15 +1,85 @@
-import { Button, Card, Grid, Spacer, Table, Text } from '@nextui-org/react';
+import {
+  Badge,
+  Button,
+  Card,
+  Grid,
+  Spacer,
+  Table,
+  Text,
+} from '@nextui-org/react';
 import classes from './DetailClass.module.css';
 import { FaCloudDownloadAlt, FaCloudUploadAlt } from 'react-icons/fa';
 import { IoArrowBackCircle } from 'react-icons/io5';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import FetchApi from '../../../../apis/FetchApi';
+import { ManageClassApis } from '../../../../apis/ListApi';
+import { Descriptions, Skeleton } from 'antd';
 
 const DetailClass = () => {
+  const [dataClass, setDataClass] = useState(undefined);
+
   const navigate = useNavigate();
+  const { id } = useParams();
+
+  const renderStatus = (id) => {
+    if (id === 1) {
+      return (
+        <Badge variant="flat" color="secondary">
+          Đã lên lịch
+        </Badge>
+      );
+    } else if (id === 2) {
+      return (
+        <Badge variant="flat" color="warning">
+          Đang học
+        </Badge>
+      );
+    } else if (id === 3) {
+      return (
+        <Badge variant="flat" color="success">
+          Đã hoàn thành
+        </Badge>
+      );
+    } else if (id === 4) {
+      return (
+        <Badge variant="flat" color="default">
+          Hủy
+        </Badge>
+      );
+    } else {
+      return (
+        <Badge variant="flat" color="primary">
+          Chưa lên lịch
+        </Badge>
+      );
+    }
+  };
+
+  const getData = () => {
+    FetchApi(ManageClassApis.getInformationClass, null, null, [String(id)])
+      .then((res) => {
+        setDataClass(res.data);
+      })
+      .catch((err) => {
+        navigate('/404');
+      });
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   return (
     <Grid.Container gap={2}>
-      <Grid xs={3.5}>
+      <Grid
+        xs={3.5}
+        css={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 20,
+        }}
+      >
         <Card
           variant="bordered"
           css={{
@@ -17,11 +87,111 @@ const DetailClass = () => {
           }}
         >
           <Card.Header>
-            <Text p b size={14} css={{ width: '100%', textAlign: 'center' }}>
-              Thông tin lớp học
+            <Text
+              p
+              b
+              size={16}
+              css={{ width: '100%', textAlign: 'center' }}
+              color="error"
+            >
+              Thông tin cơ bản
             </Text>
           </Card.Header>
-          <Card.Body></Card.Body>
+          <Card.Body>
+            {!dataClass && <Skeleton />}
+            {dataClass && (
+              <Descriptions layout="horizontal" column={{ lg: 1 }}>
+                <Descriptions.Item label="Tên lớp">
+                  <b>{dataClass?.name}</b>
+                </Descriptions.Item>
+                <Descriptions.Item label="Người quản lý (SRO)">
+                  <b>
+                    {dataClass?.sro_first_name} {dataClass?.sro_last_name}
+                  </b>
+                </Descriptions.Item>
+                <Descriptions.Item label="Ngày tạo">
+                  <b>
+                    {new Date(dataClass?.created_at).toLocaleDateString(
+                      'vi-VN'
+                    )}
+                  </b>
+                </Descriptions.Item>
+                <Descriptions.Item label="Tình trạng lớp">
+                  <b>{renderStatus(dataClass?.class_status?.id)}</b>
+                </Descriptions.Item>
+              </Descriptions>
+            )}
+          </Card.Body>
+        </Card>
+        <Card
+          variant="bordered"
+          css={{
+            height: 'fit-content',
+          }}
+        >
+          <Card.Header>
+            <Text
+              p
+              b
+              size={16}
+              css={{ width: '100%', textAlign: 'center' }}
+              color="error"
+            >
+              Thời gian và kế hoạch
+            </Text>
+          </Card.Header>
+          <Card.Body>
+            {!dataClass && <Skeleton />}
+            {dataClass && (
+              <Descriptions layout="horizontal" column={{ lg: 1 }}>
+                <Descriptions.Item label="Mã chương trình học">
+                  <b>{dataClass?.course_family?.code}</b>
+                </Descriptions.Item>
+                <Descriptions.Item label="chương trình học">
+                  <b>{dataClass?.course_family?.name}</b>
+                </Descriptions.Item>
+                <Descriptions.Item label="Ngày bắt đầu (dự tính)">
+                  <b>
+                    {new Date(dataClass?.start_date).toLocaleDateString(
+                      'vi-VN'
+                    )}
+                  </b>
+                </Descriptions.Item>
+                <Descriptions.Item label="Thời gian học">
+                  <b>
+                    {dataClass?.class_hour_start?.split(':')[0] +
+                      ':' +
+                      dataClass?.class_hour_start?.split(':')[1]}
+                    {' => '}
+                    {dataClass?.class_hour_end?.split(':')[0] +
+                      ':' +
+                      dataClass?.class_hour_end?.split(':')[1]}
+                  </b>
+                </Descriptions.Item>
+                <Descriptions.Item label="Ngày học trong tuần">
+                  <b>
+                    {dataClass?.class_days?.id === 1
+                      ? 'Thứ 2, 4, 6'
+                      : 'Thứ 3, 5, 7'}
+                  </b>
+                </Descriptions.Item>
+                <Descriptions.Item label="Ngày hoàn thành (dự tính)">
+                  <b>
+                    {new Date(dataClass?.completion_date).toLocaleDateString(
+                      'vi-VN'
+                    )}
+                  </b>
+                </Descriptions.Item>
+                <Descriptions.Item label="Ngày tốt nghiệp (dự tính)">
+                  <b>
+                    {new Date(dataClass?.graduation_date).toLocaleDateString(
+                      'vi-VN'
+                    )}
+                  </b>
+                </Descriptions.Item>
+              </Descriptions>
+            )}
+          </Card.Body>
         </Card>
       </Grid>
       <Grid xs={8.5} direction={'column'}>
@@ -38,7 +208,9 @@ const DetailClass = () => {
                   auto
                   icon={<IoArrowBackCircle size={20} />}
                   color={'error'}
-                  onPress={() => {navigate('/sro/class')}}
+                  onPress={() => {
+                    navigate('/sro/manage-class');
+                  }}
                 >
                   Trở về
                 </Button>
