@@ -235,7 +235,7 @@ const DetailClass = () => {
         <Card variant="bordered">
           <Card.Header>
             <Text p b size={14} css={{ width: '100%', textAlign: 'center' }}>
-              Danh sách học sinh
+              Danh sách học viên
             </Text>
           </Card.Header>
           <Table>
