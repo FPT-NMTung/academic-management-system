@@ -26,9 +26,62 @@ public class SkillController : ControllerBase
         var skills = _context.Skills.Select(s => new SkillResponse()
         {
             Id = s.Id,
-            Name = s.Name
+            Name = s.Name,
+            Teachers = s.Teachers.Select(t => new TeacherSkillInformation()
+            {
+                Id = t.User.Id,
+                FirstName = t.User.FirstName,
+                LastName = t.User.LastName,
+            }).ToList()
         }).ToList();
         return Ok(CustomResponse.Ok("Skills retrieved successfully", skills));
+    }
+
+    // get teachers by skill id
+    [HttpGet]
+    [Route("api/skills/{id:int}/teachers")]
+    [Authorize(Roles = "admin")]
+    public IActionResult GetTeachersBySkillId(int id)
+    {
+        var skill = _context.Skills.Select(s => new SkillResponse()
+        {
+            Id = s.Id,
+            Name = s.Name,
+            Teachers = s.Teachers.Select(t => new TeacherSkillInformation()
+            {
+                Id = t.User.Id,
+                FirstName = t.User.FirstName,
+                LastName = t.User.LastName,
+            }).ToList()
+        }).FirstOrDefault(s => s.Id == id);
+
+        if (skill == null)
+        {
+            return NotFound(CustomResponse.NotFound("Skill not found"));
+        }
+
+        return Ok(CustomResponse.Ok("Teachers retrieved successfully", skill));
+    }
+
+    // search skill by name
+    [HttpGet]
+    [Route("api/skills/search")]
+    [Authorize(Roles = "admin")]
+    public IActionResult SearchSkills([FromQuery] string name)
+    {
+        var skills = _context.Skills.Where(s => s.Name.ToLower().Contains(name.ToLower())).Select(s =>
+            new SkillResponse()
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Teachers = s.Teachers.Select(t => new TeacherSkillInformation()
+                {
+                    Id = t.User.Id,
+                    FirstName = t.User.FirstName,
+                    LastName = t.User.LastName,
+                }).ToList()
+            }).ToList();
+        return Ok(CustomResponse.Ok("Skills searched successfully", skills));
     }
 
     [HttpPost]
@@ -69,10 +122,10 @@ public class SkillController : ControllerBase
             _context.Skills.Add(skill);
             _context.SaveChanges();
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Console.WriteLine(e);
-            throw;
+            var error = ErrorDescription.Error["E1066_1"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         return Ok(CustomResponse.Ok("Skill created successfully", new SkillResponse()
@@ -124,10 +177,10 @@ public class SkillController : ControllerBase
             _context.Skills.Update(skill);
             _context.SaveChanges();
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Console.WriteLine(e);
-            throw;
+            var error = ErrorDescription.Error["E1066_1"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         return Ok(CustomResponse.Ok("Skill updated successfully", new SkillResponse()

@@ -8,7 +8,7 @@ public class Teacher
 {
     public Teacher()
     {
-        this.TeachersSkills = new HashSet<TeacherSkill>();
+        Skills = new HashSet<Skill>();
     }
 
     [Key]
@@ -45,5 +45,5 @@ public class Teacher
     public virtual User User { get; set; }
     public virtual TeacherType TeacherType { get; set; }
     public virtual WorkingTime WorkingTime { get; set; }
-    public virtual ICollection<TeacherSkill> TeachersSkills { get; set; }
+    public virtual ICollection<Skill> Skills { get; set; }
 }

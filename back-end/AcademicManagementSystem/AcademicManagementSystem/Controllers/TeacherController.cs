@@ -8,6 +8,7 @@ using AcademicManagementSystem.Models.AddressController.ProvinceModel;
 using AcademicManagementSystem.Models.AddressController.WardModel;
 using AcademicManagementSystem.Models.GenderController;
 using AcademicManagementSystem.Models.RoleController;
+using AcademicManagementSystem.Models.TeacherSkillController.Skill;
 using AcademicManagementSystem.Models.TeacherTypeController;
 using AcademicManagementSystem.Models.UserController.TeacherController;
 using AcademicManagementSystem.Models.WorkingTime;
@@ -141,7 +142,7 @@ public class TeacherController : ControllerBase
     [Authorize(Roles = "admin, sro")]
     public IActionResult CreateTeacher([FromBody] CreateTeacherRequest request)
     {
-        request.FirstName = Regex.Replace(request.FirstName!, StringConstant.RegexWhiteSpaces, " ");
+        request.FirstName = Regex.Replace(request.FirstName, StringConstant.RegexWhiteSpaces, " ");
         // function replace string ex: H ' Hen Nie => H'Hen Nie
         request.FirstName = request.FirstName.Replace(" ' ", "'").Trim();
         if (Regex.IsMatch(request.FirstName, RegexSpecialCharacters))
@@ -150,7 +151,7 @@ public class TeacherController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        request.LastName = Regex.Replace(request.LastName!, StringConstant.RegexWhiteSpaces, " ");
+        request.LastName = Regex.Replace(request.LastName, StringConstant.RegexWhiteSpaces, " ");
         request.LastName = request.LastName.Replace(" ' ", "'").Trim();
 
         if (Regex.IsMatch(request.LastName, RegexSpecialCharacters))
@@ -165,7 +166,7 @@ public class TeacherController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (!Regex.IsMatch(request.MobilePhone!, StringConstant.RegexMobilePhone))
+        if (!Regex.IsMatch(request.MobilePhone, StringConstant.RegexMobilePhone))
         {
             var error = ErrorDescription.Error["E0042"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -219,7 +220,7 @@ public class TeacherController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (!Regex.IsMatch(request.CitizenIdentityCardNo!, StringConstant.RegexCitizenIdCardNo))
+        if (!Regex.IsMatch(request.CitizenIdentityCardNo, StringConstant.RegexCitizenIdCardNo))
         {
             var error = ErrorDescription.Error["E0045"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -245,16 +246,16 @@ public class TeacherController : ControllerBase
             CenterId = request.CenterId,
             GenderId = request.GenderId,
             RoleId = RoleIdTeacher,
-            FirstName = request.FirstName!,
-            LastName = request.LastName!,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
             Avatar = request.Avatar,
-            MobilePhone = request.MobilePhone!,
-            Email = request.Email!,
-            EmailOrganization = request.EmailOrganization!,
+            MobilePhone = request.MobilePhone,
+            Email = request.Email,
+            EmailOrganization = request.EmailOrganization,
             Birthday = request.Birthday,
-            CitizenIdentityCardNo = request.CitizenIdentityCardNo!,
+            CitizenIdentityCardNo = request.CitizenIdentityCardNo,
             CitizenIdentityCardPublishedDate = request.CitizenIdentityCardPublishedDate,
-            CitizenIdentityCardPublishedPlace = request.CitizenIdentityCardPublishedPlace!,
+            CitizenIdentityCardPublishedPlace = request.CitizenIdentityCardPublishedPlace,
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             Teacher = new Teacher()
@@ -305,7 +306,7 @@ public class TeacherController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        request.FirstName = Regex.Replace(request.FirstName!, StringConstant.RegexWhiteSpaces, " ");
+        request.FirstName = Regex.Replace(request.FirstName, StringConstant.RegexWhiteSpaces, " ");
         // function replace string ex: H ' Hen Nie => H'Hen Nie
         request.FirstName = request.FirstName.Replace(" ' ", "'").Trim();
         if (Regex.IsMatch(request.FirstName, RegexSpecialCharacters))
@@ -314,7 +315,7 @@ public class TeacherController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        request.LastName = Regex.Replace(request.LastName!, StringConstant.RegexWhiteSpaces, " ");
+        request.LastName = Regex.Replace(request.LastName, StringConstant.RegexWhiteSpaces, " ");
         request.LastName = request.LastName.Replace(" ' ", "'").Trim();
 
         if (Regex.IsMatch(request.LastName, RegexSpecialCharacters))
@@ -329,7 +330,7 @@ public class TeacherController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (!Regex.IsMatch(request.MobilePhone!, StringConstant.RegexMobilePhone))
+        if (!Regex.IsMatch(request.MobilePhone, StringConstant.RegexMobilePhone))
         {
             var error = ErrorDescription.Error["E0042"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -383,7 +384,7 @@ public class TeacherController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (!Regex.IsMatch(request.CitizenIdentityCardNo!, StringConstant.RegexCitizenIdCardNo))
+        if (!Regex.IsMatch(request.CitizenIdentityCardNo, StringConstant.RegexCitizenIdCardNo))
         {
             var error = ErrorDescription.Error["E0045"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -406,15 +407,15 @@ public class TeacherController : ControllerBase
         user.WardId = request.WardId;
         user.GenderId = request.GenderId;
         user.RoleId = RoleIdTeacher;
-        user.FirstName = request.FirstName!;
-        user.LastName = request.LastName!;
-        user.MobilePhone = request.MobilePhone!;
-        user.Email = request.Email!;
-        user.EmailOrganization = request.EmailOrganization!;
+        user.FirstName = request.FirstName;
+        user.LastName = request.LastName;
+        user.MobilePhone = request.MobilePhone;
+        user.Email = request.Email;
+        user.EmailOrganization = request.EmailOrganization;
         user.Birthday = request.Birthday;
-        user.CitizenIdentityCardNo = request.CitizenIdentityCardNo!;
+        user.CitizenIdentityCardNo = request.CitizenIdentityCardNo;
         user.CitizenIdentityCardPublishedDate = request.CitizenIdentityCardPublishedDate;
-        user.CitizenIdentityCardPublishedPlace = request.CitizenIdentityCardPublishedPlace!;
+        user.CitizenIdentityCardPublishedPlace = request.CitizenIdentityCardPublishedPlace;
         user.Teacher.TeacherTypeId = request.TeacherTypeId;
         user.Teacher.WorkingTimeId = request.WorkingTimeId;
         user.Teacher.Nickname = request.Nickname;
@@ -540,6 +541,11 @@ public class TeacherController : ControllerBase
                     Id = u.Teacher.WorkingTime.Id,
                     Value = u.Teacher.WorkingTime.Value
                 },
+                Skills = u.Teacher.Skills.Select(s => new SkillResponse()
+                {
+                    Id = s.Id,
+                    Name = s.Name
+                }).ToList(),
                 Nickname = u.Teacher.Nickname,
                 CompanyAddress = u.Teacher.CompanyAddress,
                 StartWorkingDate = u.Teacher.StartWorkingDate,

@@ -6,24 +6,20 @@ namespace AcademicManagementSystem.Models.UserController.TeacherController;
 public class UpdateTeacherRequest
 {
     [JsonPropertyName("first_name")]
-    public string? FirstName { get; set; }
+    public string FirstName { get; set; }
     
     [JsonPropertyName("last_name")]
-    public string? LastName { get; set; }
+    public string LastName { get; set; }
     
     [JsonPropertyName("mobile_phone")]
-    public string? MobilePhone { get; set; }
+    public string MobilePhone { get; set; }
     
     [JsonPropertyName("email")]
-    public string? Email { get; set; }
+    public string Email { get; set; }
     
     [JsonPropertyName("email_organization")]
-    public string? EmailOrganization { get; set; }
-    
-    // [JsonPropertyName("avatar")]
-    // [DefaultValue(null)]
-    // public string? Avatar { get; set; }
-    
+    public string EmailOrganization { get; set; }
+
     [JsonPropertyName("province_id")]
     public int ProvinceId { get; set; }
     
@@ -39,23 +35,23 @@ public class UpdateTeacherRequest
     [JsonPropertyName("birthday")]
     public DateTime Birthday { get; set; }
 
-    // [JsonPropertyName("center_id")]
-    // public int CenterId { get; set; }
-
     [JsonPropertyName("citizen_identity_card_no")]
-    public string? CitizenIdentityCardNo { get; set; }
+    public string CitizenIdentityCardNo { get; set; }
     
     [JsonPropertyName("citizen_identity_card_published_date")]
     public DateTime CitizenIdentityCardPublishedDate { get; set; }
     
     [JsonPropertyName("citizen_identity_card_published_place")]
-    public string? CitizenIdentityCardPublishedPlace { get; set; }
+    public string CitizenIdentityCardPublishedPlace { get; set; }
     
     [JsonPropertyName("teacher_type_id")]
     public int TeacherTypeId { get; set; }
     
     [JsonPropertyName("working_time_id")]
     public int WorkingTimeId { get; set; }
+    
+    [JsonPropertyName("skills_id")]
+    public List<int>? SkillsId { get; set; }
     
     [JsonPropertyName("nickname")]
     [DefaultValue(null)]
