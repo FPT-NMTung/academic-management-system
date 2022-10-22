@@ -6,6 +6,7 @@ import FetchApi from '../../apis/FetchApi';
 import { AddressApis, CenterApis } from '../../apis/ListApi';
 import classes from './CenterUpdate.module.css';
 import { Validater } from '../../validater/Validater';
+import toast from 'react-hot-toast';
 
 const CenterUpdate = ({ data, onUpdateSuccess }) => {
   const [listProvince, setListProvince] = useState([]);
@@ -14,6 +15,7 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
 
   const [isUpdating, setIsUpdating] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
+  const [canDelete, setCanDelete] = useState(undefined);
 
   const [isLoadingProvince, setIsLoadingProvince] = useState(true);
   const [isLoadingDistrict, setIsLoadingDistrict] = useState(true);
@@ -71,6 +73,13 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
       setListWard(res.data);
       setIsLoadingWard(false);
     });
+    FetchApi(CenterApis.checkCanDeleteCenter, null, null, [String(data.id)])
+    .then((res) => {
+      setCanDelete(res.data.can_delete);
+    })
+    .catch((err) => {
+      toast.error('Không thể kiểm tra xem có thể xóa trung tâm này hay không');
+    })
   }, []);
 
   const handleSubmitForm = (e) => {
@@ -232,7 +241,7 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
                 flat
                 auto
                 css={{
-                  width: '150px',
+                  width: '120px',
                 }}
                 type="primary"
                 htmlType="submit"
@@ -244,12 +253,14 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
               <Button
                 flat
                 auto
-                type="primary"
-                htmlType="button"
+                css={{
+                  width: '80px',
+                }}
                 color={'error'}
-                disabled
+                disabled={canDelete === false || canDelete === undefined}
               >
-                Xoá
+                {canDelete === undefined && <Loading size="xs" />}
+                {canDelete !== undefined && 'Xoá'}
               </Button>
             </div>
           </Form.Item>

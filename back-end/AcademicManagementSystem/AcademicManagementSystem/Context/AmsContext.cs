@@ -40,6 +40,11 @@ public class AmsContext : DbContext
             .HasKey(cms => new { cms.CourseCode, cms.ModuleId, cms.SemesterId });
         modelBuilder.Entity<StudentClass>()
             .HasKey(sc => new { sc.StudentId, sc.ClassId });
+        
+        // default value
+        modelBuilder.Entity<Center>()
+            .Property(c => c.IsActive)
+            .HasDefaultValue(true);
     }
 
     public DbSet<Province> Provinces { get; set; }
