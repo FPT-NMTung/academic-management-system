@@ -14,8 +14,7 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
   const [listWard, setListWard] = useState([]);
 
   const [isUpdating, setIsUpdating] = useState(false);
-  const [isFailed, setIsFailed] = useState(false);
-  const [canDelete, setCanDelete] = useState(undefined);
+  const [canDelete, setCanDelete] = useState(false);
 
   const [isLoadingProvince, setIsLoadingProvince] = useState(true);
   const [isLoadingDistrict, setIsLoadingDistrict] = useState(true);
@@ -74,12 +73,14 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
       setIsLoadingWard(false);
     });
     FetchApi(CenterApis.checkCanDeleteCenter, null, null, [String(data.id)])
-    .then((res) => {
-      setCanDelete(res.data.can_delete);
-    })
-    .catch((err) => {
-      toast.error('Không thể kiểm tra xem có thể xóa trung tâm này hay không');
-    })
+      .then((res) => {
+        setCanDelete(res.data.can_delete);
+      })
+      .catch((err) => {
+        toast.error(
+          'Không thể kiểm tra xem có thể xóa trung tâm này hay không'
+        );
+      });
   }, []);
 
   const handleSubmitForm = (e) => {
@@ -92,14 +93,35 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
       ward_id: e.ward,
     };
 
-    FetchApi(CenterApis.updateCenter, body, null, [`${data.id}`])
-      .then((res) => {
-        onUpdateSuccess();
-      })
-      .catch((err) => {
-        setIsUpdating(false);
-        setIsFailed(true);
-      });
+    toast.promise(
+      FetchApi(CenterApis.updateCenter, body, null, [`${data.id}`]),
+      {
+        loading: 'Đang cập nhật...',
+        success: (res) => {
+          onUpdateSuccess();
+          return 'Cập nhật thành công';
+        }, 
+        error: (err) => {
+          return 'Cập nhật thất bại';
+        },
+      }
+    );
+  };
+
+  const handleDeleteCenter = () => {
+    toast.promise(
+      FetchApi(CenterApis.deleteCenter, null, null, [`${data.id}`]),
+      {
+        loading: 'Đang xóa...',
+        success: (res) => {
+          onUpdateSuccess();
+          return 'Xóa thành công';
+        },
+        error: (err) => {
+          return 'Xóa thất bại';
+        },
+      }
+    )
   };
 
   return (
@@ -247,8 +269,7 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
                 htmlType="submit"
                 disabled={isUpdating}
               >
-                {!isUpdating && 'Cập nhật'}
-                {isUpdating && <Loading size="xs" />}
+                Cập nhật
               </Button>
               <Button
                 flat
@@ -257,7 +278,10 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
                   width: '80px',
                 }}
                 color={'error'}
-                disabled={canDelete === false || canDelete === undefined}
+                disabled={
+                  canDelete === false || canDelete === undefined || isUpdating
+                }
+                onPress={handleDeleteCenter}
               >
                 {canDelete === undefined && <Loading size="xs" />}
                 {canDelete !== undefined && 'Xoá'}
@@ -265,17 +289,6 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
             </div>
           </Form.Item>
         </Form>
-      )}
-      {!isUpdating && isFailed && (
-        <Text
-          size={14}
-          css={{
-            color: 'red',
-            textAlign: 'center',
-          }}
-        >
-          Cập nhật thất bại, vui lòng thử lại
-        </Text>
       )}
     </Fragment>
   );
