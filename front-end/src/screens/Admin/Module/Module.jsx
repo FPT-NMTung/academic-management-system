@@ -61,7 +61,7 @@ const Module = () => {
         .map((e, index) => {
           return {
             id: e.module.id,
-            key: e.module.id,
+            key: e.course_code + '-' + e.module_id + '-' + e.semester_id,
             index: index + 1,
             center_id: e.module.center_id,
             modulename: e.module.module_name,

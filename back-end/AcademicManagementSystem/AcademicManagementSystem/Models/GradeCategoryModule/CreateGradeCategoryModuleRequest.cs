@@ -11,7 +11,7 @@ public class CreateGradeCategoryModuleRequest
 public class CreateGradeCategoryDetailRequest
 {
     [JsonPropertyName("grade_category_id")]
-    public int  GradeCategoryId { get; set; }
+    public int GradeCategoryId { get; set; }
     
     [JsonPropertyName("total_weight")]
     public int TotalWeight { get; set; }

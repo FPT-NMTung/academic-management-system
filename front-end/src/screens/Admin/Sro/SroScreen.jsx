@@ -1,5 +1,14 @@
-import { Card, Grid, Text, Tooltip } from '@nextui-org/react';
-import { Button, Form, Input, Table } from 'antd';
+import {
+  Card,
+  Grid,
+  Text,
+  Tooltip,
+  Button,
+  Badge,
+  Table,
+  Loading,
+} from '@nextui-org/react';
+import { Form, Input } from 'antd';
 import { Fragment } from 'react';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../../apis/FetchApi';
@@ -17,6 +26,7 @@ const SroScreen = () => {
   const [form] = Form.useForm();
 
   const getAllSro = () => {
+    setIsLoading(true);
     const param = {
       firstName: form.getFieldValue('first_name'),
       lastName: form.getFieldValue('last_name'),
@@ -47,6 +57,34 @@ const SroScreen = () => {
     getAllSro();
   };
 
+  const renderGender = (id) => {
+    if (id === 1) {
+      return (
+        <Badge variant="flat" color="success">
+          Nam
+        </Badge>
+      );
+    } else if (id === 2) {
+      return (
+        <Badge variant="flat" color="error">
+          Nữ
+        </Badge>
+      );
+    } else if (id === 3) {
+      return (
+        <Badge variant="flat" color="default">
+          Khác
+        </Badge>
+      );
+    } else {
+      return (
+        <Badge variant="flat" color="default">
+          Không xác định
+        </Badge>
+      );
+    }
+  };
+
   useEffect(() => {
     getAllSro();
   }, []);
@@ -54,8 +92,12 @@ const SroScreen = () => {
   return (
     <Grid.Container gap={2}>
       <Grid sm={12}>
-        <Card>
-          <Card.Body>
+        <Card variant="bordered">
+          <Card.Body
+            css={{
+              padding: '10px',
+            }}
+          >
             <Form
               name="basic"
               layout="inline"
@@ -95,6 +137,8 @@ const SroScreen = () => {
               </Form.Item>
               <Form.Item style={{ width: 'calc(9% - 16px)' }}>
                 <Button
+                  flat
+                  auto
                   type="primary"
                   htmlType="submit"
                   style={{ width: '100%' }}
@@ -104,11 +148,14 @@ const SroScreen = () => {
               </Form.Item>
               <Form.Item style={{ width: '6%', marginRight: 0 }}>
                 <Button
+                  flat
+                  auto
                   type="default"
                   style={{
                     width: '100%',
                   }}
-                  onClick={handleClearInput}
+                  color="error"
+                  onPress={handleClearInput}
                 >
                   Huỷ
                 </Button>
@@ -118,7 +165,12 @@ const SroScreen = () => {
         </Card>
       </Grid>
       <Grid sm={12}>
-        <Card>
+        <Card
+          variant="bordered"
+          css={{
+            minHeight: '300px',
+          }}
+        >
           <Card.Header>
             <Grid.Container>
               <Grid sm={1}></Grid>
@@ -137,11 +189,13 @@ const SroScreen = () => {
               </Grid>
               <Grid sm={1}>
                 <Button
+                  flat
+                  auto
                   type="primary"
                   style={{
                     width: '100%',
                   }}
-                  onClick={() => {
+                  onPress={() => {
                     navigate('/admin/account/sro/create');
                   }}
                 >
@@ -150,173 +204,47 @@ const SroScreen = () => {
               </Grid>
             </Grid.Container>
           </Card.Header>
-          <Table
-            loading={isLoading}
-            bordered
-            size="middle"
-            dataSource={listSro}
-            // columns={designColumns}
-            scroll={{
-              x: 1500,
-            }}
-            pagination={{
-              size: 'default',
-              position: ['bottomCenter'],
-            }}
-          >
-            <Table.Column
-              title="STT"
-              dataIndex="index"
-              key="index"
-              width={60}
-              fixed={'left'}
-            />
-            <ColumnGroup title="Tên tài khoản">
-              <Table.Column
-                title="Họ"
-                dataIndex="first_name"
-                key="username"
-                width={180}
-                fixed={'left'}
-              />
-              <Table.Column
-                title="Tên"
-                dataIndex="last_name"
-                key="name"
-                width={100}
-                fixed={'left'}
-              />
-            </ColumnGroup>
-            <ColumnGroup title="Email">
-              <Table.Column
-                title="Cá nhân"
-                dataIndex="email"
-                key="username"
-                width={250}
-              />
-              <Table.Column
-                title="Tổ chức"
-                dataIndex="email_organization"
-                key="name"
-                width={250}
-              />
-            </ColumnGroup>
-            <Table.Column
-              title="Số điện thoại"
-              dataIndex="mobile_phone"
-              key="mobile_phone"
-              width={130}
-            />
-            <Table.Column
-              title="Ngày sinh"
-              dataIndex="birthday"
-              key="birthday"
-              width={100}
-              render={(text) => {
-                return (
-                  <Fragment>
-                    {new Date(text).toLocaleDateString('vi-VN')}
-                  </Fragment>
-                );
-              }}
-            />
-            <Table.Column
-              title="Giới tính"
-              dataIndex="gender"
-              key="gender"
-              width={90}
-              render={(data) => {
-                return <Fragment>{data.id === 1 ? 'Nam' : 'Nữ'}</Fragment>;
-              }}
-            />
-            <ColumnGroup title="Địa chỉ">
-              <Table.Column
-                title="Tỉnh/Thành phố"
-                dataIndex="province"
-                key="province"
-                width={180}
-                render={(data) => {
-                  return <Fragment>{data.name}</Fragment>;
-                }}
-              />
-              <Table.Column
-                title="Quận/Huyện"
-                dataIndex="district"
-                key="district"
-                width={180}
-                render={(data) => {
-                  return (
-                    <Fragment>
-                      {data.prefix} {data.name}
-                    </Fragment>
-                  );
-                }}
-              />
-              <Table.Column
-                title="Phường/Xã"
-                dataIndex="ward"
-                key="ward"
-                width={180}
-                render={(data) => {
-                  return (
-                    <Fragment>
-                      {data.prefix} {data.name}
-                    </Fragment>
-                  );
-                }}
-              />
-            </ColumnGroup>
-            <ColumnGroup title="Thông tin thẻ CMT/CCCD">
-              <Table.Column
-                title="Số thẻ"
-                dataIndex="citizen_identity_card_no"
-                key="citizen_identity_card_no"
-                width={160}
-              />
-              <Table.Column
-                title="Ngày cấp"
-                dataIndex="citizen_identity_card_published_date"
-                key="citizen_identity_card_published_date"
-                width={160}
-                render={(text) => {
-                  return (
-                    <Fragment>
-                      {new Date(text).toLocaleDateString('vi-VN')}
-                    </Fragment>
-                  );
-                }}
-              />
-              <Table.Column
-                title="Nơi cấp"
-                dataIndex="citizen_identity_card_published_place"
-                key="citizen_identity_card_published_place"
-                width={200}
-              />
-            </ColumnGroup>
-            <Table.Column
-              width={50}
-              title=""
-              dataIndex=""
-              key="action"
-              fixed={'right'}
-              render={(_, data) => {
-                return (
-                  <div className={classes.logoEdit}>
-                    <Tooltip placement="left" content="Chi tiết" color={'invert'}>
-                      <RiEyeFill
-                        size={20}
-                        color="0a579f"
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => {
-                          navigate(`/admin/account/sro/${data.user_id}`);
-                        }}
-                      />
-                    </Tooltip>
-                  </div>
-                );
-              }}
-            />
-          </Table>
+          {isLoading && <Loading/>}
+          {!isLoading && <Table aria-label="">
+            <Table.Header>
+              <Table.Column width={60}>STT</Table.Column>
+              <Table.Column width={320}>Họ và tên</Table.Column>
+              <Table.Column width={150}>Cơ sở</Table.Column>
+              <Table.Column width={250}>Email cá nhân</Table.Column>
+              <Table.Column width={250}>Email tổ chức</Table.Column>
+              <Table.Column>Số điện thoại</Table.Column>
+              <Table.Column>Giới tính</Table.Column>
+              <Table.Column width={20}></Table.Column>
+            </Table.Header>
+            <Table.Body>
+              {listSro.map((data, index) => (
+                <Table.Row key={data.user_id}>
+                  <Table.Cell>{index + 1}</Table.Cell>
+                  <Table.Cell>
+                    <b>
+                      {data.first_name} {data.last_name}
+                    </b>
+                  </Table.Cell>
+                  <Table.Cell>{data.center_name}</Table.Cell>
+                  <Table.Cell>{data.email}</Table.Cell>
+                  <Table.Cell>{data.email_organization}</Table.Cell>
+                  <Table.Cell>{data.mobile_phone}</Table.Cell>
+                  <Table.Cell>{renderGender(data.gender.id)}</Table.Cell>
+                  <Table.Cell>
+                    <RiEyeFill
+                      size={20}
+                      color="5EA2EF"
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        navigate(`/admin/account/sro/${data.user_id}`);
+                      }}
+                    />
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+            <Table.Pagination shadow noMargin align="center" rowsPerPage={9} />
+          </Table>}
         </Card>
       </Grid>
     </Grid.Container>

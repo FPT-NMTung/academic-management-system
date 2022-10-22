@@ -5,6 +5,7 @@ using AcademicManagementSystem.Models.AddressController.ProvinceModel;
 using AcademicManagementSystem.Models.AddressController.WardModel;
 using AcademicManagementSystem.Models.GenderController;
 using AcademicManagementSystem.Models.RoleController;
+using AcademicManagementSystem.Models.TeacherSkillController.Skill;
 using AcademicManagementSystem.Models.TeacherTypeController;
 using AcademicManagementSystem.Models.WorkingTime;
 
@@ -72,6 +73,9 @@ public class TeacherResponse
     [JsonPropertyName("working_time")]
     public WorkingTimeResponse WorkingTime { get; set; }
     
+    [JsonPropertyName("skills")]
+    public List<SkillResponse> Skills { get; set; }
+
     [JsonPropertyName("nickname")]
     public string? Nickname { get; set; }
     

@@ -1,5 +1,15 @@
-import { Badge, Card, Grid, Modal, Spacer, Text } from '@nextui-org/react';
-import { Button, Form, Select, Spin, Table } from 'antd';
+import {
+  Badge,
+  Card,
+  Grid,
+  Modal,
+  Spacer,
+  Text,
+  Button,
+  Table,
+  Loading,
+} from '@nextui-org/react';
+import { Form, Select, Spin } from 'antd';
 import { Fragment, useEffect } from 'react';
 import { useState } from 'react';
 import FetchApi from '../../../apis/FetchApi';
@@ -9,6 +19,7 @@ import { CenterApis } from '../../../apis/ListApi';
 import classes from './RoomScreen.module.css';
 import CreateRoom from '../../../components/CreateRoom/CreateRoom';
 import UpdateRoom from '../../../components/UpdateRoom/UpdateRoom';
+import { FaPen } from 'react-icons/fa';
 
 const RoomScreen = () => {
   const [listRooms, setListRooms] = useState([]);
@@ -67,6 +78,14 @@ const RoomScreen = () => {
     getListRooms();
   };
 
+  const renderTypeRoom = (id) => {
+    return (
+      <Badge variant="flat" color={id === 1 ? 'success' : 'warning'}>
+        {id === 1 ? 'Lý thuyết' : 'Thực hành'}
+      </Badge>
+    );
+  };
+
   useEffect(() => {
     getListRooms(null);
     getListCenter();
@@ -112,83 +131,91 @@ const RoomScreen = () => {
             flexDirection: 'column',
           }}
         >
-          <Card>
-            <Card.Body
-              css={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}
-            >
-              <Select
-                style={{ width: 200 }}
-                placeholder="Chọn cơ sở"
-                disabled={listCenters.length === 0}
-                onChange={handleChangeCenter}
-              >
-                {listCenters.map((e) => (
-                  <Select.Option key={e.key} value={e.id}>
-                    {e.name}
-                  </Select.Option>
-                ))}
-              </Select>
-              <Button type="primary" onClick={setIsOpenCreateRoom}>
-                Tạo phòng mới
-              </Button>
-            </Card.Body>
-          </Card>
-          <Spacer y={1} />
-          <Card>
+          <Card
+            variant="bordered"
+            css={{
+              minHeight: '300px',
+            }}
+          >
             <Card.Header>
-              <Text size={14} b css={{ textAlign: 'center', width: '100%' }}>
-                Danh sách các phòng
-              </Text>
+              <Grid.Container>
+                <Grid xs={4}>
+                  <Select
+                    style={{ width: 200 }}
+                    placeholder="Chọn cơ sở"
+                    disabled={listCenters.length === 0}
+                    onChange={handleChangeCenter}
+                  >
+                    {listCenters.map((e) => (
+                      <Select.Option key={e.key} value={e.id}>
+                        {e.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Grid>
+                <Grid xs={4}>
+                  <Text
+                    size={14}
+                    b
+                    css={{ textAlign: 'center', width: '100%' }}
+                  >
+                    Danh sách các phòng
+                  </Text>
+                </Grid>
+                <Grid xs={4} justify="flex-end">
+                  <Button
+                    auto
+                    flat
+                    type="primary"
+                    onClick={setIsOpenCreateRoom}
+                  >
+                    + Tạo phòng mới
+                  </Button>
+                </Grid>
+              </Grid.Container>
             </Card.Header>
-            <Table
-              loading={isFetchingTable}
-              dataSource={listRooms}
-              pagination={{ position: ['bottomCenter'], size: 'default' }}
-              size={'middle'}
-            >
-              <Table.Column title="STT" dataIndex="index" />
-              <Table.Column title="Tên" dataIndex="name" />
-              <Table.Column title="Cơ sở" dataIndex="center_name" />
-              <Table.Column title="Loại phòng" dataIndex="roome_name_type" />
-              <Table.Column title="Sức chứa" dataIndex="capacity" />
-              <Table.Column
-                title="Trạng thái"
-                dataIndex="status_room"
-                render={() => {
-                  return (
-                    <Badge
-                      css={{
-                        margin: '0',
-                      }}
-                      size="md"
-                      color="error"
-                      variant="flat"
-                    >
-                      Đang sử dụng
-                    </Badge>
-                  );
-                }}
-              />
-              <Table.Column
-                title=""
-                dataIndex="id"
-                render={(_, data) => {
-                  return (
-                    <MdEdit
-                      style={{ cursor: 'pointer' }}
-                      color="0a579f"
-                      onClick={() => {
-                        setSelectRoomId(data.id);
-                      }}
-                    />
-                  );
-                }}
-              />
-            </Table>
+            {isFetchingTable && <Loading />}
+            {!isFetchingTable && (
+              <Table>
+                <Table.Header>
+                  <Table.Column>STT</Table.Column>
+                  <Table.Column>Tên</Table.Column>
+                  <Table.Column>Cơ sở</Table.Column>
+                  <Table.Column>Loại phòng</Table.Column>
+                  <Table.Column>Sức chứa</Table.Column>
+                  <Table.Column>Trạng thái</Table.Column>
+                  <Table.Column width={30}></Table.Column>
+                </Table.Header>
+                <Table.Body>
+                  {listRooms.map((e, index) => (
+                    <Table.Row key={index}>
+                      <Table.Cell>{index + 1}</Table.Cell>
+                      <Table.Cell>{e.name}</Table.Cell>
+                      <Table.Cell>{e.center_name}</Table.Cell>
+                      <Table.Cell>{renderTypeRoom(e.room_type.id)}</Table.Cell>
+                      <Table.Cell>{e.capacity}</Table.Cell>
+                      <Table.Cell>{e.capacity}</Table.Cell>
+                      <Table.Cell>
+                        <FaPen
+                          size={14}
+                          color="5EA2EF"
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => {
+                            setSelectRoomId(e.id);
+                          }}
+                        />
+                      </Table.Cell>
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+                <Table.Pagination
+                  shadow
+                  noMargin
+                  align="center"
+                  rowsPerPage={9}
+                />
+              </Table>
+            )}
           </Card>
         </Grid>
       </Grid.Container>

@@ -1,5 +1,5 @@
-import { Grid, Card, Text, Spacer } from '@nextui-org/react';
-import { Button, Form, Input, Select, DatePicker, InputNumber } from 'antd';
+import { Grid, Card, Text, Spacer, Button, Loading } from '@nextui-org/react';
+import { Form, Input, Select, DatePicker, InputNumber } from 'antd';
 import classes from './TeacherCreate.module.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -25,6 +25,7 @@ const translateWorkingTime = {
 };
 
 const TeacherCreate = ({ modeUpdate }) => {
+  console.log('modeUpdate', modeUpdate);
   const [listCenter, setListCenter] = useState([]);
   const [listGender, setListGender] = useState([]);
   const [listProvince, setListProvince] = useState([]);
@@ -236,7 +237,7 @@ const TeacherCreate = ({ modeUpdate }) => {
     >
       <Grid.Container justify="center">
         <Grid xs={7} direction={'column'} css={{ rowGap: 20 }}>
-          <Card>
+          <Card variant="bordered">
             <Card.Header>
               <Text
                 b
@@ -734,18 +735,23 @@ const TeacherCreate = ({ modeUpdate }) => {
                     }
                     parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
                     style={{ width: '100%' }}
-                    addonAfter="VNĐ"
                   />
                 </Form.Item>
               </div>
               <div className={classes.buttonCreate}>
                 <Button
+                  flat
+                  auto
+                  css={{
+                    width: '150px',
+                  }}
                   type="primary"
                   htmlType="submit"
-                  loading={isCreatingOrUpdating}
+                  disabled={isCreatingOrUpdating}
                 >
-                  {!modeUpdate && 'Tạo mới'}
-                  {modeUpdate && 'Cập nhật'}
+                  {!modeUpdate && !isCreatingOrUpdating && 'Tạo mới'}
+                  {modeUpdate && !isCreatingOrUpdating && 'Cập nhật'}
+                  {isCreatingOrUpdating && <Loading size={'xs'}/>}
                 </Button>
                 {!isCreatingOrUpdating && messageFailed !== undefined && (
                   <Fragment>

@@ -6,6 +6,7 @@ import {
   Button,
   Table,
   Badge,
+  Loading,
 } from '@nextui-org/react';
 import { Form, Input, message } from 'antd';
 import FetchApi from '../../../apis/FetchApi';
@@ -176,7 +177,12 @@ const TeacherScreen = () => {
         </Card>
       </Grid>
       <Grid sm={12}>
-        <Card variant="bordered">
+        <Card
+          variant="bordered"
+          css={{
+            minHeight: '300px',
+          }}
+        >
           <Card.Header>
             <Grid.Container>
               <Grid sm={1}></Grid>
@@ -210,222 +216,56 @@ const TeacherScreen = () => {
               </Grid>
             </Grid.Container>
           </Card.Header>
-          {/* <Table
-            loading={isGetData}
-            dataSource={dataSource}
-            scroll={{
-              x: 1500,
-            }}
-            bordered
-            size="middle"
-            pagination={{
-              size: 'default',
-              position: ['bottomCenter'],
-            }}
-          >
-            <Table.Column
-              title="STT"
-              dataIndex="index"
-              key="index"
-              width={50}
-              fixed={'left'}
-            />
-            <ColumnGroup title="Tên tài khoản">
-              <Table.Column
-                title="Họ"
-                dataIndex="first_name"
-                key="username"
-                width={180}
-                fixed={'left'}
-              />
-              <Table.Column
-                title="Tên"
-                dataIndex="last_name"
-                key="name"
-                width={100}
-                fixed={'left'}
-              />
-            </ColumnGroup>
-            <Table.Column
-              title="Biệt danh"
-              dataIndex="nickname"
-              key="nickname"
-              width={150}
-            />
-            <ColumnGroup title="Email">
-              <Table.Column
-                title="Cá nhân"
-                dataIndex="email"
-                key="username"
-                width={250}
-              />
-              <Table.Column
-                title="Tổ chức"
-                dataIndex="email_organization"
-                key="name"
-                width={250}
-              />
-            </ColumnGroup>
-            <Table.Column
-              title="Số điện thoại"
-              dataIndex="mobile_phone"
-              key="mobile_phone"
-              width={130}
-            />
-            <Table.Column
-              title="Ngày sinh"
-              dataIndex="birthday"
-              key="birthday"
-              width={100}
-              render={(text) => {
-                return (
-                  <Fragment>
-                    {new Date(text).toLocaleDateString('vi-VN')}
-                  </Fragment>
-                );
-              }}
-            />
-            <Table.Column
-              title="Giới tính"
-              dataIndex="gender"
-              key="gender"
-              width={90}
-              render={(data) => {
-                return <Fragment>{data.id === 1 ? 'Nam' : 'Nữ'}</Fragment>;
-              }}
-            />
-            <ColumnGroup title="Địa chỉ">
-              <Table.Column
-                title="Tỉnh/Thành phố"
-                dataIndex="province"
-                key="province"
-                width={180}
-                render={(data) => {
-                  return <Fragment>{data.name}</Fragment>;
-                }}
-              />
-              <Table.Column
-                title="Quận/Huyện"
-                dataIndex="district"
-                key="district"
-                width={180}
-                render={(data) => {
-                  return (
-                    <Fragment>
-                      {data.prefix} {data.name}
-                    </Fragment>
-                  );
-                }}
-              />
-              <Table.Column
-                title="Phường/Xã"
-                dataIndex="ward"
-                key="ward"
-                width={180}
-                render={(data) => {
-                  return (
-                    <Fragment>
-                      {data.prefix} {data.name}
-                    </Fragment>
-                  );
-                }}
-              />
-            </ColumnGroup>
-            <ColumnGroup title="Thông tin thẻ CMT/CCCD">
-              <Table.Column
-                title="Số thẻ"
-                dataIndex="citizen_identity_card_no"
-                key="citizen_identity_card_no"
-                width={160}
-              />
-              <Table.Column
-                title="Ngày cấp"
-                dataIndex="citizen_identity_card_published_date"
-                key="citizen_identity_card_published_date"
-                width={160}
-                render={(text) => {
-                  return (
-                    <Fragment>
-                      {new Date(text).toLocaleDateString('vi-VN')}
-                    </Fragment>
-                  );
-                }}
-              />
-              <Table.Column
-                title="Nơi cấp"
-                dataIndex="citizen_identity_card_published_place"
-                key="citizen_identity_card_published_place"
-                width={200}
-              />
-            </ColumnGroup>
-            <Table.Column
-              width={50}
-              title=""
-              dataIndex=""
-              key="action"
-              fixed={'right'}
-              render={(_, data) => {
-                return (
-                  <div className={classes.logoEdit}>
-                    <Tooltip
-                      placement="left"
-                      content="Chi tiết"
-                      color={'invert'}
-                    >
+          {isGetData && <Loading />}
+          {!isGetData && (
+            <Table aria-label="">
+              <Table.Header>
+                <Table.Column width={60}>STT</Table.Column>
+                <Table.Column width={270}>Họ và tên</Table.Column>
+                <Table.Column width={150}>Biệt danh</Table.Column>
+                <Table.Column width={150}>Cơ sở</Table.Column>
+                <Table.Column width={250}>Email cá nhân</Table.Column>
+                <Table.Column width={250}>Email tổ chức</Table.Column>
+                <Table.Column>Số điện thoại</Table.Column>
+                <Table.Column>Giới tính</Table.Column>
+                <Table.Column width={20}></Table.Column>
+              </Table.Header>
+              <Table.Body>
+                {dataSource.map((data, index) => (
+                  <Table.Row key={data.user_id}>
+                    <Table.Cell>{index + 1}</Table.Cell>
+                    <Table.Cell>
+                      <b>
+                        {data.first_name} {data.last_name}
+                      </b>
+                    </Table.Cell>
+                    <Table.Cell>{data.nickname}</Table.Cell>
+                    <Table.Cell>{data.center_name}</Table.Cell>
+                    <Table.Cell>{data.email}</Table.Cell>
+                    <Table.Cell>{data.email_organization}</Table.Cell>
+                    <Table.Cell>{data.mobile_phone}</Table.Cell>
+                    <Table.Cell>{renderGender(data.gender.id)}</Table.Cell>
+                    <Table.Cell>
                       <RiEyeFill
                         size={20}
-                        color="0a579f"
+                        color="5EA2EF"
                         style={{ cursor: 'pointer' }}
                         onClick={() => {
                           navigate(`/admin/account/teacher/${data.user_id}`);
                         }}
                       />
-                    </Tooltip>
-                  </div>
-                );
-              }}
-            />
-          </Table> */}
-          <Table aria-label="">
-            <Table.Header>
-              <Table.Column width={60}>STT</Table.Column>
-              <Table.Column width={320}>Họ và tên</Table.Column>
-              <Table.Column width={160}>Biệt danh</Table.Column>
-              <Table.Column width={250}>Email cá nhân</Table.Column>
-              <Table.Column width={250}>Email tổ chức</Table.Column>
-              <Table.Column>Số điện thoại</Table.Column>
-              <Table.Column>Giới tính</Table.Column>
-              <Table.Column width={20}></Table.Column>
-            </Table.Header>
-            <Table.Body>
-              {dataSource.map((data, index) => (
-                <Table.Row key={data.user_id}>
-                  <Table.Cell>{index + 1}</Table.Cell>
-                  <Table.Cell>
-                    <b>
-                      {data.first_name} {data.last_name}
-                    </b>
-                  </Table.Cell>
-                  <Table.Cell>{data.nickname}</Table.Cell>
-                  <Table.Cell>{data.email}</Table.Cell>
-                  <Table.Cell>{data.email_organization}</Table.Cell>
-                  <Table.Cell>{data.mobile_phone}</Table.Cell>
-                  <Table.Cell>{renderGender(data.gender.id)}</Table.Cell>
-                  <Table.Cell>
-                    <RiEyeFill
-                      size={20}
-                      color="5EA2EF"
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        navigate(`/admin/account/teacher/${data.user_id}`);
-                      }}
-                    />
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-            <Table.Pagination shadow noMargin align="center" rowsPerPage={10} />
-          </Table>
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+              <Table.Pagination
+                shadow
+                noMargin
+                align="center"
+                rowsPerPage={9}
+              />
+            </Table>
+          )}
         </Card>
       </Grid>
     </Grid.Container>
