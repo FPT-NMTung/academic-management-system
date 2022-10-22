@@ -28,7 +28,6 @@ public class CourseController : ControllerBase
     {
         var courses = _context.Courses
             .Include(c => c.CourseFamily)
-            .Include(c => c.CoursesModulesSemesters)
             .Select(c => new CourseResponse()
             {
                 Code = c.Code, CourseFamilyCode = c.CourseFamilyCode, Name = c.Name, SemesterCount = c.SemesterCount,
@@ -51,7 +50,6 @@ public class CourseController : ControllerBase
     {
         var course = _context.Courses
             .Include(c => c.CourseFamily)
-            .Include(c => c.CoursesModulesSemesters)
             .FirstOrDefault(c => c.Code == code.ToUpper().Trim());
         if (course == null)
         {
@@ -110,9 +108,15 @@ public class CourseController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (IsExistedCourse(request.Code))
+        if (IsCourseCodeExists(request.Code))
         {
             var error = ErrorDescription.Error["E1014"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsCourseNameExists(request.Name))
+        {
+            var error = ErrorDescription.Error["E1057"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -178,6 +182,12 @@ public class CourseController : ControllerBase
         if (Regex.IsMatch(request.Name, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
         {
             var error = ErrorDescription.Error["E1016"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
+        if (IsCourseNameWithDifferentCodeExists(request.Name, code))
+        {
+            var error = ErrorDescription.Error["E1058"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -262,9 +272,21 @@ public class CourseController : ControllerBase
         return courseResponse;
     }
 
-    // is existed course
-    private bool IsExistedCourse(string code)
+    // is course code exists
+    private bool IsCourseCodeExists(string code)
     {
         return _context.Courses.Any(c => c.Code == code.ToUpper().Trim());
+    }
+
+    // is course name exists
+    private bool IsCourseNameExists(string name)
+    {
+        return _context.Courses.Any(c => c.Name == name.Trim());
+    }
+
+    // is course name with different code exists
+    private bool IsCourseNameWithDifferentCodeExists(string name, string code)
+    {
+        return _context.Courses.Any(c => c.Name == name.Trim() && c.Code != code.ToUpper().Trim());
     }
 }

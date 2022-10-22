@@ -6,6 +6,11 @@ namespace AcademicManagementSystem.Context.AmsModels;
 [Table("teacher")]
 public class Teacher
 {
+    public Teacher()
+    {
+        this.TeachersSkills = new HashSet<TeacherSkill>();
+    }
+
     [Key]
     [Column("user_id")]
     [ForeignKey("User")]
@@ -38,9 +43,7 @@ public class Teacher
 
     // relationships
     public virtual User User { get; set; }
-
     public virtual TeacherType TeacherType { get; set; }
-    
     public virtual WorkingTime WorkingTime { get; set; }
-        
+    public virtual ICollection<TeacherSkill> TeachersSkills { get; set; }
 }
