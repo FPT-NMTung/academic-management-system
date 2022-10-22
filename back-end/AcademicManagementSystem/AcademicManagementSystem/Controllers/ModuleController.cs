@@ -159,7 +159,7 @@ public class ModuleController : ControllerBase
                 var error = ErrorDescription.Error["1041"];
                 return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
             }
-            
+
             var courseModuleSemester = new CourseModuleSemester()
             {
                 CourseCode = courseCode.ToUpper().Trim(),
@@ -195,10 +195,9 @@ public class ModuleController : ControllerBase
         out IActionResult notFound)
     {
         // is course code exist
-        foreach (var cc in listCourseCodes)
+        if (listCourseCodes.Select(cc => _context.Courses.FirstOrDefault(c => c.Code == cc.ToUpper().Trim()))
+            .Any(course => course == null))
         {
-            var course = _context.Courses.FirstOrDefault(c => c.Code == cc.ToUpper().Trim());
-            if (course != null) continue;
             var error = ErrorDescription.Error["E1038"];
             notFound = NotFound(CustomResponse.NotFound(error.Message));
             return true;
