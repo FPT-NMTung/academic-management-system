@@ -3,15 +3,19 @@ import Logo from '../../../images/logo_1.webp';
 import { NavLink } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { IoHome } from 'react-icons/io5';
-import { Dropdown, Spacer, User } from '@nextui-org/react';
+import { Badge, Dropdown, Spacer, Text, User } from '@nextui-org/react';
 import { useNavigate } from 'react-router-dom';
 import FetchApi from '../../../apis/FetchApi';
 import { UserApis } from '../../../apis/ListApi';
 import { Fragment } from 'react';
-import { FaPowerOff,FaDoorOpen } from 'react-icons/fa';
+import { FaPowerOff, FaDoorOpen } from 'react-icons/fa';
 import { MdManageAccounts } from 'react-icons/md';
-import { ImBooks,ImBook,ImLibrary } from 'react-icons/im';
-import { MdMeetingRoom, MdSupervisedUserCircle,MdMenuBook } from 'react-icons/md';
+import { ImBooks, ImBook, ImLibrary } from 'react-icons/im';
+import {
+  MdMeetingRoom,
+  MdSupervisedUserCircle,
+  MdMenuBook,
+} from 'react-icons/md';
 
 const ROLE = {
   1: 'Admin',
@@ -32,13 +36,13 @@ const menu = {
       key: '2',
       label: 'Tài khoản giáo viên',
       icon: <MdManageAccounts size={20} />,
-      url: '/admin/account/teacher', 
+      url: '/admin/account/teacher',
     },
     {
       key: '3',
       label: 'Tài khoản SRO',
       icon: <MdSupervisedUserCircle size={20} />,
-      url: '/admin/account/sro', 
+      url: '/admin/account/sro',
     },
 
     {
@@ -66,16 +70,19 @@ const menu = {
       icon: <FaDoorOpen size={18} />,
       url: '/admin/room',
     },
-    
-
   ],
   sro: [
-
     {
       key: '8',
       label: 'Quản lý lớp học',
       icon: <IoHome size={16} />,
       url: '/sro/manage-class',
+    },
+    {
+      key: '9',
+      label: 'Quản lý học viên',
+      icon: <IoHome size={16} />,
+      url: '/sro/manage/student',
     },
   ],
   teacher: [],
@@ -105,6 +112,7 @@ const ThirdLayout = ({ children }) => {
           avatar: data.avatar,
           emailOrganization: data.email_organization,
           mobilePhone: data.mobile_phone,
+          centerName: data.center_name,
         });
       })
       .catch(() => {
@@ -139,6 +147,9 @@ const ThirdLayout = ({ children }) => {
         </div>
         <div className={classes.rightSide}>
           <div className={classes.header}>
+            <Badge variant={'flat'} color="success" size="md">
+              {dataUser.centerName}
+            </Badge>
             <Dropdown placement="bottom">
               <Dropdown.Trigger css={{ cursor: 'pointer' }}>
                 <User

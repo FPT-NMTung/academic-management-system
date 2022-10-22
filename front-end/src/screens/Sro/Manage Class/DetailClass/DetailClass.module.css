@@ -1,0 +1,9 @@
+.groupButton {
+    display: flex;
+    gap: 10px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+}
