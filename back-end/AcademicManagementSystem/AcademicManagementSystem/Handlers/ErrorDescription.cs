@@ -148,6 +148,10 @@ public static class ErrorDescription
         { "E1065", new ErrorModel() { Message = "Skill is not exists", Type = "skill-error-0004" } },
         { "E1066", new ErrorModel() { Message = "Skill Name with different id is existed", Type = "skill-error-0005" } },
         
+        // teacher_skill
+        { "E1067", new ErrorModel() { Message = "Not Found Teacher_Skill with TeacherID", Type = "teacher-skill-error-0001" } },
+        { "E1068", new ErrorModel() { Message = "Not Found Teacher_Skill with SkillID", Type = "teacher-skill-error-0002" } },
+        
         //grade
         { "E0056", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0001" } },
         { "E0057", new ErrorModel() { Message = "Total Weight must be 100 for all grade category", Type = "grade-error-0002" } },

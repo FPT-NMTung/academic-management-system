@@ -12,9 +12,9 @@ public class TeacherSkillResponse
     [JsonPropertyName("skill_id")]
     public int SkillId { get; set; }
     
-    [JsonPropertyName("teacher")]
-    public TeacherResponse? Teacher { get; set; }
+    [JsonPropertyName("teacher_name")]
+    public string? TeacherName { get; set; }
     
-    [JsonPropertyName("skill")]
-    public SkillResponse? Skill { get; set; }
+    [JsonPropertyName("skill_name")]
+    public string? SkillName { get; set; }
 }
