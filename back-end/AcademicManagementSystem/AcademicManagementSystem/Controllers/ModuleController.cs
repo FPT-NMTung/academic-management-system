@@ -109,7 +109,7 @@ public class ModuleController : ControllerBase
         var listCourseCodes = request.CourseCode;
         var semesterId = request.SemesterId;
 
-        if (IsCourseCenterSemesterExisted(request, listCourseCodes, out var notFound)) return notFound;
+        if (CheckCourseCenterSemesterExisted(request, listCourseCodes, out var notFound)) return notFound;
 
         if (CheckStringNameRequestCreate(request, out var badRequest)) return badRequest;
 
@@ -196,7 +196,7 @@ public class ModuleController : ControllerBase
         return _context.Modules.Any(m => string.Equals(m.ModuleName.ToLower(), moduleName.ToLower()));
     }
 
-    private bool IsCourseCenterSemesterExisted(CreateModuleRequest request, List<string> listCourseCodes,
+    private bool CheckCourseCenterSemesterExisted(CreateModuleRequest request, IEnumerable<string> listCourseCodes,
         out IActionResult notFound)
     {
         // is course code exist
