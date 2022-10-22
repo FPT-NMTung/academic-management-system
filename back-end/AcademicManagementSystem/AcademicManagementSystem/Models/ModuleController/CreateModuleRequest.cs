@@ -35,7 +35,7 @@ public class CreateModuleRequest
     public int ExamType { get; set; }
     
     [JsonPropertyName("course_code")]
-    public string CourseCode { get; set; }
+    public List<string> CourseCode { get; set; }
     
     [JsonPropertyName("semester_id")]
     public int SemesterId { get; set; }

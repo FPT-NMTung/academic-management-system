@@ -61,7 +61,7 @@ public struct StringConstant
         @"[!@#$%^&*()_+=\[{\]};:<>|./?,-]";
     
     public const string RegexSpecialCharactersNotAllowForClassName = @"[!@#$%^&*+=\[{\]};:<>|./?,]";
-
+    public const string RegexSpecialCharacterNotAllowForModuleName = @"[~`!@$%^*+=|\\{}':;<>/?[\]]";
     
     // all special characters 
     public const string RegexSpecialCharacters = @"[!@#$%^&*()_+=\[{\]};:<>|./?,-]";

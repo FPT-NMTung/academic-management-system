@@ -103,38 +103,24 @@ public class ModuleController : ControllerBase
     [Authorize(Roles = "admin,sro")]
     public IActionResult CreateModule([FromBody] CreateModuleRequest request)
     {
-        request.CourseCode = request.CourseCode.ToUpper().Trim();
         request.ModuleName = request.ModuleName.Trim();
         request.ModuleExamNamePortal = request.ModuleExamNamePortal.Trim();
         request.SemesterNamePortal = request.SemesterNamePortal.Trim();
+        var listCourseCodes = request.CourseCode;
+        var semesterId = request.SemesterId;
 
-        // is course code exist
-        var course = _context.Courses.FirstOrDefault(c => c.Code == request.CourseCode);
-        if (course == null)
-        {
-            var error = ErrorDescription.Error["E1038"];
-            return NotFound(CustomResponse.NotFound(error.Message));
-        }
-
-        // is center id exist
-        var center = _context.Centers.FirstOrDefault(c => c.Id == request.CenterId);
-        if (center == null)
-        {
-            var error = ErrorDescription.Error["E1039"];
-            return NotFound(CustomResponse.NotFound(error.Message));
-        }
-
-        // is semester id exist
-        var semester = _context.Semesters.FirstOrDefault(s => s.Id == request.SemesterId);
-        if (semester == null)
-        {
-            var error = ErrorDescription.Error["E1040"];
-            return NotFound(CustomResponse.NotFound(error.Message));
-        }
+        if (IsCourseCenterSemesterExisted(request, listCourseCodes, out var notFound)) return notFound;
 
         if (CheckStringNameRequestCreate(request, out var badRequest)) return badRequest;
 
         if (CheckIntegerNumberRequestCreate(request, out var badRequestObjectResult)) return badRequestObjectResult;
+
+        // moduleName existed
+        if (_context.Modules.Any(m => string.Equals(m.ModuleName.ToLower(), request.ModuleName.ToLower())))
+        {
+            var error = ErrorDescription.Error["E1053"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         var module = new Module()
         {
@@ -151,27 +137,32 @@ public class ModuleController : ControllerBase
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now
         };
-        var courseCode = request.CourseCode;
-        var semesterId = request.SemesterId;
-
-        // is course code, semester id, center id exist
-        var courseSemesterCenter = GetCourseSemesterCenter(request, courseCode, semesterId);
-        if (!courseSemesterCenter.Any())
+        // add module
+        _context.Modules.Add(module);
+        try
         {
-            _context.Modules.Add(module);
-            try
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E1021"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // add to course_module_semester
+        foreach (var courseCode in listCourseCodes)
+        {
+            // course code, module id, semester id existed
+            if (_context.CoursesModulesSemesters.Any(cms =>
+                    cms.CourseCode == courseCode && cms.ModuleId == module.Id && cms.SemesterId == semesterId))
             {
-                _context.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                var error = ErrorDescription.Error["E1021"];
+                var error = ErrorDescription.Error["1041"];
                 return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
             }
-
+            
             var courseModuleSemester = new CourseModuleSemester()
             {
-                CourseCode = courseCode,
+                CourseCode = courseCode.ToUpper().Trim(),
                 ModuleId = module.Id,
                 SemesterId = semesterId
             };
@@ -187,11 +178,6 @@ public class ModuleController : ControllerBase
                 return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
             }
         }
-        else
-        {
-            var error = ErrorDescription.Error["E1041"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
 
         var createdModule = GetCoursesModulesSemestersByModuleId(module.Id).FirstOrDefault();
         if (createdModule == null)
@@ -203,6 +189,41 @@ public class ModuleController : ControllerBase
         AddDataToGradeCategoryModule(module.Id, request.ExamType);
 
         return Ok(CustomResponse.Ok("Module created successfully", createdModule));
+    }
+
+    private bool IsCourseCenterSemesterExisted(CreateModuleRequest request, List<string> listCourseCodes,
+        out IActionResult notFound)
+    {
+        // is course code exist
+        foreach (var cc in listCourseCodes)
+        {
+            var course = _context.Courses.FirstOrDefault(c => c.Code == cc.ToUpper().Trim());
+            if (course != null) continue;
+            var error = ErrorDescription.Error["E1038"];
+            notFound = NotFound(CustomResponse.NotFound(error.Message));
+            return true;
+        }
+
+        // is center id exist
+        var center = _context.Centers.FirstOrDefault(c => c.Id == request.CenterId);
+        if (center == null)
+        {
+            var error = ErrorDescription.Error["E1039"];
+            notFound = NotFound(CustomResponse.NotFound(error.Message));
+            return true;
+        }
+
+        // is semester id exist
+        var semester = _context.Semesters.FirstOrDefault(s => s.Id == request.SemesterId);
+        if (semester == null)
+        {
+            var error = ErrorDescription.Error["E1040"];
+            notFound = NotFound(CustomResponse.NotFound(error.Message));
+            return true;
+        }
+
+        notFound = null!;
+        return false;
     }
 
     private bool CheckIntegerNumberRequestCreate(CreateModuleRequest request, out IActionResult badRequestObjectResult)
@@ -275,14 +296,13 @@ public class ModuleController : ControllerBase
 
     private bool CheckStringNameRequestCreate(CreateModuleRequest request, out IActionResult badRequest)
     {
-        request.CourseCode = request.CourseCode.ToUpper().Trim();
         request.ModuleName = request.ModuleName.Trim();
         request.ModuleExamNamePortal = request.ModuleExamNamePortal.Trim();
         request.SemesterNamePortal = request.SemesterNamePortal.Trim();
+        var listCourseCodes = request.CourseCode;
 
         // check empty string
-        if (string.IsNullOrWhiteSpace(request.CourseCode) || string.IsNullOrWhiteSpace(request.ModuleName) ||
-            string.IsNullOrWhiteSpace(request.ModuleExamNamePortal) ||
+        if (string.IsNullOrWhiteSpace(request.ModuleName) || string.IsNullOrWhiteSpace(request.ModuleExamNamePortal) ||
             string.IsNullOrWhiteSpace(request.SemesterNamePortal))
         {
             var error = ErrorDescription.Error["E1023"];
@@ -291,26 +311,27 @@ public class ModuleController : ControllerBase
         }
 
         // check course code
-        request.CourseCode = Regex.Replace(request.CourseCode, StringConstant.RegexWhiteSpaces, " ");
-        request.CourseCode = request.CourseCode.Replace(" ' ", "'").Trim();
-        if (Regex.IsMatch(request.CourseCode, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        foreach (var courseCode in listCourseCodes)
         {
-            var error = ErrorDescription.Error["E1026"];
-            badRequest = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-            return true;
-        }
+            var newCourseCode = Regex.Replace(courseCode, StringConstant.RegexWhiteSpaces, " ");
+            newCourseCode = newCourseCode.Replace(" ' ", "'").Trim();
+            if (Regex.IsMatch(newCourseCode, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+            {
+                var error = ErrorDescription.Error["E1026"];
+                badRequest = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+                return true;
+            }
 
-        if (request.CourseCode.Length > 100)
-        {
-            var error = ErrorDescription.Error["E1027"];
-            badRequest = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            if (newCourseCode.Length <= 100) continue;
+            var error1 = ErrorDescription.Error["E1027"];
+            badRequest = BadRequest(CustomResponse.BadRequest(error1.Message, error1.Type));
             return true;
         }
 
         //check module name
         request.ModuleName = Regex.Replace(request.ModuleName, StringConstant.RegexWhiteSpaces, " ");
         request.ModuleName = request.ModuleName.Replace(" ' ", "'").Trim();
-        if (Regex.IsMatch(request.ModuleName, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        if (Regex.IsMatch(request.ModuleName, StringConstant.RegexSpecialCharacterNotAllowForModuleName))
         {
             var error = ErrorDescription.Error["E1024"];
             badRequest = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -328,7 +349,7 @@ public class ModuleController : ControllerBase
         request.ModuleExamNamePortal =
             Regex.Replace(request.ModuleExamNamePortal, StringConstant.RegexWhiteSpaces, " ");
         request.ModuleExamNamePortal = request.ModuleExamNamePortal.Replace(" ' ", "'").Trim();
-        if (Regex.IsMatch(request.ModuleExamNamePortal, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+        if (Regex.IsMatch(request.ModuleExamNamePortal, StringConstant.RegexSpecialCharacterNotAllowForModuleName))
         {
             var error = ErrorDescription.Error["E1028"];
             badRequest = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -361,16 +382,6 @@ public class ModuleController : ControllerBase
 
         badRequest = null!;
         return false;
-    }
-
-    private IQueryable<Module> GetCourseSemesterCenter(CreateModuleRequest request, string courseCode, int? semesterId)
-    {
-        var courseSemesterCenter = _context.Modules
-            .Join(_context.CoursesModulesSemesters, m => m.Id, cms => cms.ModuleId, (m, cms) => new { m, cms })
-            .Where(@t => @t.cms.CourseCode == courseCode && @t.cms.SemesterId == semesterId &&
-                         @t.m.CenterId == request.CenterId)
-            .Select(@t => @t.m);
-        return courseSemesterCenter;
     }
 
     // update module by id
