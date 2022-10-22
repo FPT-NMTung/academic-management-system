@@ -22,7 +22,7 @@ public class Module
     
     [Column("semester_name_portal")]
     [StringLength(255)]
-    public string? SemesterNamePortal { get; set; }
+    public string SemesterNamePortal { get; set; }
     
     [Column("module_name")]
     [StringLength(255)]
@@ -30,7 +30,7 @@ public class Module
     
     [Column("module_exam_name_portal")]
     [StringLength(255)]
-    public string? ModuleExamNamePortal { get; set; }
+    public string ModuleExamNamePortal { get; set; }
     
     [Column("module_type")]
     public int ModuleType { get; set; }

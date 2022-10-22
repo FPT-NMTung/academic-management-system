@@ -103,12 +103,13 @@ public static class ErrorDescription
         { "E1038", new ErrorModel() { Message = "Course Code is not existed", Type = "module-error-00018" } },
         { "E1039", new ErrorModel() { Message = "Center Id is not existed", Type = "module-error-00019" } },
         { "E1040", new ErrorModel() { Message = "Semester Id is not existed", Type = "module-error-00020" } },
-        { "E1041", new ErrorModel() { Message = "Module with course code, semester id existed", Type = "module-error-00021" } },
+        { "E1041", new ErrorModel() { Message = "Module in Course and Semester existed", Type = "module-error-00021" } },
         { "E1042", new ErrorModel() { Message = "Fail to SaveChange when Update Module", Type = "module-error-00022" } },
         { "E1043", new ErrorModel() { Message = "Max Grade must be ignore or greater than 0", Type = "module-error-00023" } },
         { "E1044", new ErrorModel() { Message = "Update module success but cannot get response", Type = "module-error-00024" } },
         { "E1045", new ErrorModel() { Message = "Create module success but cannot get response", Type = "module-error-00025" } },
         { "E1046", new ErrorModel() { Message = "Set null for max grade by exam type fail", Type = "module-error-00026" } },
+        { "E1053", new ErrorModel() { Message = "Module name existed", Type = "module-error-00027" } },
 
         // teacher
         { "E0039", new ErrorModel() { Message = "Please enter at least one search criteria", Type = "teacher-error-0002" } },
