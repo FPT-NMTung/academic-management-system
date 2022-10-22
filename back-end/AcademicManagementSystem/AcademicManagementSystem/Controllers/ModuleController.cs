@@ -105,8 +105,8 @@ public class ModuleController : ControllerBase
     {
         request.CourseCode = request.CourseCode.ToUpper().Trim();
         request.ModuleName = request.ModuleName.Trim();
-        request.ModuleExamNamePortal = request.ModuleExamNamePortal?.Trim();
-        request.SemesterNamePortal = request.SemesterNamePortal?.Trim();
+        request.ModuleExamNamePortal = request.ModuleExamNamePortal.Trim();
+        request.SemesterNamePortal = request.SemesterNamePortal.Trim();
 
         // is course code exist
         var course = _context.Courses.FirstOrDefault(c => c.Code == request.CourseCode);
@@ -277,8 +277,8 @@ public class ModuleController : ControllerBase
     {
         request.CourseCode = request.CourseCode.ToUpper().Trim();
         request.ModuleName = request.ModuleName.Trim();
-        request.ModuleExamNamePortal = request.ModuleExamNamePortal?.Trim();
-        request.SemesterNamePortal = request.SemesterNamePortal?.Trim();
+        request.ModuleExamNamePortal = request.ModuleExamNamePortal.Trim();
+        request.SemesterNamePortal = request.SemesterNamePortal.Trim();
 
         // check empty string
         if (string.IsNullOrWhiteSpace(request.CourseCode) || string.IsNullOrWhiteSpace(request.ModuleName) ||
@@ -326,7 +326,7 @@ public class ModuleController : ControllerBase
 
         // check exam name portal
         request.ModuleExamNamePortal =
-            Regex.Replace(request.ModuleExamNamePortal!, StringConstant.RegexWhiteSpaces, " ");
+            Regex.Replace(request.ModuleExamNamePortal, StringConstant.RegexWhiteSpaces, " ");
         request.ModuleExamNamePortal = request.ModuleExamNamePortal.Replace(" ' ", "'").Trim();
         if (Regex.IsMatch(request.ModuleExamNamePortal, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
         {
@@ -343,7 +343,7 @@ public class ModuleController : ControllerBase
         }
 
         // check semester name portal
-        request.SemesterNamePortal = Regex.Replace(request.SemesterNamePortal!, StringConstant.RegexWhiteSpaces, " ");
+        request.SemesterNamePortal = Regex.Replace(request.SemesterNamePortal, StringConstant.RegexWhiteSpaces, " ");
         request.SemesterNamePortal = request.SemesterNamePortal.Replace(" ' ", "'").Trim();
         if (Regex.IsMatch(request.SemesterNamePortal, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
         {
@@ -391,8 +391,8 @@ public class ModuleController : ControllerBase
         }
 
         request.ModuleName = request.ModuleName.Trim();
-        request.ModuleExamNamePortal = request.ModuleExamNamePortal?.Trim();
-        request.SemesterNamePortal = request.SemesterNamePortal?.Trim();
+        request.ModuleExamNamePortal = request.ModuleExamNamePortal.Trim();
+        request.SemesterNamePortal = request.SemesterNamePortal.Trim();
 
         // is center id exist
         var center = _context.Centers.FirstOrDefault(c => c.Id == request.CenterId);
@@ -513,8 +513,8 @@ public class ModuleController : ControllerBase
     private bool CheckStringNameRequestUpdate(UpdateModuleRequest request, out IActionResult actionResult)
     {
         request.ModuleName = request.ModuleName.Trim();
-        request.ModuleExamNamePortal = request.ModuleExamNamePortal?.Trim();
-        request.SemesterNamePortal = request.SemesterNamePortal?.Trim();
+        request.ModuleExamNamePortal = request.ModuleExamNamePortal.Trim();
+        request.SemesterNamePortal = request.SemesterNamePortal.Trim();
 
         //check empty
         if (string.IsNullOrWhiteSpace(request.ModuleName) || string.IsNullOrWhiteSpace(request.ModuleExamNamePortal) ||
@@ -544,7 +544,7 @@ public class ModuleController : ControllerBase
 
         // check exam name portal
         request.ModuleExamNamePortal =
-            Regex.Replace(request.ModuleExamNamePortal!, StringConstant.RegexWhiteSpaces, " ");
+            Regex.Replace(request.ModuleExamNamePortal, StringConstant.RegexWhiteSpaces, " ");
         request.ModuleExamNamePortal = request.ModuleExamNamePortal.Replace(" ' ", "'").Trim();
         if (Regex.IsMatch(request.ModuleExamNamePortal, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
         {
@@ -561,7 +561,7 @@ public class ModuleController : ControllerBase
         }
 
         // check semester name portal
-        request.SemesterNamePortal = Regex.Replace(request.SemesterNamePortal!, StringConstant.RegexWhiteSpaces, " ");
+        request.SemesterNamePortal = Regex.Replace(request.SemesterNamePortal, StringConstant.RegexWhiteSpaces, " ");
         request.SemesterNamePortal = request.SemesterNamePortal.Replace(" ' ", "'").Trim();
         if (Regex.IsMatch(request.SemesterNamePortal, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
         {
