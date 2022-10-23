@@ -310,7 +310,7 @@ public class SroController : ControllerBase
             .Replace('\u0110', 'D');
     }
 
-    private IEnumerable<SroResponse> GetAllUserRoleSro()
+    private IQueryable<SroResponse> GetAllUserRoleSro()
     {
         var allSro = _context.Users
             .Include(u => u.Province)

@@ -72,9 +72,6 @@ public class TeacherResponse
     
     [JsonPropertyName("working_time")]
     public WorkingTimeResponse WorkingTime { get; set; }
-    
-    [JsonPropertyName("skills")]
-    public List<SkillResponse> Skills { get; set; }
 
     [JsonPropertyName("nickname")]
     public string? Nickname { get; set; }
