@@ -63,6 +63,9 @@ public class SroResponse
     [JsonPropertyName("citizen_identity_card_published_place")]
     public string? CitizenIdentityCardPublishedPlace { get; set; }
     
+    [JsonPropertyName("is_active")]
+    public bool IsActive { get; set; }
+    
     [JsonPropertyName("create_at")]
     public DateTime CreatedAt { get; set; }
     

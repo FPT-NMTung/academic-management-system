@@ -1,5 +1,21 @@
-import { Grid, Card, Text, Spacer, Button, Loading } from '@nextui-org/react';
-import { Form, Input, Select, DatePicker, InputNumber } from 'antd';
+import {
+  Grid,
+  Card,
+  Text,
+  Spacer,
+  Button,
+  Loading,
+  Switch,
+  Badge,
+} from '@nextui-org/react';
+import {
+  Form,
+  Input,
+  Select,
+  DatePicker,
+  InputNumber,
+  Descriptions,
+} from 'antd';
 import classes from './TeacherCreate.module.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -14,6 +30,8 @@ import { Validater } from '../../../../validater/Validater';
 import moment from 'moment';
 import { ErrorCodeApi } from '../../../../apis/ErrorCodeApi';
 import { Fragment } from 'react';
+import { FaLock } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 
 const translateWorkingTime = {
   1: 'Sáng',
@@ -37,6 +55,8 @@ const TeacherCreate = ({ modeUpdate }) => {
   const [messageFailed, setMessageFailed] = useState(undefined);
   const [isGettingInformationTeacher, setIsGettingInformationTeacher] =
     useState(true);
+  const [isUnlockDelete, setIsUnlockDelete] = useState(false);
+  const [dataUser, setDataUser] = useState(undefined);
 
   const [form] = Form.useForm();
   const navigate = useNavigate();
@@ -136,6 +156,7 @@ const TeacherCreate = ({ modeUpdate }) => {
       `${id}`,
     ]).then((res) => {
       const data = res.data;
+      setDataUser(data);
 
       form.setFieldsValue({
         first_name: data.first_name,
@@ -215,6 +236,30 @@ const TeacherCreate = ({ modeUpdate }) => {
       });
   };
 
+  const handleDelete = () => {
+    if (!isUnlockDelete) {
+      setIsUnlockDelete(true);
+      return;
+    }
+
+    toast.error('Chức năng đang được phát triển');
+  };
+
+  const handleChangeActive = () => {
+    toast.promise(
+      FetchApi(ManageTeacherApis.changeActive, null, null, [`${id}`]),
+      {
+        loading: 'Đang thay đổi trạng thái',
+        success: () => {
+          return 'Thay đổi trạng thái thành công';
+        },
+        error: () => {
+          return 'Thay đổi trạng thái thất bại';
+        },
+      }
+    )
+  }
+
   useEffect(() => {
     getListCenter();
     getListGender();
@@ -235,7 +280,7 @@ const TeacherCreate = ({ modeUpdate }) => {
       onFinish={handleSubmitForm}
       disabled={modeUpdate && isGettingInformationTeacher}
     >
-      <Grid.Container justify="center">
+      <Grid.Container justify="center" gap={2}>
         <Grid xs={7} direction={'column'} css={{ rowGap: 20 }}>
           <Card variant="bordered">
             <Card.Header>
@@ -751,7 +796,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                 >
                   {!modeUpdate && !isCreatingOrUpdating && 'Tạo mới'}
                   {modeUpdate && !isCreatingOrUpdating && 'Cập nhật'}
-                  {isCreatingOrUpdating && <Loading size={'xs'}/>}
+                  {isCreatingOrUpdating && <Loading size={'xs'} />}
                 </Button>
                 {!isCreatingOrUpdating && messageFailed !== undefined && (
                   <Fragment>
@@ -765,6 +810,63 @@ const TeacherCreate = ({ modeUpdate }) => {
             </Card.Body>
           </Card>
         </Grid>
+        {modeUpdate && (
+          <Grid xs={3}>
+            <Card
+              variant="bordered"
+              css={{
+                height: 'min-content',
+              }}
+            >
+              <Card.Header>
+                <Text
+                  p
+                  b
+                  size={14}
+                  color={'error'}
+                  css={{
+                    width: '100%',
+                    textAlign: 'center',
+                  }}
+                >
+                  Khu vực nguy hiểm
+                </Text>
+              </Card.Header>
+              <Card.Body>
+                <Descriptions column={{ xs: 1, sm: 1, md: 1, lg: 1 }}>
+                  <Descriptions.Item label="Trạng thái kích hoạt">
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Switch onChange={handleChangeActive} disabled={dataUser === undefined} checked={dataUser?.is_active} color={'success'} size={'xs'} />
+                    </div>
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Xoá tài khoản">
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Button
+                        color={'error'}
+                        flat={!isUnlockDelete}
+                        auto
+                        icon={isUnlockDelete ? null : <FaLock />}
+                        onPress={handleDelete}
+                      >
+                        {isUnlockDelete ? 'Xoá tài khoản' : 'Mở khoá'}
+                      </Button>
+                    </div>
+                  </Descriptions.Item>
+                </Descriptions>
+              </Card.Body>
+            </Card>
+          </Grid>
+        )}
       </Grid.Container>
     </Form>
   );
