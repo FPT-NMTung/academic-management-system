@@ -12,6 +12,7 @@ using AcademicManagementSystem.Models.ClassDaysController;
 using AcademicManagementSystem.Models.ClassStatusController;
 using AcademicManagementSystem.Models.CourseFamilyController;
 using AcademicManagementSystem.Models.UserController;
+using AcademicManagementSystem.Models.UserController.StudentController;
 using AcademicManagementSystem.Services;
 using ClosedXML.Excel;
 using Microsoft.AspNetCore.Authorization;
@@ -354,6 +355,7 @@ public class ClassController : ControllerBase
     // import student from excel file
     [HttpPost]
     [Route("api/classes/{id:int}/students-from-excel")]
+    [Authorize(Roles = "admin, sro")]
     public ActionResult ImportStudentFromExcel(int id)
     {
         try
@@ -374,11 +376,9 @@ public class ClassController : ControllerBase
                         // skip the first and second row (number and column name)
                         if (row.RowNumber() == 1 || row.RowNumber() == 2) continue;
                         //define
-                        var no = row.Cell(1).Value.ToString();
                         var enrollNumber = row.Cell(2).Value.ToString();
                         var firstName = row.Cell(3).Value.ToString();
                         var lastName = row.Cell(4).Value.ToString();
-                        var fullName = row.Cell(5).Value.ToString();
                         var status = row.Cell(6).Value.ToString();
                         var statusDate = row.Cell(7).Value.ToString();
                         var gender = row.Cell(8).Value.ToString();
@@ -391,7 +391,6 @@ public class ClassController : ControllerBase
                         var identityCardNo = row.Cell(15).Value.ToString();
                         var identityCardPublishedDate = row.Cell(16).Value.ToString();
                         var identityCardPublishedPlace = row.Cell(17).Value.ToString();
-                        var address = row.Cell(18).Value.ToString();
                         var contactAddress = row.Cell(19).Value.ToString();
                         var ward = row.Cell(20).Value.ToString();
                         var district = row.Cell(21).Value.ToString();
@@ -401,27 +400,34 @@ public class ClassController : ControllerBase
                         var parentalPhone = row.Cell(25).Value.ToString();
                         var applicationDate = row.Cell(26).Value.ToString();
                         var applicationDocuments = row.Cell(27).Value.ToString();
-                        var csName = row.Cell(28).Value.ToString();
                         var courseCode = row.Cell(29).Value.ToString();
-                        var courseFamilyCode = row.Cell(30).Value.ToString();
                         var highSchool = row.Cell(31).Value.ToString();
                         var university = row.Cell(32).Value.ToString();
-                        var tempID = row.Cell(33).Value.ToString();
-                        var completionDate = row.Cell(34).Value.ToString();
-                        var graduatedStatus = row.Cell(35).Value.ToString();
                         var facebookUrl = row.Cell(36).Value.ToString();
-                        var sponsorAddress = row.Cell(37).Value.ToString();
                         var portfolio = row.Cell(38).Value.ToString();
                         var workingCompany = row.Cell(39).Value.ToString();
                         var companySalary = row.Cell(40).Value;
                         var companyPosition = row.Cell(41).Value.ToString();
-                        var field = row.Cell(42).Value.ToString();
                         var companyAddress = row.Cell(43).Value.ToString();
-                        var m = row.Cell(44).Value.ToString();
-                        var firstClass = row.Cell(45).Value.ToString();
-                        var currentClass = row.Cell(46).Value.ToString();
                         var feePlan = row.Cell(47).Value.ToString();
                         var promotion = row.Cell(48).Value.ToString();
+
+                        // check if user exist
+                        var existedUser = _context.Users.FirstOrDefault(u => u.CitizenIdentityCardNo == identityCardNo);
+                        if (existedUser != null)
+                        {
+                            var error = ErrorDescription.Error["E1071"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+                        }
+
+                        // check if students exist
+                        var existedStudent = _context.Students.FirstOrDefault(u =>
+                            string.Equals(u.EnrollNumber.ToLower(), enrollNumber!.ToLower()));
+                        if (existedStudent != null)
+                        {
+                            var error = ErrorDescription.Error["E1070"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+                        }
 
                         var provinceId = _context.Provinces.FirstOrDefault(p =>
                             string.Equals(p.Name.ToLower(), province!.ToLower()))?.Id == null
@@ -470,18 +476,18 @@ public class ClassController : ControllerBase
 
                         var user = new User()
                         {
-                            FirstName = firstName!,
-                            LastName = lastName!,
-                            MobilePhone = mobilePhone!,
-                            Email = email!,
-                            EmailOrganization = emailOrganization!,
+                            FirstName = firstName!.Trim(),
+                            LastName = lastName!.Trim(),
+                            MobilePhone = mobilePhone!.Trim(),
+                            Email = email!.Trim(),
+                            EmailOrganization = emailOrganization!.Trim(),
                             Birthday = newBirthday.Date,
                             ProvinceId = provinceId,
                             DistrictId = districtId,
                             WardId = wardId,
-                            CitizenIdentityCardNo = identityCardNo!,
+                            CitizenIdentityCardNo = identityCardNo!.Trim(),
                             CitizenIdentityCardPublishedDate = newIdentityCardPublishedDate.Date,
-                            CitizenIdentityCardPublishedPlace = identityCardPublishedPlace!,
+                            CitizenIdentityCardPublishedPlace = identityCardPublishedPlace!.Trim(),
                             RoleId = RoleIdStudent,
                             CenterId = (int)centerId,
                             GenderId = genderId,
@@ -489,16 +495,16 @@ public class ClassController : ControllerBase
                             UpdatedAt = DateTime.Now,
                             Student = new Student()
                             {
-                                EnrollNumber = enrollNumber!,
-                                CourseCode = courseCode!,
+                                EnrollNumber = enrollNumber!.Trim(),
+                                CourseCode = courseCode!.Trim(),
                                 Status = learningStatus,
                                 StatusDate = newStatusDate.Date,
                                 HomePhone = homePhone,
-                                ContactPhone = contactPhone!,
-                                ParentalName = parentalName!,
-                                ParentalRelationship = parentalRelative!,
-                                ContactAddress = contactAddress!,
-                                ParentalPhone = parentalPhone!,
+                                ContactPhone = contactPhone!.Trim(),
+                                ParentalName = parentalName!.Trim(),
+                                ParentalRelationship = parentalRelative!.Trim(),
+                                ContactAddress = contactAddress!.Trim(),
+                                ParentalPhone = parentalPhone!.Trim(),
                                 ApplicationDate = newApplicationDate.Date,
                                 ApplicationDocument = applicationDocuments,
                                 HighSchool = highSchool,
@@ -538,7 +544,7 @@ public class ClassController : ControllerBase
                         return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
                     }
 
-                    return Ok(CustomResponse.Ok("Imported successfully", null));
+                    return Ok(CustomResponse.Ok("Import file successfully", null!));
                 }
             }
         }
@@ -546,6 +552,33 @@ public class ClassController : ControllerBase
         {
             return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
         }
+    }
+
+    // save imported file
+    [HttpPut]
+    [Route("api/classes/{id:int}/students-from-excel")]
+    public IActionResult SaveImportFile(int id)
+    {
+        var students = _context.Students
+            .Include(s => s.StudentsClasses)
+            .Where(s => s.StudentsClasses.Any(sc => sc.ClassId == id))
+            .ToList();
+        foreach (var student in students)
+        {
+            student.IsDraft = false;
+            _context.Students.Update(student);
+        }
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E1072"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        return Ok(CustomResponse.Ok("Save students to class successfully", null!));
     }
 
     private static string RemoveDiacritics(string text)
