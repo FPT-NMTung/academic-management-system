@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using AcademicManagementSystem.Context;
@@ -357,7 +356,6 @@ public class ClassController : ControllerBase
     public ActionResult ImportStudentFromExcel(int id)
     {
         var users = new List<User>();
-        var students = new List<Student>();
         try
         {
             var file = Request.Form.Files[0];
@@ -368,7 +366,7 @@ public class ClassController : ControllerBase
                 {
                     var worksheet = workbook.Worksheet(1);
                     //format date time from excel
-                    DateTime startDate = new DateTime(1900, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                    var startDate = new DateTime(1900, 1, 1, 0, 0, 0, DateTimeKind.Utc);
                     // get all rows with value
                     var rows = worksheet.RowsUsed();
                     foreach (var row in rows)
@@ -419,7 +417,7 @@ public class ClassController : ControllerBase
                         var companyPosition = row.Cell(41).Value.ToString();
                         var field = row.Cell(42).Value.ToString();
                         var companyAddress = row.Cell(43).Value.ToString();
-                        var M = row.Cell(44).Value.ToString();
+                        var m = row.Cell(44).Value.ToString();
                         var firstClass = row.Cell(45).Value.ToString();
                         var currentClass = row.Cell(46).Value.ToString();
                         var feePlan = row.Cell(47).Value.ToString();
@@ -513,12 +511,24 @@ public class ClassController : ControllerBase
                                 CompanyAddress = companyAddress,
                                 FeePlan = Convert.ToInt32(feePlan),
                                 Promotion = Convert.ToInt32(promotion),
-                                IsDraft = true
+                                IsDraft = true,
+                                StudentsClasses = new List<StudentClass>()
+                                {
+                                    new StudentClass()
+                                    {
+                                        ClassId = id,
+                                        CreatedAt = DateTime.Now,
+                                        UpdatedAt = DateTime.Now,
+                                    }
+                                }
                             }
                         };
+                        _context.Users.Add(user);
+                        _context.Students.Add(user.Student);
+                        _context.StudentsClasses.Add(user.Student.StudentsClasses.First());
                         users.Add(user);
                     }
-
+                    _context.SaveChanges();
                     return Ok(users);
                 }
             }
