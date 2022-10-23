@@ -1,7 +1,7 @@
 import { Grid, Spacer, Text, Badge, Card, Button } from '@nextui-org/react';
 import classes from './TeacherDetail.module.css';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Descriptions, Spin } from 'antd';
+import { Descriptions, Spin, Tag } from 'antd';
 import { useState, useEffect } from 'react';
 import { AiFillPhone } from 'react-icons/ai';
 import { MdEmail } from 'react-icons/md';
@@ -10,10 +10,13 @@ import FetchApi from '../../../../apis/FetchApi';
 import { ManageTeacherApis } from '../../../../apis/ListApi';
 import ManImage from '../../../../images/3d-fluency-businessman-1.png';
 import WomanImage from '../../../../images/3d-fluency-businesswoman-1.png';
+import { RiSettingsFill } from 'react-icons/ri';
 
 const TeacherDetail = () => {
   const [dataUser, setDataUser] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [isEditSkill, setIsEditSkill] = useState(false);
+  const [listSkill, setListSkill] = useState([]);
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -99,6 +102,52 @@ const TeacherDetail = () => {
                   {dataUser.email_organization}
                 </Text>
               </div>
+              <Spacer y={1} />
+              <Card variant="bordered">
+                <Card.Header>
+                  <Grid.Container alignItems='center'>
+                    <Grid sm={6}>
+                      <Text
+                        p
+                        size={14}
+                        b
+                      >
+                        Kỹ năng
+                      </Text>
+                    </Grid>
+                    <Grid sm={6}
+                      css={{
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                      }}
+                    >
+                      <RiSettingsFill size={16} style={{
+                        cursor: 'pointer',
+                      }}
+                        onClick={() => setIsEditSkill(!isEditSkill)}
+                      />
+                    </Grid>
+                  </Grid.Container>
+                </Card.Header>
+                <Card.Body
+                  css={{
+                    marginTop: '0rem',
+                  }}
+                >
+                  <div>
+                    <Tag>magenta</Tag>
+                    <Tag>magenta</Tag>
+                    <Tag>magenta</Tag>
+                    <Tag>magenta</Tag>
+                    <Tag>magenta</Tag>
+                    <Tag>magenta</Tag>
+                    <Tag>magenta</Tag>
+                    <Tag>magenta</Tag>
+                    <Tag>magenta</Tag>
+                    <Tag>magenta</Tag>
+                  </div>
+                </Card.Body>
+              </Card>
             </Grid>
             <Grid sm={8.5} direction="column" css={{ rowGap: 20 }}>
               <Card variant="bordered">
@@ -138,9 +187,12 @@ const TeacherDetail = () => {
                       {dataUser.province.name}
                     </Descriptions.Item>
                     <Descriptions.Item label="Trạng thái">
-                      <Badge color={'success'} variant={'flat'}>
-                        Active
-                      </Badge>
+                      {dataUser.is_active && <Badge color={'success'} variant={'flat'}>
+                        Đang hoạt động
+                      </Badge>}
+                      {!dataUser.is_active && <Badge color={'error'} variant={'flat'}>
+                        Dừng hoạt động
+                      </Badge>}
                     </Descriptions.Item>
                     <Descriptions.Item label="Ngày sinh">
                       {new Date(dataUser.birthday).toLocaleDateString('vi-VN')}

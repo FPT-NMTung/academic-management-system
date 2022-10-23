@@ -132,9 +132,16 @@ const SroDetail = () => {
                       {dataUser.province.name}
                     </Descriptions.Item>
                     <Descriptions.Item label="Trạng thái">
-                      <Badge color={'success'} variant={'flat'}>
-                        Active
-                      </Badge>
+                      {dataUser.is_active && (
+                        <Badge color={'success'} variant={'flat'}>
+                          Đang hoạt động
+                        </Badge>
+                      )}
+                      {!dataUser.is_active && (
+                        <Badge color={'error'} variant={'flat'}>
+                          Dừng hoạt động
+                        </Badge>
+                      )}
                     </Descriptions.Item>
                     <Descriptions.Item label="Ngày sinh">
                       {new Date(dataUser.birthday).toLocaleDateString('vi-VN')}

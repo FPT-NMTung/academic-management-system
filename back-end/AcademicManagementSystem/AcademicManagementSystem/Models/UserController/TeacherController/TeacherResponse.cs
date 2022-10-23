@@ -72,9 +72,6 @@ public class TeacherResponse
     
     [JsonPropertyName("working_time")]
     public WorkingTimeResponse WorkingTime { get; set; }
-    
-    [JsonPropertyName("skills")]
-    public List<SkillResponse> Skills { get; set; }
 
     [JsonPropertyName("nickname")]
     public string? Nickname { get; set; }
@@ -90,6 +87,9 @@ public class TeacherResponse
     
     [JsonPropertyName("tax_code")]
     public string? TaxCode { get; set; }
+    
+    [JsonPropertyName("is_active")]
+    public bool IsActive { get; set; }
     
     [JsonPropertyName("create_at")]
     public DateTime CreatedAt { get; set; }
