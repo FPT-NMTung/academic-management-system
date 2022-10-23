@@ -72,6 +72,9 @@ public class User
     [StringLength(255)]
     public string CitizenIdentityCardPublishedPlace { get; set; }
     
+    [Column("is_active")]
+    public bool IsActive { get; set; }
+    
     [Column("created_at")]
     public DateTime CreatedAt { get; set; }
     
