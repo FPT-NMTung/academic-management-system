@@ -83,6 +83,6 @@ export const ErrorCodeApi = {
 
   'module-error-00021': 'Môn học với mã khóa học, học kỳ đã tồn tại',
 
-   'class-error-0070': "Tên lớp học đã được sử dụng",
-   'class-error-0069': "Tên lớp học chứa ký tự đặc biệt | Các ký tự cho phép: ( ) _ - ",
+  'class-error-0070': 'Tên lớp học đã được sử dụng',
+  'class-error-0069': 'Tên lớp học chứa ký tự đặc biệt | Các ký tự cho phép: ( ) _ - ',
 };

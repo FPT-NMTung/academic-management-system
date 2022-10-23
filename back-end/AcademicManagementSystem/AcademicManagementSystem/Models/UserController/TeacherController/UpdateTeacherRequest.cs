@@ -50,10 +50,7 @@ public class UpdateTeacherRequest
     
     [JsonPropertyName("working_time_id")]
     public int WorkingTimeId { get; set; }
-    
-    [JsonPropertyName("skills")]
-    public List<UpdateSkillRequest>? Skills { get; set; }
-    
+
     [JsonPropertyName("nickname")]
     [DefaultValue(null)]
     public string? Nickname { get; set; }

@@ -57,9 +57,6 @@ public class CreateTeacherRequest
     
     [JsonPropertyName("working_time_id")]
     public int WorkingTimeId { get; set; }
-    
-    [JsonPropertyName("skills")]
-    public List<CreateSkillRequest>? Skills { get; set; }
 
     [JsonPropertyName("nickname")]
     [DefaultValue(null)]

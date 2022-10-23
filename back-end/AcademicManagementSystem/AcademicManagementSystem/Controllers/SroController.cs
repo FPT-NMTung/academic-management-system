@@ -264,6 +264,33 @@ public class SroController : ControllerBase
         var sroResponse = GetAllUserRoleSro().FirstOrDefault(s => s.UserId == sro.UserId);
         return Ok(CustomResponse.Ok("Update SRO successfully", sroResponse!));
     }
+    
+    [HttpPatch]
+    [Route("api/sros/{id:int}/change-active")]
+    [Authorize(Roles = "admin")]
+    public IActionResult ChangeActivateTeacher(int id)
+    {
+        var sro = _context.Sros.Include(s => s.User).FirstOrDefault(s => s.UserId == id);
+        if (sro == null)
+        {
+            var error = ErrorDescription.Error["E0017"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        try
+        {
+            sro.User.IsActive = !sro.User.IsActive;
+            sro.User.UpdatedAt = DateTime.Now;
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E2057"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        return Ok(CustomResponse.Ok("Change active successfully", null!));
+    }
 
     private bool IsCenterExists(int centerId)
     {
@@ -310,7 +337,7 @@ public class SroController : ControllerBase
             .Replace('\u0110', 'D');
     }
 
-    private IEnumerable<SroResponse> GetAllUserRoleSro()
+    private IQueryable<SroResponse> GetAllUserRoleSro()
     {
         var allSro = _context.Users
             .Include(u => u.Province)
@@ -364,6 +391,7 @@ public class SroController : ControllerBase
                 CitizenIdentityCardNo = s.CitizenIdentityCardNo,
                 CitizenIdentityCardPublishedDate = s.CitizenIdentityCardPublishedDate,
                 CitizenIdentityCardPublishedPlace = s.CitizenIdentityCardPublishedPlace,
+                IsActive = s.IsActive,
                 CreatedAt = s.CreatedAt,
                 UpdatedAt = s.UpdatedAt
             });
