@@ -4,6 +4,7 @@ using AcademicManagementSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    partial class AmsContextModelSnapshot : ModelSnapshot
+    [Migration("20221022201429_Add active status for center")]
+    partial class Addactivestatusforcenter
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -728,10 +730,11 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("contact_phone");
 
                     b.Property<string>("CourseCode")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("course_code");
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int")
+                        .HasColumnName("course_id");
 
                     b.Property<string>("EnrollNumber")
                         .IsRequired()
@@ -1325,12 +1328,11 @@ namespace AcademicManagementSystem.Migrations
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Course", "Course")
                         .WithMany("Students")
                         .HasForeignKey("CourseCode")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.ClientNoAction);
 
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.User", "User")
-                        .WithOne("Student")
-                        .HasForeignKey("AcademicManagementSystem.Context.AmsModels.Student", "UserId")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
@@ -1590,9 +1592,6 @@ namespace AcademicManagementSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("Sro")
-                        .IsRequired();
-
-                    b.Navigation("Student")
                         .IsRequired();
 
                     b.Navigation("Teacher")

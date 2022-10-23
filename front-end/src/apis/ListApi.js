@@ -12,6 +12,21 @@ export const CenterApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  getCenterById: {
+    url: 'api/centers/{0}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  checkCanDeleteCenter: {
+    url: 'api/centers/{0}/can-delete',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  changeStatusCenter: {
+    url: 'api/centers/{0}/change-activate',
+    method: 'PATCH',
+    contextType: 'application/json',
+  },
   createCenter: {
     url: 'api/centers',
     method: 'POST',
@@ -22,6 +37,11 @@ export const CenterApis = {
     method: 'PUT',
     contextType: 'application/json',
   },
+  deleteCenter: {
+    url: 'api/centers/{0}',
+    method: 'DELETE',
+    contextType: 'application/json',
+  }
 };
 
 export const AddressApis = {

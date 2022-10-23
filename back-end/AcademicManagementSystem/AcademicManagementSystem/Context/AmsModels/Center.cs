@@ -32,6 +32,9 @@ public class Center
     [StringLength(100)]
     public string Name { get; set; }
     
+    [Column("is_active")]
+    public bool IsActive { get; set; }
+    
     [Column("created_at")]
     public DateTime CreatedAt { get; set; }
     

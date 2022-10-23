@@ -136,6 +136,7 @@ const ManageClass = () => {
       );
     }
   };
+  
   const renderDays = (id) => {
     if (id === 1) {
       return (
@@ -361,6 +362,9 @@ const ManageClass = () => {
                         size={20}
                         color="5EA2EF"
                         style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          navigate(`/sro/manage-class/${data.key}`);
+                        }}
                       />
                     </Table.Cell>
                   </Table.Row>

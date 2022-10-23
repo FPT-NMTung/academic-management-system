@@ -12,7 +12,7 @@ public class CreateRoomRequest
     public int RoomTypeId { get; set; }
 
     [JsonPropertyName("name")]
-    public string? Name { get; set; }
+    public string Name { get; set; }
     
     [JsonPropertyName("capacity")]
     public int Capacity { get; set; }
