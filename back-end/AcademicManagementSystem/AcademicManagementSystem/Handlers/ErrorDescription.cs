@@ -173,6 +173,9 @@ public static class ErrorDescription
         { "E0071", new ErrorModel() { Message = "Add class failed, data not valid", Type = "class-error-0071" } },
         { "E0072", new ErrorModel() { Message = "Class hour start must less than hour end ", Type = "class-error-0072" } },
 
+        // student class
+        { "E1069", new ErrorModel() { Message = "Fail to SaveChange when import student to class by excel", Type = "student-class-error-0001" } },
+        { "1070", new ErrorModel() { Message = "Fail when import student", Type = "student-class-error-0002" } },
     };
 }
 

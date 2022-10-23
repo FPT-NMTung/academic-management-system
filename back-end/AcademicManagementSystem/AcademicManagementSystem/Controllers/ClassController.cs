@@ -11,6 +11,7 @@ using AcademicManagementSystem.Models.ClassController;
 using AcademicManagementSystem.Models.ClassDaysController;
 using AcademicManagementSystem.Models.ClassStatusController;
 using AcademicManagementSystem.Models.CourseFamilyController;
+using AcademicManagementSystem.Models.UserController;
 using AcademicManagementSystem.Services;
 using ClosedXML.Excel;
 using Microsoft.AspNetCore.Authorization;
@@ -355,7 +356,6 @@ public class ClassController : ControllerBase
     [Route("api/classes/{id:int}/students-from-excel")]
     public ActionResult ImportStudentFromExcel(int id)
     {
-        var users = new List<User>();
         try
         {
             var file = Request.Form.Files[0];
@@ -526,17 +526,25 @@ public class ClassController : ControllerBase
                         _context.Users.Add(user);
                         _context.Students.Add(user.Student);
                         _context.StudentsClasses.Add(user.Student.StudentsClasses.First());
-                        users.Add(user);
                     }
-                    _context.SaveChanges();
-                    return Ok(users);
+
+                    try
+                    {
+                        _context.SaveChanges();
+                    }
+                    catch (Exception e)
+                    {
+                        var error = ErrorDescription.Error["E1069"];
+                        return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+                    }
+
+                    return Ok(CustomResponse.Ok("Imported successfully", null));
                 }
             }
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
         }
     }
 
