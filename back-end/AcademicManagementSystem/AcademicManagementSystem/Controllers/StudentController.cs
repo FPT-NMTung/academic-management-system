@@ -51,7 +51,7 @@ public class StudentController : ControllerBase
                 ApplicationDocument = u.Student.ApplicationDocument, CompanyAddress = u.Student.CompanyAddress,
                 CompanyPosition = u.Student.CompanyPosition, CompanySalary = u.Student.CompanySalary,
                 ContactAddress = u.Student.ContactAddress, ContactPhone = u.Student.ContactPhone,
-                CourseId = u.Student.CourseId, EnrollNumber = u.Student.EnrollNumber,
+                CourseCode = u.Student.CourseCode, EnrollNumber = u.Student.EnrollNumber,
                 FacebookUrl = u.Student.FacebookUrl, FeePlan = u.Student.FeePlan, HighSchool = u.Student.HighSchool,
                 HomePhone = u.Student.HomePhone, ParentalName = u.Student.ParentalName,
                 ParentalRelationship = u.Student.ParentalRelationship, ParentalPhone = u.Student.ParentalPhone,

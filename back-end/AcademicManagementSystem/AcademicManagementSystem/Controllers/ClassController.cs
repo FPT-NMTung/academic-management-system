@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using AcademicManagementSystem.Context;
@@ -12,6 +13,7 @@ using AcademicManagementSystem.Models.ClassDaysController;
 using AcademicManagementSystem.Models.ClassStatusController;
 using AcademicManagementSystem.Models.CourseFamilyController;
 using AcademicManagementSystem.Services;
+using ClosedXML.Excel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +25,7 @@ public class ClassController : ControllerBase
 {
     private readonly AmsContext _context;
     private readonly User _user;
+    private const int RoleIdStudent = 4;
 
     public ClassController(AmsContext context, IUserService userService)
     {
@@ -345,6 +348,156 @@ public class ClassController : ControllerBase
                 SroFirstName = c.Sro.User.FirstName,
                 SroLastName = c.Sro.User.LastName
             }).Where(c => c.CenterId == _user.CenterId);
+    }
+
+
+    // import student from excel file
+    [HttpPost]
+    [Route("api/classes/{id:int}/students-from-excel")]
+    public ActionResult ImportStudentFromExcel(int id)
+    {
+        var users = new List<User>();
+        var students = new List<Student>();
+        try
+        {
+            var file = Request.Form.Files[0];
+            using (var stream = new MemoryStream())
+            {
+                file.CopyTo(stream);
+                using (var workbook = new XLWorkbook(stream))
+                {
+                    var worksheet = workbook.Worksheet(1);
+                    //format date time from excel
+                    DateTime startDate = new DateTime(1900, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                    // get all rows with value
+                    var rows = worksheet.RowsUsed();
+                    foreach (var row in rows)
+                    {
+                        // skip the first and second row (number and column name)
+                        if (row.RowNumber() == 1 || row.RowNumber() == 2) continue;
+                        //define
+                        var no = row.Cell(1).Value.ToString();
+                        var enrollNumber = row.Cell(2).Value.ToString();
+                        var firstName = row.Cell(3).Value.ToString();
+                        var lastName = row.Cell(4).Value.ToString();
+                        var fullName = row.Cell(5).Value.ToString();
+                        var status = row.Cell(6).Value.ToString();
+                        var statusDate = row.Cell(7).Value.ToString();
+                        var gender = row.Cell(8).Value.ToString();
+                        var birthday = row.Cell(9).Value.ToString();
+                        var mobilePhone = row.Cell(10).Value.ToString();
+                        var homePhone = row.Cell(11).Value.ToString();
+                        var contactPhone = row.Cell(12).Value.ToString();
+                        var email = row.Cell(13).Value.ToString();
+                        var emailOrganization = row.Cell(14).Value.ToString();
+                        var identityCardNo = row.Cell(15).Value.ToString();
+                        var identityCardPublishedDate = row.Cell(16).Value.ToString();
+                        var identityCardPublishedPlace = row.Cell(17).Value.ToString();
+                        var address = row.Cell(18).Value.ToString();
+                        var contactAddress = row.Cell(19).Value.ToString();
+                        var ward = row.Cell(20).Value.ToString();
+                        var district = row.Cell(21).Value.ToString();
+                        var province = row.Cell(22).Value.ToString();
+                        var parentalName = row.Cell(23).Value.ToString();
+                        var parentalRelative = row.Cell(24).Value.ToString();
+                        var parentalPhone = row.Cell(25).Value.ToString();
+                        var applicationDate = row.Cell(26).Value.ToString();
+                        var applicationDocuments = row.Cell(27).Value.ToString();
+                        var csName = row.Cell(28).Value.ToString();
+                        var courseCode = row.Cell(29).Value.ToString();
+                        var courseFamilyCode = row.Cell(30).Value.ToString();
+                        var highSchool = row.Cell(31).Value.ToString();
+                        var university = row.Cell(32).Value.ToString();
+                        var tempID = row.Cell(33).Value.ToString();
+                        var completionDate = row.Cell(34).Value.ToString();
+                        var graduatedStatus = row.Cell(35).Value.ToString();
+                        var facebookUrl = row.Cell(36).Value.ToString();
+                        var sponsorAddress = row.Cell(37).Value.ToString();
+                        var portfolio = row.Cell(38).Value.ToString();
+                        var workingCompany = row.Cell(39).Value.ToString();
+                        var companySalary = row.Cell(40).Value.ToString();
+                        var companyPosition = row.Cell(41).Value.ToString();
+                        var field = row.Cell(42).Value.ToString();
+                        var companyAddress = row.Cell(43).Value.ToString();
+                        var M = row.Cell(44).Value.ToString();
+                        var firstClass = row.Cell(45).Value.ToString();
+                        var currentClass = row.Cell(46).Value.ToString();
+
+                        var provinceId = _context.Provinces.FirstOrDefault(p =>
+                            string.Equals(p.Name.ToLower(), province!.ToLower()))?.Id == null
+                            ? 1
+                            : _context.Provinces.FirstOrDefault(p => p.Name == province)!.Id;
+
+                        var districtId = _context.Districts.FirstOrDefault(d =>
+                            string.Equals(d.Name.ToLower(), district!.ToLower()))?.Id == null
+                            ? 1
+                            : _context.Districts.FirstOrDefault(d => d.Name == district)!.Id;
+
+                        var wardId = _context.Wards.FirstOrDefault(w =>
+                            string.Equals(w.Name.ToLower(), ward!.ToLower()))?.Id == null
+                            ? 1
+                            : _context.Wards.FirstOrDefault(w => w.Name == ward)!.Id;
+
+                        var newBirthday = startDate.AddDays(Convert.ToDouble(birthday)).ToLocalTime();
+                        var newIdentityCardPublishedDate =
+                            startDate.AddDays(Convert.ToDouble(identityCardPublishedDate)).ToLocalTime();
+                        var centerId = _context.Classes.Include(c => c.Center)
+                            .FirstOrDefault(c => c.Id == id)?.Center.Id!;
+                        var genderId = gender switch
+                        {
+                            "Male" => 1,
+                            "Female" => 2,
+                            "Not Known" => 3,
+                            "Not Applicable" => 4,
+                            _ => 4
+                        };
+
+                        var user = new User()
+                        {
+                            FirstName = firstName!,
+                            LastName = lastName!,
+                            MobilePhone = mobilePhone!,
+                            Email = email!,
+                            EmailOrganization = emailOrganization!,
+                            Birthday = newBirthday.Date,
+                            ProvinceId = provinceId,
+                            DistrictId = districtId,
+                            WardId = wardId,
+                            CitizenIdentityCardNo = identityCardNo!,
+                            CitizenIdentityCardPublishedDate = newIdentityCardPublishedDate.Date,
+                            CitizenIdentityCardPublishedPlace = identityCardPublishedPlace!,
+                            RoleId = RoleIdStudent,
+                            CenterId = (int)centerId,
+                            GenderId = genderId,
+                            CreatedAt = DateTime.Now,
+                            UpdatedAt = DateTime.Now,
+                            Student = new Student()
+                            {
+                                EnrollNumber = enrollNumber!,
+                                
+                            }
+                        };
+                        users.Add(user);
+                        var student = new Student()
+                        {
+                            
+                            
+                            StatusDate = Convert.ToDateTime(row.Cell(9).Value.ToString()),
+                            ContactPhone = row.Cell(15).Value.ToString()!,
+                            HomePhone = row.Cell(14).Value.ToString(),
+                        };
+                        students.Add(student);
+                    }
+
+                    return Ok(users);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     private static string RemoveDiacritics(string text)

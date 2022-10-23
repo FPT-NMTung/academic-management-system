@@ -73,8 +73,8 @@ public class StudentResponse
     [JsonPropertyName("enroll_number")]
     public string? EnrollNumber { get; set; }
     
-    [JsonPropertyName("course_id")]
-    public int CourseId { get; set; }
+    [JsonPropertyName("course_code")]
+    public string? CourseCode { get; set; }
 
     [JsonPropertyName("status")]
     public int Status { get; set; }
