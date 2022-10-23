@@ -20,8 +20,9 @@ public class Student
     [StringLength(255)]
     public string EnrollNumber { get; set; }
 
-    [Column("course_id")]
-    public int CourseId { get; set; }
+    [Column("course_code")]
+    [StringLength(100)]
+    public string CourseCode { get; set; }
     
     [Column("status")]
     public int Status { get; set; }

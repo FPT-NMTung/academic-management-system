@@ -88,6 +88,7 @@ public class User
     public virtual Admin Admin { get; set; }
     public virtual Sro Sro { get; set; }
     public virtual Teacher Teacher { get; set; }
+    public virtual Student Student { get; set; }
     public virtual ICollection<ActiveRefreshToken> ActiveRefreshTokens { get; set; }
     
 }
