@@ -174,6 +174,11 @@ public static class ErrorDescription
         { "E0071", new ErrorModel() { Message = "Add class failed, data not valid", Type = "class-error-0071" } },
         { "E0072", new ErrorModel() { Message = "Class hour start must less than hour end ", Type = "class-error-0072" } },
 
+        // student class
+        { "E1069", new ErrorModel() { Message = "Fail to SaveChange when import student to class by excel", Type = "student-class-error-0001" } },
+        { "E1070", new ErrorModel() { Message = "Student in excel file with enroll number is existed", Type = "student-class-error-0002" } },
+        { "E1071", new ErrorModel() { Message = "User with identify card number in excel file is existed", Type = "student-class-error-0003" } },
+        { "E1072", new ErrorModel() { Message = "Fail to SaveChange when save Students to Class", Type = "student-class-error-0004" } },
     };
 }
 
