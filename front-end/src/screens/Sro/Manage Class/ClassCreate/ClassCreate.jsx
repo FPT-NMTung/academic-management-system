@@ -22,7 +22,6 @@ import { MdEdit } from "react-icons/md";
 import ColumnGroup from "antd/lib/table/ColumnGroup";
 import { ErrorCodeApi } from "../../../../apis/ErrorCodeApi";
 import { Validater } from "../../../../validater/Validater";
-import { getByPlaceholderText } from "@testing-library/react";
 import moment from "moment";
 
 const ClassCreate = ({ modeUpdate }) => {
