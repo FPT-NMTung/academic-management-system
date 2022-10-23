@@ -62,6 +62,7 @@ public static class ErrorDescription
         { "E0021_1", new ErrorModel() { Message = "Email Already Belong To Another EmailOrganization", Type = "sro-error-0021-1" } },
         { "E0022_1", new ErrorModel() { Message = "EmailOrganization Already Belong To Another Email", Type = "sro-error-0022-1" } },
         { "E0022_2", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "sro-error-0022-2" } },
+        { "E2057", new ErrorModel() { Message = "Change status sro failed", Type = "sro-error-2057" } },
 
         // address
         { "E1006", new ErrorModel() { Message = "Do not exist provinceId, DistrictId or WardId", Type = "address-error-0001" } },
@@ -140,7 +141,8 @@ public static class ErrorDescription
         { "E0051_1", new ErrorModel() { Message = "Email Already Belong To Another EmailOrganization", Type = "teacher-error-0051-1" } },
         { "E0052_1", new ErrorModel() { Message = "EmailOrganization Already Belong To Another Email", Type = "teacher-error-0052-1" } },
         { "E0052_2", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "teacher-error-0052-2" } },
-        
+        { "E2056", new ErrorModel() { Message = "Change status teacher failed", Type = "teacher-error-2056" } },
+
         // skill
         { "E1062", new ErrorModel() { Message = "Skill Name is not match with format", Type = "skill-error-0001" } },
         { "E1063", new ErrorModel() { Message = "Skill Name must less or equal than 255 character", Type = "skill-error-0002" } },

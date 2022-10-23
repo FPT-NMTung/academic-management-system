@@ -88,6 +88,9 @@ public class TeacherResponse
     [JsonPropertyName("tax_code")]
     public string? TaxCode { get; set; }
     
+    [JsonPropertyName("is_active")]
+    public bool IsActive { get; set; }
+    
     [JsonPropertyName("create_at")]
     public DateTime CreatedAt { get; set; }
     
