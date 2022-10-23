@@ -415,13 +415,15 @@ public class ClassController : ControllerBase
                         var sponsorAddress = row.Cell(37).Value.ToString();
                         var portfolio = row.Cell(38).Value.ToString();
                         var workingCompany = row.Cell(39).Value.ToString();
-                        var companySalary = row.Cell(40).Value.ToString();
+                        var companySalary = row.Cell(40).Value;
                         var companyPosition = row.Cell(41).Value.ToString();
                         var field = row.Cell(42).Value.ToString();
                         var companyAddress = row.Cell(43).Value.ToString();
                         var M = row.Cell(44).Value.ToString();
                         var firstClass = row.Cell(45).Value.ToString();
                         var currentClass = row.Cell(46).Value.ToString();
+                        var feePlan = row.Cell(47).Value.ToString();
+                        var promotion = row.Cell(48).Value.ToString();
 
                         var provinceId = _context.Provinces.FirstOrDefault(p =>
                             string.Equals(p.Name.ToLower(), province!.ToLower()))?.Id == null
@@ -438,11 +440,15 @@ public class ClassController : ControllerBase
                             ? 1
                             : _context.Wards.FirstOrDefault(w => w.Name == ward)!.Id;
 
+                        var centerId = _context.Classes.Include(c => c.Center)
+                            .FirstOrDefault(c => c.Id == id)?.Center.Id!;
+
                         var newBirthday = startDate.AddDays(Convert.ToDouble(birthday)).ToLocalTime();
                         var newIdentityCardPublishedDate =
                             startDate.AddDays(Convert.ToDouble(identityCardPublishedDate)).ToLocalTime();
-                        var centerId = _context.Classes.Include(c => c.Center)
-                            .FirstOrDefault(c => c.Id == id)?.Center.Id!;
+                        var newStatusDate = startDate.AddDays(Convert.ToDouble(statusDate)).ToLocalTime();
+                        var newApplicationDate = startDate.AddDays(Convert.ToDouble(applicationDate)).ToLocalTime();
+
                         var genderId = gender switch
                         {
                             "Male" => 1,
@@ -450,6 +456,18 @@ public class ClassController : ControllerBase
                             "Not Known" => 3,
                             "Not Applicable" => 4,
                             _ => 4
+                        };
+
+                        var learningStatus = status switch
+                        {
+                            "Studying" => 1,
+                            "Delay" => 2,
+                            "Dropout" => 3,
+                            "ClassQueue" => 4,
+                            "Transfer" => 5,
+                            "Upgrade" => 6,
+                            "Finished" => 7,
+                            _ => 0
                         };
 
                         var user = new User()
@@ -474,19 +492,31 @@ public class ClassController : ControllerBase
                             Student = new Student()
                             {
                                 EnrollNumber = enrollNumber!,
-                                
+                                CourseCode = courseCode!,
+                                Status = learningStatus,
+                                StatusDate = newStatusDate.Date,
+                                HomePhone = homePhone,
+                                ContactPhone = contactPhone!,
+                                ParentalName = parentalName!,
+                                ParentalRelationship = parentalRelative!,
+                                ContactAddress = contactAddress!,
+                                ParentalPhone = parentalPhone!,
+                                ApplicationDate = newApplicationDate.Date,
+                                ApplicationDocument = applicationDocuments,
+                                HighSchool = highSchool,
+                                University = university,
+                                FacebookUrl = facebookUrl,
+                                PortfolioUrl = portfolio,
+                                WorkingCompany = workingCompany,
+                                CompanySalary = companySalary as int?,
+                                CompanyPosition = companyPosition,
+                                CompanyAddress = companyAddress,
+                                FeePlan = Convert.ToInt32(feePlan),
+                                Promotion = Convert.ToInt32(promotion),
+                                IsDraft = true
                             }
                         };
                         users.Add(user);
-                        var student = new Student()
-                        {
-                            
-                            
-                            StatusDate = Convert.ToDateTime(row.Cell(9).Value.ToString()),
-                            ContactPhone = row.Cell(15).Value.ToString()!,
-                            HomePhone = row.Cell(14).Value.ToString(),
-                        };
-                        students.Add(student);
                     }
 
                     return Ok(users);
