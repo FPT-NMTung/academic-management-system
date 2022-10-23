@@ -96,9 +96,15 @@ public class CourseFamilyController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (IsCourseFamilyExists(request))
+        if (IsCourseFamilyCodeExists(request.Code))
         {
             var error = ErrorDescription.Error["E1013"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsCourseFamilyNameExists(request.Name))
+        {
+            var error = ErrorDescription.Error["E1055"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -154,6 +160,12 @@ public class CourseFamilyController : ControllerBase
         if (Regex.IsMatch(request.Name, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
         {
             var error = ErrorDescription.Error["E1008"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsCourseFamilyNameWithDifferentCodeExists(code.Trim(), request.Name))
+        {
+            var error = ErrorDescription.Error["E1056"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -222,8 +234,20 @@ public class CourseFamilyController : ControllerBase
     }
 
     // is course family exists
-    private bool IsCourseFamilyExists(CreateCourseFamilyRequest request)
+    private bool IsCourseFamilyCodeExists(string code)
     {
-        return _context.CourseFamilies.Any(cf => cf.Code == request.Code.ToUpper().Trim());
+        return _context.CourseFamilies.Any(cf => cf.Code == code);
+    }
+
+    // is course family name exists
+    private bool IsCourseFamilyNameExists(string name)
+    {
+        return _context.CourseFamilies.Any(cf => cf.Name == name);
+    }
+
+    // is course family name with different code existed
+    private bool IsCourseFamilyNameWithDifferentCodeExists(string code, string name)
+    {
+        return _context.CourseFamilies.Any(cf => cf.Code != code && cf.Name == name);
     }
 }

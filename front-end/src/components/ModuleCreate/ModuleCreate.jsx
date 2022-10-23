@@ -42,7 +42,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
     FetchApi(CenterApis.getAllCenter).then((res) => {
       const data = res.data.map((e) => {
         return {
-          key: e.id,
+          key: e.course_code,
           ...e,
         };
       });
@@ -131,12 +131,11 @@ const ModuleCreate = ({ onCreateSuccess }) => {
       )}
       {!isLoading && (
         <Form
-          // labelCol={{ span: 6 }}
           labelCol={{
-            span: 7,
+            span: 6,
           }}
           wrapperCol={{
-            span: 16,
+            span: 18,
           }}
           layout="horizontal"
           labelAlign="right"
@@ -160,7 +159,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                     return Promise.reject('Trường này không được để trống');
                   }
                   if (
-                    Validater.isContaintSpecialCharacterForName(value.trim())
+                    Validater.isContaintSpecialCharacterForNameModule(value.trim())
                   ) {
                     return Promise.reject(
                       'Trường này không được chứa ký tự đặc biệt'
@@ -236,6 +235,8 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                 style={{ width: '100%' }}
                 dropdownStyle={{ zIndex: 9999 }}
                 loading={isLoading}
+                mode='multiple'
+                maxTagCount={'responsive'}
                 onChange={GetListSemesterid}
               >
                 {listCourses.map((e, index) => (
@@ -250,7 +251,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               rules={[
                 {
                   required: true,
-                  message: 'Hãy chọc học kỳ',
+                  message: 'Hãy chọn học kỳ',
                 },
               ]}
               style={{
@@ -474,7 +475,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                       return Promise.reject('Trường này không được để trống');
                     }
                     if (
-                      Validater.isContaintSpecialCharacterForName(value.trim())
+                      Validater.isContaintSpecialCharacterForNameModule(value.trim())
                     ) {
                       return Promise.reject(
                         'Trường này không được chứa ký tự đặc biệt'

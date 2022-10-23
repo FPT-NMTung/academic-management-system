@@ -79,6 +79,12 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnType("int")
                         .HasColumnName("district_id");
 
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -496,6 +502,7 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("max_theory_grade");
 
                     b.Property<string>("ModuleExamNamePortal")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("module_exam_name_portal");
@@ -511,6 +518,7 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("module_type");
 
                     b.Property<string>("SemesterNamePortal")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("semester_name_portal");
@@ -647,6 +655,26 @@ namespace AcademicManagementSystem.Migrations
                     b.ToTable("semester");
                 });
 
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Skill", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("skill");
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Sro", b =>
                 {
                     b.Property<int>("UserId")
@@ -700,11 +728,10 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("contact_phone");
 
                     b.Property<string>("CourseCode")
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int")
-                        .HasColumnName("course_id");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("course_code");
 
                     b.Property<string>("EnrollNumber")
                         .IsRequired()
@@ -1066,6 +1093,21 @@ namespace AcademicManagementSystem.Migrations
                     b.ToTable("working_time");
                 });
 
+            modelBuilder.Entity("SkillTeacher", b =>
+                {
+                    b.Property<int>("SkillsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeachersUserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SkillsId", "TeachersUserId");
+
+                    b.HasIndex("TeachersUserId");
+
+                    b.ToTable("SkillTeacher");
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.ActiveRefreshToken", b =>
                 {
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.User", "User")
@@ -1283,11 +1325,12 @@ namespace AcademicManagementSystem.Migrations
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Course", "Course")
                         .WithMany("Students")
                         .HasForeignKey("CourseCode")
-                        .OnDelete(DeleteBehavior.ClientNoAction);
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
 
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                        .WithOne("Student")
+                        .HasForeignKey("AcademicManagementSystem.Context.AmsModels.Student", "UserId")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
@@ -1412,6 +1455,21 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("Province");
                 });
 
+            modelBuilder.Entity("SkillTeacher", b =>
+                {
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Skill", null)
+                        .WithMany()
+                        .HasForeignKey("SkillsId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Teacher", null)
+                        .WithMany()
+                        .HasForeignKey("TeachersUserId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Center", b =>
                 {
                     b.Navigation("Classes");
@@ -1532,6 +1590,9 @@ namespace AcademicManagementSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("Sro")
+                        .IsRequired();
+
+                    b.Navigation("Student")
                         .IsRequired();
 
                     b.Navigation("Teacher")

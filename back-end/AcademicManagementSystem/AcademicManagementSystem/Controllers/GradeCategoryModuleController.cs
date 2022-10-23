@@ -15,9 +15,9 @@ public class GradeCategoryModuleController : ControllerBase
 {
     private readonly AmsContext _context;
     private const int PracticeExam = 5;
-    private const int FinalExam = 6;
+    private const int TheoryExam = 6;
     private const int PracticeExamResit = 7;
-    private const int FinalExamResit = 8;
+    private const int TheoryExamResit = 8;
 
     public GradeCategoryModuleController(AmsContext context)
     {
@@ -62,11 +62,11 @@ public class GradeCategoryModuleController : ControllerBase
                 return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
             }
 
-            //check list request have practice exam and final exam
+            //check list request have practice exam and theory exam
             var pe = request.GradeCategoryDetails.FirstOrDefault(gcd => gcd.GradeCategoryId == PracticeExam);
-            var fe = request.GradeCategoryDetails.FirstOrDefault(gcd => gcd.GradeCategoryId == FinalExam);
-            // both PE & FE are required
-            if (module.ExamType == 3 && (pe == null || fe == null))
+            var te = request.GradeCategoryDetails.FirstOrDefault(gcd => gcd.GradeCategoryId == TheoryExam);
+            // both PE & TE are required
+            if (module.ExamType == 3 && (pe == null || te == null))
             {
                 var error = ErrorDescription.Error["E0067"];
                 return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -76,7 +76,7 @@ public class GradeCategoryModuleController : ControllerBase
             {
                 var gradeCategoryName = _context.GradeCategories.Find(gcd.GradeCategoryId)!.Name;
 
-                if (gcd.GradeCategoryId is PracticeExamResit or FinalExamResit)
+                if (gcd.GradeCategoryId is PracticeExamResit or TheoryExamResit)
                 {
                     var error = ErrorDescription.Error["E0066"];
                     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -95,7 +95,7 @@ public class GradeCategoryModuleController : ControllerBase
                         break;
                     // practical exam
                     case 2:
-                        if (gcd.GradeCategoryId is FinalExam or FinalExamResit)
+                        if (gcd.GradeCategoryId is TheoryExam or TheoryExamResit)
                         {
                             var error = ErrorDescription.Error["E0064"];
                             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -104,7 +104,7 @@ public class GradeCategoryModuleController : ControllerBase
                         break;
                     // not take exam
                     case 4:
-                        if (gcd.GradeCategoryId is PracticeExam or PracticeExamResit or FinalExam or FinalExamResit)
+                        if (gcd.GradeCategoryId is PracticeExam or PracticeExamResit or TheoryExam or TheoryExamResit)
                         {
                             var error = ErrorDescription.Error["E0065"];
                             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -113,8 +113,7 @@ public class GradeCategoryModuleController : ControllerBase
                         break;
                 }
 
-                // final exam must have only one
-                if (gcd.GradeCategoryId is PracticeExam or FinalExam or PracticeExamResit or FinalExamResit &&
+                if (gcd.GradeCategoryId is PracticeExam or TheoryExam or PracticeExamResit or TheoryExamResit &&
                     gcd.QuantityGradeItem != 1)
                 {
                     var error = ErrorDescription.Error["E0060"];
@@ -179,8 +178,8 @@ public class GradeCategoryModuleController : ControllerBase
                         _context.GradeCategoryModules.Add(gradeCategoryModuleResit);
                         break;
                     // final exam
-                    case FinalExam:
-                        gradeCategoryModuleResit.GradeCategoryId = FinalExamResit;
+                    case TheoryExam:
+                        gradeCategoryModuleResit.GradeCategoryId = TheoryExamResit;
                         _context.GradeCategoryModules.Add(gradeCategoryModuleResit);
                         break;
                 }

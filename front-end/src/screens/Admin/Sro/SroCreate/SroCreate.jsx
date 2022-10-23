@@ -1,5 +1,5 @@
-import { Grid, Card, Text, Spacer } from '@nextui-org/react';
-import { Button, Form, Input, Select, Divider, DatePicker } from 'antd';
+import { Grid, Card, Text, Spacer, Button, Loading } from '@nextui-org/react';
+import { Form, Input, Select, Divider, DatePicker } from 'antd';
 import classes from './SroCreate.module.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -179,7 +179,7 @@ const SroCreate = ({ modeUpdate }) => {
 
   return (
     <Form
-      labelCol={{ span: 7 }}
+      labelCol={{ span: 8 }}
       wrapperCol={{ span: 15 }}
       form={form}
       onFinish={handleSubmitForm}
@@ -187,7 +187,7 @@ const SroCreate = ({ modeUpdate }) => {
     >
       <Grid.Container justify="center">
         <Grid xs={7} direction={'column'} css={{ rowGap: 20 }}>
-          <Card>
+          <Card variant="bordered">
             <Card.Header>
               <Text
                 b
@@ -538,12 +538,18 @@ const SroCreate = ({ modeUpdate }) => {
               <Spacer y={1.5} />
               <div className={classes.buttonCreate}>
                 <Button
+                  flat
+                  auto
+                  css={{
+                    width: '120px',
+                  }}
                   type="primary"
                   htmlType="submit"
-                  loading={isCreatingOrUpdating}
+                  disabled={isCreatingOrUpdating}
                 >
-                  {!modeUpdate && 'Tạo mới'}
-                  {modeUpdate && 'Cập nhật'}
+                  {!modeUpdate && !isCreatingOrUpdating && 'Tạo mới'}
+                  {modeUpdate && !isCreatingOrUpdating && 'Cập nhật'}
+                  {isCreatingOrUpdating && <Loading size={'xs'} />}
                 </Button>
                 {!isCreatingOrUpdating && messageFailed !== undefined && (
                   <Fragment>
