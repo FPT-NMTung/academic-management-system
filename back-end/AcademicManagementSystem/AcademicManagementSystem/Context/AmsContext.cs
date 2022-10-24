@@ -45,6 +45,9 @@ public class AmsContext : DbContext
         modelBuilder.Entity<Center>()
             .Property(c => c.IsActive)
             .HasDefaultValue(true);
+        modelBuilder.Entity<User>()
+            .Property(u => u.IsActive)
+            .HasDefaultValue(true);
     }
 
     public DbSet<Province> Provinces { get; set; }

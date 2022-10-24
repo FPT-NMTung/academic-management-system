@@ -6,13 +6,10 @@ namespace AcademicManagementSystem.Models.TeacherSkillController;
 
 public class TeacherSkillResponse
 {
-    [JsonPropertyName("teacher_id")]
-    public int TeacherId { get; set; }
-
-    [JsonPropertyName("teacher_name")]
-    public string? TeacherName { get; set; }
+    [JsonPropertyName("teacher")]
+    public BasicTeacherInformationResponse Teacher { get; set; }
     
     [JsonPropertyName("skills")]
-    public List<SkillResponse> Skills { get; set; }
+    public List<SkillResponse>? Skills { get; set; }
     
 }
