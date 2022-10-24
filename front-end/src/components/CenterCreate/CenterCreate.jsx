@@ -1,6 +1,7 @@
 import { Card, Grid, Text, Button, Loading } from '@nextui-org/react';
 import { Form, Select, Input } from 'antd';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import FetchApi from '../../apis/FetchApi';
 import { AddressApis, CenterApis } from '../../apis/ListApi';
 import { Validater } from '../../validater/Validater';
@@ -55,24 +56,32 @@ const CenterCreate = ({ onCreateSuccess }) => {
 
   const handleSubmitForm = (e) => {
     setIsCreating(true);
-    FetchApi(
-      CenterApis.createCenter,
+
+    toast.promise(
+      FetchApi(
+        CenterApis.createCenter,
+        {
+          name: e.name.trim(),
+          province_id: e.province,
+          district_id: e.district,
+          ward_id: e.ward,
+        },
+        null,
+        null
+      ),
       {
-        name: e.name.trim(),
-        province_id: e.province,
-        district_id: e.district,
-        ward_id: e.ward,
-      },
-      null,
-      null
-    )
-      .then(() => {
-        onCreateSuccess();
-      })
-      .catch(() => {
-        setIsCreating(false);
-        setIsFailed(true);
-      });
+        loading: 'Đang tạo trung tâm',
+        success: (res) => {
+          setIsCreating(false);
+          onCreateSuccess();
+          return 'Tạo trung tâm thành công';
+        },
+        error: (err) => {
+          setIsCreating(false);
+          return 'Tạo trung tâm thất bại';
+        },
+      }
+    );
   };
 
   return (
@@ -217,22 +226,10 @@ const CenterCreate = ({ onCreateSuccess }) => {
                 htmlType="submit"
                 disabled={isCreating}
               >
-                {!isCreating && 'Tạo mới'}
-                {isCreating && <Loading size="xs" />}
+                {'Tạo mới'}
               </Button>
             </Form.Item>
           </Form>
-          {!isCreating && isFailed && (
-            <Text
-              size={14}
-              css={{
-                color: 'red',
-                textAlign: 'center',
-              }}
-            >
-              Tạo cơ sở thuất bại, kiểm tra lại thông tin và thử lại
-            </Text>
-          )}
         </Card.Body>
       </Card>
     </Grid>

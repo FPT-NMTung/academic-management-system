@@ -289,7 +289,7 @@ const ModuleUpdate = () => {
                       loading={listCenters.length === 0}
                       placeholder="Chọn cơ sở"
                     >
-                      {listCenters.map((e, index) => {
+                      {listCenters.filter(e => e.is_active).map((e, index) => {
                         return (
                           <Select.Option key={index} value={e.key}>
                             {e.name}

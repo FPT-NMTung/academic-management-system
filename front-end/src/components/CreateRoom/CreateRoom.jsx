@@ -5,6 +5,7 @@ import FetchApi from '../../apis/FetchApi';
 import { useState, useEffect } from 'react';
 import { ErrorCodeApi } from '../../apis/ErrorCodeApi';
 import { Validater } from '../../validater/Validater';
+import toast from 'react-hot-toast';
 
 const CreateRoom = ({ onCreateRoomSuccess }) => {
   const [listCenters, setListCenters] = useState([]);
@@ -61,16 +62,23 @@ const CreateRoom = ({ onCreateRoomSuccess }) => {
 
     setIsCreatingRoom(true);
     setErrorValue(undefined);
-    FetchApi(RoomApis.createRoom, body, null, null)
-      .then((res) => {
-        setIsCreatingRoom(false);
-        onCreateRoomSuccess();
-      })
-      .catch((err) => {
-        setIsCreatingRoom(false);
-        setIsFailedCreateRoom(true);
-        setErrorValue(ErrorCodeApi[err.type_error]);
-      });
+    
+    toast.promise(
+      FetchApi(RoomApis.createRoom, body, null, null),
+      {
+        loading: 'Đang tạo phòng',
+        success: (res) => {
+          onCreateRoomSuccess();
+          setIsCreatingRoom(false);
+          return 'Tạo phòng thành công';
+        },
+        error: (err) => {
+          setIsCreatingRoom(false);
+          setIsFailedCreateRoom(true);
+          return ErrorCodeApi[err.type_error];
+        },
+      }
+    )
   };
 
   return (
@@ -102,7 +110,7 @@ const CreateRoom = ({ onCreateRoomSuccess }) => {
           dropdownStyle={{ zIndex: 9999 }}
           loading={isGetListCenter}
         >
-          {listCenters.map((e) => (
+          {listCenters.filter(e => e.is_active).map((e) => (
             <Select.Option key={e.key} value={e.id}>
               {e.name}
             </Select.Option>
@@ -192,20 +200,9 @@ const CreateRoom = ({ onCreateRoomSuccess }) => {
           htmlType="submit"
           disabled={isCreatingRoom}
         >
-          {isCreatingRoom && <Loading size='xs'/>}
-          {!isCreatingRoom && 'Thêm'}
+          Thêm
         </Button>
       </Form.Item>
-      {!isCreatingRoom && isFailedCreateRoom && (
-        <Text
-          color="error"
-          size={15}
-          p
-          css={{ width: '100%', textAlign: 'center' }}
-        >
-          {errorValue}, hãy thử lại!
-        </Text>
-      )}
     </Form>
   );
 };
