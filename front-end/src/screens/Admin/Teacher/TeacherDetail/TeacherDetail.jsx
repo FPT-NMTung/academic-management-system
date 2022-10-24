@@ -12,6 +12,13 @@ import ManImage from '../../../../images/3d-fluency-businessman-1.png';
 import WomanImage from '../../../../images/3d-fluency-businesswoman-1.png';
 import { RiSettingsFill } from 'react-icons/ri';
 
+const gender = {
+  1: 'Nam',
+  2: 'Nữ',
+  3: 'Khác',
+  4: 'Không xác định',
+}
+
 const TeacherDetail = () => {
   const [dataUser, setDataUser] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -179,7 +186,7 @@ const TeacherDetail = () => {
                       {dataUser.mobile_phone}
                     </Descriptions.Item>
                     <Descriptions.Item label="Giới tính">
-                      {dataUser.gender.id === 1 ? 'Nam' : 'Nữ'}
+                      {gender[dataUser.gender.id]}
                     </Descriptions.Item>
                     <Descriptions.Item label="Địa chỉ" span={2}>
                       {dataUser.ward.prefix} {dataUser.ward.name},{' '}
