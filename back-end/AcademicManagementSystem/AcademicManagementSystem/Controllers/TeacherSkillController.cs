@@ -132,7 +132,7 @@ public class TeacherSkillController : ControllerBase
         }
         catch (DbUpdateException)
         {
-            var error = ErrorDescription.Error["E1069"];
+            var error = ErrorDescription.Error["E0069_1"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 

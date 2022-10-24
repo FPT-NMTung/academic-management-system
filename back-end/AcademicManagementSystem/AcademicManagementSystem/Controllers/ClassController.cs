@@ -23,6 +23,7 @@ public class ClassController : ControllerBase
 {
     private readonly AmsContext _context;
     private readonly User _user;
+    private const int NotScheduleYet = 5;
 
     public ClassController(AmsContext context, IUserService userService)
     {
@@ -124,7 +125,7 @@ public class ClassController : ControllerBase
             CenterId = _user.CenterId,
             CourseFamilyCode = request.CourseFamilyCode,
             ClassDaysId = request.ClassDaysId,
-            ClassStatusId = request.ClassStatusId,
+            ClassStatusId = NotScheduleYet,
             SroId = _user.Id,
             Name = request.Name,
             StartDate = request.StartDate,

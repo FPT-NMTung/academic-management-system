@@ -153,7 +153,7 @@ public static class ErrorDescription
         // teacher_skill
         { "E1067", new ErrorModel() { Message = "Not Found Teacher_Skill with TeacherID", Type = "teacher-skill-error-0001" } },
         { "E1068", new ErrorModel() { Message = "Not Found Teacher_Skill with SkillID", Type = "teacher-skill-error-0002" } },
-        { "E1069", new ErrorModel() { Message = "Invalid data for create/update", Type = "teacher-skill-error-0003" } },
+        { "E0069_1", new ErrorModel() { Message = "Invalid data for create/update teacher skill", Type = "teacher-skill-error-0003" } },
 
         //grade
         { "E0056", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0001" } },
