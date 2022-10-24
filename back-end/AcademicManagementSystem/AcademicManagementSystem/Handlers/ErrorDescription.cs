@@ -180,9 +180,10 @@ public static class ErrorDescription
 
         // student class
         { "E1069", new ErrorModel() { Message = "Fail to SaveChange when import student to class by excel", Type = "student-class-error-0001" } },
-        { "E1070", new ErrorModel() { Message = "Student in excel file with enroll number is existed", Type = "student-class-error-0002" } },
-        { "E1071", new ErrorModel() { Message = "User with identify card number in excel file is existed", Type = "student-class-error-0003" } },
+        { "E1070", new ErrorModel() { Message = "EnrollNumber is existed at Student No ", Type = "student-class-error-0002" } },
+        { "E1071", new ErrorModel() { Message = "Email or EmailOrganization or PhoneNumber or IdentityCardNo is existed at Student No ", Type = "student-class-error-0003" } },
         { "E1072", new ErrorModel() { Message = "Fail to SaveChange when save Students to Class", Type = "student-class-error-0004" } },
+        { "E1073", new ErrorModel() { Message = "Class is not exists", Type = "student-class-error-0005" } },
     };
 }
 

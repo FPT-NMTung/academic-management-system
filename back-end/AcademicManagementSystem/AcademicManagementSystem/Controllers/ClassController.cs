@@ -355,7 +355,17 @@ public class ClassController : ControllerBase
     [Route("api/classes/{id:int}/students-from-excel")]
     [Authorize(Roles = "admin, sro")]
     public ActionResult ImportStudentFromExcel(int id)
-    {
+    {   
+        //is class exists
+        var existedClass = _context.Classes.Any(c => c.Id == id);
+        if (!existedClass)
+        {
+            var error = ErrorDescription.Error["E1073"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        //format date time from excel
+        var startDate = new DateTime(1900, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var studentNo = 0;
         try
         {
             var file = Request.Form.Files[0];
@@ -365,14 +375,14 @@ public class ClassController : ControllerBase
                 using (var workbook = new XLWorkbook(stream))
                 {
                     var worksheet = workbook.Worksheet(1);
-                    //format date time from excel
-                    var startDate = new DateTime(1900, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
                     // get all rows with value
                     var rows = worksheet.RowsUsed();
                     foreach (var row in rows)
                     {
                         // skip the first and second row (number and column name)
                         if (row.RowNumber() == 1 || row.RowNumber() == 2) continue;
+                        studentNo++;
                         //define
                         var enrollNumber = row.Cell(2).Value.ToString();
                         var firstName = row.Cell(3).Value.ToString();
@@ -411,11 +421,14 @@ public class ClassController : ControllerBase
                         var promotion = row.Cell(48).Value.ToString();
 
                         // check if user exist
-                        var existedUser = _context.Users.FirstOrDefault(u => u.CitizenIdentityCardNo == identityCardNo);
+                        var existedUser = _context.Users.FirstOrDefault(u =>
+                            u.Email == email || u.EmailOrganization == emailOrganization ||
+                            u.MobilePhone == mobilePhone ||
+                            u.CitizenIdentityCardNo == identityCardNo);
                         if (existedUser != null)
                         {
                             var error = ErrorDescription.Error["E1071"];
-                            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+                            return BadRequest(CustomResponse.BadRequest(error.Message + studentNo, error.Type));
                         }
 
                         // check if students exist
@@ -424,7 +437,7 @@ public class ClassController : ControllerBase
                         if (existedStudent != null)
                         {
                             var error = ErrorDescription.Error["E1070"];
-                            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+                            return BadRequest(CustomResponse.BadRequest(error.Message + studentNo, error.Type));
                         }
 
                         var provinceId = _context.Provinces.FirstOrDefault(p =>
@@ -539,7 +552,8 @@ public class ClassController : ControllerBase
                     catch (Exception e)
                     {
                         var error = ErrorDescription.Error["E1069"];
-                        return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+                        return BadRequest(CustomResponse.BadRequest(error.Message + " at Student No " + studentNo,
+                            error.Type));
                     }
 
                     return Ok(CustomResponse.Ok("Import file successfully", null!));
@@ -548,14 +562,15 @@ public class ClassController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+            return BadRequest(CustomResponse.BadRequest(e.Message + " at Student No " + studentNo,
+                e.GetType().ToString()));
         }
     }
 
     // save imported file
-    [HttpPut]
+    [HttpPatch]
     [Route("api/classes/{id:int}/students-from-excel")]
-    public IActionResult SaveImportFile(int id)
+    public IActionResult SaveImportedStudents(int id)
     {
         var students = _context.Students
             .Include(s => s.StudentsClasses)
@@ -576,6 +591,7 @@ public class ClassController : ControllerBase
             var error = ErrorDescription.Error["E1072"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
+
         return Ok(CustomResponse.Ok("Save students to class successfully", null!));
     }
 
