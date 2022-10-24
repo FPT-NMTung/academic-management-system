@@ -622,6 +622,23 @@ public class ClassController : ControllerBase
 
         return Ok(CustomResponse.Ok("Cancel import students successfully", null!));
     }
+    
+    [HttpGet]
+    [Route("api/class/download-template-import-students")]
+    public IActionResult DownloadTemplateStudents()
+    {
+        // get location of file Template1.xlsx
+        var path = Path.Combine(Directory.GetCurrentDirectory(), "TemplateExcel/Template_Student.xlsx");
+        using (var workbook = new XLWorkbook(path))
+        {
+            using (var stream = new MemoryStream())
+            {
+                workbook.SaveAs(stream);
+                var content = stream.ToArray();
+                return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Template_Student.xlsx");
+            }
+        }
+    }
 
     private static string RemoveDiacritics(string text)
     {
