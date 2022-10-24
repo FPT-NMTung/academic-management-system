@@ -26,7 +26,7 @@ public class CourseModuleSemesterController : ControllerBase
 
     // get all course module semesters
     [HttpGet]
-    [Route("api/courses_modules_semesters")]
+    [Route("api/courses-modules-semesters")]
     [Authorize(Roles = "admin,sro,teacher,student")]
     public IActionResult GetCourseModuleSemesters()
     {
@@ -99,7 +99,7 @@ public class CourseModuleSemesterController : ControllerBase
 
     // get course module semester by course code
     [HttpGet]
-    [Route("api/courses_modules_semesters/courses/{courseCode}")]
+    [Route("api/courses-modules-semesters/courses/{courseCode}")]
     [Authorize(Roles = "admin,sro,teacher,student")]
     public IActionResult GetCourseModuleSemesterByCourseCode(string courseCode)
     {
@@ -178,7 +178,7 @@ public class CourseModuleSemesterController : ControllerBase
 
     // get course module semester by semester id
     [HttpGet]
-    [Route("api/courses_modules_semesters/semesters/{semesterId:int}")]
+    [Route("api/courses-modules-semesters/semesters/{semesterId:int}")]
     [Authorize(Roles = "admin,sro,teacher,student")]
     public IActionResult GetCourseModuleSemesterBySemesterId(int semesterId)
     {
@@ -257,7 +257,7 @@ public class CourseModuleSemesterController : ControllerBase
     
     // get course module semester by semester id
     [HttpGet]
-    [Route("api/courses_modules_semesters/modules/{moduleId}")]
+    [Route("api/courses-modules-semesters/modules/{moduleId}")]
     [Authorize(Roles = "admin,sro")]
     public IActionResult GetCourseModuleSemesterByModuleId(int moduleId)
     {
