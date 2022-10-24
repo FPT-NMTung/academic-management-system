@@ -355,7 +355,7 @@ public class ClassController : ControllerBase
     [Route("api/classes/{id:int}/students-from-excel")]
     [Authorize(Roles = "admin, sro")]
     public ActionResult ImportStudentFromExcel(int id)
-    {   
+    {
         //is class exists
         var existedClass = _context.Classes.Any(c => c.Id == id);
         if (!existedClass)
@@ -363,6 +363,7 @@ public class ClassController : ControllerBase
             var error = ErrorDescription.Error["E1073"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
+
         //format date time from excel
         var startDate = new DateTime(1900, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var studentNo = 0;
@@ -593,6 +594,33 @@ public class ClassController : ControllerBase
         }
 
         return Ok(CustomResponse.Ok("Save students to class successfully", null!));
+    }
+
+    // delete imported file
+    [HttpDelete]
+    [Route("api/classes/{id:int}/students-from-excel")]
+    public IActionResult DeleteImportedStudents(int id)
+    {
+        var students = _context.Students
+            .Include(s => s.StudentsClasses)
+            .Where(s => s.StudentsClasses.Any(sc => sc.ClassId == id))
+            .ToList();
+        foreach (var student in students)
+        {
+            _context.Students.Remove(student);
+        }
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E1074"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        return Ok(CustomResponse.Ok("Cancel import students successfully", null!));
     }
 
     private static string RemoveDiacritics(string text)
