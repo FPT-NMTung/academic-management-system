@@ -42,7 +42,9 @@ export const ErrorCodeApi = {
   'sro-error-0019': '',
   'sro-error-0020': '',
   'sro-error-0021': '',
+  'sro-error-0021-1': 'Email cá nhân đã được sử dụng',
   'sro-error-0022': '',
+  'sro-error-0022-1': 'Email tổ chức đã được sử dụng',
   'sro-error-0022-2': 'Email cá nhân và email tổ chức không được trùng nhau',
 
   'address-error-0001': '',

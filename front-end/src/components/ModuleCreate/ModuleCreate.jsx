@@ -198,7 +198,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               dropdownStyle={{ zIndex: 9999 }}
               loading={isLoading}
             >
-              {listCenters.map((e) => (
+              {listCenters.filter(e => e.is_active).map((e) => (
                 <Select.Option key={e.key} value={e.id}>
                   {e.name}
                 </Select.Option>

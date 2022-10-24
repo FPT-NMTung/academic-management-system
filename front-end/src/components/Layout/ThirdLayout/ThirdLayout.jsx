@@ -45,7 +45,6 @@ const menu = {
       icon: <MdSupervisedUserCircle size={20} />,
       url: '/admin/account/sro',
     },
-
     {
       key: '4',
       label: 'Chương Trình Học',
@@ -134,6 +133,7 @@ const ThirdLayout = ({ children }) => {
           <div className={classes.menu}>
             {menu[localStorage.getItem('role')].map((item) => (
               <NavLink
+                key={item.key}
                 to={item.url}
                 className={({ isActive }) => {
                   return isActive

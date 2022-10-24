@@ -135,15 +135,23 @@ const SroCreate = ({ modeUpdate }) => {
 
     const api = modeUpdate ? ManageSroApis.updateSro : ManageSroApis.createSro;
     const params = modeUpdate ? [`${id}`] : null;
-    FetchApi(api, body, null, params)
-      .then((res) => {
+
+    toast.promise(FetchApi(api, body, null, params), {
+      loading: 'Đang xử lý...',
+      success: (res) => {
+        setIsCreatingOrUpdating(false);
         const user_id = res.data.user_id;
         navigate(`/admin/account/sro/${user_id}`, { replace: true });
-      })
-      .catch((err) => {
+        return 'Thành công';
+      },
+      error: (err) => {
         setIsCreatingOrUpdating(false);
-        setMessageFailed(ErrorCodeApi[err.type_error]);
-      });
+        if (err?.type_error) {
+          return ErrorCodeApi[err.type_error];
+        }
+        return 'Có lỗi xảy ra';
+      },
+    });
   };
 
   const getInformationSro = () => {
@@ -253,7 +261,7 @@ const SroCreate = ({ modeUpdate }) => {
                     placeholder="Cơ sở"
                     loading={listCenter.length === 0}
                   >
-                    {listCenter.map((e) => (
+                    {listCenter.filter(e => e.is_active).map((e) => (
                       <Select.Option key={e.id} value={e.id}>
                         {e.name}
                       </Select.Option>
@@ -581,18 +589,9 @@ const SroCreate = ({ modeUpdate }) => {
                   htmlType="submit"
                   disabled={isCreatingOrUpdating}
                 >
-                  {!modeUpdate && !isCreatingOrUpdating && 'Tạo mới'}
-                  {modeUpdate && !isCreatingOrUpdating && 'Cập nhật'}
-                  {isCreatingOrUpdating && <Loading size={'xs'} />}
+                  {!modeUpdate && 'Tạo mới'}
+                  {modeUpdate && 'Cập nhật'}
                 </Button>
-                {!isCreatingOrUpdating && messageFailed !== undefined && (
-                  <Fragment>
-                    <Spacer x={0.5} />
-                    <Text color="error" size={15}>
-                      {messageFailed}, vui lòng thử lại
-                    </Text>
-                  </Fragment>
-                )}
               </div>
             </Card.Body>
           </Card>
