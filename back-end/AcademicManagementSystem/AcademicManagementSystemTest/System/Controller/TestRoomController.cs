@@ -1,71 +1,35 @@
 ﻿using AcademicManagementSystem.Context;
-using AcademicManagementSystem.Context.AmsModels;
 using AcademicManagementSystem.Controllers;
 using AcademicManagementSystem.Models.RoomController.RoomModel;
-using Microsoft.AspNetCore.Builder;
+using AcademicManagementSystemTest.MockData;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace AcademicManagementSystemTest.System.Controller;
 
 public class TestRoomController
 {
-    private readonly RoomController _controllerServer;
-
-    private readonly AmsContext _contextInMemoryDb;
-    private readonly RoomController _controllerInMemoryDb;
+    private readonly AmsContext _context;
+    private readonly RoomController _controller;
 
     public TestRoomController()
     {
-        var builder = WebApplication.CreateBuilder();
-
-        var connectionString = builder.Configuration.GetConnectionString("AmsConnection");
-
-        var options = new DbContextOptionsBuilder<AmsContext>()
-            .UseSqlServer(connectionString)
-            .Options;
-
         var optionsInMemoryDb = new DbContextOptionsBuilder<AmsContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
-        var contextServer = new AmsContext(options);
-        _controllerServer = new RoomController(contextServer);
-
-        _contextInMemoryDb = new AmsContext(optionsInMemoryDb);
-        _controllerInMemoryDb = new RoomController(_contextInMemoryDb);
-
+        _context = new AmsContext(optionsInMemoryDb);
+        _controller = new RoomController(_context);
         Init();
     }
 
     private void Init()
     {
-        _contextInMemoryDb.Rooms.Add(new Room()
-        {
-            CenterId = 1,
-            RoomTypeId = 1,
-            Name = "Room 1",
-            Capacity = 20
-        });
+        _context.Centers.AddRange(CenterMockData.Centers);
+        _context.RoomTypes.AddRange(RoomTypeMockData.RoomTypes);
+        _context.Rooms.AddRange(RoomMockData.Rooms);
 
-        _contextInMemoryDb.Rooms.Add(new Room()
-        {
-            CenterId = 2,
-            RoomTypeId = 2,
-            Name = "Room 2",
-            Capacity = 30
-        });
-        
-        _contextInMemoryDb.Rooms.Add(new Room()
-        {
-            CenterId = 1,
-            RoomTypeId = 1,
-            Name = "Room 3",
-            Capacity = 20
-        });
-
-        _contextInMemoryDb.SaveChanges();
+        _context.SaveChanges();
     }
 
     [Fact(DisplayName = "Return Bad Request Center Not Found")]
@@ -75,7 +39,7 @@ public class TestRoomController
         const int centerId = -1;
 
         // act
-        var result = _controllerServer.GetRoomsByCenterId(centerId);
+        var result = _controller.GetRoomsByCenterId(centerId);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -88,13 +52,13 @@ public class TestRoomController
         const int centerId = 2;
 
         // act
-        var result = _controllerServer.GetRoomsByCenterId(centerId);
+        var result = _controller.GetRoomsByCenterId(centerId);
 
         // assert
         Assert.IsType<OkObjectResult>(result);
     }
 
-    [Fact(DisplayName = "Add Invalid Format RoomName Return Bad Request")]
+    [Fact(DisplayName = "Add Invalid: Format RoomName Return Bad Request")]
     public void AddInvalidData_RoomName_ReturnBadRequest()
     {
         // arrange
@@ -107,13 +71,13 @@ public class TestRoomController
         };
 
         // act
-        var result = _controllerInMemoryDb.CreateRoom(request);
+        var result = _controller.CreateRoom(request);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
 
-    [Fact(DisplayName = "Add Invalid RoomName Empty Return Bad Request")]
+    [Fact(DisplayName = "Add Invalid: RoomName Empty Return Bad Request")]
     public void AddInvalidData_RoomName_Empty_ReturnBadRequest()
     {
         // arrange
@@ -126,13 +90,13 @@ public class TestRoomController
         };
 
         // act
-        var result = _controllerInMemoryDb.CreateRoom(request);
+        var result = _controller.CreateRoom(request);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
 
-    [Fact(DisplayName = "Add Invalid RoomCapacity OutRange Return Bad Request")]
+    [Fact(DisplayName = "Add Invalid: RoomCapacity OutRange Return Bad Request")]
     public void AddInvalidData_RoomCapacity_ReturnBadRequest()
     {
         // arrange
@@ -145,32 +109,32 @@ public class TestRoomController
         };
 
         // act
-        var result = _controllerInMemoryDb.CreateRoom(request);
+        var result = _controller.CreateRoom(request);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
 
-    [Fact(DisplayName = "Add Valid Data But Existed Room Return Bad Request")]
+    [Fact(DisplayName = "Add Valid Data: But Existed Room Return Bad Request")]
     public void AddValidDataButExistedRoom_ReturnBadRequest()
     {
         // arrange
         var request = new CreateRoomRequest()
         {
-            CenterId = 1,
-            RoomTypeId = 1,
-            Name = "Room 1",
-            Capacity = 30
+            CenterId = 2,
+            RoomTypeId = 2,
+            Name = "Room 2",
+            Capacity = 99
         };
 
         // act
-        var result = _controllerInMemoryDb.CreateRoom(request);
+        var result = _controller.CreateRoom(request);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
 
-    [Fact(DisplayName = "Add Valid Data Return Ok Object Created")]
+    [Fact(DisplayName = "Add Valid Data: Return Ok Object Created")]
     public void AddValidData_ReturnOk()
     {
         // arrange
@@ -182,13 +146,13 @@ public class TestRoomController
             Capacity = 30
         };
         // act
-        var result = _controllerInMemoryDb.CreateRoom(request);
+        var result = _controller.CreateRoom(request);
 
         // assert
         Assert.IsType<OkObjectResult>(result);
     }
 
-    [Fact(DisplayName = "Update Not Found Room Return Bad Request")]
+    [Fact(DisplayName = "Update Room: Not Found Room Return Bad Request")]
     public void UpdateNotFoundRoom_ReturnBadRequest()
     {
         // arrange
@@ -202,13 +166,13 @@ public class TestRoomController
         };
 
         // act
-        var result = _controllerInMemoryDb.UpdateRoom(roomId, request);
+        var result = _controller.UpdateRoom(roomId, request);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
 
-    [Fact(DisplayName = "Update Invalid Data RoomName Empty Return Bad Request")]
+    [Fact(DisplayName = "Update Invalid: Data RoomName Empty Return Bad Request")]
     public void UpdateInvalidData_RoomName_Empty_ReturnBadRequest()
     {
         // arrange
@@ -222,13 +186,13 @@ public class TestRoomController
         };
 
         // act
-        var result = _controllerInMemoryDb.UpdateRoom(roomId, request);
+        var result = _controller.UpdateRoom(roomId, request);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
 
-    [Fact(DisplayName = "Update Invalid RoomCapacity OutRange Return Bad Request")]
+    [Fact(DisplayName = "Update Invalid: RoomCapacity OutRange Return Bad Request")]
     public void UpdateInvalidData_RoomCapacity_ReturnBadRequest()
     {
         // arrange
@@ -242,13 +206,13 @@ public class TestRoomController
         };
 
         // act
-        var result = _controllerInMemoryDb.UpdateRoom(roomId, request);
+        var result = _controller.UpdateRoom(roomId, request);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
 
-    [Fact(DisplayName = "Update Valid Data But Existed Room Return Bad Request")]
+    [Fact(DisplayName = "Update Valid Data: But Existed Room Return Bad Request")]
     public void UpdateValidDataButExistedRoom_ReturnBadRequest()
     {
         // arrange
@@ -263,13 +227,13 @@ public class TestRoomController
         };
 
         // act
-        var result = _controllerInMemoryDb.UpdateRoom(roomId, request);
+        var result = _controller.UpdateRoom(roomId, request);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
 
-    [Fact(DisplayName = "Update Valid Data Return Ok Object Created")]
+    [Fact(DisplayName = "Update Valid Data: Return Ok Object Created")]
     public void UpdateValidData_ReturnOk()
     {
         // arrange
@@ -283,7 +247,7 @@ public class TestRoomController
         };
 
         // act
-        var result = _controllerInMemoryDb.UpdateRoom(roomId, request);
+        var result = _controller.UpdateRoom(roomId, request);
 
         // assert
         Assert.IsType<OkObjectResult>(result);

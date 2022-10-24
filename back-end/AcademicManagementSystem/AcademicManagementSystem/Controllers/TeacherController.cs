@@ -138,7 +138,7 @@ public class TeacherController : ControllerBase
     // create teacher
     [HttpPost]
     [Route("api/teachers")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult CreateTeacher([FromBody] CreateTeacherRequest request)
     {
         if (request.FirstName.Trim().Equals(string.Empty) || request.LastName.Trim().Equals(string.Empty))
@@ -287,13 +287,18 @@ public class TeacherController : ControllerBase
         }
 
         var teacherResponse = GetAllUserRoleTeacher().FirstOrDefault(s => s.UserId == user.Id);
+        if (teacherResponse == null)
+        {
+            var error = ErrorDescription.Error["E0055"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
         return Ok(CustomResponse.Ok("Create Teacher successfully", teacherResponse));
     }
 
     //update teacher 
     [HttpPut]
     [Route("api/teachers/{id:int}")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult UpdateTeacher(int id, [FromBody] UpdateTeacherRequest request)
     {
         if (request.FirstName.Trim().Equals(string.Empty) || request.LastName.Trim().Equals(string.Empty))
@@ -452,7 +457,7 @@ public class TeacherController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        return Ok(CustomResponse.Ok("Update SRO successfully", teacherResponse));
+        return Ok(CustomResponse.Ok("Update Teacher successfully", teacherResponse));
     }
 
     private bool IsMobilePhoneExists(string? mobilePhone, bool isUpdate, int userId)
