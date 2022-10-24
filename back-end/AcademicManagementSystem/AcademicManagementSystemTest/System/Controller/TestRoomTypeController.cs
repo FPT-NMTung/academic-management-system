@@ -2,6 +2,7 @@
 using AcademicManagementSystem.Context.AmsModels;
 using AcademicManagementSystem.Controllers;
 using AcademicManagementSystem.Models.RoomController.RoomTypeModel;
+using AcademicManagementSystemTest.MockData;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,18 +21,12 @@ public class RoomTypeControllerTest
 
         _context = new AmsContext(options);
         _controller = new RoomTypeController(_context);
+        Init();
     }
 
     private void Init()
     {
-        _context.RoomTypes.Add(new RoomType
-        {
-            Value = "Lý Thuyết"
-        });
-        _context.RoomTypes.Add(new RoomType
-        {
-            Value = "Thực Hành"
-        });
+        _context.RoomTypes.AddRange(RoomTypeMockData.RoomTypes);
         _context.SaveChanges();
     }
 
@@ -50,7 +45,6 @@ public class RoomTypeControllerTest
     public void Get_WhenCalled_ReturnsAllItems()
     {
         // Arrange
-        Init();
 
         // Act
         var result = _controller.GetRoomTypes() as OkObjectResult;
