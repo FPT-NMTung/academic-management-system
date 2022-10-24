@@ -354,7 +354,6 @@ public class ClassController : ControllerBase
             }).Where(c => c.CenterId == _user.CenterId);
     }
 
-
     // import student from excel file
     [HttpPost]
     [Route("api/classes/{id:int}/students-from-excel")]
@@ -576,6 +575,7 @@ public class ClassController : ControllerBase
     // save imported file
     [HttpPatch]
     [Route("api/classes/{id:int}/students-from-excel")]
+    [Authorize(Roles = "admin, sro")]
     public IActionResult SaveImportedStudents(int id)
     {
         var existedClass = _context.Classes.Any(c => c.Id == id);
@@ -611,6 +611,7 @@ public class ClassController : ControllerBase
     // delete imported file
     [HttpDelete]
     [Route("api/classes/{id:int}/students-from-excel")]
+    [Authorize(Roles = "admin, sro")]
     public IActionResult DeleteImportedStudents(int id)
     {
         var existedClass = _context.Classes.Any(c => c.Id == id);
@@ -645,6 +646,7 @@ public class ClassController : ControllerBase
     // get students in class
     [HttpGet]
     [Route("api/classes/{id:int}/students")]
+    [Authorize(Roles = "admin, sro")]
     public IActionResult GetStudentsInClass(int id)
     {
         // is class exist
@@ -734,6 +736,7 @@ public class ClassController : ControllerBase
     // download template
     [HttpGet]
     [Route("api/class/download-template-import-students")]
+    [Authorize(Roles = "admin, sro")]
     public IActionResult DownloadTemplateStudents()
     {
         // get location of file Template1.xlsx
