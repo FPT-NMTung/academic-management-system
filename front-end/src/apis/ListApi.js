@@ -141,12 +141,12 @@ export const ModulesApis = {
 
 export const CourseModuleSemesterApis = {
   getByCourseCode: {
-    url: 'api/courses_modules_semesters/courses/{0}',
+    url: 'api/courses-modules-semesters/courses/{0}',
     method: 'GET',
     contextType: 'application/json',
   },
   getAllCourseModuleSemesterApis: {
-    url: 'api/courses_modules_semesters',
+    url: 'api/courses-modules-semesters',
     method: 'GET',
     contextType: 'application/json',
   },
