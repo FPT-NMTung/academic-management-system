@@ -17,6 +17,13 @@ import { MdEmail } from 'react-icons/md';
 import { HiOfficeBuilding } from 'react-icons/hi';
 import { Spin, Descriptions, Table } from 'antd';
 
+const gender = {
+  1: 'Nam',
+  2: 'Nữ',
+  3: 'Khác',
+  4: 'Không xác định',
+}
+
 const SroDetail = () => {
   const [dataUser, setDataUser] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -124,7 +131,7 @@ const SroDetail = () => {
                       {dataUser.mobile_phone}
                     </Descriptions.Item>
                     <Descriptions.Item label="Giới tính">
-                      {dataUser.gender.id === 1 ? 'Nam' : 'Nữ'}
+                      {gender[dataUser.gender.id]}
                     </Descriptions.Item>
                     <Descriptions.Item label="Địa chỉ" span={2}>
                       {dataUser.ward.prefix} {dataUser.ward.name},{' '}
@@ -132,9 +139,16 @@ const SroDetail = () => {
                       {dataUser.province.name}
                     </Descriptions.Item>
                     <Descriptions.Item label="Trạng thái">
-                      <Badge color={'success'} variant={'flat'}>
-                        Active
-                      </Badge>
+                      {dataUser.is_active && (
+                        <Badge color={'success'} variant={'flat'}>
+                          Đang hoạt động
+                        </Badge>
+                      )}
+                      {!dataUser.is_active && (
+                        <Badge color={'error'} variant={'flat'}>
+                          Dừng hoạt động
+                        </Badge>
+                      )}
                     </Descriptions.Item>
                     <Descriptions.Item label="Ngày sinh">
                       {new Date(dataUser.birthday).toLocaleDateString('vi-VN')}

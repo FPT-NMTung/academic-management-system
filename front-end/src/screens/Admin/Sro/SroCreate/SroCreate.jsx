@@ -1,5 +1,13 @@
-import { Grid, Card, Text, Spacer, Button, Loading } from '@nextui-org/react';
-import { Form, Input, Select, Divider, DatePicker } from 'antd';
+import {
+  Grid,
+  Card,
+  Text,
+  Spacer,
+  Button,
+  Loading,
+  Switch,
+} from '@nextui-org/react';
+import { Form, Input, Select, Divider, DatePicker, Descriptions } from 'antd';
 import classes from './SroCreate.module.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -14,6 +22,8 @@ import { Validater } from '../../../../validater/Validater';
 import moment from 'moment';
 import { ErrorCodeApi } from '../../../../apis/ErrorCodeApi';
 import { Fragment } from 'react';
+import { FaLock } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 
 const SroCreate = ({ modeUpdate }) => {
   const [listCenter, setListCenter] = useState([]);
@@ -24,6 +34,8 @@ const SroCreate = ({ modeUpdate }) => {
   const [isGetDateUser, setIsGetDateUser] = useState(modeUpdate);
   const [isCreatingOrUpdating, setIsCreatingOrUpdating] = useState(false);
   const [messageFailed, setMessageFailed] = useState(undefined);
+  const [dataUser, setDataUser] = useState(undefined);
+  const [isUnlockDelete, setIsUnlockDelete] = useState(false);
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -123,21 +135,30 @@ const SroCreate = ({ modeUpdate }) => {
 
     const api = modeUpdate ? ManageSroApis.updateSro : ManageSroApis.createSro;
     const params = modeUpdate ? [`${id}`] : null;
-    FetchApi(api, body, null, params)
-      .then((res) => {
+
+    toast.promise(FetchApi(api, body, null, params), {
+      loading: 'Đang xử lý...',
+      success: (res) => {
+        setIsCreatingOrUpdating(false);
         const user_id = res.data.user_id;
         navigate(`/admin/account/sro/${user_id}`, { replace: true });
-      })
-      .catch((err) => {
+        return 'Thành công';
+      },
+      error: (err) => {
         setIsCreatingOrUpdating(false);
-        setMessageFailed(ErrorCodeApi[err.type_error]);
-      });
+        if (err?.type_error) {
+          return ErrorCodeApi[err.type_error];
+        }
+        return 'Có lỗi xảy ra';
+      },
+    });
   };
 
   const getInformationSro = () => {
     FetchApi(ManageSroApis.getDetailSro, null, null, [`${id}`])
       .then((res) => {
         const data = res.data;
+        setDataUser(data);
         form.setFieldsValue({
           first_name: data.first_name,
           last_name: data.last_name,
@@ -168,6 +189,27 @@ const SroCreate = ({ modeUpdate }) => {
       });
   };
 
+  const handleDelete = () => {
+    if (!isUnlockDelete) {
+      setIsUnlockDelete(true);
+      return;
+    }
+
+    toast.error('Chức năng đang được phát triển');
+  };
+
+  const handleChangeActive = () => {
+    toast.promise(FetchApi(ManageSroApis.changeActive, null, null, [`${id}`]), {
+      loading: 'Đang thay đổi trạng thái',
+      success: () => {
+        return 'Thay đổi trạng thái thành công';
+      },
+      error: () => {
+        return 'Thay đổi trạng thái thất bại';
+      },
+    });
+  };
+
   useEffect(() => {
     getListCenter();
     getListGender();
@@ -185,7 +227,7 @@ const SroCreate = ({ modeUpdate }) => {
       onFinish={handleSubmitForm}
       disabled={isGetDateUser}
     >
-      <Grid.Container justify="center">
+      <Grid.Container justify="center" gap={2}>
         <Grid xs={7} direction={'column'} css={{ rowGap: 20 }}>
           <Card variant="bordered">
             <Card.Header>
@@ -219,7 +261,7 @@ const SroCreate = ({ modeUpdate }) => {
                     placeholder="Cơ sở"
                     loading={listCenter.length === 0}
                   >
-                    {listCenter.map((e) => (
+                    {listCenter.filter(e => e.is_active).map((e) => (
                       <Select.Option key={e.id} value={e.id}>
                         {e.name}
                       </Select.Option>
@@ -242,7 +284,7 @@ const SroCreate = ({ modeUpdate }) => {
                           );
                         }
                         if (
-                          Validater.isContaintSpecialCharacterForName(
+                          Validater.isNotHumanName(
                             value.trim()
                           )
                         ) {
@@ -250,9 +292,9 @@ const SroCreate = ({ modeUpdate }) => {
                             'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
-                        if (value.trim().length < 2) {
+                        if (value.trim().length < 2 || value.trim().length > 255) {
                           return Promise.reject(
-                            new Error('Trường phải có ít nhất 2 ký tự')
+                            new Error('Trường phải từ 2 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -279,7 +321,7 @@ const SroCreate = ({ modeUpdate }) => {
                           );
                         }
                         if (
-                          Validater.isContaintSpecialCharacterForName(
+                          Validater.isNotHumanName(
                             value.trim()
                           )
                         ) {
@@ -287,9 +329,9 @@ const SroCreate = ({ modeUpdate }) => {
                             'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
-                        if (value.trim().length < 2) {
+                        if (value.trim().length < 2 || value.trim().length > 255) {
                           return Promise.reject(
-                            new Error('Trường phải có ít nhất 2 ký tự')
+                            new Error('Trường phải từ 2 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -518,9 +560,9 @@ const SroCreate = ({ modeUpdate }) => {
                             'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
-                        if (value.trim().length < 2) {
+                        if (value.trim().length < 2 || value.trim().length > 255) {
                           return Promise.reject(
-                            new Error('Trường phải có ít nhất 2 ký tự')
+                            new Error('Trường phải từ 2 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -547,22 +589,76 @@ const SroCreate = ({ modeUpdate }) => {
                   htmlType="submit"
                   disabled={isCreatingOrUpdating}
                 >
-                  {!modeUpdate && !isCreatingOrUpdating && 'Tạo mới'}
-                  {modeUpdate && !isCreatingOrUpdating && 'Cập nhật'}
-                  {isCreatingOrUpdating && <Loading size={'xs'} />}
+                  {!modeUpdate && 'Tạo mới'}
+                  {modeUpdate && 'Cập nhật'}
                 </Button>
-                {!isCreatingOrUpdating && messageFailed !== undefined && (
-                  <Fragment>
-                    <Spacer x={0.5} />
-                    <Text color="error" size={15}>
-                      {messageFailed}, vui lòng thử lại
-                    </Text>
-                  </Fragment>
-                )}
               </div>
             </Card.Body>
           </Card>
         </Grid>
+        {modeUpdate && (
+          <Grid xs={3}>
+            <Card
+              variant="bordered"
+              css={{
+                height: 'min-content',
+              }}
+            >
+              <Card.Header>
+                <Text
+                  p
+                  b
+                  size={14}
+                  color={'error'}
+                  css={{
+                    width: '100%',
+                    textAlign: 'center',
+                  }}
+                >
+                  Khu vực nguy hiểm
+                </Text>
+              </Card.Header>
+              <Card.Body>
+                <Descriptions column={{ xs: 1, sm: 1, md: 1, lg: 1 }}>
+                  <Descriptions.Item label="Trạng thái kích hoạt">
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Switch
+                        onChange={handleChangeActive}
+                        disabled={dataUser === undefined}
+                        checked={dataUser?.is_active}
+                        color={'success'}
+                        size={'xs'}
+                      />
+                    </div>
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Xoá tài khoản">
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Button
+                        color={'error'}
+                        flat={!isUnlockDelete}
+                        auto
+                        icon={isUnlockDelete ? null : <FaLock />}
+                        onPress={handleDelete}
+                      >
+                        {isUnlockDelete ? 'Xoá tài khoản' : 'Mở khoá'}
+                      </Button>
+                    </div>
+                  </Descriptions.Item>
+                </Descriptions>
+              </Card.Body>
+            </Card>
+          </Grid>
+        )}
       </Grid.Container>
     </Form>
   );

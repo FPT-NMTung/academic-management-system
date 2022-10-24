@@ -31,7 +31,6 @@
 
     <ItemGroup>
       <Folder Include="Helper" />
-      <Folder Include="MockData" />
     </ItemGroup>
 
 </Project>

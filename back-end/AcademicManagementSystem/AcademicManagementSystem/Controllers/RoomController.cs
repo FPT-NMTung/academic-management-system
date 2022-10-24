@@ -82,6 +82,12 @@ public class RoomController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
         
+        if (!Regex.IsMatch(roomCreate.Name, RegexRoomName))
+        {
+            var error = ErrorDescription.Error["E0008"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
         if (IsRoomExists(roomCreate, false, 0))
         {
             var error = ErrorDescription.Error["E0003"];
@@ -91,12 +97,6 @@ public class RoomController : ControllerBase
         if (createRoomRequest.Capacity < 20 || createRoomRequest.Capacity > 100)
         {
             var error = ErrorDescription.Error["E0006"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (!Regex.IsMatch(roomCreate.Name, RegexRoomName))
-        {
-            var error = ErrorDescription.Error["E0008"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 

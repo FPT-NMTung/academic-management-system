@@ -60,4 +60,12 @@ export const Validater = {
     const re = /[~`!#$%\^&*+=\-\[\]\\';,./{}|\\":<>\?]/;
     return re.test(String(str.trim()));
   },
+  isNotHumanName: (str) => {
+    console.log(str);
+    if (str == null) {
+      return false;
+    }
+    const re = /[~`!#$%\^&*+=\-\[\]\\;,./{}|\\":<>\?0-9]/;
+    return re.test(String(str.trim()));
+  },
 };

@@ -204,6 +204,11 @@ export const ManageSroApis = {
     method: 'PUT',
     contextType: 'application/json',
   },
+  changeActive: {
+    url: 'api/sros/{0}/change-active',
+    method: 'PATCH',
+    contextType: 'application/json',
+  }
 };
 
 export const GenderApis = {
@@ -250,6 +255,11 @@ export const ManageTeacherApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  changeActive: {
+    url: 'api/teachers/{0}/change-active',
+    method: 'PATCH',
+    contextType: 'application/json',
+  }
 };
 
 export const UserApis = {
