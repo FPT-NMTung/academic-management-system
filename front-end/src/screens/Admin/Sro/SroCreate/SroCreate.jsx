@@ -284,7 +284,7 @@ const SroCreate = ({ modeUpdate }) => {
                           );
                         }
                         if (
-                          Validater.isContaintSpecialCharacterForName(
+                          Validater.isNotHumanName(
                             value.trim()
                           )
                         ) {
@@ -321,7 +321,7 @@ const SroCreate = ({ modeUpdate }) => {
                           );
                         }
                         if (
-                          Validater.isContaintSpecialCharacterForName(
+                          Validater.isNotHumanName(
                             value.trim()
                           )
                         ) {
