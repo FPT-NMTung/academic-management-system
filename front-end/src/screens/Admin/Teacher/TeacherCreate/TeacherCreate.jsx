@@ -318,9 +318,13 @@ const TeacherCreate = ({ modeUpdate }) => {
                   ]}
                 >
                   <Select placeholder="Cơ sở">
-                    {listCenter.filter(e => e.is_active).map((item, index) => (
-                      <Select.Option key={index} value={item.id}>{item.name}</Select.Option>
-                    ))}
+                    {listCenter
+                      .filter((e) => e.is_active)
+                      .map((item, index) => (
+                        <Select.Option key={index} value={item.id}>
+                          {item.name}
+                        </Select.Option>
+                      ))}
                   </Select>
                 </Form.Item>
               </div>
@@ -338,7 +342,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                           );
                         }
                         if (
-                          Validater.isContaintSpecialCharacterForName(
+                          Validater.isNotHumanName(
                             value.trim()
                           )
                         ) {
@@ -346,9 +350,9 @@ const TeacherCreate = ({ modeUpdate }) => {
                             'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
-                        if (value.trim().length < 2) {
+                        if (value.trim().length < 2 || value.trim().length > 255) {
                           return Promise.reject(
-                            new Error('Trường phải có ít nhất 2 ký tự')
+                            new Error('Trường phải từ 2 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -374,18 +378,14 @@ const TeacherCreate = ({ modeUpdate }) => {
                             'Trường này không được để trống'
                           );
                         }
-                        if (
-                          Validater.isContaintSpecialCharacterForName(
-                            value.trim()
-                          )
-                        ) {
+                        if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
                             'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
-                        if (value.trim().length < 2) {
+                        if (value.trim().length < 2 || value.trim().length > 255) {
                           return Promise.reject(
-                            new Error('Trường phải có ít nhất 2 ký tự')
+                            new Error('Trường phải từ 2 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -611,9 +611,9 @@ const TeacherCreate = ({ modeUpdate }) => {
                             'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
-                        if (value.trim().length < 2) {
+                        if (value.trim().length < 2 || value.trim().length > 255) {
                           return Promise.reject(
-                            new Error('Trường phải có ít nhất 2 ký tự')
+                            new Error('Trường phải từ 2 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -653,9 +653,9 @@ const TeacherCreate = ({ modeUpdate }) => {
                             'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
-                        if (value.trim().length < 2) {
+                        if (value.trim().length < 2 || value.trim().length > 255) {
                           return Promise.reject(
-                            new Error('Trường phải có ít nhất 2 ký tự')
+                            new Error('Trường phải từ 2 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -704,9 +704,9 @@ const TeacherCreate = ({ modeUpdate }) => {
                             'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
-                        if (value.trim().length < 2) {
+                        if (value.trim().length < 2 || value.trim().length > 255) {
                           return Promise.reject(
-                            new Error('Trường phải có ít nhất 2 ký tự')
+                            new Error('Trường phải từ 2 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
