@@ -11,8 +11,6 @@ using AcademicManagementSystem.Models.ClassController;
 using AcademicManagementSystem.Models.ClassDaysController;
 using AcademicManagementSystem.Models.ClassStatusController;
 using AcademicManagementSystem.Models.CourseFamilyController;
-using AcademicManagementSystem.Models.UserController;
-using AcademicManagementSystem.Models.UserController.StudentController;
 using AcademicManagementSystem.Services;
 using ClosedXML.Excel;
 using Microsoft.AspNetCore.Authorization;
