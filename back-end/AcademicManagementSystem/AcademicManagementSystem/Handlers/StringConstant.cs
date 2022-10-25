@@ -2,10 +2,12 @@ namespace AcademicManagementSystem.Handlers;
 
 public struct StringConstant
 {
-    
-     //Any spaces and tabs
-     public const string RegexWhiteSpaces = @"\s+";
-    
+    //Any spaces and tabs
+    public const string RegexWhiteSpaces = @"\s+";
+
+    // Digit
+    public const string RegexDigits = @"\d+";
+
     /*
      * Accept characters with tone marks, any spaces, tabs
      * Accept Special characters: hyphens/dash(-), and underscore(_) but not at the beginning or end of the string
@@ -14,7 +16,7 @@ public struct StringConstant
      */
     public const string RegexVietNameseNameWithDashUnderscoreSpaces =
         @"^[a-zA-Z0-9ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếệỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹỹý \t](?!.*--)(?!.*__)(?!.*-_)(?!.*_-)[a-zA-Z0-9ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếệỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹỹý_ \t-]*[a-zA-Z0-9ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếệỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹỹý \t]$";
-    
+
     public const string RegexNameWithDashUnderscoreSpaces =
         @"^[a-zA-Z0-9](?!.*--)(?!.*__)(?!.*-_)(?!.*_-)[a-zA-Z0-9_ \t-]*[a-zA-Z0-9 \t]$";
 
@@ -45,8 +47,9 @@ public struct StringConstant
 
     // regex special character
     public const string RegexSpecialCharacter = @"[~`!@#$%^&*()+=|\\{}':;.,<>/?[\]""_-]";
-    
+
     public const string RegexSpecialCharacterWithDashUnderscoreSpaces = @"[~`!@#$%^&*()+=|\\{}':;.,<>/?[\]""]";
+
     /*
     * Accept characters with tone marks, any spaces, tabs
     * Accept Special characters: apostrophe/single quote(') but not at the beginning or end of the string.
@@ -55,26 +58,30 @@ public struct StringConstant
     */
     public const string RegexToneMarkUserNameWithApostrophe =
         @"^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếệỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹỹý \t](?!.*'')[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếệỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹỹý' \t]*[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếệỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹỹý \t]$";
-    
-    // Name will be denied all below special characters
-    public const string RegexSpecialCharsNotAllowForPersonName =
-        @"[!@#$%^&*()_+=\[{\]};:<>|./?,-]";
-    
-    public const string RegexSpecialCharactersNotAllowForClassName = @"[!@#$%^&*+=\[{\]};:<>|./?,]";
+
+    public const string RegexSpecialCharsNotAllowForPersonName = @"[~`!@#$%^&*()_+=\[{\]};:<>|.""\\/?,-]";
+
+    public const string RegexSpecialCharactersNotAllowForClassName = @"[~`!@#$%^&*()+=\[{\]};:<>|.""\\/?,]";
+
+    public const string RegexSpecialCharactersNotAllowForRoomName = RegexSpecialCharactersNotAllowForClassName;
+
     public const string RegexSpecialCharacterNotAllowForModuleName = @"[~`!@$%^*+=|\\{}':;<>/?[\]]";
+
     public const string RegexSpecialCharacterForSkillName = @"[!@$%^*_=\[{\]};:<>|/?,]";
+
     // all special characters 
-    public const string RegexSpecialCharacters = @"[!@#$%^&*()_+=\[{\]};:<>|./?,-]";
+    public const string RegexSpecialCharacters = @"[~`!@#$%^&*()-_+=""\[{\]};:<>|.'\\/?,";
 
     // 10 digits starting with 0
     public const string RegexMobilePhone = @"^0[0-9]{9}$";
-    
+
     // Match all mobile network operators in Vietnam
-    public const string RegexVietNamMobilePhone = @"^(0|\+84|84)(3[2-9]|5[2|5|6|8|9]|7[0|6-9]|8[1-9]|9[0-4|6-9])[0-9]{7}$";
+    public const string RegexVietNamMobilePhone =
+        @"^(0|\+84|84)(3[2-9]|5[2|5|6|8|9]|7[0|6-9]|8[1-9]|9[0-4|6-9])[0-9]{7}$";
 
     // 10 digits
     public const string RegexTenDigits = @"^[0-9]{10}$";
-    
+
     // 9 or 12 digits
     public const string RegexCitizenIdCardNo = @"^(\d{9}|\d{12})$";
 

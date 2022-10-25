@@ -54,8 +54,8 @@ public static class ErrorDescription
         { "E0031", new ErrorModel() { Message = "Email must match with format", Type = "sro-error-0016" } },
         { "E0032", new ErrorModel() { Message = "EmailOrganization must match with format", Type = "sro-error-0017" } },
         { "E0033", new ErrorModel() { Message = "CitizenIdCardNo must be 9 or 12 digits", Type = "sro-error-0018" } },
-        { "E0034", new ErrorModel() { Message = "FirstName must match with format", Type = "sro-error-0019" } },
-        { "E0035", new ErrorModel() { Message = "LastName must match with format", Type = "sro-error-0020" } },
+        { "E0034", new ErrorModel() { Message = "FirstName must match with format, allow: single quote ', not allow digits", Type = "sro-error-0019" } },
+        { "E0035", new ErrorModel() { Message = "LastName must match with format, allow: single quote ', not allow digits", Type = "sro-error-0020" } },
         { "E0036", new ErrorModel() { Message = "User role SRO Not found", Type = "sro-error-0021" } },
         { "E0037", new ErrorModel() { Message = "Invalid Data for create/update user", Type = "sro-error-0022" } },
         { "E0038", new ErrorModel() { Message = "Invalid Data for create/update sro", Type = "sro-error-0023" } },
@@ -128,8 +128,8 @@ public static class ErrorDescription
         { "E0043", new ErrorModel() { Message = "Email must match with format", Type = "teacher-error-0006" } },
         { "E0044", new ErrorModel() { Message = "EmailOrganization must match with format", Type = "teacher-error-0007" } },
         { "E0045", new ErrorModel() { Message = "CitizenIdCardNo must be 9 or 12 digits", Type = "teacher-error-0008" } },
-        { "E0046", new ErrorModel() { Message = "FirstName must match with format", Type = "teacher-error-0009" } },
-        { "E0047", new ErrorModel() { Message = "LastName must match with format", Type = "teacher-error-0010" } },
+        { "E0046", new ErrorModel() { Message = "FirstName must match with format, allow: single quote ', not allow digits", Type = "teacher-error-0009" } },
+        { "E0047", new ErrorModel() { Message = "LastName must match with format, allow: single quote ', not allow digits", Type = "teacher-error-0010" } },
         { "E0048", new ErrorModel() { Message = "User role Teacher Not found", Type = "teacher-error-0011" } },
         { "E0049", new ErrorModel() { Message = "Invalid Data for Create/Update Teacher", Type = "teacher-error-0012" } },
         { "E0050", new ErrorModel() { Message = "Duplicated MobilePhone for CREATE/UPDATE Teacher", Type = "teacher-error-0013" } },
@@ -179,10 +179,12 @@ public static class ErrorDescription
         { "E0072", new ErrorModel() { Message = "Class hour start must less than hour end ", Type = "class-error-0072" } },
 
         // student class
-        { "E1069", new ErrorModel() { Message = "Fail to SaveChange when import student to class by excel", Type = "student-class-error-0001" } },
-        { "E1070", new ErrorModel() { Message = "Student in excel file with enroll number is existed", Type = "student-class-error-0002" } },
-        { "E1071", new ErrorModel() { Message = "User with identify card number in excel file is existed", Type = "student-class-error-0003" } },
+        { "E1069", new ErrorModel() { Message = "Fail to SaveChange when import Students to class by excel", Type = "student-class-error-0001" } },
+        { "E1070", new ErrorModel() { Message = "EnrollNumber is existed at Student No ", Type = "student-class-error-0002" } },
+        { "E1071", new ErrorModel() { Message = "Email or EmailOrganization or PhoneNumber or IdentityCardNo is existed at Student No ", Type = "student-class-error-0003" } },
         { "E1072", new ErrorModel() { Message = "Fail to SaveChange when save Students to Class", Type = "student-class-error-0004" } },
+        { "E1073", new ErrorModel() { Message = "Class is not exists", Type = "student-class-error-0005" } },
+        { "E1074", new ErrorModel() { Message = "Fail to SaveChange when cancel import Students to Class", Type = "student-class-error-0006" } },
     };
 }
 
