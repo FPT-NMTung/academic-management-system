@@ -368,6 +368,14 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        // is class have student
+        var existedStudentInClass = _context.StudentsClasses.Any(sc => sc.ClassId == id);
+        if (existedStudentInClass)
+        {
+            var error = ErrorDescription.Error["E1075"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         //format date time from excel
         var startDate = new DateTime(1900, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var studentNo = 0;
@@ -621,13 +629,17 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var students = _context.Students
-            .Include(s => s.StudentsClasses)
-            .Where(s => s.StudentsClasses.Any(sc => sc.ClassId == id))
+        var users = _context.Users
+            .Include(u => u.Student)
+            .Include(u => u.Student.StudentsClasses)
+            .Where(u => u.Student.StudentsClasses.Any(sc => sc.ClassId == id) && u.Student.IsDraft)
             .ToList();
-        foreach (var student in students)
+        foreach (var user in users)
         {
-            _context.Students.Remove(student);
+            _context.StudentsClasses.Remove(
+                user.Student.StudentsClasses.First(sc => sc.StudentId == user.Student.UserId));
+            _context.Students.Remove(user.Student);
+            _context.Users.Remove(user);
         }
 
         try
@@ -659,6 +671,46 @@ public class ClassController : ControllerBase
 
         var students = GetAllStudentsByClassId(id);
         return Ok(CustomResponse.Ok("Get students in class successfully", students));
+    }
+
+    // delete all students in class
+    // [NOTE] this method is only used for testing
+    [HttpDelete]
+    [Route("api/classes/{id:int}/students")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult DeleteAllStudents(int id)
+    {
+        var existedClass = _context.Classes.Any(c => c.Id == id);
+        if (!existedClass)
+        {
+            var error = ErrorDescription.Error["E1073"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var users = _context.Users
+            .Include(u => u.Student)
+            .Include(u => u.Student.StudentsClasses)
+            .Where(u => u.Student.StudentsClasses.Any(sc => sc.ClassId == id))
+            .ToList();
+        foreach (var user in users)
+        {
+            _context.StudentsClasses.Remove(
+                user.Student.StudentsClasses.First(sc => sc.StudentId == user.Student.UserId));
+            _context.Students.Remove(user.Student);
+            _context.Users.Remove(user);
+        }
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E1074"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        return Ok(CustomResponse.Ok("Cancel import students successfully", null!));
     }
 
     private List<StudentResponse> GetAllStudentsByClassId(int id)
