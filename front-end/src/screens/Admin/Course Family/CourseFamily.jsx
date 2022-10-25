@@ -1,5 +1,13 @@
-import { Card, Grid, Text, Modal } from "@nextui-org/react";
-import { Form, Select, Input, Divider, Button, Table } from "antd";
+import {
+  Card,
+  Grid,
+  Text,
+  Modal,
+  Button,
+  Table,
+  Loading,
+} from "@nextui-org/react";
+import { Form, Select, Input, Divider } from "antd";
 import { useEffect, useState } from "react";
 import FetchApi from "../../../apis/FetchApi";
 import { CourseFamilyApis } from "../../../apis/ListApi";
@@ -7,6 +15,7 @@ import classes from "./CourseFamily.module.css";
 import { MdEdit } from "react-icons/md";
 import CouseFamilyCreate from "../../../components/CourseFamilyCreate/CourseFamilyCreate";
 import CourseFamilyUpdate from "../../../components/CourseFamilyUpdate/CourseFamilyUpdate";
+import { FaPen } from "react-icons/fa";
 
 const CourseFamily = () => {
   const [listCourseFamily, setlistCourseFamily] = useState([]);
@@ -18,7 +27,6 @@ const CourseFamily = () => {
   const [messageFailed, setMessageFailed] = useState(undefined);
 
   const getData = () => {
-    setIsLoading(true);
     const apiCourseFamily = CourseFamilyApis.getAllCourseFamily;
     // console.log(apiCourseFamily);
     FetchApi(apiCourseFamily).then((res) => {
@@ -35,8 +43,8 @@ const CourseFamily = () => {
           activatecourse: e.is_active,
         };
       });
-      setIsLoading(false);
       setlistCourseFamily(mergeAllCourseFamily);
+      setIsLoading(false);
     });
   };
   const handleAddSuccess = () => {
@@ -55,72 +63,86 @@ const CourseFamily = () => {
   return (
     <div>
       <Grid.Container gap={2} justify="center">
-        <Grid xs={5}>
+        <Grid xs={6}>
           <Card
+            variant="bordered"
             css={{
               width: "100%",
               height: "fit-content",
+              minHeight: "200px",
             }}
           >
             <Card.Header>
               <div className={classes.headerTable}>
-                <Text size={14}>Danh sách chương trình học</Text>
-                <Button
-                  type="primary"
-                  onClick={() => {
-                    setIsCreate(!isCreate);
-                  }}
-                >
-                  Thêm chương trình học
-                </Button>
+                <Grid.Container justify="space-between">
+                  <Grid xs={4}></Grid>
+                  <Grid xs={4}>
+                    <Text
+                      b
+                      size={14}
+                      p
+                      css={{
+                        width: "100%",
+                        textAlign: "center",
+                      }}
+                    >
+                      Danh sách chương trình học
+                    </Text>
+                  </Grid>
+                  <Grid xs={4} justify="flex-end">
+                    <Button
+                      type="primary"
+                      onPress={() => {
+                        setIsCreate(!isCreate);
+                      }}
+                      auto
+                      flat
+                    >
+                      + Thêm
+                    </Button>
+                  </Grid>
+                </Grid.Container>
               </div>
             </Card.Header>
-            <Card.Divider />
-            <Table
-              loading={IsLoading}
-              rowClassName={(record, index) => {
-                if (record.activatecourse === false) {
-                  return (record.classes = classes.rowDisable);
-                }
-              }}
-              sortDirections={["descend", "ascend"]}
-              pagination={{ position: ["bottomCenter"] }}
-              dataSource={listCourseFamily}
-
-              // rowClassName={record => activatecourse === 'false' && "disabled-row"}
-            >
-              <Table.Column
-                title="Tên"
-                dataIndex="namecoursefamily"
-                key="name"
-              />
-              <Table.Column
-                title="Mã chương trình học"
-                dataIndex="codefamily"
-                key="address"
-              />
-              <Table.Column
-                sorter={(a, b) => a.codefamilyyear - b.codefamilyyear}
-                title="Năm áp dụng"
-                dataIndex="codefamilyyear"
-                key="year"
-              />
-              <Table.Column
-                title=""
-                dataIndex="action"
-                key="action"
-                render={(_, data) => {
-                  return (
-                    <MdEdit
-                      className={classes.editIcon}
-                      onClick={() => {
-                        setselectedCourseFamilyCode(data.codefamily);
-                      }}
-                    />
-                  );
-                }}
-              />
-            </Table>
+            {IsLoading && <Loading />}
+            {!IsLoading && (
+              <Table aria-label="">
+                <Table.Header>
+                  <Table.Column>Tên</Table.Column>
+                  <Table.Column>Mã chương trình học</Table.Column>
+                  <Table.Column width={100}>Năm áp dụng</Table.Column>
+                  <Table.Column width={80}>Chỉnh sửa</Table.Column>
+                </Table.Header>
+                <Table.Body>
+                  {listCourseFamily.map((data, index) => (
+                    <Table.Row key={index}>
+                      <Table.Cell>{data.namecoursefamily}</Table.Cell>
+                      <Table.Cell>{data.codefamily}</Table.Cell>
+                      <Table.Cell css={{ textAlign: "center" }}>
+                        {data.codefamilyyear}
+                      </Table.Cell>
+                      <Table.Cell css={{ textAlign: "center" }}>
+                        <FaPen
+                          size={14}
+                          color="5EA2EF"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => {
+                            setselectedCourseFamilyCode(data.codefamily);
+                          }}
+                        />
+                      </Table.Cell>
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+                <Table.Pagination
+                  shadow
+                  noMargin
+                  align="center"
+                  rowsPerPage={5}
+                  // color="error"
+                />
+              </Table>
+            )}
           </Card>
         </Grid>
         {isCreate && <CouseFamilyCreate onCreateSuccess={handleAddSuccess} />}
