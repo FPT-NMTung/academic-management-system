@@ -173,7 +173,7 @@ const Module = () => {
     <div>
       <Grid.Container gap={2}>
         <Grid sm={12}>
-          <Card>
+          <Card variant="bordered">
             <Card.Body
               css={{
                 padding: "10px",
