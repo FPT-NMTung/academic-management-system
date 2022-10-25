@@ -70,8 +70,6 @@ const CouseFamilyCreate = ({ onCreateSuccess }) => {
         </Card.Header>
         <Card.Body>
           <Form
-            // labelCol={{ span: 6 }}
-            // wrapperCol={{ span: 14 }}
             layout="horizontal"
             labelCol={{ flex: '110px', span: 6 }}
             labelAlign="left"

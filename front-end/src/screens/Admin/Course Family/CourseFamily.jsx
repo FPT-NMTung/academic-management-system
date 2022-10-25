@@ -24,7 +24,6 @@ const CourseFamily = () => {
 
   const [IsLoading, setIsLoading] = useState(true);
   const [isCreate, setIsCreate] = useState(false);
-  const [messageFailed, setMessageFailed] = useState(undefined);
 
   const getData = () => {
     const apiCourseFamily = CourseFamilyApis.getAllCourseFamily;
@@ -108,14 +107,16 @@ const CourseFamily = () => {
             {!IsLoading && (
               <Table aria-label="">
                 <Table.Header>
+                  <Table.Column>STT</Table.Column>
                   <Table.Column>Tên</Table.Column>
                   <Table.Column>Mã chương trình học</Table.Column>
-                  <Table.Column width={100}>Năm áp dụng</Table.Column>
-                  <Table.Column width={80}>Chỉnh sửa</Table.Column>
+                  <Table.Column>Năm áp dụng</Table.Column>
+                  <Table.Column>Chỉnh sửa</Table.Column>
                 </Table.Header>
                 <Table.Body>
                   {listCourseFamily.map((data, index) => (
                     <Table.Row key={index}>
+                      <Table.Cell>{index + 1}</Table.Cell>
                       <Table.Cell>{data.namecoursefamily}</Table.Cell>
                       <Table.Cell>{data.codefamily}</Table.Cell>
                       <Table.Cell css={{ textAlign: "center" }}>
