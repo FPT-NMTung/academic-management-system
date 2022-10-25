@@ -132,9 +132,9 @@ const CreateRoom = ({ onCreateRoomSuccess }) => {
                   'Trường này không được chứa ký tự đặc biệt'
                 );
               }
-              if (value.trim().length < 2 || value.trim().length > 255) {
+              if (value.trim().length < 1 || value.trim().length > 255) {
                 return Promise.reject(
-                  new Error('Trường phải từ 2 đến 255 ký tự')
+                  new Error('Trường phải từ 1 đến 255 ký tự')
                 );
               }
               return Promise.resolve();
