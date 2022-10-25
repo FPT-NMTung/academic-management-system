@@ -71,7 +71,7 @@ const Course = () => {
   return (
     <div>
       <Grid.Container gap={2} justify="center">
-        <Grid xs={8}>
+        <Grid xs={7.5}>
           <Card
             variant="bordered"
             css={{
@@ -106,7 +106,7 @@ const Course = () => {
                       auto
                       flat
                     >
-                      + Thêm
+                      + Tạo mới
                     </Button>
                   </Grid>
                 </Grid.Container>
