@@ -43,7 +43,7 @@ public class StudentController : ControllerBase
             .Include(u => u.Center)
             .Include(u => u.Role)
             .Include(u => u.Gender)
-            .Where(u => u.RoleId == RoleIdStudent)
+            .Where(u => u.RoleId == RoleIdStudent && !u.Student.IsDraft)
             .Select(u => new StudentResponse()
             {
                 UserId = u.Student.UserId, Promotion = u.Student.Promotion, Status = u.Student.Status,
