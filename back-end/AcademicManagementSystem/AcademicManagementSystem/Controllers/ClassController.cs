@@ -368,6 +368,14 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        // is class have student
+        var existedStudentInClass = _context.StudentsClasses.Any(sc => sc.ClassId == id);
+        if (existedStudentInClass)
+        {
+            var error = ErrorDescription.Error["E1075"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         //format date time from excel
         var startDate = new DateTime(1900, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var studentNo = 0;

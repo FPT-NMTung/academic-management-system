@@ -185,6 +185,8 @@ public static class ErrorDescription
         { "E1072", new ErrorModel() { Message = "Fail to SaveChange when save Students to Class", Type = "student-class-error-0004" } },
         { "E1073", new ErrorModel() { Message = "Class is not exists", Type = "student-class-error-0005" } },
         { "E1074", new ErrorModel() { Message = "Fail to SaveChange when cancel import Students to Class", Type = "student-class-error-0006" } },
+        { "E1075", new ErrorModel() { Message = "Fail to import because this Class had students", Type = "student-class-error-0007" } },
+
     };
 }
 
