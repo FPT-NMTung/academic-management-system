@@ -23,6 +23,7 @@ public class TeacherController : ControllerBase
     private readonly AmsContext _context;
     private const int RoleIdTeacher = 3;
     private const string RegexSpecialCharacters = StringConstant.RegexSpecialCharsNotAllowForPersonName;
+    private const string Digits = StringConstant.RegexDigits;
 
     public TeacherController(AmsContext context)
     {
@@ -149,7 +150,8 @@ public class TeacherController : ControllerBase
         request.FirstName = Regex.Replace(request.FirstName, StringConstant.RegexWhiteSpaces, " ");
         // function replace string ex: H ' Hen Nie => H'Hen Nie
         request.FirstName = request.FirstName.Replace(" ' ", "'").Trim();
-        if (Regex.IsMatch(request.FirstName, RegexSpecialCharacters))
+        if (Regex.IsMatch(request.FirstName, RegexSpecialCharacters) ||
+            Regex.IsMatch(request.FirstName, Digits))
         {
             var error = ErrorDescription.Error["E0046"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -158,7 +160,8 @@ public class TeacherController : ControllerBase
         request.LastName = Regex.Replace(request.LastName, StringConstant.RegexWhiteSpaces, " ");
         request.LastName = request.LastName.Replace(" ' ", "'").Trim();
 
-        if (Regex.IsMatch(request.LastName, RegexSpecialCharacters))
+        if (Regex.IsMatch(request.LastName, RegexSpecialCharacters) ||
+            Regex.IsMatch(request.LastName, Digits))
         {
             var error = ErrorDescription.Error["E0047"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -292,6 +295,7 @@ public class TeacherController : ControllerBase
             var error = ErrorDescription.Error["E0055"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
+
         return Ok(CustomResponse.Ok("Create Teacher successfully", teacherResponse));
     }
 
@@ -324,7 +328,8 @@ public class TeacherController : ControllerBase
         request.FirstName = Regex.Replace(request.FirstName, StringConstant.RegexWhiteSpaces, " ");
         // function replace string ex: H ' Hen Nie => H'Hen Nie
         request.FirstName = request.FirstName.Replace(" ' ", "'").Trim();
-        if (Regex.IsMatch(request.FirstName, RegexSpecialCharacters))
+        if (Regex.IsMatch(request.FirstName, RegexSpecialCharacters)
+            || Regex.IsMatch(request.FirstName, Digits))
         {
             var error = ErrorDescription.Error["E0046"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -333,7 +338,8 @@ public class TeacherController : ControllerBase
         request.LastName = Regex.Replace(request.LastName, StringConstant.RegexWhiteSpaces, " ");
         request.LastName = request.LastName.Replace(" ' ", "'").Trim();
 
-        if (Regex.IsMatch(request.LastName, RegexSpecialCharacters))
+        if (Regex.IsMatch(request.LastName, RegexSpecialCharacters) ||
+            Regex.IsMatch(request.LastName, Digits))
         {
             var error = ErrorDescription.Error["E0047"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
