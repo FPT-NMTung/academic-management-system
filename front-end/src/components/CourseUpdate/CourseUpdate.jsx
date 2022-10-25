@@ -1,11 +1,14 @@
-import { Card, Grid, Text } from '@nextui-org/react';
-import { Form, Select, Input, Button, Spin, message } from 'antd';
+import { Card, Grid, Button, Text } from '@nextui-org/react';
+import { Form, Select, Input, Spin, message } from 'antd';
 import { Fragment } from 'react';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
 import { CourseFamilyApis, CourseApis } from '../../apis/ListApi';
 import classes from './CourseUpdate.module.css';
 import { Validater } from '../../validater/Validater';
+import toast from 'react-hot-toast';
+import { ErrorCodeApi } from "../../apis/ErrorCodeApi";
+
 const CourseUpdate = ({ data, onUpdateSuccess }) => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
@@ -13,6 +16,7 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
   const [form] = Form.useForm();
   const [listCourse, setlistCourse] = useState([]);
   const [listCourseFamily, setlistCourseFamily] = useState([]);
+  const [messageFailed, setMessageFailed] = useState(undefined);
   const getlistCourseFamily = () => {
     FetchApi(CourseFamilyApis.getAllCourseFamily).then((res) => {
       setlistCourseFamily(res.data);
@@ -43,16 +47,33 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
       semester_count: e.semester_count,
       is_active: true,
     };
-
-    FetchApi(CourseApis.updateCourse, body, null, [`${e.codecourse}`])
-      .then((res) => {
-        message.success('Cập nhật khóa học thành công');
+    toast.promise(
+    FetchApi(CourseApis.updateCourse, body, null, [`${e.codecourse}`]),
+    {
+      loading: "Đang cập nhật...",
+      success: (res) => {
         onUpdateSuccess();
-      })
-      .catch((err) => {
+        return "Cập nhật thành công !";
+      },
+      error: (err) => {
         setIsUpdating(false);
         setIsFailed(true);
-      });
+        setMessageFailed(ErrorCodeApi[err.type_error]);
+        if (err?.type_error) {
+          return ErrorCodeApi[err.type_error];
+        }
+        return "Cập nhật thất bại !";
+      },
+    }
+      // .then((res) => {
+      //   message.success('Cập nhật khóa học thành công');
+      //   onUpdateSuccess();
+      // })
+      // .catch((err) => {
+      //   setIsUpdating(false);
+      //   setIsFailed(true);
+      // }
+      );
   };
 
   return (
@@ -168,22 +189,37 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
           </Fragment>
 
           <Form.Item wrapperCol={{ offset: 7, span: 99 }}>
-            <Button type="primary" htmlType="submit" loading={isUpdating}>
+          <Button
+              flat
+              auto
+              css={{
+                width: "120px",
+              }}
+              type="primary"
+              htmlType="submit"
+              disabled={isUpdating}
+            >
               Cập nhật
             </Button>
-            <Button
-              style={{ marginLeft: 10 }}
-              type="primary"
-              htmlType="button"
-              danger
-              disabled
-            >
-              Xoá
-            </Button>
+            {/* <Button
+                flat
+                auto
+                css={{
+                  width: '80px',
+                }}
+                color={'error'}
+                disabled={
+                  canDelete === false || canDelete === undefined || isUpdating
+                }
+                onPress={handleDeleteCenter}
+              >
+                {canDelete === undefined && <Loading size="xs" />}
+                {canDelete !== undefined && 'Xoá'}
+              </Button> */}
           </Form.Item>
         </Form>
       )}
-      {!isUpdating && isFailed && (
+      {!isUpdating && messageFailed !== undefined && isFailed && (
         <Text
           size={14}
           css={{
@@ -191,7 +227,7 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
             textAlign: 'center',
           }}
         >
-          Cập nhật thất bại, vui lòng thử lại
+          {messageFailed}, vui lòng thử lại
         </Text>
       )}
     </Fragment>
