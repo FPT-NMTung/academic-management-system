@@ -621,13 +621,17 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var students = _context.Students
-            .Include(s => s.StudentsClasses)
-            .Where(s => s.StudentsClasses.Any(sc => sc.ClassId == id))
+        var users = _context.Users
+            .Include(u => u.Student)
+            .Include(u => u.Student.StudentsClasses)
+            .Where(u => u.Student.StudentsClasses.Any(sc => sc.ClassId == id) && u.Student.IsDraft)
             .ToList();
-        foreach (var student in students)
+        foreach (var user in users)
         {
-            _context.Students.Remove(student);
+            _context.StudentsClasses.Remove(
+                user.Student.StudentsClasses.First(sc => sc.StudentId == user.Student.UserId));
+            _context.Students.Remove(user.Student);
+            _context.Users.Remove(user);
         }
 
         try
