@@ -787,7 +787,7 @@ public class ClassController : ControllerBase
 
     // download template
     [HttpGet]
-    [Route("api/class/download-template-import-students")]
+    [Route("api/classes/download-template-import-students")]
     [Authorize(Roles = "admin, sro")]
     public IActionResult DownloadTemplateStudents()
     {
