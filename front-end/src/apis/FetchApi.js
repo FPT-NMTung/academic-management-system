@@ -94,8 +94,12 @@ const FetchApi = async (api, bodyObject, params, pathValiable) => {
     return Promise.reject(errorData);
   }
 
+  if (api.responseType === 'blob') {
+    const blob = await response.blob();
+    return Promise.resolve(blob);
+  }
   const data = await response.json();
-  return data;
+  return Promise.resolve(data);
 };
 
 const refreshToken = async () => {
