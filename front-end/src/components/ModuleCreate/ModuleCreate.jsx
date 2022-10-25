@@ -1,30 +1,30 @@
-import { Card, Grid, Text } from '@nextui-org/react';
+import { Card, Grid, Button, Text } from "@nextui-org/react";
 import {
   Form,
   Select,
   Input,
-  Button,
   Spin,
   Table,
   Tooltip,
   Space,
   Typography,
   message,
-} from 'antd';
-import { useEffect, useState } from 'react';
-import FetchApi from '../../apis/FetchApi';
+} from "antd";
+import { useEffect, useState } from "react";
+import FetchApi from "../../apis/FetchApi";
 import {
   ModulesApis,
   CenterApis,
   CourseApis,
   SemesterApis,
-} from '../../apis/ListApi';
-import classes from './ModuleCreate.module.css';
-import { Fragment } from 'react';
-import { MdEdit } from 'react-icons/md';
-import ColumnGroup from 'antd/lib/table/ColumnGroup';
-import { ErrorCodeApi } from '../../apis/ErrorCodeApi';
-import { Validater } from '../../validater/Validater';
+} from "../../apis/ListApi";
+import classes from "./ModuleCreate.module.css";
+import { Fragment } from "react";
+import { MdEdit } from "react-icons/md";
+import ColumnGroup from "antd/lib/table/ColumnGroup";
+import { ErrorCodeApi } from "../../apis/ErrorCodeApi";
+import { Validater } from "../../validater/Validater";
+import toast from "react-hot-toast";
 
 const ModuleCreate = ({ onCreateSuccess }) => {
   const [isCreating, setIsCreating] = useState(false);
@@ -65,7 +65,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
   };
 
   const GetListSemesterid = () => {
-    const coursecode = form.getFieldValue('course_code').trim();
+    const coursecode = form.getFieldValue("course_code").trim();
 
     FetchApi(CourseApis.getCourseByCode, null, null, [`${coursecode}`]).then(
       (res) => {
@@ -78,7 +78,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
   };
 
   const handleChangeExamType = () => {
-    const examtype = form.getFieldValue('exam_type');
+    const examtype = form.getFieldValue("exam_type");
     setExam_type(examtype);
   };
 
@@ -90,36 +90,45 @@ const ModuleCreate = ({ onCreateSuccess }) => {
   const handleSubmitForm = (e) => {
     setIsCreating(true);
     setErrorValue(undefined);
-    FetchApi(
-      ModulesApis.createModules,
+    toast.promise(
+      FetchApi(
+        ModulesApis.createModules,
+        {
+          center_id: e.center_id,
+          semester_name_portal: e.semester_name_portal.trim(),
+          module_name: e.module_name.trim(),
+          module_exam_name_portal: e.module_exam_name_portal.trim(),
+          module_type: e.module_type,
+          max_theory_grade: e.max_theory_grade,
+          max_practical_grade: e.max_practical_grade,
+          hours: e.hours,
+          days: e.days,
+          exam_type: e.exam_type,
+          course_code: e.course_code,
+          semester_id: e.semesterid,
+        },
+        null,
+        null
+      ),
       {
-        center_id: e.center_id,
-        semester_name_portal: e.semester_name_portal.trim(),
-        module_name: e.module_name.trim(),
-        module_exam_name_portal: e.module_exam_name_portal.trim(),
-        module_type: e.module_type,
-        max_theory_grade: e.max_theory_grade,
-        max_practical_grade: e.max_practical_grade,
-        hours: e.hours,
-        days: e.days,
-        exam_type: e.exam_type,
-        course_code: e.course_code,
-        semester_id: e.semesterid,
-      },
-      null,
-      null
-    )
-      .then(() => {
-        message.success('Tạo môn học thành công');
-        setIsCreating(false);
-        setIsFailed(false);
-        onCreateSuccess();
-      })
-      .catch((err) => {
-        setErrorValue(ErrorCodeApi[err.type_error]);
-        setIsCreating(false);
-        setIsFailed(true);
-      });
+        loading: "Đang tạo...",
+        success: (res) => {
+          onCreateSuccess();
+          setIsCreating(false);
+          setIsFailed(false);
+          return "Tạo thành công !";
+        },
+        error: (err) => {
+          setIsCreating(false);
+          setIsFailed(true);
+          setErrorValue(ErrorCodeApi[err.type_error]);
+          if (err?.type_error) {
+            return ErrorCodeApi[err.type_error];
+          }
+          return "Tạo thất bại !";
+        },
+      }
+    );
   };
 
   return (
@@ -149,25 +158,27 @@ const ModuleCreate = ({ onCreateSuccess }) => {
           form={form}
         >
           <Form.Item
-            name={'module_name'}
-            label={'Môn học'}
+            name={"module_name"}
+            label={"Môn học"}
             rules={[
               {
                 required: true,
                 validator: (_, value) => {
                   if (value === null || value === undefined) {
-                    return Promise.reject('Trường này không được để trống');
+                    return Promise.reject("Trường này không được để trống");
                   }
                   if (
-                    Validater.isContaintSpecialCharacterForNameModule(value.trim())
+                    Validater.isContaintSpecialCharacterForNameModule(
+                      value.trim()
+                    )
                   ) {
                     return Promise.reject(
-                      'Trường này không được chứa ký tự đặc biệt'
+                      "Trường này không được chứa ký tự đặc biệt"
                     );
                   }
-                  if (value.trim().length < 2 || value.trim().length > 255) {
+                  if (value.trim().length < 1 || value.trim().length > 255) {
                     return Promise.reject(
-                      new Error('Trường phải từ 2 đến 255 ký tự')
+                      new Error("Trường phải từ 1 đến 255 ký tự")
                     );
                   }
                   return Promise.resolve();
@@ -183,26 +194,28 @@ const ModuleCreate = ({ onCreateSuccess }) => {
             />
           </Form.Item>
           <Form.Item
-            name={'center_id'}
-            label={'Cơ sở'}
+            name={"center_id"}
+            label={"Cơ sở"}
             rules={[
               {
                 required: true,
-                message: 'Hãy chọn cơ sở',
+                message: "Hãy chọn cơ sở",
               },
             ]}
           >
             <Select
               placeholder="Chọn cơ sở"
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
               dropdownStyle={{ zIndex: 9999 }}
               loading={isLoading}
             >
-              {listCenters.filter(e => e.is_active).map((e) => (
-                <Select.Option key={e.key} value={e.id}>
-                  {e.name}
-                </Select.Option>
-              ))}
+              {listCenters
+                .filter((e) => e.is_active)
+                .map((e) => (
+                  <Select.Option key={e.key} value={e.id}>
+                    {e.name}
+                  </Select.Option>
+                ))}
             </Select>
           </Form.Item>
           <Form.Item
@@ -222,21 +235,21 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               rules={[
                 {
                   required: true,
-                  message: 'Hãy chọc mã khóa học',
+                  message: "Hãy chọc mã khóa học",
                 },
               ]}
               style={{
-                display: 'inline-block',
-                width: 'calc(50% - 8px)',
+                display: "inline-block",
+                width: "calc(50% - 8px)",
               }}
             >
               <Select
                 placeholder="Chọn mã khóa học"
-                style={{ width: '100%' }}
+                style={{ width: "100%" }}
                 dropdownStyle={{ zIndex: 9999 }}
                 loading={isLoading}
-                mode='multiple'
-                maxTagCount={'responsive'}
+                mode="multiple"
+                maxTagCount={"responsive"}
                 onChange={GetListSemesterid}
               >
                 {listCourses.map((e, index) => (
@@ -251,17 +264,17 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               rules={[
                 {
                   required: true,
-                  message: 'Hãy chọn học kỳ',
+                  message: "Hãy chọn học kỳ",
                 },
               ]}
               style={{
-                display: 'inline-block',
-                width: 'calc(50% - 8px)',
-                margin: '0 8px',
+                display: "inline-block",
+                width: "calc(50% - 8px)",
+                margin: "0 8px",
               }}
             >
               <Select
-                style={{ width: '100%' }}
+                style={{ width: "100%" }}
                 dropdownStyle={{ zIndex: 9999 }}
                 placeholder="Chọn học kỳ"
                 optionFilterProp="children"
@@ -297,13 +310,13 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               name="hours"
               rules={[
                 {
-                  message: 'Vui lòng nhập số tiếng học',
+                  message: "Vui lòng nhập số tiếng học",
                   required: true,
                 },
               ]}
               style={{
-                display: 'inline-block',
-                width: 'calc(50% - 8px)',
+                display: "inline-block",
+                width: "calc(50% - 8px)",
               }}
             >
               <Input placeholder="Số tiếng" />
@@ -312,14 +325,14 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               name="days"
               rules={[
                 {
-                  message: 'Vui lòng nhập số buổi học',
+                  message: "Vui lòng nhập số buổi học",
                   required: true,
                 },
               ]}
               style={{
-                display: 'inline-block',
-                width: 'calc(50% - 8px)',
-                margin: '0 8px',
+                display: "inline-block",
+                width: "calc(50% - 8px)",
+                margin: "0 8px",
               }}
             >
               <Input placeholder="Số buổi" />
@@ -336,17 +349,17 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               name="module_type"
               rules={[
                 {
-                  message: 'Vui lòng chọn hình thức học',
+                  message: "Vui lòng chọn hình thức học",
                   required: true,
                 },
               ]}
               style={{
-                display: 'inline-block',
-                width: 'calc(50% - 8px)',
+                display: "inline-block",
+                width: "calc(50% - 8px)",
               }}
             >
               <Select
-                style={{ width: '100%' }}
+                style={{ width: "100%" }}
                 dropdownStyle={{ zIndex: 9999 }}
                 placeholder="Hình thức học"
               >
@@ -364,14 +377,14 @@ const ModuleCreate = ({ onCreateSuccess }) => {
             <Form.Item
               name="exam_type"
               style={{
-                display: 'inline-block',
-                width: 'calc(50% - 8px)',
-                margin: '0 8px',
+                display: "inline-block",
+                width: "calc(50% - 8px)",
+                margin: "0 8px",
               }}
             >
               <Select
                 onChange={handleChangeExamType}
-                style={{ width: '100%' }}
+                style={{ width: "100%" }}
                 dropdownStyle={{ zIndex: 9999 }}
                 placeholder="Hình thức thi"
               >
@@ -403,8 +416,8 @@ const ModuleCreate = ({ onCreateSuccess }) => {
             <Form.Item
               name="max_theory_grade"
               style={{
-                display: 'inline-block',
-                width: 'calc(50% - 8px)',
+                display: "inline-block",
+                width: "calc(50% - 8px)",
               }}
             >
               <Input
@@ -416,9 +429,9 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               name="max_practical_grade"
               rules={[{}]}
               style={{
-                display: 'inline-block',
-                width: 'calc(50% - 8px)',
-                margin: '0 8px',
+                display: "inline-block",
+                width: "calc(50% - 8px)",
+                margin: "0 8px",
               }}
             >
               <Input
@@ -440,18 +453,18 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                   required: true,
                   validator: (_, value) => {
                     if (value === null || value === undefined) {
-                      return Promise.reject('Trường này không được để trống');
+                      return Promise.reject("Trường này không được để trống");
                     }
                     if (
                       Validater.isContaintSpecialCharacterForName(value.trim())
                     ) {
                       return Promise.reject(
-                        'Trường này không được chứa ký tự đặc biệt'
+                        "Trường này không được chứa ký tự đặc biệt"
                       );
                     }
-                    if (value.trim().length < 2 || value.trim().length > 255) {
+                    if (value.trim().length < 1 || value.trim().length > 255) {
                       return Promise.reject(
-                        new Error('Trường phải từ 2 đến 255 ký tự')
+                        new Error("Trường phải từ 1 đến 255 ký tự")
                       );
                     }
                     return Promise.resolve();
@@ -459,8 +472,8 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                 },
               ]}
               style={{
-                display: 'inline-block',
-                width: 'calc(50% - 8px)',
+                display: "inline-block",
+                width: "calc(50% - 8px)",
               }}
             >
               <Input placeholder="Tên kỳ học"></Input>
@@ -472,18 +485,20 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                   required: true,
                   validator: (_, value) => {
                     if (value === null || value === undefined) {
-                      return Promise.reject('Trường này không được để trống');
+                      return Promise.reject("Trường này không được để trống");
                     }
                     if (
-                      Validater.isContaintSpecialCharacterForNameModule(value.trim())
+                      Validater.isContaintSpecialCharacterForNameModule(
+                        value.trim()
+                      )
                     ) {
                       return Promise.reject(
-                        'Trường này không được chứa ký tự đặc biệt'
+                        "Trường này không được chứa ký tự đặc biệt"
                       );
                     }
-                    if (value.trim().length < 2 || value.trim().length > 255) {
+                    if (value.trim().length < 1 || value.trim().length > 255) {
                       return Promise.reject(
-                        new Error('Trường phải từ 2 đến 255 ký tự')
+                        new Error("Trường phải từ 1 đến 255 ký tự")
                       );
                     }
                     return Promise.resolve();
@@ -491,36 +506,40 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                 },
               ]}
               style={{
-                display: 'inline-block',
-                width: 'calc(50% - 8px)',
-                margin: '0 8px',
+                display: "inline-block",
+                width: "calc(50% - 8px)",
+                margin: "0 8px",
               }}
             >
               <Input placeholder="Tên khóa học"></Input>
             </Form.Item>
           </Form.Item>
-          <Card.Divider />
-          <Form.Item
-            wrapperCol={{ offset: 19, span: 10 }}
-            style={{
-              margin: '10px 0 0 0',
-            }}
-          >
-            <Button type="primary" htmlType="submit" loading={isCreating}>
-              Tạo mới
+
+          <Form.Item wrapperCol={{ offset: 6, span: 10 }}>
+            <Button
+              auto
+              flat
+              css={{
+                width: "120px",
+              }}
+              type="primary"
+              htmlType="submit"
+              disabled={isCreating}
+            >
+              {"Tạo mới"}
             </Button>
           </Form.Item>
         </Form>
       )}
       {!isCreating &&
         isFailed &&
-        (form.resetFields(['max_theory_grade', 'max_practical_grade']),
+        (form.resetFields(["max_theory_grade", "max_practical_grade"]),
         (
           <Text
             size={14}
             css={{
-              color: 'red',
-              textAlign: 'center',
+              color: "red",
+              textAlign: "center",
             }}
           >
             {errorValue}, vui lòng thử lại
