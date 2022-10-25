@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { ErrorCodeApi } from '../../apis/ErrorCodeApi';
 import { Fragment } from 'react';
 import { Validater } from '../../validater/Validater';
+import toast from 'react-hot-toast';
 
 const UpdateRoom = ({ data, onUpdateSuccess }) => {
   const [listCenters, setListCenters] = useState([]);
@@ -68,10 +69,25 @@ const UpdateRoom = ({ data, onUpdateSuccess }) => {
         onUpdateSuccess();
       })
       .catch((err) => {
-        setIsCreatingRoom(false);
-        setIsFailedCreateRoom(true);
-        setErrorValue(ErrorCodeApi[err.type_error]);
+        
       });
+
+    toast.promise(
+      FetchApi(RoomApis.updateRoom, body, null, [`${data?.id}`]),
+      {
+        loading: 'Đang cập nhật phòng',
+        success: () => {
+          setIsCreatingRoom(false);
+          onUpdateSuccess();
+          return 'Cập nhật phòng thành công';
+        },
+        error: (err) => {
+          setIsCreatingRoom(false);
+          setIsFailedCreateRoom(true);
+          return ErrorCodeApi[err.type_error];
+        }
+      }
+    )
   };
 
   return (
@@ -129,9 +145,9 @@ const UpdateRoom = ({ data, onUpdateSuccess }) => {
                     'Trường này không được chứa ký tự đặc biệt'
                   );
                 }
-                if (value.trim().length < 2) {
+                if (value.trim().length < 1 || value.trim().length > 255) {
                   return Promise.reject(
-                    new Error('Trường phải có ít nhất 2 ký tự')
+                    new Error('Trường phải từ 1 đến 255 ký tự')
                   );
                 }
                 return Promise.resolve();
@@ -204,16 +220,6 @@ const UpdateRoom = ({ data, onUpdateSuccess }) => {
             </Button>
           </div>
         </Form.Item>
-        {!isCreatingRoom && isFailedCreateRoom && (
-          <Text
-            color="error"
-            size={15}
-            p
-            css={{ width: '100%', textAlign: 'center' }}
-          >
-            {errorValue}, hãy thử lại!
-          </Text>
-        )}
       </Form>
     </Fragment>
   );

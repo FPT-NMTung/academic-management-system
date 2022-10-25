@@ -23,6 +23,7 @@ public class TeacherController : ControllerBase
     private readonly AmsContext _context;
     private const int RoleIdTeacher = 3;
     private const string RegexSpecialCharacters = StringConstant.RegexSpecialCharsNotAllowForPersonName;
+    private const string Digits = StringConstant.RegexDigits;
 
     public TeacherController(AmsContext context)
     {
@@ -138,7 +139,7 @@ public class TeacherController : ControllerBase
     // create teacher
     [HttpPost]
     [Route("api/teachers")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult CreateTeacher([FromBody] CreateTeacherRequest request)
     {
         if (request.FirstName.Trim().Equals(string.Empty) || request.LastName.Trim().Equals(string.Empty))
@@ -149,7 +150,8 @@ public class TeacherController : ControllerBase
         request.FirstName = Regex.Replace(request.FirstName, StringConstant.RegexWhiteSpaces, " ");
         // function replace string ex: H ' Hen Nie => H'Hen Nie
         request.FirstName = request.FirstName.Replace(" ' ", "'").Trim();
-        if (Regex.IsMatch(request.FirstName, RegexSpecialCharacters))
+        if (Regex.IsMatch(request.FirstName, RegexSpecialCharacters) ||
+            Regex.IsMatch(request.FirstName, Digits))
         {
             var error = ErrorDescription.Error["E0046"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -158,7 +160,8 @@ public class TeacherController : ControllerBase
         request.LastName = Regex.Replace(request.LastName, StringConstant.RegexWhiteSpaces, " ");
         request.LastName = request.LastName.Replace(" ' ", "'").Trim();
 
-        if (Regex.IsMatch(request.LastName, RegexSpecialCharacters))
+        if (Regex.IsMatch(request.LastName, RegexSpecialCharacters) ||
+            Regex.IsMatch(request.LastName, Digits))
         {
             var error = ErrorDescription.Error["E0047"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -287,13 +290,19 @@ public class TeacherController : ControllerBase
         }
 
         var teacherResponse = GetAllUserRoleTeacher().FirstOrDefault(s => s.UserId == user.Id);
+        if (teacherResponse == null)
+        {
+            var error = ErrorDescription.Error["E0055"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         return Ok(CustomResponse.Ok("Create Teacher successfully", teacherResponse));
     }
 
     //update teacher 
     [HttpPut]
     [Route("api/teachers/{id:int}")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult UpdateTeacher(int id, [FromBody] UpdateTeacherRequest request)
     {
         if (request.FirstName.Trim().Equals(string.Empty) || request.LastName.Trim().Equals(string.Empty))
@@ -319,7 +328,8 @@ public class TeacherController : ControllerBase
         request.FirstName = Regex.Replace(request.FirstName, StringConstant.RegexWhiteSpaces, " ");
         // function replace string ex: H ' Hen Nie => H'Hen Nie
         request.FirstName = request.FirstName.Replace(" ' ", "'").Trim();
-        if (Regex.IsMatch(request.FirstName, RegexSpecialCharacters))
+        if (Regex.IsMatch(request.FirstName, RegexSpecialCharacters)
+            || Regex.IsMatch(request.FirstName, Digits))
         {
             var error = ErrorDescription.Error["E0046"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -328,7 +338,8 @@ public class TeacherController : ControllerBase
         request.LastName = Regex.Replace(request.LastName, StringConstant.RegexWhiteSpaces, " ");
         request.LastName = request.LastName.Replace(" ' ", "'").Trim();
 
-        if (Regex.IsMatch(request.LastName, RegexSpecialCharacters))
+        if (Regex.IsMatch(request.LastName, RegexSpecialCharacters) ||
+            Regex.IsMatch(request.LastName, Digits))
         {
             var error = ErrorDescription.Error["E0047"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -452,7 +463,7 @@ public class TeacherController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        return Ok(CustomResponse.Ok("Update SRO successfully", teacherResponse));
+        return Ok(CustomResponse.Ok("Update Teacher successfully", teacherResponse));
     }
 
     [HttpPatch]

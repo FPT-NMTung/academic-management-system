@@ -155,11 +155,12 @@ const ManageClass = () => {
 
   return (
     <Grid.Container gap={2} justify="center">
-      <Grid sm={10}>
+      <Grid xl={10}>
         <Card variant="bordered">
           <Card.Body
             css={{
               padding: "10px",
+             
             }}
           >
             <Form
@@ -178,7 +179,7 @@ const ManageClass = () => {
             >
               <Form.Item
                 name="class_status_name"
-                style={{ width: "calc(15% - 16px)" }}
+                style={{ width: "calc(16% - 16px)" }}
               >
                 <Select
                   placeholder="Trạng thái lớp "
@@ -204,13 +205,13 @@ const ManageClass = () => {
               </Form.Item>
               <Form.Item
                 name="class_name"
-                style={{ width: "calc(15% - 16px)" }}
+                style={{ width: "calc(16% - 16px)" }}
               >
                 <Input placeholder="Tên lớp" />
               </Form.Item>
               <Form.Item
                 name="course_family_code"
-                style={{ width: "calc(20% - 16px)" }}
+                style={{ width: "calc(18% - 16px)" }}
               >
                 <Input placeholder="Mã Chương Trình Học" />
               </Form.Item>
@@ -277,7 +278,7 @@ const ManageClass = () => {
           </Card.Body>
         </Card>
       </Grid>
-      <Grid sm={10}>
+      <Grid xl={10}>
         <Card variant="bordered">
           <Card.Header>
             <Grid.Container>

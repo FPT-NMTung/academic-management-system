@@ -1,5 +1,5 @@
-import { Card, Grid, Text } from '@nextui-org/react';
-import { Form, Select, Input, Button, message } from 'antd';
+import { Card, Grid, Button, Text } from '@nextui-org/react';
+import { Form, Select, Input,message } from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
 import { AddressApis, CenterApis } from '../../apis/ListApi';
@@ -7,6 +7,7 @@ import mergeCourseFamilyres from '../../screens/Admin/Course Family/CourseFamily
 import { CourseFamilyApis, CourseApis } from '../../apis/ListApi';
 import { Validater } from '../../validater/Validater';
 import { ErrorCodeApi } from '../../apis/ErrorCodeApi';
+import toast from "react-hot-toast";
 const CourseCreate = ({ onCreateSuccess }) => {
   const [listCourseFamily, setListCourseFamily] = useState([]);
 
@@ -23,7 +24,8 @@ const CourseCreate = ({ onCreateSuccess }) => {
 
   const handleSubmitForm = (e) => {
     setIsCreating(true);
-    FetchApi(
+    toast.promise
+    (FetchApi(
       CourseApis.createCourse,
       {
         code: e.coursecode,
@@ -34,16 +36,24 @@ const CourseCreate = ({ onCreateSuccess }) => {
       },
       null,
       null
-    )
-      .then(() => {
-        message.success('Tạo khóa học thành công');
+    ),
+    {
+      loading: "Đang tạo...",
+      success: (res) => {
         onCreateSuccess();
-      })
-      .catch((err) => {
-        setErrorValue(ErrorCodeApi[err.type_error]);
+        return "Tạo thành công !";
+      },
+      error: (err) => {
         setIsCreating(false);
         setIsFailed(true);
-      });
+        setErrorValue(ErrorCodeApi[err.type_error]);
+        if (err?.type_error) {
+          return ErrorCodeApi[err.type_error];
+        }
+        return "Tạo thất bại !";
+      },
+    }
+      );
   };
   useEffect(() => {
     getListCourseFamily();
@@ -55,17 +65,25 @@ const CourseCreate = ({ onCreateSuccess }) => {
           width: '100%',
           height: 'fit-content',
         }}
+        variant="bordered"
       >
         <Card.Header>
-          <Text size={14}>
-            Tạo thêm khóa học mới: <b></b>
+        <Text
+            b
+            p
+            size={14}
+            css={{
+              width: '100%',
+              textAlign: 'center',
+            }}
+          >
+            Tạo thêm khóa học mới <b></b>
           </Text>
+
         </Card.Header>
-        <Card.Divider />
         <Card.Body>
           <Form
-            // labelCol={{ span: 6 }}
-            labelCol={{ flex: '200px', span: 6 }}
+            labelCol={{ flex: '110px', span: 6 }}
             layout="horizontal"
             labelAlign="left"
             labelWrap
@@ -93,9 +111,9 @@ const CourseCreate = ({ onCreateSuccess }) => {
 												'Trường này không được chứa ký tự đặc biệt'
 											);
 										}
-										if (value.trim().length < 2) {
+										if (value.trim().length < 1 || value.trim().length > 255) {
 											return Promise.reject(
-												new Error('Trường phải có ít nhất 2 ký tự')
+												new Error('Trường phải từ 1 đến 255 ký tự')
 											);
 										}
 										return Promise.resolve();
@@ -161,12 +179,21 @@ const CourseCreate = ({ onCreateSuccess }) => {
               <Input />
             </Form.Item>
             <Form.Item wrapperCol={{ offset: 6, span: 10 }}>
-              <Button type="primary" htmlType="submit" loading={isCreating}>
-                Tạo mới
+            <Button
+                auto
+                flat
+                css={{
+                  width: '120px',
+                }}
+                type="primary"
+                htmlType="submit"
+                disabled={isCreating}
+              >
+                {'Tạo mới'}
               </Button>
             </Form.Item>
           </Form>
-          {!isCreating && isFailed && (
+          {!isCreating && errorValue !== undefined && isFailed && (
             <Text
               size={14}
               css={{

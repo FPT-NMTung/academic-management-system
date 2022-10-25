@@ -15,8 +15,6 @@ public class RoomController : ControllerBase
 {
     private readonly AmsContext _context;
 
-    private const string RegexRoomName = StringConstant.RegexVietNameseNameWithDashUnderscoreSpaces;
-
     public RoomController(AmsContext context)
     {
         _context = context;
@@ -81,7 +79,13 @@ public class RoomController : ControllerBase
             var error = ErrorDescription.Error["E0007"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
+        if (Regex.IsMatch(roomCreate.Name, StringConstant.RegexSpecialCharactersNotAllowForRoomName))
+        {
+            var error = ErrorDescription.Error["E0008"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         if (IsRoomExists(roomCreate, false, 0))
         {
             var error = ErrorDescription.Error["E0003"];
@@ -91,12 +95,6 @@ public class RoomController : ControllerBase
         if (createRoomRequest.Capacity < 20 || createRoomRequest.Capacity > 100)
         {
             var error = ErrorDescription.Error["E0006"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (!Regex.IsMatch(roomCreate.Name, RegexRoomName))
-        {
-            var error = ErrorDescription.Error["E0008"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -135,7 +133,7 @@ public class RoomController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (!Regex.IsMatch(updateRoomRequest.Name.Trim(), RegexRoomName))
+        if (Regex.IsMatch(updateRoomRequest.Name.Trim(), StringConstant.RegexSpecialCharactersNotAllowForRoomName))
         {
             var error = ErrorDescription.Error["E0011"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
