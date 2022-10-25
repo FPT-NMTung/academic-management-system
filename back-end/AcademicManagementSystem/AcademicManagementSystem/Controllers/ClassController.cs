@@ -673,6 +673,46 @@ public class ClassController : ControllerBase
         return Ok(CustomResponse.Ok("Get students in class successfully", students));
     }
 
+    // delete all students in class
+    // [NOTE] this method is only used for testing
+    [HttpDelete]
+    [Route("api/classes/{id:int}/students")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult DeleteAllStudents(int id)
+    {
+        var existedClass = _context.Classes.Any(c => c.Id == id);
+        if (!existedClass)
+        {
+            var error = ErrorDescription.Error["E1073"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var users = _context.Users
+            .Include(u => u.Student)
+            .Include(u => u.Student.StudentsClasses)
+            .Where(u => u.Student.StudentsClasses.Any(sc => sc.ClassId == id))
+            .ToList();
+        foreach (var user in users)
+        {
+            _context.StudentsClasses.Remove(
+                user.Student.StudentsClasses.First(sc => sc.StudentId == user.Student.UserId));
+            _context.Students.Remove(user.Student);
+            _context.Users.Remove(user);
+        }
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E1074"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        return Ok(CustomResponse.Ok("Cancel import students successfully", null!));
+    }
+
     private List<StudentResponse> GetAllStudentsByClassId(int id)
     {
         var students = _context.Users.Include(u => u.Student)
