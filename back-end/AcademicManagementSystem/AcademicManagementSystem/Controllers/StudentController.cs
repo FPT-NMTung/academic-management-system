@@ -38,8 +38,60 @@ public class StudentController : ControllerBase
             ? CustomResponse.Ok("There is no students", students)
             : CustomResponse.Ok("Students retrieved successfully", students));
     }
-    
-    // get all students
+
+    // search all students
+    [HttpGet]
+    [Route("api/students/search")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult SearchAllStudents([FromQuery] string? courseCode, [FromQuery] string? studentName,
+        [FromQuery] string? enrollNumber, [FromQuery] string? className, [FromQuery] string? email,
+        [FromQuery] string? emailOrganization)
+    {
+        var sCourseCode = courseCode == null ? string.Empty : RemoveDiacritics(courseCode.Trim().ToLower());
+        var sStudentName = studentName == null ? string.Empty : RemoveDiacritics(studentName.Trim().ToLower());
+        var sEnrollNumber = enrollNumber == null ? string.Empty : RemoveDiacritics(enrollNumber.Trim().ToLower());
+        var sClassName = className == null ? string.Empty : RemoveDiacritics(className.Trim().ToLower());
+        var sEmail = email == null ? string.Empty : RemoveDiacritics(email.Trim().ToLower());
+        var sEmailOrganization = emailOrganization == null
+            ? string.Empty
+            : RemoveDiacritics(emailOrganization.Trim().ToLower());
+
+        var students = GetAllStudents();
+
+        // if user didn't input any search condition, return all students
+        if (sCourseCode == string.Empty && sStudentName == string.Empty && sEnrollNumber == string.Empty &&
+            sClassName == string.Empty && sEmail == string.Empty && sEmailOrganization == string.Empty)
+        {
+            return Ok(CustomResponse.Ok("Students searched successfully", students));
+        }
+
+        var studentResponses = new List<StudentResponse>();
+        foreach (var student in students)
+        {
+            var s1 = RemoveDiacritics(student.Course!.Code!.ToLower());
+            var s2 = RemoveDiacritics(student.FirstName!.ToLower());
+            var s3 = RemoveDiacritics(student.LastName!.ToLower());
+            var studentFullName = s2 + " " + s3;
+            var s4 = RemoveDiacritics(student.EnrollNumber!.ToLower());
+            var s5 = RemoveDiacritics(student.ClassName!.ToLower());
+            var s6 = RemoveDiacritics(student.Email!.ToLower());
+            var s7 = RemoveDiacritics(student.EmailOrganization!.ToLower());
+
+            if (s1.Contains(sCourseCode)
+                && studentFullName.Contains(sStudentName)
+                && s4.Contains(sEnrollNumber)
+                && s5.Contains(sClassName)
+                && s6.Contains(sEmail)
+                && s7.Contains(sEmailOrganization))
+            {
+                studentResponses.Add(student);
+            }
+        }
+
+        return Ok(CustomResponse.Ok("Students searched successfully", studentResponses));
+    }
+
+    // get all student by center Id
     [HttpGet]
     [Route("api/centers/{centerId:int}/students")]
     [Authorize(Roles = "admin, sro")]
@@ -58,12 +110,13 @@ public class StudentController : ControllerBase
             : CustomResponse.Ok("Students in center " + centerId + " retrieved successfully", students));
     }
 
-    // search student by by firstName, lastName, mobilePhone, email, emailOrganization
+    // search student in center by courseCode, student name, enroll number, class, email, email organization
     [HttpGet]
     [Route("api/centers/{centerId:int}/students/search")]
     [Authorize(Roles = "admin, sro")]
-    public IActionResult SearchStudents(int centerId, [FromQuery] string? firstName, [FromQuery] string? lastName,
-        [FromQuery] string? mobilePhone, [FromQuery] string? email,
+    public IActionResult SearchStudentsWithCenterId(int centerId, [FromQuery] string? courseCode,
+        [FromQuery] string? studentName,
+        [FromQuery] string? enrollNumber, [FromQuery] string? className, [FromQuery] string? email,
         [FromQuery] string? emailOrganization)
     {
         var existedCenter = _context.Centers.Any(c => c.Id == centerId);
@@ -72,9 +125,10 @@ public class StudentController : ControllerBase
             return NotFound(CustomResponse.NotFound("Not found center with id: " + centerId));
         }
 
-        var sFirstName = firstName == null ? string.Empty : RemoveDiacritics(firstName.Trim().ToLower());
-        var sLastName = lastName == null ? string.Empty : RemoveDiacritics(lastName.Trim().ToLower());
-        var sMobilePhone = mobilePhone == null ? string.Empty : RemoveDiacritics(mobilePhone.Trim().ToLower());
+        var sCourseCode = courseCode == null ? string.Empty : RemoveDiacritics(courseCode.Trim().ToLower());
+        var sStudentName = studentName == null ? string.Empty : RemoveDiacritics(studentName.Trim().ToLower());
+        var sEnrollNumber = enrollNumber == null ? string.Empty : RemoveDiacritics(enrollNumber.Trim().ToLower());
+        var sClassName = className == null ? string.Empty : RemoveDiacritics(className.Trim().ToLower());
         var sEmail = email == null ? string.Empty : RemoveDiacritics(email.Trim().ToLower());
         var sEmailOrganization = emailOrganization == null
             ? string.Empty
@@ -82,33 +136,33 @@ public class StudentController : ControllerBase
 
         var students = GetAllStudentsByCenterId(centerId);
 
-        // if user didn't input any search condition, return all teachers
-        if (sFirstName == string.Empty && sLastName == string.Empty
-                                       && sMobilePhone == string.Empty
-                                       && sEmail == string.Empty && sEmailOrganization == string.Empty)
+        // if user didn't input any search condition, return all students
+        if (sCourseCode == string.Empty && sStudentName == string.Empty && sEnrollNumber == string.Empty &&
+            sClassName == string.Empty && sEmail == string.Empty && sEmailOrganization == string.Empty)
         {
             return Ok(CustomResponse.Ok("Students searched successfully", students));
         }
 
         var studentResponses = new List<StudentResponse>();
-        foreach (var t in students)
+        foreach (var student in students)
         {
-            var s1 = RemoveDiacritics(t.FirstName!.ToLower());
-            var s2 = RemoveDiacritics(t.LastName!.ToLower());
-            // t.Nickname ??= string.Empty;
-            // var s3 = RemoveDiacritics(t.Nickname.ToLower());
-            var s4 = RemoveDiacritics(t.MobilePhone!.ToLower());
-            var s5 = RemoveDiacritics(t.Email!.ToLower());
-            var s6 = RemoveDiacritics(t.EmailOrganization!.ToLower());
+            var s1 = RemoveDiacritics(student.Course!.Code!.ToLower());
+            var s2 = RemoveDiacritics(student.FirstName!.ToLower());
+            var s3 = RemoveDiacritics(student.LastName!.ToLower());
+            var studentFullName = s2 + " " + s3;
+            var s4 = RemoveDiacritics(student.EnrollNumber!.ToLower());
+            var s5 = RemoveDiacritics(student.ClassName!.ToLower());
+            var s6 = RemoveDiacritics(student.Email!.ToLower());
+            var s7 = RemoveDiacritics(student.EmailOrganization!.ToLower());
 
-            if (s1.Contains(sFirstName)
-                && s2.Contains(sLastName)
-                // && s3.Contains(sNickname)
-                && s4.Contains(sMobilePhone)
-                && s5.Contains(sEmail)
-                && s6.Contains(sEmailOrganization))
+            if (s1.Contains(sCourseCode)
+                && studentFullName.Contains(sStudentName)
+                && s4.Contains(sEnrollNumber)
+                && s5.Contains(sClassName)
+                && s6.Contains(sEmail)
+                && s7.Contains(sEmailOrganization))
             {
-                studentResponses.Add(t);
+                studentResponses.Add(student);
             }
         }
 
@@ -126,6 +180,8 @@ public class StudentController : ControllerBase
             .Include(u => u.Center)
             .Include(u => u.Role)
             .Include(u => u.Gender)
+            .Include(u => u.Student.StudentsClasses)
+            .ThenInclude(sc => sc.Class)
             .Where(u => u.RoleId == RoleIdStudent && !u.Student.IsDraft && u.CenterId == centerId)
             .Select(u => new StudentResponse()
             {
@@ -182,12 +238,13 @@ public class StudentController : ControllerBase
                 Role = new RoleResponse()
                 {
                     Id = u.Role.Id, Value = u.Role.Value
-                }
+                },
+                ClassName = u.Student.StudentsClasses.First(sc => sc.StudentId == u.Student.UserId).Class.Name
             }).ToList();
         return students;
     }
-    
-        private List<StudentResponse> GetAllStudents()
+
+    private List<StudentResponse> GetAllStudents()
     {
         var students = _context.Users.Include(u => u.Student)
             .Include(u => u.Student.Course)
@@ -198,6 +255,8 @@ public class StudentController : ControllerBase
             .Include(u => u.Center)
             .Include(u => u.Role)
             .Include(u => u.Gender)
+            .Include(u => u.Student.StudentsClasses)
+            .ThenInclude(sc => sc.Class)
             .Where(u => u.RoleId == RoleIdStudent && !u.Student.IsDraft)
             .Select(u => new StudentResponse()
             {
@@ -254,7 +313,8 @@ public class StudentController : ControllerBase
                 Role = new RoleResponse()
                 {
                     Id = u.Role.Id, Value = u.Role.Value
-                }
+                }, 
+                ClassName = u.Student.StudentsClasses.First(sc => sc.StudentId == u.Student.UserId).Class.Name
             }).ToList();
         return students;
     }

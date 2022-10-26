@@ -141,4 +141,7 @@ public class StudentResponse
     
     [JsonPropertyName("Course")]
     public CourseResponse? Course { get; set; }
+    
+    [JsonPropertyName("ClassName")]
+    public string? ClassName { get; set; }
 }
