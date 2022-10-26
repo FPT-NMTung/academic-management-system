@@ -277,6 +277,7 @@ public class StudentController : ControllerBase
                 {
                     Id = u.Role.Id, Value = u.Role.Value
                 },
+                ClassId = u.Student.StudentsClasses.First(sc => sc.StudentId == u.Student.UserId).Class.Id,
                 ClassName = u.Student.StudentsClasses.First(sc => sc.StudentId == u.Student.UserId).Class.Name
             }).ToList();
         return students;
@@ -352,6 +353,7 @@ public class StudentController : ControllerBase
                 {
                     Id = u.Role.Id, Value = u.Role.Value
                 },
+                ClassId = u.Student.StudentsClasses.First(sc => sc.StudentId == u.Student.UserId).Class.Id,
                 ClassName = u.Student.StudentsClasses.First(sc => sc.StudentId == u.Student.UserId).Class.Name
             }).ToList();
         return students;
