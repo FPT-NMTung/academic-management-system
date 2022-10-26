@@ -444,26 +444,28 @@ public class ClassController : ControllerBase
                         var identityCardNo = row.Cell(15).Value.ToString();
                         var identityCardPublishedDate = row.Cell(16).Value.ToString();
                         var identityCardPublishedPlace = row.Cell(17).Value.ToString();
-                        var contactAddress = row.Cell(19).Value.ToString();
-                        var ward = row.Cell(20).Value.ToString();
-                        var district = row.Cell(21).Value.ToString();
-                        var province = row.Cell(22).Value.ToString();
-                        var parentalName = row.Cell(23).Value.ToString();
-                        var parentalRelative = row.Cell(24).Value.ToString();
-                        var parentalPhone = row.Cell(25).Value.ToString();
-                        var applicationDate = row.Cell(26).Value.ToString();
-                        var applicationDocuments = row.Cell(27).Value.ToString();
-                        var courseCode = row.Cell(29).Value.ToString();
-                        var highSchool = row.Cell(31).Value.ToString();
-                        var university = row.Cell(32).Value.ToString();
-                        var facebookUrl = row.Cell(36).Value.ToString();
-                        var portfolio = row.Cell(38).Value.ToString();
-                        var workingCompany = row.Cell(39).Value.ToString();
-                        var companySalary = row.Cell(40).Value;
-                        var companyPosition = row.Cell(41).Value.ToString();
-                        var companyAddress = row.Cell(43).Value.ToString();
-                        var feePlan = row.Cell(47).Value.ToString();
-                        var promotion = row.Cell(48).Value.ToString();
+                        var contactAddress = row.Cell(18).Value.ToString();
+                        var ward = row.Cell(19).Value.ToString();
+                        var district = row.Cell(20).Value.ToString();
+                        var province = row.Cell(21).Value.ToString();
+                        var parentalName = row.Cell(22).Value.ToString();
+                        var parentalRelative = row.Cell(23).Value.ToString();
+                        var parentalPhone = row.Cell(24).Value.ToString();
+                        var applicationDate = row.Cell(25).Value.ToString();
+                        var applicationDocuments = row.Cell(26).Value.ToString();
+                        var courseCode = row.Cell(27).Value.ToString();
+                        var highSchool = row.Cell(29).Value.ToString();
+                        var university = row.Cell(30).Value.ToString();
+                        var facebookUrl = row.Cell(31).Value.ToString();
+                        var portfolio = row.Cell(32).Value.ToString();
+                        var workingCompany = row.Cell(33).Value.ToString();
+                        var companySalary = row.Cell(34).Value.ToString() == ""
+                            ? 0
+                            : Convert.ToInt32(row.Cell(34).Value.ToString());
+                        var companyPosition = row.Cell(35).Value.ToString();
+                        var companyAddress = row.Cell(36).Value.ToString();
+                        var feePlan = row.Cell(37).Value.ToString();
+                        var promotion = row.Cell(38).Value.ToString();
 
                         // check if user exist
                         var existedUser = _context.Users.FirstOrDefault(u =>
@@ -568,7 +570,7 @@ public class ClassController : ControllerBase
                                 FacebookUrl = facebookUrl,
                                 PortfolioUrl = portfolio,
                                 WorkingCompany = workingCompany,
-                                CompanySalary = companySalary as int?,
+                                CompanySalary = companySalary,
                                 CompanyPosition = companyPosition,
                                 CompanyAddress = companyAddress,
                                 FeePlan = Convert.ToInt32(feePlan),
@@ -666,6 +668,12 @@ public class ClassController : ControllerBase
             .Include(u => u.Student.StudentsClasses)
             .Where(u => u.Student.StudentsClasses.Any(sc => sc.ClassId == id) && u.Student.IsDraft)
             .ToList();
+
+        if (users.Count == 0)
+        {
+            return Ok(CustomResponse.Ok("No student in class", null!));
+        }
+
         foreach (var user in users)
         {
             _context.StudentsClasses.Remove(
@@ -724,6 +732,13 @@ public class ClassController : ControllerBase
             .Include(u => u.Student.StudentsClasses)
             .Where(u => u.Student.StudentsClasses.Any(sc => sc.ClassId == id))
             .ToList();
+
+        if (users.Count == 0)
+        {
+            return Ok(CustomResponse.Ok("No student in class", null!));
+        }
+
+
         foreach (var user in users)
         {
             _context.StudentsClasses.Remove(
@@ -742,7 +757,7 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        return Ok(CustomResponse.Ok("Cancel import students successfully", null!));
+        return Ok(CustomResponse.Ok("Delete students successfully", null!));
     }
 
     private List<StudentResponse> GetAllStudentsByClassId(int id)
