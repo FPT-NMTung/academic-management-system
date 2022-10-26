@@ -159,10 +159,10 @@ public static class ErrorDescription
 
         //grade
         { "E0056", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0001" } },
-        { "E0057", new ErrorModel() { Message = "Total Weight must be 100 for all grade category", Type = "grade-error-0002" } },
+        { "E0057", new ErrorModel() { Message = "All TotalWeight of grade category must be 100 (Except totalWeight of TheoryExam)", Type = "grade-error-0002" } },
         { "E0058", new ErrorModel() { Message = "Invalid data for create grade category details", Type = "grade-error-0003" } },
         { "E0059", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0004" } },
-        { "E0060", new ErrorModel() { Message = "Exam must have only 1 item", Type = "grade-error-0005" } },
+        { "E0060", new ErrorModel() { Message = "Exam or Final Project must have only 1 item", Type = "grade-error-0005" } },
         { "E0061", new ErrorModel() { Message = "QuantityGradeItem out of range [1-10]", Type = "grade-error-0006" } },
         { "E0062", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0007" } },
         { "E0063", new ErrorModel() { Message = "Can't add PE because Module Exam Type is TE", Type = "grade-error-0008" } },
@@ -170,13 +170,18 @@ public static class ErrorDescription
         { "E0065", new ErrorModel() { Message = "This module not take exam", Type = "grade-error-0010" } },
         { "E0066", new ErrorModel() { Message = "Can't add Resit Exam", Type = "grade-error-0011" } },
         { "E0067", new ErrorModel() { Message = "This module must have both PE and TE", Type = "grade-error-0012" } },
-        
+        { "E0067_1", new ErrorModel() { Message = "TotalWeight of grade category must bigger than 0(Except TheoryExam)", Type = "grade-error-0013" } },
+
         //class
         { "E0068", new ErrorModel() { Message = "Class name can't be empty", Type = "class-error-0068" } },
         { "E0069", new ErrorModel() { Message = "Class name must match with format(allow characters: ( ) _ - ", Type = "class-error-0069" } },
         { "E0070", new ErrorModel() { Message = "Class already exist", Type = "class-error-0070" } },
         { "E0071", new ErrorModel() { Message = "Add class failed, data not valid", Type = "class-error-0071" } },
-        { "E0072", new ErrorModel() { Message = "Class hour start must less than hour end ", Type = "class-error-0072" } },
+        { "E0072", new ErrorModel() { Message = "Class hour start must less than hour end learning time must be 1h - 4h", Type = "class-error-0072" } },
+        { "E0073", new ErrorModel() { Message = "StartDate(AdmissionDate) can't smaller than today", Type = "class-error-0073" } },
+        { "E0074", new ErrorModel() { Message = "CompletionDate can't equal or smaller than StartDate(AdmissionDate) ", Type = "class-error-0074" } },
+        { "E0075", new ErrorModel() { Message = "GraduationDate can't smaller than CompletionDate", Type = "class-error-0075" } },
+        { "E0076", new ErrorModel() { Message = "Update StartDate(AdmissionDate) can't smaller than created StartDate(AdmissionDate)", Type = "class-error-0076" } },
 
         // student class
         { "E1069", new ErrorModel() { Message = "Fail to SaveChange when import Students to class by excel", Type = "student-class-error-0001" } },
@@ -187,6 +192,29 @@ public static class ErrorDescription
         { "E1074", new ErrorModel() { Message = "Fail to SaveChange when cancel import Students to Class", Type = "student-class-error-0006" } },
         { "E1075", new ErrorModel() { Message = "Fail to import because this Class had students", Type = "student-class-error-0007" } },
 
+        // student
+        { "E1076", new ErrorModel() { Message = "First name is not match with format", Type = "student-error-0001" } },
+        { "E1077", new ErrorModel() { Message = "Last name is not match with format", Type = "student-error-0002" } },
+        { "E1078", new ErrorModel() { Message = "Mobile phone is existed", Type = "student-error-0003" } },
+        { "E1079", new ErrorModel() { Message = "Mobile phone is not match with format", Type = "student-error-0004" } },
+        { "E1079_1", new ErrorModel() { Message = "Contact phone is not match with format", Type = "student-error-0004_1" } },
+        { "E1079_2", new ErrorModel() { Message = "Home phone is not match with format", Type = "student-error-0004_2" } },
+        { "E1079_3", new ErrorModel() { Message = "Parental phone is not match with format", Type = "student-error-0004_3" } },
+        { "E1080", new ErrorModel() { Message = "Email is existed", Type = "student-error-0005" } },
+        { "E1081", new ErrorModel() { Message = "Email Already Belong To Another EmailOrganization", Type = "student-error-0006" } },
+        { "E1082", new ErrorModel() { Message = "EmailOrganization is not match with format", Type = "student-error-0007" } },
+        { "E1081_1", new ErrorModel() { Message = "EmailOrganization Already Belong To Another Email", Type = "student-error-0008" } },
+        { "E1083", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "student-error-0009" } },
+        { "E1084", new ErrorModel() { Message = "Identity Card No is existed", Type = "student-error-00010" } },
+        { "E1085", new ErrorModel() { Message = "Identity Card No is not match with format", Type = "student-error-00011" } },
+        { "E1088", new ErrorModel() { Message = "Province is not exists", Type = "student-error-00014" } },
+        { "E1089", new ErrorModel() { Message = "District is not exists", Type = "student-error-00015" } },
+        { "E1090", new ErrorModel() { Message = "Ward is not exists", Type = "student-error-00016" } },
+        { "E1091", new ErrorModel() { Message = "Address is not exists", Type = "student-error-00017" } },
+        { "E1092", new ErrorModel() { Message = "Gender is not exists", Type = "student-error-00018" } },
+        { "E1093", new ErrorModel() { Message = "First name, last name, email and email organization cannot be empty", Type = "student-error-00019" } },
+        { "E1094", new ErrorModel() { Message = "Status must be between 1-7", Type = "student-error-00020" } },
+        { "E1095", new ErrorModel() { Message = "Student response is null", Type = "student-error-00021" } },
     };
 }
 
