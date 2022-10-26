@@ -177,19 +177,19 @@ public class ClassController : ControllerBase
     {
         request.Name = Regex.Replace(request.Name, StringConstant.RegexWhiteSpaces, " ").Trim();
 
-        var errorCode = GetCodeIfOccuredErrorWhenUpdate(classId, request);
-
-        if (errorCode != null)
-        {
-            var error = ErrorDescription.Error[errorCode];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
         var classToUpdate = _context.Classes.FirstOrDefault(c => c.Id == classId && c.CenterId == _user.CenterId);
 
         if (classToUpdate == null)
         {
             return NotFound(CustomResponse.NotFound("Class not found in this center"));
+        }
+        
+        var errorCode = GetCodeIfOccuredErrorWhenUpdate(classId, request, classToUpdate.StartDate);
+
+        if (errorCode != null)
+        {
+            var error = ErrorDescription.Error[errorCode];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         classToUpdate.CourseFamilyCode = request.CourseFamilyCode;
@@ -246,10 +246,25 @@ public class ClassController : ControllerBase
             return "E0072";
         }
 
+        if (request.StartDate.Date < DateTime.Now.Date)
+        {
+            return "E0073";
+        }
+
+        if (request.CompletionDate.Date <= request.StartDate.Date)
+        {
+            return "E0074";
+        }
+
+        if (request.GraduationDate.Date < request.CompletionDate.Date)
+        {
+            return "E0075";
+        }
+
         return IsClassExist(request.Name, _user.CenterId, false, 0) ? "E0070" : null;
     }
 
-    private string? GetCodeIfOccuredErrorWhenUpdate(int classId, UpdateClassRequest request)
+    private string? GetCodeIfOccuredErrorWhenUpdate(int classId, UpdateClassRequest request, DateTime createdStartDate)
     {
         if (string.IsNullOrWhiteSpace(request.Name))
         {
@@ -265,6 +280,21 @@ public class ClassController : ControllerBase
         if (request.ClassHourStart >= request.ClassHourEnd)
         {
             return "E0072";
+        }
+        
+        if (request.StartDate.Date < createdStartDate.Date)
+        {
+            return "E0076";
+        }
+
+        if (request.CompletionDate.Date <= request.StartDate.Date)
+        {
+            return "E0074";
+        }
+
+        if (request.GraduationDate.Date < request.CompletionDate.Date)
+        {
+            return "E0075";
         }
 
         return IsClassExist(request.Name, _user.CenterId, true, classId) ? "E0070" : null;
