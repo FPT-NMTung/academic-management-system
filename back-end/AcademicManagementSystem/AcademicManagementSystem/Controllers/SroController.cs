@@ -21,7 +21,7 @@ public class SroController : ControllerBase
     private readonly AmsContext _context;
     private const int SroRoleId = 2;
     private const string RegexSpecialCharacters = StringConstant.RegexSpecialCharsNotAllowForPersonName;
-
+    private const string Digits = StringConstant.RegexDigits;
     public SroController(AmsContext context)
     {
         _context = context;
@@ -486,7 +486,8 @@ public class SroController : ControllerBase
         request.FirstName = Regex.Replace(request.FirstName, StringConstant.RegexWhiteSpaces, " ");
         // function replace string ex: H ' Hen Nie => H'Hen Nie
         request.FirstName = request.FirstName.Replace(" ' ", "'").Trim();
-        if (Regex.IsMatch(request.FirstName, RegexSpecialCharacters))
+        if (Regex.IsMatch(request.FirstName, RegexSpecialCharacters)
+            || Regex.IsMatch(request.FirstName, Digits))
         {
             var error = ErrorDescription.Error["E0034"];
             badRequest = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -496,7 +497,8 @@ public class SroController : ControllerBase
         request.LastName = Regex.Replace(request.LastName, StringConstant.RegexWhiteSpaces, " ");
         request.LastName = request.LastName.Replace(" ' ", "'").Trim();
 
-        if (Regex.IsMatch(request.LastName, RegexSpecialCharacters))
+        if (Regex.IsMatch(request.LastName, RegexSpecialCharacters) ||
+            Regex.IsMatch(request.LastName, Digits))
         {
             var error = ErrorDescription.Error["E0035"];
             badRequest = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -506,7 +508,7 @@ public class SroController : ControllerBase
         badRequest = null!;
         return false;
     }
-    
+
     private bool CheckEmailAndEmailOrganizationForUpdate(int id, UpdateSroRequest request,
         out IActionResult badRequestObjectResult)
     {
@@ -595,7 +597,8 @@ public class SroController : ControllerBase
         request.FirstName = Regex.Replace(request.FirstName, StringConstant.RegexWhiteSpaces, " ");
         // function replace string ex: H ' Hen Nie => H'Hen Nie
         request.FirstName = request.FirstName.Replace(" ' ", "'").Trim();
-        if (Regex.IsMatch(request.FirstName, RegexSpecialCharacters))
+        if (Regex.IsMatch(request.FirstName, RegexSpecialCharacters) ||
+            Regex.IsMatch(request.FirstName, Digits))
         {
             var error = ErrorDescription.Error["E0034"];
             badRequest = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -605,7 +608,8 @@ public class SroController : ControllerBase
         request.LastName = Regex.Replace(request.LastName, StringConstant.RegexWhiteSpaces, " ");
         request.LastName = request.LastName.Replace(" ' ", "'").Trim();
 
-        if (Regex.IsMatch(request.LastName, RegexSpecialCharacters))
+        if (Regex.IsMatch(request.LastName, RegexSpecialCharacters) ||
+            Regex.IsMatch(request.LastName, Digits))
         {
             var error = ErrorDescription.Error["E0035"];
             badRequest = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
