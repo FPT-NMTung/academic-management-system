@@ -23,9 +23,9 @@ public class ModuleController : ControllerBase
 {
     private readonly AmsContext _context;
     private const int PracticeExam = 5;
-    private const int FinalExam = 6;
+    private const int TheoryExam = 6;
     private const int PracticeExamResit = 7;
-    private const int FinalExamResit = 8;
+    private const int TheoryExamResit = 8;
 
     public ModuleController(AmsContext context)
     {
@@ -845,20 +845,20 @@ public class ModuleController : ControllerBase
             return;
         }
 
-        var gradeItemNameFe = _context.GradeCategories.Find(FinalExam)!.Name;
-        var gradeItemNameFResit = _context.GradeCategories.Find(FinalExamResit)!.Name;
+        var gradeItemNamePe = _context.GradeCategories.Find(PracticeExam)!.Name;
+        var gradeItemNamePeResit = _context.GradeCategories.Find(PracticeExamResit)!.Name;
 
         var gradeCategoryModule = new GradeCategoryModule()
         {
             ModuleId = moduleId,
-            GradeCategoryId = FinalExam,
+            GradeCategoryId = PracticeExam,
             TotalWeight = 100,
             QuantityGradeItem = 1,
             GradeItems = new List<GradeItem>()
             {
                 new GradeItem()
                 {
-                    Name = gradeItemNameFe
+                    Name = gradeItemNamePe
                 }
             }
         };
@@ -866,62 +866,65 @@ public class ModuleController : ControllerBase
         var gradeCategoryModuleResit = new GradeCategoryModule()
         {
             ModuleId = moduleId,
-            GradeCategoryId = FinalExamResit,
+            GradeCategoryId = PracticeExamResit,
             TotalWeight = 100,
             QuantityGradeItem = 1,
             GradeItems = new List<GradeItem>()
             {
                 new GradeItem()
                 {
-                    Name = gradeItemNameFResit
+                    Name = gradeItemNamePeResit
                 }
             }
         };
 
         switch (examType)
         {
-            // theory exam
+            // theory exam, theory exam weight not managed in this system -> 0%
             case 1:
+                gradeCategoryModule.GradeCategoryId = TheoryExam;
+                gradeCategoryModule.TotalWeight = 0;
+                gradeCategoryModuleResit.GradeCategoryId = TheoryExamResit;
+                gradeCategoryModuleResit.TotalWeight = 0;
                 break;
             // practical exam
             case 2:
-                gradeCategoryModule.GradeCategoryId = PracticeExam;
-                gradeCategoryModuleResit.GradeCategoryId = PracticeExamResit;
                 break;
             // both theory and practical exam
             case 3:
-                var gradeCategoryModulePe = new GradeCategoryModule()
+                // add grade category for theory exam and theory exam resit
+                var gradeCategoryModuleTe = new GradeCategoryModule()
                 {
                     ModuleId = moduleId,
-                    GradeCategoryId = PracticeExam,
-                    TotalWeight = 50,
+                    GradeCategoryId = TheoryExam,
+                    TotalWeight = 0,
                     QuantityGradeItem = 1,
                     GradeItems = new List<GradeItem>()
                     {
                         new GradeItem()
                         {
-                            Name = _context.GradeCategories.Find(PracticeExam)!.Name
+                            Name = _context.GradeCategories.Find(TheoryExam)!.Name
                         }
                     }
                 };
-                var gradeCategoryModulePeResit = new GradeCategoryModule()
+                var gradeCategoryModuleTeResit = new GradeCategoryModule()
                 {
                     ModuleId = moduleId,
-                    GradeCategoryId = PracticeExamResit,
-                    TotalWeight = 50,
+                    GradeCategoryId = TheoryExamResit,
+                    TotalWeight = 0,
                     QuantityGradeItem = 1,
                     GradeItems = new List<GradeItem>()
                     {
                         new GradeItem()
                         {
-                            Name = _context.GradeCategories.Find(PracticeExamResit)!.Name
+                            Name = _context.GradeCategories.Find(TheoryExamResit)!.Name
                         }
                     }
                 };
-                gradeCategoryModule.TotalWeight = 50;
-                gradeCategoryModuleResit.TotalWeight = 50;
-                _context.GradeCategoryModules.Add(gradeCategoryModulePe);
-                _context.GradeCategoryModules.Add(gradeCategoryModulePeResit);
+                gradeCategoryModule.TotalWeight = 100;
+                gradeCategoryModuleResit.TotalWeight = 100;
+                _context.GradeCategoryModules.Add(gradeCategoryModuleTe);
+                _context.GradeCategoryModules.Add(gradeCategoryModuleTeResit);
                 break;
         }
 

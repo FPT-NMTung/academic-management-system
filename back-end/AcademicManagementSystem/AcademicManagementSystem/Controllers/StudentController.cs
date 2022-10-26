@@ -1,3 +1,5 @@
+using System.Text;
+using System.Text.RegularExpressions;
 using AcademicManagementSystem.Context;
 using AcademicManagementSystem.Models.AddressController.DistrictModel;
 using AcademicManagementSystem.Models.AddressController.ProvinceModel;
@@ -7,6 +9,8 @@ using AcademicManagementSystem.Models.CourseFamilyController;
 using AcademicManagementSystem.Models.GenderController;
 using AcademicManagementSystem.Models.RoleController;
 using AcademicManagementSystem.Models.UserController.StudentController;
+using AcademicManagementSystem.Models.UserController.TeacherController;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,10 +30,62 @@ public class StudentController : ControllerBase
     // get all students
     [HttpGet]
     [Route("api/students")]
+    [Authorize(Roles = "admin, sro")]
     public IActionResult GetStudents()
     {
         var students = GetAllStudent();
         return Ok(CustomResponse.Ok("Students retrieved successfully", students));
+    }
+
+    // search student by by firstName, lastName, mobilePhone, email, emailOrganization
+    [HttpGet]
+    [Route("api/teachers/search")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult SearchStudents([FromQuery] string? firstName, [FromQuery] string? lastName,
+        [FromQuery] string? mobilePhone, [FromQuery] string? email,
+        [FromQuery] string? emailOrganization)
+    {
+        var sFirstName = firstName == null ? string.Empty : RemoveDiacritics(firstName.Trim().ToLower());
+        var sLastName = lastName == null ? string.Empty : RemoveDiacritics(lastName.Trim().ToLower());
+        var sMobilePhone = mobilePhone == null ? string.Empty : RemoveDiacritics(mobilePhone.Trim().ToLower());
+        var sEmail = email == null ? string.Empty : RemoveDiacritics(email.Trim().ToLower());
+        var sEmailOrganization = emailOrganization == null
+            ? string.Empty
+            : RemoveDiacritics(emailOrganization.Trim().ToLower());
+
+        var teachers = GetAllStudent();
+
+        // if user didn't input any search condition, return all teachers
+        if (sFirstName == string.Empty && sLastName == string.Empty
+                                       && sMobilePhone == string.Empty
+                                       && sEmail == string.Empty && sEmailOrganization == string.Empty)
+        {
+            return Ok(CustomResponse.Ok("Search teachers successfully", teachers));
+        }
+
+        var studentResponses = new List<StudentResponse>();
+        foreach (var t in teachers)
+        {
+            var s1 = RemoveDiacritics(t.FirstName!.ToLower());
+            var s2 = RemoveDiacritics(t.LastName!.ToLower());
+            // t.Nickname ??= string.Empty;
+            // var s3 = RemoveDiacritics(t.Nickname.ToLower());
+            var s4 = RemoveDiacritics(t.MobilePhone!.ToLower());
+            var s5 = RemoveDiacritics(t.Email!.ToLower());
+            var s6 = RemoveDiacritics(t.EmailOrganization!.ToLower());
+
+            if (s1.Contains(sFirstName)
+                && s2.Contains(sLastName)
+                // && s3.Contains(sNickname)
+                && s4.Contains(sMobilePhone)
+                && s5.Contains(sEmail)
+                && s6.Contains(sEmailOrganization))
+            {
+                studentResponses.Add(t);
+            }
+        }
+
+        return Ok(CustomResponse.Ok("Search Teacher successfully", studentResponses));
     }
 
     private List<StudentResponse> GetAllStudent()
@@ -102,5 +158,17 @@ public class StudentController : ControllerBase
                 }
             }).ToList();
         return students;
+    }
+
+    private static string RemoveDiacritics(string text)
+    {
+        //regex pattern to remove diacritics
+        const string pattern = "\\p{IsCombiningDiacriticalMarks}+";
+
+        var normalizedStr = text.Normalize(NormalizationForm.FormD);
+
+        return Regex.Replace(normalizedStr, pattern, string.Empty)
+            .Replace('\u0111', 'd')
+            .Replace('\u0110', 'D');
     }
 }
