@@ -1,6 +1,8 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using AcademicManagementSystem.Context;
+using AcademicManagementSystem.Context.AmsModels;
+using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.AddressController.DistrictModel;
 using AcademicManagementSystem.Models.AddressController.ProvinceModel;
 using AcademicManagementSystem.Models.AddressController.WardModel;
@@ -9,7 +11,6 @@ using AcademicManagementSystem.Models.CourseFamilyController;
 using AcademicManagementSystem.Models.GenderController;
 using AcademicManagementSystem.Models.RoleController;
 using AcademicManagementSystem.Models.UserController.StudentController;
-using AcademicManagementSystem.Models.UserController.TeacherController;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -207,6 +208,222 @@ public class StudentController : ControllerBase
         return Ok(CustomResponse.Ok("Student retrieved successfully", student));
     }
 
+    // update student information
+    [HttpPut]
+    [Route("api/students/{id:int}")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult UpdateStudent(int id, [FromBody] UpdateStudentRequest request)
+    {
+        var user = _context.Users
+            .Include(u => u.Student)
+            .Include(u => u.Student.Course)
+            .FirstOrDefault(u => u.Id == id);
+
+        if (user == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not found user with id: " + id));
+        }
+
+        request.FirstName = request.FirstName.Trim();
+        request.LastName = request.LastName.Trim();
+        request.Email = request.Email.Trim();
+        request.EmailOrganization = request.EmailOrganization.Trim();
+
+        if (string.IsNullOrEmpty(request.FirstName) || string.IsNullOrEmpty(request.LastName) ||
+            string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.EmailOrganization))
+        {
+            var error = ErrorDescription.Error["E1093"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        request.FirstName = Regex.Replace(request.FirstName, StringConstant.RegexWhiteSpaces, " ");
+        // function replace string ex: H ' Hen Nie => H'Hen Nie
+        request.FirstName = request.FirstName.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.FirstName, StringConstant.RegexSpecialCharsNotAllowForPersonName)
+            || Regex.IsMatch(request.FirstName, StringConstant.RegexDigits))
+        {
+            var error = ErrorDescription.Error["E1076"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        request.LastName = Regex.Replace(request.LastName, StringConstant.RegexWhiteSpaces, " ");
+        request.LastName = request.LastName.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.LastName, StringConstant.RegexSpecialCharsNotAllowForPersonName) ||
+            Regex.IsMatch(request.LastName, StringConstant.RegexDigits))
+        {
+            var error = ErrorDescription.Error["E1077"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsMobilePhoneExists(request.MobilePhone, true, id))
+        {
+            var error = ErrorDescription.Error["E1078"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!Regex.IsMatch(request.MobilePhone, StringConstant.RegexMobilePhone))
+        {
+            var error = ErrorDescription.Error["E1079"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!Regex.IsMatch(request.ContactPhone, StringConstant.RegexMobilePhone))
+        {
+            var error = ErrorDescription.Error["E1079_1"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.HomePhone != null && !Regex.IsMatch(request.HomePhone, StringConstant.RegexMobilePhone))
+        {
+            var error = ErrorDescription.Error["E1079_2"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!Regex.IsMatch(request.ParentalPhone, StringConstant.RegexMobilePhone))
+        {
+            var error = ErrorDescription.Error["E1079_3"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsEmailExists(request.Email, true, id))
+        {
+            var error = ErrorDescription.Error["E1080"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsEmailExists(request.EmailOrganization, true, id))
+        {
+            var error = ErrorDescription.Error["1081"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsEmailOrganizationExists(request.EmailOrganization, true, id))
+        {
+            var error = ErrorDescription.Error["1082"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsEmailOrganizationExists(request.Email, true, id))
+        {
+            var error = ErrorDescription.Error["1081_1"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.Email == request.EmailOrganization)
+        {
+            var error = ErrorDescription.Error["E1083"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsCitizenIdentityCardNoExists(request.CitizenIdentityCardNo, true, id))
+        {
+            var error = ErrorDescription.Error["E1084"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!Regex.IsMatch(request.CitizenIdentityCardNo, StringConstant.RegexCitizenIdCardNo))
+        {
+            var error = ErrorDescription.Error["E1085"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+
+        if (!IsProvinceExists(request.ProvinceId))
+        {
+            var error = ErrorDescription.Error["E1088"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsDistrictExists(request.DistrictId))
+        {
+            var error = ErrorDescription.Error["E1089"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsWardExists(request.WardId))
+        {
+            var error = ErrorDescription.Error["E1090"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsAddressExists(request.ProvinceId, request.DistrictId, request.WardId))
+        {
+            var error = ErrorDescription.Error["E1091"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsGenderExists(request.GenderId))
+        {
+            var error = ErrorDescription.Error["E1092"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.Status is < 1 or > 7)
+        {
+            var error = ErrorDescription.Error["E1094"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        user.FirstName = request.FirstName;
+        user.LastName = request.LastName;
+        user.MobilePhone = request.MobilePhone;
+        user.Email = request.Email;
+        user.EmailOrganization = request.EmailOrganization;
+        user.ProvinceId = request.ProvinceId;
+        user.DistrictId = request.DistrictId;
+        user.WardId = request.WardId;
+        user.GenderId = request.GenderId;
+        user.Birthday = request.Birthday;
+        user.CitizenIdentityCardNo = request.CitizenIdentityCardNo;
+        user.CitizenIdentityCardPublishedDate = request.CitizenIdentityCardPublishedDate;
+        user.CitizenIdentityCardPublishedPlace = request.CitizenIdentityCardPublishedPlace;
+        user.UpdatedAt = DateTime.Now;
+        user.Student = new Student()
+        {
+            EnrollNumber = user.Student.EnrollNumber,
+            Status = request.Status,
+            StatusDate = request.Status == user.Student.Status ? user.Student.StatusDate : DateTime.Now,
+            HomePhone = request.HomePhone,
+            ContactPhone = request.ContactPhone,
+            ParentalName = request.ParentalName,
+            ParentalRelationship = request.ParentalRelationship,
+            ContactAddress = request.ContactAddress,
+            ParentalPhone = request.ParentalPhone,
+            ApplicationDate = request.ApplicationDate,
+            ApplicationDocument = request.ApplicationDocument,
+            HighSchool = request.HighSchool,
+            University = request.University,
+            FacebookUrl = request.FacebookUrl,
+            PortfolioUrl = request.PortfolioUrl,
+            WorkingCompany = request.WorkingCompany,
+            CompanySalary = request.CompanySalary,
+            CompanyPosition = request.CompanyPosition,
+            CompanyAddress = request.CompanyAddress,
+            FeePlan = request.FeePlan,
+            Promotion = request.Promotion,
+            CourseCode = user.Student.CourseCode
+        };
+        _context.Users.Update(user);
+        _context.Students.Update(user.Student);
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+        }
+
+        var studentResponse = GetAllStudents().FirstOrDefault(s => s.UserId == id);
+        if (studentResponse == null)
+        {
+            var error = ErrorDescription.Error["E1095"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        return Ok(CustomResponse.Ok("Student updated successfully", studentResponse));
+    }
+
+
     private List<StudentResponse> GetAllStudentsByCenterId(int centerId)
     {
         var students = _context.Users.Include(u => u.Student)
@@ -277,6 +494,7 @@ public class StudentController : ControllerBase
                 {
                     Id = u.Role.Id, Value = u.Role.Value
                 },
+                ClassId = u.Student.StudentsClasses.First(sc => sc.StudentId == u.Student.UserId).Class.Id,
                 ClassName = u.Student.StudentsClasses.First(sc => sc.StudentId == u.Student.UserId).Class.Name
             }).ToList();
         return students;
@@ -352,9 +570,68 @@ public class StudentController : ControllerBase
                 {
                     Id = u.Role.Id, Value = u.Role.Value
                 },
+                ClassId = u.Student.StudentsClasses.First(sc => sc.StudentId == u.Student.UserId).Class.Id,
                 ClassName = u.Student.StudentsClasses.First(sc => sc.StudentId == u.Student.UserId).Class.Name
             }).ToList();
         return students;
+    }
+
+    private bool IsMobilePhoneExists(string? mobilePhone, bool isUpdate, int userId)
+    {
+        return isUpdate
+            ? _context.Users.Any(e => e.MobilePhone == mobilePhone && e.Id != userId)
+            : _context.Users.Any(e => e.MobilePhone == mobilePhone);
+    }
+
+    private bool IsEmailExists(string? email, bool isUpdate, int userId)
+    {
+        return isUpdate
+            ? _context.Users.Any(e => e.Email == email && e.Id != userId)
+            : _context.Users.Any(e => e.Email == email);
+    }
+
+    private bool IsEmailOrganizationExists(string? emailOrganization, bool isUpdate, int userId)
+    {
+        return isUpdate
+            ? _context.Users.Any(e => e.EmailOrganization == emailOrganization && e.Id != userId)
+            : _context.Users.Any(e => e.EmailOrganization == emailOrganization);
+    }
+
+    private bool IsCitizenIdentityCardNoExists(string? citizenIdentityCardNo, bool isUpdate, int userId)
+    {
+        return isUpdate
+            ? _context.Users.Any(e => e.CitizenIdentityCardNo == citizenIdentityCardNo && e.Id != userId)
+            : _context.Users.Any(e => e.CitizenIdentityCardNo == citizenIdentityCardNo);
+    }
+
+    private bool IsProvinceExists(int provinceId)
+    {
+        return _context.Provinces.Any(e => e.Id == provinceId);
+    }
+
+    private bool IsDistrictExists(int districtId)
+    {
+        return _context.Districts.Any(e => e.Id == districtId);
+    }
+
+    private bool IsWardExists(int wardId)
+    {
+        return _context.Wards.Any(e => e.Id == wardId);
+    }
+
+    private bool IsAddressExists(int provinceId, int districtId, int wardId)
+    {
+        return _context.Provinces
+            .Include(p => p.Districts)
+            .Include(p => p.Wards)
+            .Any(p => p.Id == provinceId && p.Districts.Any(d => d.Id == districtId && d.Province.Id == provinceId) &&
+                      p.Wards.Any(w =>
+                          w.Id == wardId && w.District.Id == districtId && w.District.Province.Id == provinceId));
+    }
+    
+    private bool IsGenderExists(int genderId)
+    {
+        return _context.Genders.Any(g => g.Id == genderId);
     }
 
     private static string RemoveDiacritics(string text)
