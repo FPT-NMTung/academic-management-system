@@ -176,7 +176,7 @@ public static class ErrorDescription
         { "E0069", new ErrorModel() { Message = "Class name must match with format(allow characters: ( ) _ - ", Type = "class-error-0069" } },
         { "E0070", new ErrorModel() { Message = "Class already exist", Type = "class-error-0070" } },
         { "E0071", new ErrorModel() { Message = "Add class failed, data not valid", Type = "class-error-0071" } },
-        { "E0072", new ErrorModel() { Message = "Class hour start must less than hour end", Type = "class-error-0072" } },
+        { "E0072", new ErrorModel() { Message = "Class hour start must less than hour end learning time must be 1h - 4h", Type = "class-error-0072" } },
         { "E0073", new ErrorModel() { Message = "StartDate(AdmissionDate) can't smaller than today", Type = "class-error-0073" } },
         { "E0074", new ErrorModel() { Message = "CompletionDate can't equal or smaller than StartDate(AdmissionDate) ", Type = "class-error-0074" } },
         { "E0075", new ErrorModel() { Message = "GraduationDate can't smaller than CompletionDate", Type = "class-error-0075" } },
