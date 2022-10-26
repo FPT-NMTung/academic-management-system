@@ -91,6 +91,22 @@ public class StudentController : ControllerBase
         return Ok(CustomResponse.Ok("Students searched successfully", studentResponses));
     }
 
+    // get students by id
+    [HttpGet]
+    [Route("api/students/{id:int}")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult GetStudentById(int id)
+    {
+        var student = GetAllStudents().FirstOrDefault(s => s.UserId == id);
+
+        if (student == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not found student with id: " + id));
+        }
+
+        return Ok(CustomResponse.Ok("Student retrieved successfully", student));
+    }
+
     // get all student by center Id
     [HttpGet]
     [Route("api/centers/{centerId:int}/students")]
@@ -167,6 +183,28 @@ public class StudentController : ControllerBase
         }
 
         return Ok(CustomResponse.Ok("Students searched successfully", studentResponses));
+    }
+
+    // get student by center id and student id
+    [HttpGet]
+    [Route("api/centers/{centerId:int}/students/{studentId:int}")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult GetStudentByCenterIdAndStudentId(int centerId, int studentId)
+    {
+        var existedCenter = _context.Centers.Any(c => c.Id == centerId);
+        if (!existedCenter)
+        {
+            return NotFound(CustomResponse.NotFound("Not found center with id: " + centerId));
+        }
+
+        var student = GetAllStudentsByCenterId(centerId).FirstOrDefault(s => s.UserId == studentId);
+
+        if (student == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not found student with id: " + studentId));
+        }
+
+        return Ok(CustomResponse.Ok("Student retrieved successfully", student));
     }
 
     private List<StudentResponse> GetAllStudentsByCenterId(int centerId)
@@ -313,7 +351,7 @@ public class StudentController : ControllerBase
                 Role = new RoleResponse()
                 {
                     Id = u.Role.Id, Value = u.Role.Value
-                }, 
+                },
                 ClassName = u.Student.StudentsClasses.First(sc => sc.StudentId == u.Student.UserId).Class.Name
             }).ToList();
         return students;
