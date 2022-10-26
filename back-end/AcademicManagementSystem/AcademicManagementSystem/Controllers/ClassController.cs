@@ -241,7 +241,8 @@ public class ClassController : ControllerBase
             return "E0069";
         }
 
-        if (request.ClassHourStart >= request.ClassHourEnd)
+        if (request.ClassHourEnd - request.ClassHourStart < TimeSpan.FromHours(1)
+            || request.ClassHourEnd - request.ClassHourStart > TimeSpan.FromHours(4))
         {
             return "E0072";
         }
@@ -277,7 +278,8 @@ public class ClassController : ControllerBase
             return "E0069";
         }
 
-        if (request.ClassHourStart >= request.ClassHourEnd)
+        if (request.ClassHourEnd - request.ClassHourStart < TimeSpan.FromHours(1)
+            || request.ClassHourEnd - request.ClassHourStart > TimeSpan.FromHours(4))
         {
             return "E0072";
         }

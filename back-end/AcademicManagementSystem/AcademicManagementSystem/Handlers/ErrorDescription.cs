@@ -159,10 +159,10 @@ public static class ErrorDescription
 
         //grade
         { "E0056", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0001" } },
-        { "E0057", new ErrorModel() { Message = "Total Weight must be 100 for all grade category", Type = "grade-error-0002" } },
+        { "E0057", new ErrorModel() { Message = "All TotalWeight of grade category must be 100 (Except totalWeight of TheoryExam)", Type = "grade-error-0002" } },
         { "E0058", new ErrorModel() { Message = "Invalid data for create grade category details", Type = "grade-error-0003" } },
         { "E0059", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0004" } },
-        { "E0060", new ErrorModel() { Message = "Exam must have only 1 item", Type = "grade-error-0005" } },
+        { "E0060", new ErrorModel() { Message = "Exam or Final Project must have only 1 item", Type = "grade-error-0005" } },
         { "E0061", new ErrorModel() { Message = "QuantityGradeItem out of range [1-10]", Type = "grade-error-0006" } },
         { "E0062", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0007" } },
         { "E0063", new ErrorModel() { Message = "Can't add PE because Module Exam Type is TE", Type = "grade-error-0008" } },
@@ -170,13 +170,14 @@ public static class ErrorDescription
         { "E0065", new ErrorModel() { Message = "This module not take exam", Type = "grade-error-0010" } },
         { "E0066", new ErrorModel() { Message = "Can't add Resit Exam", Type = "grade-error-0011" } },
         { "E0067", new ErrorModel() { Message = "This module must have both PE and TE", Type = "grade-error-0012" } },
-        
+        { "E0067_1", new ErrorModel() { Message = "TotalWeight of grade category must bigger than 0(Except TheoryExam)", Type = "grade-error-0013" } },
+
         //class
         { "E0068", new ErrorModel() { Message = "Class name can't be empty", Type = "class-error-0068" } },
         { "E0069", new ErrorModel() { Message = "Class name must match with format(allow characters: ( ) _ - ", Type = "class-error-0069" } },
         { "E0070", new ErrorModel() { Message = "Class already exist", Type = "class-error-0070" } },
         { "E0071", new ErrorModel() { Message = "Add class failed, data not valid", Type = "class-error-0071" } },
-        { "E0072", new ErrorModel() { Message = "Class hour start must less than hour end", Type = "class-error-0072" } },
+        { "E0072", new ErrorModel() { Message = "Class hour start must less than hour end learning time must be 1h - 4h", Type = "class-error-0072" } },
         { "E0073", new ErrorModel() { Message = "StartDate(AdmissionDate) can't smaller than today", Type = "class-error-0073" } },
         { "E0074", new ErrorModel() { Message = "CompletionDate can't equal or smaller than StartDate(AdmissionDate) ", Type = "class-error-0074" } },
         { "E0075", new ErrorModel() { Message = "GraduationDate can't smaller than CompletionDate", Type = "class-error-0075" } },
