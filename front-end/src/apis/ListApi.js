@@ -141,12 +141,12 @@ export const ModulesApis = {
 
 export const CourseModuleSemesterApis = {
   getByCourseCode: {
-    url: 'api/courses_modules_semesters/courses/{0}',
+    url: 'api/courses-modules-semesters/courses/{0}',
     method: 'GET',
     contextType: 'application/json',
   },
   getAllCourseModuleSemesterApis: {
-    url: 'api/courses_modules_semesters',
+    url: 'api/courses-modules-semesters',
     method: 'GET',
     contextType: 'application/json',
   },
@@ -204,6 +204,11 @@ export const ManageSroApis = {
     method: 'PUT',
     contextType: 'application/json',
   },
+  changeActive: {
+    url: 'api/sros/{0}/change-active',
+    method: 'PATCH',
+    contextType: 'application/json',
+  }
 };
 
 export const GenderApis = {
@@ -250,6 +255,11 @@ export const ManageTeacherApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  changeActive: {
+    url: 'api/teachers/{0}/change-active',
+    method: 'PATCH',
+    contextType: 'application/json',
+  }
 };
 
 export const UserApis = {

@@ -4,6 +4,7 @@ using AcademicManagementSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    partial class AmsContextModelSnapshot : ModelSnapshot
+    [Migration("20221023110915_Update data type and name CourseCode")]
+    partial class UpdatedatatypeandnameCourseCode
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,12 +80,6 @@ namespace AcademicManagementSystem.Migrations
                     b.Property<int>("DistrictId")
                         .HasColumnType("int")
                         .HasColumnName("district_id");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true)
-                        .HasColumnName("is_active");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -892,6 +888,23 @@ namespace AcademicManagementSystem.Migrations
                     b.ToTable("teacher");
                 });
 
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.TeacherSkill", b =>
+                {
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int")
+                        .HasColumnName("teacher_id");
+
+                    b.Property<int>("SkillId")
+                        .HasColumnType("int")
+                        .HasColumnName("skill_id");
+
+                    b.HasKey("TeacherId", "SkillId");
+
+                    b.HasIndex("SkillId");
+
+                    b.ToTable("teacher_skill");
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.TeacherType", b =>
                 {
                     b.Property<int>("Id")
@@ -979,12 +992,6 @@ namespace AcademicManagementSystem.Migrations
                     b.Property<int>("GenderId")
                         .HasColumnType("int")
                         .HasColumnName("gender_id");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true)
-                        .HasColumnName("is_active");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -1097,21 +1104,6 @@ namespace AcademicManagementSystem.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("working_time");
-                });
-
-            modelBuilder.Entity("SkillTeacher", b =>
-                {
-                    b.Property<int>("SkillsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TeachersUserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("SkillsId", "TeachersUserId");
-
-                    b.HasIndex("TeachersUserId");
-
-                    b.ToTable("SkillTeacher");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.ActiveRefreshToken", b =>
@@ -1391,6 +1383,25 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("WorkingTime");
                 });
 
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.TeacherSkill", b =>
+                {
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Skill", "Skill")
+                        .WithMany("TeachersSkills")
+                        .HasForeignKey("SkillId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Teacher", "Teacher")
+                        .WithMany("TeachersSkills")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.Navigation("Skill");
+
+                    b.Navigation("Teacher");
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.User", b =>
                 {
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Center", "Center")
@@ -1459,21 +1470,6 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("District");
 
                     b.Navigation("Province");
-                });
-
-            modelBuilder.Entity("SkillTeacher", b =>
-                {
-                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Skill", null)
-                        .WithMany()
-                        .HasForeignKey("SkillsId")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
-
-                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Teacher", null)
-                        .WithMany()
-                        .HasForeignKey("TeachersUserId")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Center", b =>
@@ -1573,6 +1569,11 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("CoursesModuleSemesters");
                 });
 
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Skill", b =>
+                {
+                    b.Navigation("TeachersSkills");
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Sro", b =>
                 {
                     b.Navigation("Classes");
@@ -1581,6 +1582,11 @@ namespace AcademicManagementSystem.Migrations
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Student", b =>
                 {
                     b.Navigation("StudentsClasses");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Teacher", b =>
+                {
+                    b.Navigation("TeachersSkills");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.TeacherType", b =>

@@ -72,6 +72,9 @@ public class User
     [StringLength(255)]
     public string CitizenIdentityCardPublishedPlace { get; set; }
     
+    [Column("is_active")]
+    public bool IsActive { get; set; }
+    
     [Column("created_at")]
     public DateTime CreatedAt { get; set; }
     
@@ -88,6 +91,7 @@ public class User
     public virtual Admin Admin { get; set; }
     public virtual Sro Sro { get; set; }
     public virtual Teacher Teacher { get; set; }
+    public virtual Student Student { get; set; }
     public virtual ICollection<ActiveRefreshToken> ActiveRefreshTokens { get; set; }
     
 }

@@ -1,5 +1,21 @@
-import { Grid, Card, Text, Spacer, Button, Loading } from '@nextui-org/react';
-import { Form, Input, Select, DatePicker, InputNumber } from 'antd';
+import {
+  Grid,
+  Card,
+  Text,
+  Spacer,
+  Button,
+  Loading,
+  Switch,
+  Badge,
+} from '@nextui-org/react';
+import {
+  Form,
+  Input,
+  Select,
+  DatePicker,
+  InputNumber,
+  Descriptions,
+} from 'antd';
 import classes from './TeacherCreate.module.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -14,6 +30,8 @@ import { Validater } from '../../../../validater/Validater';
 import moment from 'moment';
 import { ErrorCodeApi } from '../../../../apis/ErrorCodeApi';
 import { Fragment } from 'react';
+import { FaLock } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 
 const translateWorkingTime = {
   1: 'Sáng',
@@ -37,6 +55,8 @@ const TeacherCreate = ({ modeUpdate }) => {
   const [messageFailed, setMessageFailed] = useState(undefined);
   const [isGettingInformationTeacher, setIsGettingInformationTeacher] =
     useState(true);
+  const [isUnlockDelete, setIsUnlockDelete] = useState(false);
+  const [dataUser, setDataUser] = useState(undefined);
 
   const [form] = Form.useForm();
   const navigate = useNavigate();
@@ -136,6 +156,7 @@ const TeacherCreate = ({ modeUpdate }) => {
       `${id}`,
     ]).then((res) => {
       const data = res.data;
+      setDataUser(data);
 
       form.setFieldsValue({
         first_name: data.first_name,
@@ -176,43 +197,75 @@ const TeacherCreate = ({ modeUpdate }) => {
     setMessageFailed(undefined);
 
     const body = {
-      first_name: data.first_name.trim(),
-      last_name: data.last_name.trim(),
-      mobile_phone: data.mobile_phone.trim(),
-      email: data.email.trim(),
-      email_organization: data.email_organization.trim(),
+      first_name: data.first_name?.trim(),
+      last_name: data.last_name?.trim(),
+      mobile_phone: data.mobile_phone?.trim(),
+      email: data.email?.trim(),
+      email_organization: data.email_organization?.trim(),
       province_id: data.province_id,
       district_id: data.district_id,
       ward_id: data.ward_id,
       gender_id: data.gender_id,
       birthday: data.birthday.add(7, 'hours').toDate(),
       center_id: data.center_id,
-      citizen_identity_card_no: data.citizen_identity_card_no.trim(),
+      citizen_identity_card_no: data.citizen_identity_card_no?.trim(),
       citizen_identity_card_published_date:
         data.citizen_identity_card_published_date.add(7, 'hours').toDate(),
       citizen_identity_card_published_place:
-        data.citizen_identity_card_published_place.trim(),
+        data.citizen_identity_card_published_place?.trim(),
       teacher_type_id: data.teacher_type_id,
       working_time_id: data.working_time_id,
-      nickname: data.nickname.trim(),
-      company_address: data.company_address.trim(),
+      nickname: data.nickname?.trim(),
+      company_address: data.company_address?.trim(),
       start_working_date: data.start_working_date.add(7, 'hours').toDate(),
       salary: data.salary,
-      tax_code: data.tax_code.trim(),
+      tax_code: data.tax_code?.trim(),
     };
 
     const api = modeUpdate
       ? ManageTeacherApis.updateTeacher
       : ManageTeacherApis.createTeacher;
     const params = modeUpdate ? [`${id}`] : null;
-    FetchApi(api, body, null, params)
-      .then((res) => {
-        navigate(`/admin/account/teacher/${res.data.user_id}`);
-      })
-      .catch((err) => {
+
+    toast.promise(FetchApi(api, body, null, params), {
+      loading: 'Đang xử lý',
+      success: (res) => {
         setIsCreatingOrUpdating(false);
-        setMessageFailed(ErrorCodeApi[err.type_error]);
-      });
+        navigate(`/admin/account/teacher/${res.data.user_id}`);
+        return 'Thành công';
+      },
+      error: (err) => {
+        setIsCreatingOrUpdating(false);
+        if (err?.type_error) {
+          return ErrorCodeApi[err.type_error];
+        }
+        return 'Có lỗi xảy ra';
+      },
+    });
+  };
+
+  const handleDelete = () => {
+    if (!isUnlockDelete) {
+      setIsUnlockDelete(true);
+      return;
+    }
+
+    toast.error('Chức năng đang được phát triển');
+  };
+
+  const handleChangeActive = () => {
+    toast.promise(
+      FetchApi(ManageTeacherApis.changeActive, null, null, [`${id}`]),
+      {
+        loading: 'Đang thay đổi trạng thái',
+        success: () => {
+          return 'Thay đổi trạng thái thành công';
+        },
+        error: () => {
+          return 'Thay đổi trạng thái thất bại';
+        },
+      }
+    );
   };
 
   useEffect(() => {
@@ -235,7 +288,7 @@ const TeacherCreate = ({ modeUpdate }) => {
       onFinish={handleSubmitForm}
       disabled={modeUpdate && isGettingInformationTeacher}
     >
-      <Grid.Container justify="center">
+      <Grid.Container justify="center" gap={2}>
         <Grid xs={7} direction={'column'} css={{ rowGap: 20 }}>
           <Card variant="bordered">
             <Card.Header>
@@ -265,9 +318,13 @@ const TeacherCreate = ({ modeUpdate }) => {
                   ]}
                 >
                   <Select placeholder="Cơ sở">
-                    {listCenter.map((item) => (
-                      <Select.Option value={item.id}>{item.name}</Select.Option>
-                    ))}
+                    {listCenter
+                      .filter((e) => e.is_active)
+                      .map((item, index) => (
+                        <Select.Option key={index} value={item.id}>
+                          {item.name}
+                        </Select.Option>
+                      ))}
                   </Select>
                 </Form.Item>
               </div>
@@ -285,7 +342,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                           );
                         }
                         if (
-                          Validater.isContaintSpecialCharacterForName(
+                          Validater.isNotHumanName(
                             value.trim()
                           )
                         ) {
@@ -293,9 +350,9 @@ const TeacherCreate = ({ modeUpdate }) => {
                             'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
-                        if (value.trim().length < 2) {
+                        if (value.trim().length < 1 || value.trim().length > 255) {
                           return Promise.reject(
-                            new Error('Trường phải có ít nhất 2 ký tự')
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -321,18 +378,14 @@ const TeacherCreate = ({ modeUpdate }) => {
                             'Trường này không được để trống'
                           );
                         }
-                        if (
-                          Validater.isContaintSpecialCharacterForName(
-                            value.trim()
-                          )
-                        ) {
+                        if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
                             'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
-                        if (value.trim().length < 2) {
+                        if (value.trim().length < 1 || value.trim().length > 255) {
                           return Promise.reject(
-                            new Error('Trường phải có ít nhất 2 ký tự')
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -357,8 +410,8 @@ const TeacherCreate = ({ modeUpdate }) => {
                   ]}
                 >
                   <Select placeholder="Giới tính">
-                    {listGender.map((item) => (
-                      <Select.Option value={item.id}>
+                    {listGender.map((item, index) => (
+                      <Select.Option key={index} value={item.id}>
                         {item.value}
                       </Select.Option>
                     ))}
@@ -558,9 +611,9 @@ const TeacherCreate = ({ modeUpdate }) => {
                             'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
-                        if (value.trim().length < 2) {
+                        if (value.trim().length < 1 || value.trim().length > 255) {
                           return Promise.reject(
-                            new Error('Trường phải có ít nhất 2 ký tự')
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -582,12 +635,14 @@ const TeacherCreate = ({ modeUpdate }) => {
                   name="nickname"
                   rules={[
                     {
-                      required: true,
+                      required: false,
                       validator: (_, value) => {
-                        if (value === null || value === undefined) {
-                          return Promise.reject(
-                            'Trường này không được để trống'
-                          );
+                        if (
+                          value === null ||
+                          value === undefined ||
+                          value.trim() === ''
+                        ) {
+                          return Promise.resolve();
                         }
                         if (
                           Validater.isContaintSpecialCharacterForName(
@@ -598,9 +653,9 @@ const TeacherCreate = ({ modeUpdate }) => {
                             'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
-                        if (value.trim().length < 2) {
+                        if (value.trim().length < 1 || value.trim().length > 255) {
                           return Promise.reject(
-                            new Error('Trường phải có ít nhất 2 ký tự')
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -631,12 +686,14 @@ const TeacherCreate = ({ modeUpdate }) => {
                   name="company_address"
                   rules={[
                     {
-                      required: true,
+                      required: false,
                       validator: (_, value) => {
-                        if (value === null || value === undefined) {
-                          return Promise.reject(
-                            'Trường này không được để trống'
-                          );
+                        if (
+                          value === null ||
+                          value === undefined ||
+                          value.trim() === ''
+                        ) {
+                          return Promise.resolve();
                         }
                         if (
                           Validater.isContaintSpecialCharacterForName(
@@ -647,9 +704,9 @@ const TeacherCreate = ({ modeUpdate }) => {
                             'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
-                        if (value.trim().length < 2) {
+                        if (value.trim().length < 1 || value.trim().length > 255) {
                           return Promise.reject(
-                            new Error('Trường phải có ít nhất 2 ký tự')
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -749,22 +806,76 @@ const TeacherCreate = ({ modeUpdate }) => {
                   htmlType="submit"
                   disabled={isCreatingOrUpdating}
                 >
-                  {!modeUpdate && !isCreatingOrUpdating && 'Tạo mới'}
-                  {modeUpdate && !isCreatingOrUpdating && 'Cập nhật'}
-                  {isCreatingOrUpdating && <Loading size={'xs'}/>}
+                  {!modeUpdate && 'Tạo mới'}
+                  {modeUpdate && 'Cập nhật'}
                 </Button>
-                {!isCreatingOrUpdating && messageFailed !== undefined && (
-                  <Fragment>
-                    <Spacer x={0.5} />
-                    <Text color="error" size={15}>
-                      {messageFailed}, vui lòng thử lại
-                    </Text>
-                  </Fragment>
-                )}
               </div>
             </Card.Body>
           </Card>
         </Grid>
+        {modeUpdate && (
+          <Grid xs={3}>
+            <Card
+              variant="bordered"
+              css={{
+                height: 'min-content',
+              }}
+            >
+              <Card.Header>
+                <Text
+                  p
+                  b
+                  size={14}
+                  color={'error'}
+                  css={{
+                    width: '100%',
+                    textAlign: 'center',
+                  }}
+                >
+                  Khu vực nguy hiểm
+                </Text>
+              </Card.Header>
+              <Card.Body>
+                <Descriptions column={{ xs: 1, sm: 1, md: 1, lg: 1 }}>
+                  <Descriptions.Item label="Trạng thái kích hoạt">
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Switch
+                        onChange={handleChangeActive}
+                        disabled={dataUser === undefined}
+                        checked={dataUser?.is_active}
+                        color={'success'}
+                        size={'xs'}
+                      />
+                    </div>
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Xoá tài khoản">
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Button
+                        color={'error'}
+                        flat={!isUnlockDelete}
+                        auto
+                        icon={isUnlockDelete ? null : <FaLock />}
+                        onPress={handleDelete}
+                      >
+                        {isUnlockDelete ? 'Xoá tài khoản' : 'Mở khoá'}
+                      </Button>
+                    </div>
+                  </Descriptions.Item>
+                </Descriptions>
+              </Card.Body>
+            </Card>
+          </Grid>
+        )}
       </Grid.Container>
     </Form>
   );

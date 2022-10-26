@@ -466,6 +466,33 @@ public class TeacherController : ControllerBase
         return Ok(CustomResponse.Ok("Update Teacher successfully", teacherResponse));
     }
 
+    [HttpPatch]
+    [Route("api/teachers/{id:int}/change-active")]
+    [Authorize(Roles = "admin")]
+    public IActionResult ChangeActivateTeacher(int id)
+    {
+        var teacher = _context.Teachers.Include(t => t.User).FirstOrDefault(s => s.UserId == id);
+        if (teacher == null)
+        {
+            var error = ErrorDescription.Error["E0055"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        try
+        {
+            teacher.User.IsActive = !teacher.User.IsActive;
+            teacher.User.UpdatedAt = DateTime.Now;
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E2056"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        return Ok(CustomResponse.Ok("Change active successfully", null!));
+    }
+
     private bool IsMobilePhoneExists(string? mobilePhone, bool isUpdate, int userId)
     {
         return isUpdate
@@ -573,6 +600,7 @@ public class TeacherController : ControllerBase
                 StartWorkingDate = u.Teacher.StartWorkingDate,
                 Salary = u.Teacher.Salary,
                 TaxCode = u.Teacher.TaxCode,
+                IsActive = u.IsActive,
                 CreatedAt = u.CreatedAt,
                 UpdatedAt = u.UpdatedAt
             });
