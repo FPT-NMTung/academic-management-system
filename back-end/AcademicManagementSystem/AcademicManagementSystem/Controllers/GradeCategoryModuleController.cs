@@ -18,6 +18,7 @@ public class GradeCategoryModuleController : ControllerBase
     private const int TheoryExam = 6;
     private const int PracticeExamResit = 7;
     private const int TheoryExamResit = 8;
+    private const int FinalProject = 9;
 
     public GradeCategoryModuleController(AmsContext context)
     {
@@ -47,9 +48,11 @@ public class GradeCategoryModuleController : ControllerBase
         RemoveDataGradeCategoryAndGradeItem(moduleId);
         if (request.GradeCategoryDetails != null)
         {
-            var eachWeight = request.GradeCategoryDetails.Sum(gcd => gcd.TotalWeight);
+            // calculate total each weight of grade category except theory exam and it's resit
+            var totalEachWeight = request.GradeCategoryDetails
+                .Where(gcd => gcd.GradeCategoryId != 6 && gcd.GradeCategoryId != 8).Sum(gcd => gcd.TotalWeight);
 
-            if (eachWeight != 100)
+            if (totalEachWeight != 100)
             {
                 var error = ErrorDescription.Error["E0057"];
                 return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -74,17 +77,27 @@ public class GradeCategoryModuleController : ControllerBase
 
             foreach (var gcd in request.GradeCategoryDetails)
             {
+                // get grade category name in db
                 var gradeCategoryName = _context.GradeCategories.Find(gcd.GradeCategoryId)!.Name;
 
+                if (gcd.GradeCategoryId != TheoryExam && gcd.GradeCategoryId != TheoryExamResit
+                                                      && gcd.TotalWeight <= 0)
+                {
+                    var error = ErrorDescription.Error["E0067_1"];
+                    return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+                }
+
+                // not allow to create pe resit and te resit
                 if (gcd.GradeCategoryId is PracticeExamResit or TheoryExamResit)
                 {
                     var error = ErrorDescription.Error["E0066"];
                     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
                 }
 
+                // check if grade category in requested list isn't match with module exam type
                 switch (module.ExamType)
                 {
-                    // theory exam(final exam)
+                    // theory exam(final exam) -> can't have practice exam
                     case 1:
                         if (gcd.GradeCategoryId is PracticeExam or PracticeExamResit)
                         {
@@ -93,7 +106,7 @@ public class GradeCategoryModuleController : ControllerBase
                         }
 
                         break;
-                    // practical exam
+                    // practical exam -> can't have theory exam
                     case 2:
                         if (gcd.GradeCategoryId is TheoryExam or TheoryExamResit)
                         {
@@ -102,7 +115,7 @@ public class GradeCategoryModuleController : ControllerBase
                         }
 
                         break;
-                    // not take exam
+                    // not take exam -> can't have practice exam and theory exam
                     case 4:
                         if (gcd.GradeCategoryId is PracticeExam or PracticeExamResit or TheoryExam or TheoryExamResit)
                         {
@@ -113,8 +126,9 @@ public class GradeCategoryModuleController : ControllerBase
                         break;
                 }
 
-                if (gcd.GradeCategoryId is PracticeExam or TheoryExam or PracticeExamResit or TheoryExamResit &&
-                    gcd.QuantityGradeItem != 1)
+                if (gcd.GradeCategoryId is PracticeExam or TheoryExam or PracticeExamResit or TheoryExamResit
+                        or FinalProject
+                    && gcd.QuantityGradeItem != 1)
                 {
                     var error = ErrorDescription.Error["E0060"];
                     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -135,6 +149,12 @@ public class GradeCategoryModuleController : ControllerBase
                     GradeItems = new List<GradeItem>()
                 };
 
+                // theory exam weight not managed in this system -> 0%
+                if (gcd.GradeCategoryId is TheoryExam or TheoryExamResit)
+                {
+                    gradeCategoryModule.TotalWeight = 0;
+                }
+
                 // auto create grade items
                 for (var i = 0; i < gcd.QuantityGradeItem; i++)
                 {
@@ -143,8 +163,9 @@ public class GradeCategoryModuleController : ControllerBase
                         GradeCategoryModuleId = gradeCategoryModule.Id,
                         Name = gradeCategoryName,
                     };
-                    if (!gradeCategoryName.Contains("Exam") ||
-                        !gradeCategoryName.Contains("Final"))
+                    // if (!gradeCategoryName.Contains("Exam") ||
+                    //     !gradeCategoryName.Contains("Final"))
+                    if (gradeCategoryModule.GradeCategoryId is not PracticeExam or TheoryExam or FinalProject)
                     {
                         gradeItem.Name = gradeCategoryName + $" {i + 1}";
                     }
@@ -180,6 +201,8 @@ public class GradeCategoryModuleController : ControllerBase
                     // final exam
                     case TheoryExam:
                         gradeCategoryModuleResit.GradeCategoryId = TheoryExamResit;
+                        // theory exam weight not managed in this system -> 0%
+                        gradeCategoryModuleResit.TotalWeight = 0;
                         _context.GradeCategoryModules.Add(gradeCategoryModuleResit);
                         break;
                 }
@@ -198,7 +221,7 @@ public class GradeCategoryModuleController : ControllerBase
 
         var response = GetGradeCategoryModuleResponsesByModuleId(moduleId);
 
-        return Ok(CustomResponse.Ok("Create grade category module successfully", response));
+        return Ok(CustomResponse.Ok("Create|Update grade category module successfully", response));
     }
 
     private IEnumerable<GradeCategoryModuleResponse> GetGradeCategoryModuleResponsesByModuleId(int moduleId)
