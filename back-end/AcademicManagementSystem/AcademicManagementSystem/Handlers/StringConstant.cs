@@ -40,6 +40,10 @@ public struct StringConstant
 
     public const string RegexName =
         @"^[a-zA-Z0-9][a-zA-Z0-9_]*[a-zA-Z0-9]$";
+    
+    // regex email
+    public const string RegexEmailCopilot =
+        @"^(([\w-]+\.)+[\w-]+|([a-zA-Z]{1}|[\w-]{2,}))@" + @"((([0-1]?[0-9]{1,2}\.){3}[0-1]?[0-9]{1,2})|" + @"(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,4}))$";
 
     // regex phone number
     public const string RegexPhoneNumber =

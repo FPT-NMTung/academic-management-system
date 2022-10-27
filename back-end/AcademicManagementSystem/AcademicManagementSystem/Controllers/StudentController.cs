@@ -1,6 +1,8 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using AcademicManagementSystem.Context;
+using AcademicManagementSystem.Context.AmsModels;
+using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.AddressController.DistrictModel;
 using AcademicManagementSystem.Models.AddressController.ProvinceModel;
 using AcademicManagementSystem.Models.AddressController.WardModel;
@@ -9,7 +11,7 @@ using AcademicManagementSystem.Models.CourseFamilyController;
 using AcademicManagementSystem.Models.GenderController;
 using AcademicManagementSystem.Models.RoleController;
 using AcademicManagementSystem.Models.UserController.StudentController;
-using AcademicManagementSystem.Models.UserController.TeacherController;
+using AcademicManagementSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,11 +22,14 @@ namespace AcademicManagementSystem.Controllers;
 public class StudentController : ControllerBase
 {
     private readonly AmsContext _context;
+    private readonly User _user;
     private const int RoleIdStudent = 4;
 
-    public StudentController(AmsContext context)
+    public StudentController(AmsContext context, IUserService userService)
     {
         _context = context;
+        var userId = Convert.ToInt32(userService.GetUserId());
+        _user = _context.Users.FirstOrDefault(u => u.Id == userId)!;
     }
 
     // get all students
@@ -33,7 +38,7 @@ public class StudentController : ControllerBase
     [Authorize(Roles = "admin, sro")]
     public IActionResult GetStudents()
     {
-        var students = GetAllStudents();
+        var students = GetAllStudentsInThisCenterByContext();
         return Ok(!students.Any()
             ? CustomResponse.Ok("There is no students", students)
             : CustomResponse.Ok("Students retrieved successfully", students));
@@ -56,7 +61,7 @@ public class StudentController : ControllerBase
             ? string.Empty
             : RemoveDiacritics(emailOrganization.Trim().ToLower());
 
-        var students = GetAllStudents();
+        var students = GetAllStudentsInThisCenterByContext();
 
         // if user didn't input any search condition, return all students
         if (sCourseCode == string.Empty && sStudentName == string.Empty && sEnrollNumber == string.Empty &&
@@ -91,160 +96,250 @@ public class StudentController : ControllerBase
         return Ok(CustomResponse.Ok("Students searched successfully", studentResponses));
     }
 
-    // get all student by center Id
+    // get students by id
     [HttpGet]
-    [Route("api/centers/{centerId:int}/students")]
+    [Route("api/students/{id:int}")]
     [Authorize(Roles = "admin, sro")]
-    public IActionResult GetStudentsByCenterId(int centerId)
+    public IActionResult GetStudentById(int id)
     {
-        // is center exists
-        var existedCenter = _context.Centers.Any(c => c.Id == centerId);
-        if (!existedCenter)
+        var student = GetAllStudentsInThisCenterByContext().FirstOrDefault(s => s.UserId == id);
+
+        if (student == null)
         {
-            return NotFound(CustomResponse.NotFound("Not found center with id: " + centerId));
+            return NotFound(CustomResponse.NotFound("Not found student with id: " + id + " in this center"));
         }
 
-        var students = GetAllStudentsByCenterId(centerId);
-        return Ok(!students.Any()
-            ? CustomResponse.Ok("There is no students in this center", students)
-            : CustomResponse.Ok("Students in center " + centerId + " retrieved successfully", students));
+        return Ok(CustomResponse.Ok("Student retrieved successfully", student));
     }
 
-    // search student in center by courseCode, student name, enroll number, class, email, email organization
-    [HttpGet]
-    [Route("api/centers/{centerId:int}/students/search")]
+    // update student information
+    [HttpPut]
+    [Route("api/students/{id:int}")]
     [Authorize(Roles = "admin, sro")]
-    public IActionResult SearchStudentsWithCenterId(int centerId, [FromQuery] string? courseCode,
-        [FromQuery] string? studentName,
-        [FromQuery] string? enrollNumber, [FromQuery] string? className, [FromQuery] string? email,
-        [FromQuery] string? emailOrganization)
+    public IActionResult UpdateStudent(int id, [FromBody] UpdateStudentRequest request)
     {
-        var existedCenter = _context.Centers.Any(c => c.Id == centerId);
-        if (!existedCenter)
-        {
-            return NotFound(CustomResponse.NotFound("Not found center with id: " + centerId));
-        }
-
-        var sCourseCode = courseCode == null ? string.Empty : RemoveDiacritics(courseCode.Trim().ToLower());
-        var sStudentName = studentName == null ? string.Empty : RemoveDiacritics(studentName.Trim().ToLower());
-        var sEnrollNumber = enrollNumber == null ? string.Empty : RemoveDiacritics(enrollNumber.Trim().ToLower());
-        var sClassName = className == null ? string.Empty : RemoveDiacritics(className.Trim().ToLower());
-        var sEmail = email == null ? string.Empty : RemoveDiacritics(email.Trim().ToLower());
-        var sEmailOrganization = emailOrganization == null
-            ? string.Empty
-            : RemoveDiacritics(emailOrganization.Trim().ToLower());
-
-        var students = GetAllStudentsByCenterId(centerId);
-
-        // if user didn't input any search condition, return all students
-        if (sCourseCode == string.Empty && sStudentName == string.Empty && sEnrollNumber == string.Empty &&
-            sClassName == string.Empty && sEmail == string.Empty && sEmailOrganization == string.Empty)
-        {
-            return Ok(CustomResponse.Ok("Students searched successfully", students));
-        }
-
-        var studentResponses = new List<StudentResponse>();
-        foreach (var student in students)
-        {
-            var s1 = RemoveDiacritics(student.Course!.Code!.ToLower());
-            var s2 = RemoveDiacritics(student.FirstName!.ToLower());
-            var s3 = RemoveDiacritics(student.LastName!.ToLower());
-            var studentFullName = s2 + " " + s3;
-            var s4 = RemoveDiacritics(student.EnrollNumber!.ToLower());
-            var s5 = RemoveDiacritics(student.ClassName!.ToLower());
-            var s6 = RemoveDiacritics(student.Email!.ToLower());
-            var s7 = RemoveDiacritics(student.EmailOrganization!.ToLower());
-
-            if (s1.Contains(sCourseCode)
-                && studentFullName.Contains(sStudentName)
-                && s4.Contains(sEnrollNumber)
-                && s5.Contains(sClassName)
-                && s6.Contains(sEmail)
-                && s7.Contains(sEmailOrganization))
-            {
-                studentResponses.Add(student);
-            }
-        }
-
-        return Ok(CustomResponse.Ok("Students searched successfully", studentResponses));
-    }
-
-    private List<StudentResponse> GetAllStudentsByCenterId(int centerId)
-    {
-        var students = _context.Users.Include(u => u.Student)
+        var user = _context.Users
+            .Include(u => u.Student)
             .Include(u => u.Student.Course)
-            .Include(u => u.Student.Course.CourseFamily)
-            .Include(u => u.Province)
-            .Include(u => u.District)
-            .Include(u => u.Ward)
-            .Include(u => u.Center)
-            .Include(u => u.Role)
-            .Include(u => u.Gender)
-            .Include(u => u.Student.StudentsClasses)
-            .ThenInclude(sc => sc.Class)
-            .Where(u => u.RoleId == RoleIdStudent && !u.Student.IsDraft && u.CenterId == centerId)
-            .Select(u => new StudentResponse()
-            {
-                UserId = u.Student.UserId, Promotion = u.Student.Promotion, Status = u.Student.Status,
-                University = u.Student.University, ApplicationDate = u.Student.ApplicationDate,
-                ApplicationDocument = u.Student.ApplicationDocument, CompanyAddress = u.Student.CompanyAddress,
-                CompanyPosition = u.Student.CompanyPosition, CompanySalary = u.Student.CompanySalary,
-                ContactAddress = u.Student.ContactAddress, ContactPhone = u.Student.ContactPhone,
-                CourseCode = u.Student.CourseCode, EnrollNumber = u.Student.EnrollNumber,
-                FacebookUrl = u.Student.FacebookUrl, FeePlan = u.Student.FeePlan, HighSchool = u.Student.HighSchool,
-                HomePhone = u.Student.HomePhone, ParentalName = u.Student.ParentalName,
-                ParentalRelationship = u.Student.ParentalRelationship, ParentalPhone = u.Student.ParentalPhone,
-                PortfolioUrl = u.Student.PortfolioUrl, StatusDate = u.Student.StatusDate,
-                WorkingCompany = u.Student.WorkingCompany, IsDraft = u.Student.IsDraft, Avatar = u.Avatar,
+            .FirstOrDefault(u => u.Id == id);
 
-                FirstName = u.FirstName, LastName = u.LastName, Birthday = u.Birthday, Email = u.Email,
-                MobilePhone = u.MobilePhone, CenterId = u.CenterId, EmailOrganization = u.EmailOrganization,
-                CenterName = u.Center.Name, CreatedAt = u.CreatedAt, UpdatedAt = u.UpdatedAt,
-                CitizenIdentityCardNo = u.CitizenIdentityCardNo,
-                CitizenIdentityCardPublishedDate = u.CitizenIdentityCardPublishedDate,
-                CitizenIdentityCardPublishedPlace = u.CitizenIdentityCardPublishedPlace,
+        if (user == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not found user with id: " + id));
+        }
 
-                Course = new CourseResponse()
-                {
-                    Code = u.Student.Course.Code, Name = u.Student.Course.Name,
-                    SemesterCount = u.Student.Course.SemesterCount,
-                    CourseFamilyCode = u.Student.Course.CourseFamilyCode, IsActive = u.Student.Course.IsActive,
-                    CreatedAt = u.Student.Course.CreatedAt,
-                    UpdatedAt = u.Student.Course.UpdatedAt, CourseFamily = new CourseFamilyResponse()
-                    {
-                        Code = u.Student.Course.CourseFamily.Code, Name = u.Student.Course.CourseFamily.Name,
-                        IsActive = u.Student.Course.CourseFamily.IsActive,
-                        PublishedYear = u.Student.Course.CourseFamily.PublishedYear,
-                        CreatedAt = u.Student.Course.CourseFamily.CreatedAt,
-                        UpdatedAt = u.Student.Course.CourseFamily.UpdatedAt
-                    }
-                },
-                Province = new ProvinceResponse()
-                {
-                    Id = u.Province.Id, Name = u.Province.Name, Code = u.Province.Code
-                },
-                District = new DistrictResponse()
-                {
-                    Id = u.District.Id, Name = u.District.Name, Prefix = u.District.Prefix
-                },
-                Ward = new WardResponse()
-                {
-                    Id = u.Ward.Id, Name = u.Ward.Name, Prefix = u.Ward.Prefix
-                },
-                Gender = new GenderResponse()
-                {
-                    Id = u.Gender.Id, Value = u.Gender.Value
-                },
-                Role = new RoleResponse()
-                {
-                    Id = u.Role.Id, Value = u.Role.Value
-                },
-                ClassName = u.Student.StudentsClasses.First(sc => sc.StudentId == u.Student.UserId).Class.Name
-            }).ToList();
-        return students;
+        request.FirstName = request.FirstName.Trim();
+        request.LastName = request.LastName.Trim();
+        request.Email = request.Email.Trim();
+        request.EmailOrganization = request.EmailOrganization.Trim();
+
+        if (string.IsNullOrEmpty(request.FirstName) || string.IsNullOrEmpty(request.LastName) ||
+            string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.EmailOrganization))
+        {
+            var error = ErrorDescription.Error["E1093"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        request.FirstName = Regex.Replace(request.FirstName, StringConstant.RegexWhiteSpaces, " ");
+        // function replace string ex: H ' Hen Nie => H'Hen Nie
+        request.FirstName = request.FirstName.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.FirstName, StringConstant.RegexSpecialCharsNotAllowForPersonName)
+            || Regex.IsMatch(request.FirstName, StringConstant.RegexDigits))
+        {
+            var error = ErrorDescription.Error["E1076"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        request.LastName = Regex.Replace(request.LastName, StringConstant.RegexWhiteSpaces, " ");
+        request.LastName = request.LastName.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.LastName, StringConstant.RegexSpecialCharsNotAllowForPersonName) ||
+            Regex.IsMatch(request.LastName, StringConstant.RegexDigits))
+        {
+            var error = ErrorDescription.Error["E1077"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsMobilePhoneExists(request.MobilePhone, true, id))
+        {
+            var error = ErrorDescription.Error["E1078"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!Regex.IsMatch(request.MobilePhone, StringConstant.RegexMobilePhone))
+        {
+            var error = ErrorDescription.Error["E1079"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!Regex.IsMatch(request.ContactPhone, StringConstant.RegexMobilePhone))
+        {
+            var error = ErrorDescription.Error["E1079_1"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.HomePhone != null && !Regex.IsMatch(request.HomePhone, StringConstant.RegexMobilePhone))
+        {
+            var error = ErrorDescription.Error["E1079_2"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!Regex.IsMatch(request.ParentalPhone, StringConstant.RegexMobilePhone))
+        {
+            var error = ErrorDescription.Error["E1079_3"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsEmailExists(request.Email, true, id))
+        {
+            var error = ErrorDescription.Error["E1080"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsEmailExists(request.EmailOrganization, true, id))
+        {
+            var error = ErrorDescription.Error["1081"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!Regex.IsMatch(request.Email, StringConstant.RegexEmailCopilot))
+        {
+            var error = ErrorDescription.Error["E1082"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsEmailOrganizationExists(request.EmailOrganization, true, id))
+        {
+            var error = ErrorDescription.Error["1082"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsEmailOrganizationExists(request.Email, true, id))
+        {
+            var error = ErrorDescription.Error["1081_1"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!Regex.IsMatch(request.EmailOrganization, StringConstant.RegexEmailCopilot))
+        {
+            var error = ErrorDescription.Error["E1082"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.Email == request.EmailOrganization)
+        {
+            var error = ErrorDescription.Error["E1083"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (IsCitizenIdentityCardNoExists(request.CitizenIdentityCardNo, true, id))
+        {
+            var error = ErrorDescription.Error["E1084"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!Regex.IsMatch(request.CitizenIdentityCardNo, StringConstant.RegexCitizenIdCardNo))
+        {
+            var error = ErrorDescription.Error["E1085"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsProvinceExists(request.ProvinceId))
+        {
+            var error = ErrorDescription.Error["E1088"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsDistrictExists(request.DistrictId))
+        {
+            var error = ErrorDescription.Error["E1089"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsWardExists(request.WardId))
+        {
+            var error = ErrorDescription.Error["E1090"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsAddressExists(request.ProvinceId, request.DistrictId, request.WardId))
+        {
+            var error = ErrorDescription.Error["E1091"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsGenderExists(request.GenderId))
+        {
+            var error = ErrorDescription.Error["E1092"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.Status is < 1 or > 7)
+        {
+            var error = ErrorDescription.Error["E1094"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        user.FirstName = request.FirstName;
+        user.LastName = request.LastName;
+        user.MobilePhone = request.MobilePhone;
+        user.Email = request.Email;
+        user.EmailOrganization = request.EmailOrganization;
+        user.ProvinceId = request.ProvinceId;
+        user.DistrictId = request.DistrictId;
+        user.WardId = request.WardId;
+        user.GenderId = request.GenderId;
+        user.Birthday = request.Birthday;
+        user.CitizenIdentityCardNo = request.CitizenIdentityCardNo;
+        user.CitizenIdentityCardPublishedDate = request.CitizenIdentityCardPublishedDate;
+        user.CitizenIdentityCardPublishedPlace = request.CitizenIdentityCardPublishedPlace;
+        user.UpdatedAt = DateTime.Now;
+        user.Student = new Student()
+        {
+            EnrollNumber = user.Student.EnrollNumber,
+            Status = request.Status,
+            StatusDate = request.Status == user.Student.Status ? user.Student.StatusDate : DateTime.Now,
+            HomePhone = request.HomePhone,
+            ContactPhone = request.ContactPhone,
+            ParentalName = request.ParentalName,
+            ParentalRelationship = request.ParentalRelationship,
+            ContactAddress = request.ContactAddress,
+            ParentalPhone = request.ParentalPhone,
+            ApplicationDate = request.ApplicationDate,
+            ApplicationDocument = request.ApplicationDocument,
+            HighSchool = request.HighSchool,
+            University = request.University,
+            FacebookUrl = request.FacebookUrl,
+            PortfolioUrl = request.PortfolioUrl,
+            WorkingCompany = request.WorkingCompany,
+            CompanySalary = request.CompanySalary,
+            CompanyPosition = request.CompanyPosition,
+            CompanyAddress = request.CompanyAddress,
+            FeePlan = request.FeePlan,
+            Promotion = request.Promotion,
+            CourseCode = user.Student.CourseCode
+        };
+        _context.Users.Update(user);
+        _context.Students.Update(user.Student);
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+        }
+
+        var studentResponse = GetAllStudentsInThisCenterByContext().FirstOrDefault(s => s.UserId == id);
+        if (studentResponse == null)
+        {
+            var error = ErrorDescription.Error["E1095"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        return Ok(CustomResponse.Ok("Student updated successfully", studentResponse));
     }
 
-    private List<StudentResponse> GetAllStudents()
+    private List<StudentResponse> GetAllStudentsInThisCenterByContext()
     {
         var students = _context.Users.Include(u => u.Student)
             .Include(u => u.Student.Course)
@@ -313,10 +408,71 @@ public class StudentController : ControllerBase
                 Role = new RoleResponse()
                 {
                     Id = u.Role.Id, Value = u.Role.Value
-                }, 
+                },
+                ClassId = u.Student.StudentsClasses.First(sc => sc.StudentId == u.Student.UserId).Class.Id,
                 ClassName = u.Student.StudentsClasses.First(sc => sc.StudentId == u.Student.UserId).Class.Name
-            }).ToList();
+            })
+            .Where(u => u.CenterId == _user.CenterId)
+            .ToList();
         return students;
+    }
+
+    private bool IsMobilePhoneExists(string? mobilePhone, bool isUpdate, int userId)
+    {
+        return isUpdate
+            ? _context.Users.Any(e => e.MobilePhone == mobilePhone && e.Id != userId)
+            : _context.Users.Any(e => e.MobilePhone == mobilePhone);
+    }
+
+    private bool IsEmailExists(string? email, bool isUpdate, int userId)
+    {
+        return isUpdate
+            ? _context.Users.Any(e => e.Email == email && e.Id != userId)
+            : _context.Users.Any(e => e.Email == email);
+    }
+
+    private bool IsEmailOrganizationExists(string? emailOrganization, bool isUpdate, int userId)
+    {
+        return isUpdate
+            ? _context.Users.Any(e => e.EmailOrganization == emailOrganization && e.Id != userId)
+            : _context.Users.Any(e => e.EmailOrganization == emailOrganization);
+    }
+
+    private bool IsCitizenIdentityCardNoExists(string? citizenIdentityCardNo, bool isUpdate, int userId)
+    {
+        return isUpdate
+            ? _context.Users.Any(e => e.CitizenIdentityCardNo == citizenIdentityCardNo && e.Id != userId)
+            : _context.Users.Any(e => e.CitizenIdentityCardNo == citizenIdentityCardNo);
+    }
+
+    private bool IsProvinceExists(int provinceId)
+    {
+        return _context.Provinces.Any(e => e.Id == provinceId);
+    }
+
+    private bool IsDistrictExists(int districtId)
+    {
+        return _context.Districts.Any(e => e.Id == districtId);
+    }
+
+    private bool IsWardExists(int wardId)
+    {
+        return _context.Wards.Any(e => e.Id == wardId);
+    }
+
+    private bool IsAddressExists(int provinceId, int districtId, int wardId)
+    {
+        return _context.Provinces
+            .Include(p => p.Districts)
+            .Include(p => p.Wards)
+            .Any(p => p.Id == provinceId && p.Districts.Any(d => d.Id == districtId && d.Province.Id == provinceId) &&
+                      p.Wards.Any(w =>
+                          w.Id == wardId && w.District.Id == districtId && w.District.Province.Id == provinceId));
+    }
+
+    private bool IsGenderExists(int genderId)
+    {
+        return _context.Genders.Any(g => g.Id == genderId);
     }
 
     private static string RemoveDiacritics(string text)
