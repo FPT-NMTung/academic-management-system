@@ -2,19 +2,16 @@ import {
   Grid,
   Card,
   Text,
-  Tooltip,
   Button,
   Table,
   Badge,
   Loading,
 } from "@nextui-org/react";
-import { Form, Input, message, Select } from "antd";
+import { Form, Input, Select } from "antd";
 import FetchApi from "../../../apis/FetchApi";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
-import ColumnGroup from "antd/lib/table/ColumnGroup";
-import { Fragment } from "react";
 import classes from "./ManageClass.module.css";
 import { RiEyeFill, RiPencilFill } from "react-icons/ri";
 import { ManageClassApis, CenterApis } from "../../../apis/ListApi";
@@ -64,7 +61,7 @@ const ManageClass = () => {
             class_days_id: e.class_days_id,
             created_at: e.created_at,
             updated_at: e.updated_at,
-            start_date: `${new Date(e.start_date).toLocaleDateString('vi-VN')}`,
+            start_date: `${new Date(e.start_date).toLocaleDateString("vi-VN")}`,
             completion_date: e.completion_date,
             graduation_date: e.graduation_date,
             class_hour_start: e.class_hour_start,
@@ -136,7 +133,7 @@ const ManageClass = () => {
       );
     }
   };
-  
+
   const renderDays = (id) => {
     if (id === 1) {
       return (
@@ -160,7 +157,6 @@ const ManageClass = () => {
           <Card.Body
             css={{
               padding: "10px",
-             
             }}
           >
             <Form
