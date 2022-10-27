@@ -539,6 +539,9 @@ const DetailClass = () => {
                           color="5EA2EF"
                           style={{cursor: 'pointer'}}
                           onClick={() => {
+                            navigate(
+                              `/sro/manage/student/${item.user_id}`
+                            );
                           }}
                         />
                       </Table.Cell>

@@ -23,6 +23,7 @@ import ColumnGroup from "antd/lib/table/ColumnGroup";
 import { ErrorCodeApi } from "../../../../apis/ErrorCodeApi";
 import { Validater } from "../../../../validater/Validater";
 import moment from "moment";
+import toast from "react-hot-toast";
 
 const ClassCreate = ({ modeUpdate }) => {
   const [isCreatingOrUpdating, setisCreatingOrUpdating] = useState(false);
@@ -56,7 +57,7 @@ const ClassCreate = ({ modeUpdate }) => {
     const data = form.getFieldsValue();
     setisCreatingOrUpdating(true);
 
-    const body ={
+    const body = {
       class_days_id: data.class_days_id,
       class_status_id: data.class_status_id,
       name: data.class_name.trim(),
@@ -71,20 +72,39 @@ const ClassCreate = ({ modeUpdate }) => {
       ? ManageClassApis.updateClass
       : ManageClassApis.createClass;
     const params = modeUpdate ? [`${id}`] : null;
-    FetchApi(api, body, null, params)
-      .then((res) => {
-        if (modeUpdate) {
-          message.success("Cập nhật lớp học thành công");
-        } else {
-          message.success("Tạo lớp học thành công");
-        }
+    toast.promise(
+      FetchApi(api, body, null, params),
+      {
+        loading: "...",
+        success: (res) => {
+          setisCreatingOrUpdating(false);
+          navigate(`/sro/manage-class`);
+          return "Thành công !";
+        },
 
-        navigate(`/sro/manage-class/`);
-      })
-      .catch((err) => {
-        setisCreatingOrUpdating(false);
-        setMessageFailed(ErrorCodeApi[err.type_error]);
-      });
+        error: (err) => {
+          setisCreatingOrUpdating(false);
+          setMessageFailed(ErrorCodeApi[err.type_error]);
+          // if (err?.type_error) {
+          //   return ErrorCodeApi[err.type_error];
+          // }
+          return "Thất bại !";
+        },
+      }
+      // .then((res) => {
+      //   if (modeUpdate) {
+      //     message.success("Cập nhật lớp học thành công");
+      //   } else {
+      //     message.success("Tạo lớp học thành công");
+      //   }
+
+      //   navigate(`/sro/manage-class/`);
+      // })
+      // .catch((err) => {
+      //   setisCreatingOrUpdating(false);
+      //   setMessageFailed(ErrorCodeApi[err.type_error]);
+      // });
+    );
   };
   const handleChangeClassStatus = () => {
     if (!modeUpdate) {
@@ -189,8 +209,25 @@ const ClassCreate = ({ modeUpdate }) => {
                       name="class_name"
                       rules={[
                         {
-                          message: "Vui lòng nhập tên lớp học",
                           required: true,
+                          validator: (_, value) => {
+                            if (value === null || value === undefined) {
+                              return Promise.reject('Trường này không được để trống');
+                            }
+                            if (
+                              Validater.isContaintSpecialCharacterForName(value.trim())
+                            ) {
+                              return Promise.reject(
+                                'Trường này không được chứa ký tự đặc biệt'
+                              );
+                            }
+                            if (value.trim().length < 1 || value.trim().length > 255) {
+                              return Promise.reject(
+                                new Error('Trường phải từ 1 đến 255 ký tự')
+                              );
+                            }
+                            return Promise.resolve();
+                          },
                         },
                       ]}
                       style={{
@@ -440,7 +477,7 @@ const ClassCreate = ({ modeUpdate }) => {
                             color: "red",
                           }}
                         >
-                          {messageFailed}, vui lòng thử lại
+                          {messageFailed}
                         </Text>
                       )}
                     </Form.Item>
