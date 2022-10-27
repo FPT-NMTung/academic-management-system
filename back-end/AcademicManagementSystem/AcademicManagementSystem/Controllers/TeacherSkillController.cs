@@ -45,6 +45,7 @@ public class TeacherSkillController : ControllerBase
                     Id = t.User.Id,
                     FirstName = t.User.FirstName,
                     LastName = t.User.LastName,
+                    EmailOrganization = t.User.EmailOrganization
                 }).ToList()
             }).Where(s => s.Skill.Id == skillId).ToList();
 
@@ -118,6 +119,7 @@ public class TeacherSkillController : ControllerBase
 
                     _context.Skills.Add(newSkill);
                     teacher.Skills.Add(newSkill);
+                    _context.SaveChanges();
                 }
                 else if (!teacher.Skills.Contains(existedSkill))
                 {
@@ -151,6 +153,7 @@ public class TeacherSkillController : ControllerBase
                     Id = t.User.Id,
                     FirstName = t.User.FirstName,
                     LastName = t.User.LastName,
+                    EmailOrganization = t.User.EmailOrganization
                 },
                 Skills = t.Skills.Select(s => new SkillResponse()
                 {
@@ -164,5 +167,4 @@ public class TeacherSkillController : ControllerBase
     {
         return _context.Skills.FirstOrDefault(s => s.Name.ToLower().Equals(name.ToLower()));
     }
-    
 }
