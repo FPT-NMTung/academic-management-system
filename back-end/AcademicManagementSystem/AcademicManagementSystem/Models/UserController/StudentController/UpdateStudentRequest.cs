@@ -43,6 +43,9 @@ public class UpdateStudentRequest
     
     [JsonPropertyName("citizen_identity_card_published_place")]
     public string CitizenIdentityCardPublishedPlace { get; set; }
+    
+    [JsonPropertyName("course_code")]
+    public string CourseCode { get; set; }
 
     [JsonPropertyName("status")]
     public int Status { get; set; }
