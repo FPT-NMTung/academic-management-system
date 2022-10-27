@@ -28,7 +28,6 @@ const StudentScreen = () => {
       courseCode: form.getFieldValue("courseCode"),
     }
 FetchApi(ManageStudentApis.searchStudent,null,param,null).then((res) => {
-  console.log(ManageStudentApis);
       const data = res.data;
       const mergeModuleRes = data
       .sort((a, b) => -((a.last_name) - (b.last_name)))
@@ -262,8 +261,7 @@ FetchApi(ManageStudentApis.searchStudent,null,param,null).then((res) => {
                           style={{ cursor: "pointer" }}
                           onClick={() => {
                             navigate(
-                              // `/sro/manage/student/${data.user_id}`
-                              `/sro/manage/student/:id`
+                              `/sro/manage/student/${data.user_id}`
                             );
                           }}
                         />

@@ -64,7 +64,7 @@ const ManageClass = () => {
             class_days_id: e.class_days_id,
             created_at: e.created_at,
             updated_at: e.updated_at,
-            start_date: e.start_date,
+            start_date: `${new Date(e.start_date).toLocaleDateString('vi-VN')}`,
             completion_date: e.completion_date,
             graduation_date: e.graduation_date,
             class_hour_start: e.class_hour_start,
@@ -155,7 +155,7 @@ const ManageClass = () => {
 
   return (
     <Grid.Container gap={2} justify="center">
-      <Grid xl={10}>
+      <Grid sm={12}>
         <Card variant="bordered">
           <Card.Body
             css={{
@@ -278,7 +278,7 @@ const ManageClass = () => {
           </Card.Body>
         </Card>
       </Grid>
-      <Grid xl={10}>
+      <Grid sm={12}>
         <Card variant="bordered">
           <Card.Header>
             <Grid.Container>
@@ -324,13 +324,13 @@ const ManageClass = () => {
               <Table.Header>
                 <Table.Column width={60}>STT</Table.Column>
                 <Table.Column width={200}>Tên lớp học</Table.Column>
-                <Table.Column width={100}>Cơ Sở</Table.Column>
-                <Table.Column width={200}>Mã Chương Trình Học</Table.Column>
+                <Table.Column width={120}>Ngày nhập học</Table.Column>
+                <Table.Column width={160}>Mã Chương Trình Học</Table.Column>
                 <Table.Column width={200}>Người Phụ Trách</Table.Column>
                 <Table.Column width={150}>Ngày Học</Table.Column>
                 <Table.Column width={200}>Trạng Thái Lớp Học</Table.Column>
-                <Table.Column width={200}>Chỉnh Sửa</Table.Column>
-                <Table.Column width={200}>Xem Chi Tiết</Table.Column>
+                <Table.Column width={100}>Chỉnh Sửa</Table.Column>
+                <Table.Column width={100}>Xem Chi Tiết</Table.Column>
               </Table.Header>
               <Table.Body>
                 {dataSource.map((data, index) => (
@@ -339,7 +339,7 @@ const ManageClass = () => {
                     <Table.Cell>
                       <b>{data.class_name}</b>
                     </Table.Cell>
-                    <Table.Cell>{data.center_name}</Table.Cell>
+                    <Table.Cell>{data.start_date}</Table.Cell>
                     <Table.Cell>{data.course_family_code}</Table.Cell>
                     <Table.Cell>{data.sro_name}</Table.Cell>
                     <Table.Cell css={{ textAlign: "start" }}>
@@ -375,7 +375,7 @@ const ManageClass = () => {
                 shadow
                 noMargin
                 align="center"
-                rowsPerPage={9}
+                rowsPerPage={10}
                 color="error"
               />
             </Table>

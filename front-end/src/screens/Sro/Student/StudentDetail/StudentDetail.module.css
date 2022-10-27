@@ -26,14 +26,24 @@
 }
 
 .iconInformation {
+  height: 30px;
   width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
+  column-gap: 15px;
+  padding: 0;
+  margin: 0;
+}
+.iconAddress {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
   justify-content: flex-start;
   column-gap: 15px;
 }
-
 .avatar {
   border-radius: 10em;
 }
@@ -49,4 +59,8 @@
 .header {
   display: flex;
   justify-content: space-between;
+}
+.statusStudent {
+  padding: 0 0 5px 0;
+  margin: 0;
 }

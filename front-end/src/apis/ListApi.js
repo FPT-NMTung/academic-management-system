@@ -345,8 +345,8 @@ export const ManageStudentApis = {
     method: 'GET',
     contextType: 'application/json',
   },
-  detailTeacher: {
-    url: 'api/teachers/{0}',
+  detailStudent: {
+    url: 'api/students/{0}',
     method: 'GET',
     contextType: 'application/json',
   },
