@@ -1,9 +1,17 @@
 .groupButton {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap    : 10px;
 }
 
 .header {
-  display: flex;
+  display        : flex;
   justify-content: space-between;
+}
+
+.upload {
+  height        : 200px;
+  display       : flex;
+  flex-direction: column;
+  align-items   : center;
+  justify-content: center;
 }
