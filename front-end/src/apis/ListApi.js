@@ -259,6 +259,16 @@ export const ManageTeacherApis = {
     url: 'api/teachers/{0}/change-active',
     method: 'PATCH',
     contextType: 'application/json',
+  },
+  getListSkillOfTeacher: {
+    url: 'api/teachers/{0}/skills',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  saveSkillOfTeacher: {
+    url: 'api/teachers/{0}/skills',
+    method: 'POST',
+    contextType: 'application/json',
   }
 };
 
@@ -350,5 +360,4 @@ export const ManageStudentApis = {
     method: 'GET',
     contextType: 'application/json',
   },
-
 };
