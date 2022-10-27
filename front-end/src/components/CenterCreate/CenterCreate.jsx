@@ -12,8 +12,6 @@ const CenterCreate = ({ onCreateSuccess }) => {
   const [listWard, setListWard] = useState([]);
 
   const [isCreating, setIsCreating] = useState(false);
-  const [isFailed, setIsFailed] = useState(false);
-
   const [form] = Form.useForm();
 
   const getListProvince = () => {
@@ -58,17 +56,12 @@ const CenterCreate = ({ onCreateSuccess }) => {
     setIsCreating(true);
 
     toast.promise(
-      FetchApi(
-        CenterApis.createCenter,
-        {
-          name: e.name.trim(),
-          province_id: e.province,
-          district_id: e.district,
-          ward_id: e.ward,
-        },
-        null,
-        null
-      ),
+      FetchApi(CenterApis.createCenter, {
+        name: e.name.trim(),
+        province_id: e.province,
+        district_id: e.district,
+        ward_id: e.ward,
+      }, null, null),
       {
         loading: 'Đang tạo trung tâm',
         success: (res) => {

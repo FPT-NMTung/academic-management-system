@@ -1,15 +1,15 @@
-// const endpoint = 'https://apms-api.azurewebsites.net/';
-const endpoint = 'https://localhost:7142/';
+const endpoint = 'https://apms-api.azurewebsites.net/';
+// const endpoint = 'https://localhost:7142/';
 
 /**
  * Fetches data from the API and returns a promise.
  * @param {object} api - The API endpoint.
  * @param {object} bodyObject - The body of the request.
  * @param {object} params - The parameters of the request.
- * @param {array<string>} pathValiable - The path variables of the request.
+ * @param {array<string>} pathVariable - The path variables of the request.
  * @returns {Promise<any>} - A promise that resolves to the response.
  */
-const FetchApi = async (api, bodyObject, params, pathValiable) => {
+const FetchApi = async (api, bodyObject = null, params = null, pathVariable = null) => {
   // add no-cors
   let options = {
     method: api.method,
@@ -39,8 +39,8 @@ const FetchApi = async (api, bodyObject, params, pathValiable) => {
   }
 
   let newUrl = api.url;
-  if (pathValiable != undefined && pathValiable.length > 0) {
-    pathValiable.forEach((element, index) => {
+  if (pathVariable !== null && pathVariable !== undefined && pathVariable.length > 0) {
+    pathVariable.forEach((element, index) => {
       newUrl = newUrl.replace(`{${index}}`, element);
     });
   }
@@ -138,8 +138,7 @@ const refreshToken = async () => {
     return null;
   }
 
-  const dataRefresh = await responseRefresh.json();
-  return dataRefresh;
+  return await responseRefresh.json();
 };
 
 export default FetchApi;

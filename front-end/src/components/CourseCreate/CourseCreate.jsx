@@ -23,18 +23,13 @@ const CourseCreate = ({ onCreateSuccess }) => {
 
   const handleSubmitForm = (e) => {
     setIsCreating(true);
-    FetchApi(
-      CourseApis.createCourse,
-      {
-        code: e.coursecode,
-        course_family_code: e.coursefamilycode,
-        name: e.coursename,
-        semester_count: e.semester,
-        is_active: true,
-      },
-      null,
-      null
-    )
+    FetchApi(CourseApis.createCourse, {
+      code: e.coursecode,
+      course_family_code: e.coursefamilycode,
+      name: e.coursename,
+      semester_count: e.semester,
+      is_active: true,
+    }, null, null)
       .then(() => {
         message.success('Tạo khóa học thành công');
         onCreateSuccess();
