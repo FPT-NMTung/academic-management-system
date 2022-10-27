@@ -20,6 +20,10 @@ public static class ErrorDescription
         { "E0013", new ErrorModel() { Message = "roomTypeId for UPDATE room not found", Type = "room-error-0013" } },
         { "E0014", new ErrorModel() { Message = "Capacity for UPDATE room must be between 20 and 100", Type = "room-error-0014" } },
         { "E0015", new ErrorModel() { Message = "This room already exists for UPDATE", Type = "room-error-0015" } },
+        { "E2059", new ErrorModel() { Message = "This room not found", Type = "room-error-0016" } },
+        { "E2060", new ErrorModel() { Message = "Delete room failed", Type = "room-error-0017" } },
+        { "E2061", new ErrorModel() { Message = "Change status room failed", Type = "room-error-0018" } },
+        { "E2062", new ErrorModel() { Message = "Can not delete room", Type = "room-error-0019" } },
 
         // center
         { "E1001", new ErrorModel() { Message = "Center Not Found", Type = "center-error-0001" } },

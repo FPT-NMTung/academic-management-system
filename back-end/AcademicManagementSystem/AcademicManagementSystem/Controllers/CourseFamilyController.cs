@@ -203,13 +203,20 @@ public class CourseFamilyController : ControllerBase
     [Authorize(Roles = "admin")]
     public IActionResult CanDeleteCourseFamily(string code)
     {
-        if (CanDelete(code))
-            return Ok(CustomResponse.Ok("Can delete course family", null!));
+        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.Trim());
+        if (courseFamily == null)
+        {
+            return NotFound(CustomResponse.NotFound("Course family not found"));
+        }
 
-        var error = ErrorDescription.Error["E2058"];
-        return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        var canDelete = CanDelete(code);
+
+        return Ok(CustomResponse.Ok("Can delete course family", new CheckCourseFamilyCanDeleteResponse()
+        {
+            CanDelete = canDelete
+        }));
     }
-    
+
     // change active status
     [HttpPatch]
     [Route("api/course-families/{code}")]
@@ -217,12 +224,12 @@ public class CourseFamilyController : ControllerBase
     public IActionResult ChangeActiveStatusCourseFamily(string code)
     {
         var selectedCourseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.Trim());
-        
+
         if (selectedCourseFamily == null)
             return NotFound(CustomResponse.NotFound("Course family not found"));
-        
+
         selectedCourseFamily.IsActive = !selectedCourseFamily.IsActive;
-        
+
         try
         {
             _context.SaveChanges();
@@ -232,7 +239,7 @@ public class CourseFamilyController : ControllerBase
             var error = ErrorDescription.Error["E2059"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         var courseFamilyResponse = GetCourseFamilyResponse(selectedCourseFamily);
         return Ok(CustomResponse.Ok("Change active status course family success", courseFamilyResponse));
     }
