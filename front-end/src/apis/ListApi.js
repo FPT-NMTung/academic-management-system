@@ -183,6 +183,21 @@ export const RoomApis = {
     method: 'PUT',
     contextType: 'application/json',
   },
+  checkCanDeleteRoom: {
+    url: 'api/rooms/{0}/can-delete',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  changeActiveRoom: {
+    url: 'api/rooms/{0}/change-status',
+    method: 'PATCH',
+    contextType: 'application/json',
+  },
+  deleteRoom: {
+    url: 'api/rooms/{0}',
+    method: 'DELETE',
+    contextType: 'application/json',
+  },
 };
 
 export const RoomTypeApis = {
