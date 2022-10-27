@@ -174,7 +174,7 @@ export const ErrorCodeApi = {
 
   "student-error-0001":"Họ và tên đệm không đúng định dạng",
   "student-error-0002":"Tên không đúng định dạng",
-  "student-error-0003":"Số điện thoại đã tồn tại",
+  "student-error-0003":"Số điện thoại cá nhân đã tồn tại",
   "student-error-0004":"Số điện thoại không đúng định dạng",
   "student-error-0004_1":"Số điện thoại liên lạc không đúng định dạng",
   "student-error-0004_2":"Số điện thoại gia đình không đúng định dạng",
@@ -188,14 +188,14 @@ export const ErrorCodeApi = {
   "student-error-0011":"CCCD/CMND không đúng định dạng",
 
 
-  "student-error-0014":"Tỉnh không tồn tại",
-  "student-error-0015":"Huyện không tồn tại",
-  "student-error-0016":"Phường không tồn tại",
-  "student-error-0017":"Địa chỉ không tồn tại",
-  "student-error-0018":"Giới tính không tồn tại",
-  "student-error-0019":"Họ và tên, email cá nhân, email tổ chức không được để trống",
-  "student-error-0020":"Tình trạng phải từ 1 - 7",
-  "student-error-0021":"Hệ thống trả về không thành công",
-  "student-error-0022":"Email cá nhân không đúng định dạng",
+  "student-error-00014":"Tỉnh không tồn tại",
+  "student-error-00015":"Huyện không tồn tại",
+  "student-error-00016":"Phường không tồn tại",
+  "student-error-00017":"Địa chỉ không tồn tại",
+  "student-error-00018":"Giới tính không tồn tại",
+  "student-error-00019":"Họ và tên, email cá nhân, email tổ chức không được để trống",
+  "student-error-00020":"Tình trạng phải từ 1 - 7",
+  "student-error-00021":"Hệ thống trả về không thành công",
+  "student-error-00022":"Email cá nhân không đúng định dạng",
 
 };

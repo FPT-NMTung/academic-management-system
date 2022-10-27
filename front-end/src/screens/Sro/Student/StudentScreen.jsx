@@ -218,9 +218,16 @@ FetchApi(ManageStudentApis.searchStudent,null,param,null).then((res) => {
       <Grid sm={12}>
         <Card variant="bordered">
           <Card.Header>
+          <Grid.Container>
+          <Grid sm={1}></Grid>
+          <Grid sm={10}>
             <Text b p size={14} css={{ width: "100%", textAlign: "center" }}>
               Danh sách học viên
             </Text>
+            </Grid>
+            <Grid sm={1}> </Grid>
+            </Grid.Container>
+
           </Card.Header>
           {IsLoading && <Loading/>}
             {!IsLoading && (

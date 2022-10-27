@@ -360,4 +360,14 @@ export const ManageStudentApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  getInformationStudent: {
+    url: 'api/students/{0}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  updateStudent: {
+    url: 'api/students/{0}',
+    method: 'PUT',
+    contextType: 'application/json',
+  },
 };
