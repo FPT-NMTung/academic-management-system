@@ -14,17 +14,12 @@ const CouseFamilyCreate = ({ onCreateSuccess }) => {
 
   const handleSubmitForm = (e) => {
     setIsCreating(true);
-    FetchApi(
-      CourseFamilyApis.createCourseFamily,
-      {
-        name: e.coursefamilyname,
-        code: e.coursefamilycode,
-        published_year: e.year.year(),
-        is_active: true,
-      },
-      null,
-      null
-    )
+    FetchApi(CourseFamilyApis.createCourseFamily, {
+      name: e.coursefamilyname,
+      code: e.coursefamilycode,
+      published_year: e.year.year(),
+      is_active: true,
+    }, null, null)
       .then(() => {
         message.success('Tạo chương trình học thành công');
         onCreateSuccess();

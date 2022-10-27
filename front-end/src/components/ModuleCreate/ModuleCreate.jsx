@@ -90,25 +90,20 @@ const ModuleCreate = ({ onCreateSuccess }) => {
   const handleSubmitForm = (e) => {
     setIsCreating(true);
     setErrorValue(undefined);
-    FetchApi(
-      ModulesApis.createModules,
-      {
-        center_id: e.center_id,
-        semester_name_portal: e.semester_name_portal.trim(),
-        module_name: e.module_name.trim(),
-        module_exam_name_portal: e.module_exam_name_portal.trim(),
-        module_type: e.module_type,
-        max_theory_grade: e.max_theory_grade,
-        max_practical_grade: e.max_practical_grade,
-        hours: e.hours,
-        days: e.days,
-        exam_type: e.exam_type,
-        course_code: e.course_code,
-        semester_id: e.semesterid,
-      },
-      null,
-      null
-    )
+    FetchApi(ModulesApis.createModules, {
+      center_id: e.center_id,
+      semester_name_portal: e.semester_name_portal.trim(),
+      module_name: e.module_name.trim(),
+      module_exam_name_portal: e.module_exam_name_portal.trim(),
+      module_type: e.module_type,
+      max_theory_grade: e.max_theory_grade,
+      max_practical_grade: e.max_practical_grade,
+      hours: e.hours,
+      days: e.days,
+      exam_type: e.exam_type,
+      course_code: e.course_code,
+      semester_id: e.semesterid,
+    }, null, null)
       .then(() => {
         message.success('Tạo môn học thành công');
         setIsCreating(false);

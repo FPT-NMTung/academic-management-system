@@ -313,7 +313,7 @@ export const ManageClassApis = {
     contextType: 'application/json',
   },
   downloadTemplate: {
-    url: 'api/class/download-template-import-students',
+    url: 'api/classes/download-template-import-students',
     method: 'GET',
     contextType: 'application/json',
     responseType: 'blob',
