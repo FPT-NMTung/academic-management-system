@@ -339,3 +339,16 @@ export const ManageClassApis = {
     contextType: 'application/json',
   },
 };
+export const ManageStudentApis = {
+  searchStudent: {
+    url: 'api/students/search',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  detailStudent: {
+    url: 'api/students/{0}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+
+};
