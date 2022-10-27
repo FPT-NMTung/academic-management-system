@@ -42,7 +42,7 @@ const StudentUpdate = (modeUpdate) => {
   const [listProvince, setListProvince] = useState([]);
   const [listDistrict, setListDistrict] = useState([]);
   const [listWard, setListWard] = useState([]);
-
+  const navigate = useNavigate();
   const [form] = Form.useForm();
 
   const getListGender = () => {
@@ -525,7 +525,118 @@ const StudentUpdate = (modeUpdate) => {
                 </Form.Item>
                 <div></div>
               </div>
+              <Divider
+                orientation="left"
+                style={{ marginTop: 0, marginBottom: 24 }}
+              >
+                <Text
+                  b
+                  p
+                  size={15}
+                  css={{
+                    width: "100%",
+                    textAlign: "center",
+                    //   margin: '0',
+                    //   padding: '0',
+                  }}
+                >
+                  Thông tin học tập
+                </Text>
+              </Divider>
+              <div></div>
+              <div className={classes.layout}>
+                <Form.Item
+                  label="Học bổng"
+                  name="promotion"
+                //   rules={[
+                //     {
+                //       required: true,
+                //       validator: (_, value) => {
+                //         if (value === null || value === undefined) {
+                //           return Promise.reject(
+                //             "Trường này không được để trống"
+                //           );
+                //         }
+                //         if (Validater.isNotHumanName(value.trim())) {
+                //           return Promise.reject(
+                //             "Trường này không được chứa ký tự đặc biệt"
+                //           );
+                //         }
+                //         if (
+                //           value.trim().length < 1 ||
+                //           value.trim().length > 255
+                //         ) {
+                //           return Promise.reject(
+                //             new Error("Trường phải từ 1 đến 255 ký tự")
+                //           );
+                //         }
+                //         return Promise.resolve();
+                //       },
+                //     },
+                //     {
+                //       whitespace: true,
+                //       message: "Trường không được chứa khoảng trắng",
+                //     },
+                //   ]}
+                >
+                  <Input placeholder="20" />
+                </Form.Item>
+                <Form.Item
+                  label="Kế hoạch phí"
+                  name="fee_plan"
+                  rules={[
+                    {
+                      required: true,
+                      validator: (_, value) => {
+                        if (value === null || value === undefined) {
+                          return Promise.reject(
+                            "Trường này không được để trống"
+                          );
+                        }
+                        if (Validater.isNotHumanName(value.trim())) {
+                          return Promise.reject(
+                            "Trường này không được chứa ký tự đặc biệt"
+                          );
+                        }
+                        if (
+                          value.trim().length < 1 ||
+                          value.trim().length > 255
+                        ) {
+                          return Promise.reject(
+                            new Error("Trường phải từ 1 đến 255 ký tự")
+                          );
+                        }
+                        return Promise.resolve();
+                      },
+                    },
+                    {
+                      whitespace: true,
+                      message: "Trường không được chứa khoảng trắng",
+                    },
+                  ]}
+                >
+                  <Input placeholder="20" />
+                </Form.Item>
 
+                <Form.Item
+                  label="Hồ sơ"
+                  name="application_date"
+                  style={{
+                    // margin: "auto",
+                    width: "100%",
+                    // textAlign: "left",
+                  }}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Hãy nhập ngày sinh",
+                    },
+                  ]}
+                >
+                  <DatePicker placeholder="Ngày nộp hồ sơ" format={"DD/MM/YYYY"} />
+                </Form.Item>
+                <div></div>
+              </div>
               <Spacer y={0.5} />
 
             </Card.Body>
@@ -743,7 +854,7 @@ const StudentUpdate = (modeUpdate) => {
                     width: "150px",
                     position: "absolute",
                     right: "10px",
-                    bottom: "-50px",
+                    bottom: "10px",
                   }}
                   type="primary"
                   htmlType="submit"
@@ -752,7 +863,25 @@ const StudentUpdate = (modeUpdate) => {
                   {!modeUpdate && "Tạo mới"}
                   {modeUpdate && "Cập nhật"}
                 </Button>
+                <Button
+                  flat
+                  auto
+                  color="error"
+                  css={{
+                    width: "150px",
+                    position: "absolute",
+                    right: "180px",
+                    bottom: "10px",
+                  }}
+                  onPress={() => {
+                    navigate('/sro/manage/student');
+                  }}
+                  // disabled={isCreatingOrUpdating}
+                >
+                  Hủy
+                </Button>
               </div>
+
           </Grid>
         )}
       </Grid.Container>
