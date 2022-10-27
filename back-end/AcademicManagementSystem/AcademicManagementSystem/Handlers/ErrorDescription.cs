@@ -77,7 +77,9 @@ public static class ErrorDescription
         { "E1013", new ErrorModel() { Message = "Course family code is existed", Type = "course-family-error-0008" } },
         { "E1055", new ErrorModel() { Message = "Course family name is existed", Type = "course-family-error-0009" } },
         { "E1056", new ErrorModel() { Message = "Course family name with different code is existed", Type = "course-family-error-0010" } },
-        
+        { "E2058", new ErrorModel() { Message = "Can not delete this Course family", Type = "course-family-error-0011" } },
+        { "E2059", new ErrorModel() { Message = "Can not change status this Course family", Type = "course-family-error-0012" } },
+
         // course
         { "E1014", new ErrorModel() { Message = "Course code existed", Type = "course-error-0001" } },
         { "E1015", new ErrorModel() { Message = "Course family not found", Type = "course-error-0002" } },
