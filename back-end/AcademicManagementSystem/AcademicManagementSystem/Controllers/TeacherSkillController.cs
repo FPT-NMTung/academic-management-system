@@ -45,6 +45,7 @@ public class TeacherSkillController : ControllerBase
                     Id = t.User.Id,
                     FirstName = t.User.FirstName,
                     LastName = t.User.LastName,
+                    EmailOrganization = t.User.EmailOrganization
                 }).ToList()
             }).Where(s => s.Skill.Id == skillId).ToList();
 
@@ -151,6 +152,7 @@ public class TeacherSkillController : ControllerBase
                     Id = t.User.Id,
                     FirstName = t.User.FirstName,
                     LastName = t.User.LastName,
+                    EmailOrganization = t.User.EmailOrganization
                 },
                 Skills = t.Skills.Select(s => new SkillResponse()
                 {
