@@ -68,7 +68,10 @@ const CourseFamily = () => {
       {
         loading: 'Cập nhật ... ',
         success: () => {
-          getData();
+          const temp = listCourseFamily.find(item => item.codefamily === data.codefamily);
+          temp.activatecourse = !temp.activatecourse;
+          setlistCourseFamily([...listCourseFamily]);
+
           return 'Cập nhật trạng thái thành công';
         },
         error: () => {
