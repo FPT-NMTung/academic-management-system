@@ -139,6 +139,12 @@ public class StudentResponse
     [JsonPropertyName("is_draft")]
     public bool IsDraft { get; set; }
     
-    [JsonPropertyName("Course")]
+    [JsonPropertyName("course")]
     public CourseResponse? Course { get; set; }
+    
+    [JsonPropertyName("class_id")]
+    public int? ClassId { get; set; }
+    
+    [JsonPropertyName("class_name")]
+    public string? ClassName { get; set; }
 }
