@@ -3,15 +3,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AcademicManagementSystem.Context.AmsModels;
 
-[Table("class_status")]
-public class ClassStatus
+[Table("attendance_status")]
+public class AttendanceStatus
 {
-    public ClassStatus()
+    public AttendanceStatus()
     {
-        Classes = new HashSet<Class>();
-        ClassSchedules = new HashSet<ClassSchedule>();
+        Attendances = new HashSet<Attendance>();
     }
-
+    
     [Key]
     [Column("id")]
     public int Id { get; set; }
@@ -20,6 +19,6 @@ public class ClassStatus
     [StringLength(50)]
     public string Value { get; set; }
     
-    public ICollection<Class> Classes { get; set; }
-    public virtual ICollection<ClassSchedule> ClassSchedules { get; set; }
+    // relationships
+    public virtual ICollection<Attendance> Attendances { get; set; }
 }

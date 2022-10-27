@@ -6,6 +6,11 @@ namespace AcademicManagementSystem.Context.AmsModels;
 [Table("grade_item")]
 public class GradeItem
 {
+
+    public GradeItem()
+    {
+        StudentGrades = new HashSet<StudentGrade>();
+    }
     [Key]
     [Column("id")]
     public int Id { get; set; }
@@ -19,4 +24,5 @@ public class GradeItem
 
     // relationships
     public virtual GradeCategoryModule GradeCategoryModule { get; set; }
+    public virtual ICollection<StudentGrade> StudentGrades { get; set; }
 }

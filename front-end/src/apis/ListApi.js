@@ -259,6 +259,16 @@ export const ManageTeacherApis = {
     url: 'api/teachers/{0}/change-active',
     method: 'PATCH',
     contextType: 'application/json',
+  },
+  getListSkillOfTeacher: {
+    url: 'api/teachers/{0}/skills',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  saveSkillOfTeacher: {
+    url: 'api/teachers/{0}/skills',
+    method: 'POST',
+    contextType: 'application/json',
   }
 };
 
@@ -336,6 +346,28 @@ export const ManageClassApis = {
   saveStudent: {
     url: 'api/classes/{0}/students-from-excel',
     method: 'PATCH',
+    contextType: 'application/json',
+  },
+};
+export const ManageStudentApis = {
+  searchStudent: {
+    url: 'api/students/search',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  detailStudent: {
+    url: 'api/students/{0}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getInformationStudent: {
+    url: 'api/students/{0}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  updateStudent: {
+    url: 'api/students/{0}',
+    method: 'PUT',
     contextType: 'application/json',
   },
 };

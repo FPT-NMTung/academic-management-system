@@ -1,29 +1,43 @@
-import { Grid, Spacer, Text, Badge, Card, Button } from '@nextui-org/react';
+import {
+  Grid,
+  Spacer,
+  Text,
+  Badge,
+  Card,
+  Button,
+  Loading,
+  Modal,
+} from '@nextui-org/react';
 import classes from './TeacherDetail.module.css';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Descriptions, Spin, Tag } from 'antd';
-import { useState, useEffect } from 'react';
+import { Descriptions, Form, Input, Select, Spin, Tag } from 'antd';
+import { useState, useEffect, Fragment } from 'react';
 import { AiFillPhone } from 'react-icons/ai';
 import { MdEmail } from 'react-icons/md';
 import { HiOfficeBuilding } from 'react-icons/hi';
 import FetchApi from '../../../../apis/FetchApi';
-import { ManageTeacherApis } from '../../../../apis/ListApi';
+import { ManageSkillApis, ManageTeacherApis } from '../../../../apis/ListApi';
 import ManImage from '../../../../images/3d-fluency-businessman-1.png';
 import WomanImage from '../../../../images/3d-fluency-businesswoman-1.png';
 import { RiSettingsFill } from 'react-icons/ri';
+import toast from 'react-hot-toast';
+import { Validater } from '../../../../validater/Validater';
 
 const gender = {
   1: 'Nam',
   2: 'Nữ',
   3: 'Khác',
   4: 'Không xác định',
-}
+};
 
 const TeacherDetail = () => {
   const [dataUser, setDataUser] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [isEditSkill, setIsEditSkill] = useState(false);
-  const [listSkill, setListSkill] = useState([]);
+  const [listSkill, setListSkill] = useState(undefined);
+  const [cloneListSkill, setCloneListSkill] = useState(undefined);
+
+  const [form] = Form.useForm();
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -39,8 +53,64 @@ const TeacherDetail = () => {
       });
   };
 
+  const getListSkill = () => {
+    FetchApi(ManageTeacherApis.getListSkillOfTeacher, null, null, [String(id)])
+      .then((res) => {
+        setListSkill(res.data[0].skills);
+        setCloneListSkill(res.data[0].skills);
+      })
+      .catch(() => {
+        toast.error('Lỗi lấy danh sách kỹ năng');
+      });
+  };
+
+  const handleSubmitFromSkill = (e) => {
+    if (
+      cloneListSkill.find(
+        (item) =>
+          item.name.trim().toLowerCase() === e.skill.trim().toLowerCase()
+      )
+    ) {
+      toast.error('Kỹ năng đã tồn tại');
+      return;
+    }
+
+    setCloneListSkill([...cloneListSkill, { id: 1, name: e.skill }]);
+    form.resetFields();
+  };
+
+  const handleDeleteSkill = (e) => {
+    const clone = cloneListSkill.filter((item) => item.name !== e.name);
+    setCloneListSkill(clone);
+  };
+
+  const handleSaveSkill = () => {
+    const body = {
+      skills: cloneListSkill.map((item) => {
+        return { name: item.name };
+      }),
+    };
+
+    setIsEditSkill(false);
+
+    toast.promise(
+      FetchApi(ManageTeacherApis.saveSkillOfTeacher, body, null, [String(id)]),
+      {
+        loading: 'Đang lưu ...',
+        success: () => {
+          getListSkill();
+          return 'Lưu thành công';
+        },
+        error: () => {
+          return 'Lưu thất bại';
+        },
+      }
+    );
+  };
+
   useEffect(() => {
     getDataUser();
+    getListSkill();
   }, []);
 
   return (
@@ -112,46 +182,176 @@ const TeacherDetail = () => {
               <Spacer y={1} />
               <Card variant="bordered">
                 <Card.Header>
-                  <Grid.Container alignItems='center'>
+                  <Grid.Container alignItems="center">
                     <Grid sm={6}>
-                      <Text
-                        p
-                        size={14}
-                        b
-                      >
+                      <Text p size={14} b>
                         Kỹ năng
                       </Text>
                     </Grid>
-                    <Grid sm={6}
+                    <Grid
+                      sm={6}
                       css={{
                         display: 'flex',
                         justifyContent: 'flex-end',
                       }}
                     >
-                      <RiSettingsFill size={16} style={{
-                        cursor: 'pointer',
-                      }}
-                        onClick={() => setIsEditSkill(!isEditSkill)}
-                      />
+                      <Button
+                        onPress={() => {
+                          setIsEditSkill(true);
+                        }}
+                        size={'xs'}
+                        auto
+                        flat
+                        color={'primary'}
+                      >
+                        Sửa
+                      </Button>
                     </Grid>
                   </Grid.Container>
                 </Card.Header>
                 <Card.Body
                   css={{
-                    marginTop: '0rem',
+                    paddingTop: '0rem',
                   }}
                 >
                   <div>
-                    <Tag>magenta</Tag>
-                    <Tag>magenta</Tag>
-                    <Tag>magenta</Tag>
-                    <Tag>magenta</Tag>
-                    <Tag>magenta</Tag>
-                    <Tag>magenta</Tag>
-                    <Tag>magenta</Tag>
-                    <Tag>magenta</Tag>
-                    <Tag>magenta</Tag>
-                    <Tag>magenta</Tag>
+                    {listSkill?.map((item, index) => (
+                      <Tag key={index}>{item.name}</Tag>
+                    ))}
+                    {listSkill?.length === 0 && (
+                      <Text
+                        p
+                        size={14}
+                        css={{
+                          color: '#9e9e9e',
+                          width: '100%',
+                          textAlign: 'center',
+                        }}
+                      >
+                        Chưa có kỹ năng
+                      </Text>
+                    )}
+                    {listSkill === undefined && (
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <Loading size="xs" color={'error'} />
+                      </div>
+                    )}
+                    <Modal
+                      open={isEditSkill}
+                      width="500px"
+                      closeButton
+                      onClose={() => {
+                        setIsEditSkill(false);
+                      }}
+                    >
+                      <Modal.Header>
+                        <Text p b size={14}>
+                          Chỉnh sửa kỹ năng
+                        </Text>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <div className={classes.listSkillUpdate}>
+                          {cloneListSkill?.map((item, index) => (
+                            <Tag
+                              visible={true}
+                              closable
+                              onClose={() => handleDeleteSkill(item)}
+                              key={index}
+                            >
+                              {item.name}
+                            </Tag>
+                          ))}
+                        </div>
+                        <Form
+                          name={'skill'}
+                          layout="inline"
+                          onFinish={handleSubmitFromSkill}
+                          form={form}
+                        >
+                          <Form.Item
+                            style={{
+                              width: 'calc(60% - 16px)',
+                              marginBottom: '0'
+                            }}
+                            rules={[
+                              {
+                                required: true,
+                                validator: (_, value) => {
+                                  if (value === null || value === undefined) {
+                                    return Promise.reject(
+                                      'Trường này không được để trống'
+                                    );
+                                  }
+                                  if (
+                                    Validater.isContaintSpecialCharacterForNameModule(
+                                      value.trim()
+                                    )
+                                  ) {
+                                    return Promise.reject(
+                                      'Trường này không được chứa ký tự đặc biệt'
+                                    );
+                                  }
+                                  if (
+                                    value.trim().length < 1 ||
+                                    value.trim().length > 255
+                                  ) {
+                                    return Promise.reject(
+                                      new Error(
+                                        'Trường phải từ 1 đến 255 ký tự'
+                                      )
+                                    );
+                                  }
+                                  return Promise.resolve();
+                                },
+                              },
+                            ]}
+                            name="skill"
+                          >
+                            <Input placeholder="Nhập kỹ năng" />
+                          </Form.Item>
+                          <Form.Item
+                            style={{
+                              width: 'calc(25% - 16px)',
+                            }}
+                          >
+                            <Button
+                              flat
+                              auto
+                              type="primary"
+                              htmlType="submit"
+                              css={{
+                                width: '100%',
+                              }}
+                            >
+                              Thêm
+                            </Button>
+                          </Form.Item>
+                          <Form.Item
+                            style={{
+                              width: 'calc(15%)',
+                              marginRight: 0,
+                            }}
+                          >
+                            <Button
+                              flat
+                              auto
+                              color={'success'}
+                              css={{
+                                width: '100%',
+                              }}
+                              onPress={handleSaveSkill}
+                            >
+                              Lưu
+                            </Button>
+                          </Form.Item>
+                        </Form>
+                      </Modal.Body>
+                    </Modal>
                   </div>
                 </Card.Body>
               </Card>
@@ -194,12 +394,16 @@ const TeacherDetail = () => {
                       {dataUser.province.name}
                     </Descriptions.Item>
                     <Descriptions.Item label="Trạng thái">
-                      {dataUser.is_active && <Badge color={'success'} variant={'flat'}>
-                        Đang hoạt động
-                      </Badge>}
-                      {!dataUser.is_active && <Badge color={'error'} variant={'flat'}>
-                        Dừng hoạt động
-                      </Badge>}
+                      {dataUser.is_active && (
+                        <Badge color={'success'} variant={'flat'}>
+                          Đang hoạt động
+                        </Badge>
+                      )}
+                      {!dataUser.is_active && (
+                        <Badge color={'error'} variant={'flat'}>
+                          Dừng hoạt động
+                        </Badge>
+                      )}
                     </Descriptions.Item>
                     <Descriptions.Item label="Ngày sinh">
                       {new Date(dataUser.birthday).toLocaleDateString('vi-VN')}

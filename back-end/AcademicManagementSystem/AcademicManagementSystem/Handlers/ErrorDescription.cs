@@ -20,6 +20,10 @@ public static class ErrorDescription
         { "E0013", new ErrorModel() { Message = "roomTypeId for UPDATE room not found", Type = "room-error-0013" } },
         { "E0014", new ErrorModel() { Message = "Capacity for UPDATE room must be between 20 and 100", Type = "room-error-0014" } },
         { "E0015", new ErrorModel() { Message = "This room already exists for UPDATE", Type = "room-error-0015" } },
+        { "E2059", new ErrorModel() { Message = "This room not found", Type = "room-error-0016" } },
+        { "E2060", new ErrorModel() { Message = "Delete room failed", Type = "room-error-0017" } },
+        { "E2061", new ErrorModel() { Message = "Change status room failed", Type = "room-error-0018" } },
+        { "E2062", new ErrorModel() { Message = "Can not delete room", Type = "room-error-0019" } },
 
         // center
         { "E1001", new ErrorModel() { Message = "Center Not Found", Type = "center-error-0001" } },
@@ -77,7 +81,9 @@ public static class ErrorDescription
         { "E1013", new ErrorModel() { Message = "Course family code is existed", Type = "course-family-error-0008" } },
         { "E1055", new ErrorModel() { Message = "Course family name is existed", Type = "course-family-error-0009" } },
         { "E1056", new ErrorModel() { Message = "Course family name with different code is existed", Type = "course-family-error-0010" } },
-        
+        { "E2058", new ErrorModel() { Message = "Can not delete this Course family", Type = "course-family-error-0011" } },
+        { "E2059", new ErrorModel() { Message = "Can not change status this Course family", Type = "course-family-error-0012" } },
+
         // course
         { "E1014", new ErrorModel() { Message = "Course code existed", Type = "course-error-0001" } },
         { "E1015", new ErrorModel() { Message = "Course family not found", Type = "course-error-0002" } },
@@ -212,11 +218,12 @@ public static class ErrorDescription
         { "E1090", new ErrorModel() { Message = "Ward is not exists", Type = "student-error-00016" } },
         { "E1091", new ErrorModel() { Message = "Address is not exists", Type = "student-error-00017" } },
         { "E1092", new ErrorModel() { Message = "Gender is not exists", Type = "student-error-00018" } },
-        { "E1093", new ErrorModel() { Message = "First name, last name, email and email organization cannot be empty", Type = "student-error-00019" } },
+        { "E1093", new ErrorModel() { Message = "First name, last name, course code, email and email organization cannot be empty", Type = "student-error-00019" } },
         { "E1094", new ErrorModel() { Message = "Status must be between 1-7", Type = "student-error-00020" } },
         { "E1095", new ErrorModel() { Message = "Student response is null", Type = "student-error-00021" } },
         { "E1096", new ErrorModel() { Message = "Email is not match with format", Type = "student-error-00022" } },
         { "E1097", new ErrorModel() { Message = "EmailOrganization is not match with format", Type = "student-error-00023" } },
+        { "E1098", new ErrorModel() { Message = "Course code is not exists or not active", Type = "student-error-00024" } },
     };
 }
 
