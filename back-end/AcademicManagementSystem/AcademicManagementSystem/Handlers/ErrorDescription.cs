@@ -212,9 +212,12 @@ public static class ErrorDescription
         { "E1090", new ErrorModel() { Message = "Ward is not exists", Type = "student-error-00016" } },
         { "E1091", new ErrorModel() { Message = "Address is not exists", Type = "student-error-00017" } },
         { "E1092", new ErrorModel() { Message = "Gender is not exists", Type = "student-error-00018" } },
-        { "E1093", new ErrorModel() { Message = "First name, last name, email and email organization cannot be empty", Type = "student-error-00019" } },
+        { "E1093", new ErrorModel() { Message = "First name, last name, course code, email and email organization cannot be empty", Type = "student-error-00019" } },
         { "E1094", new ErrorModel() { Message = "Status must be between 1-7", Type = "student-error-00020" } },
         { "E1095", new ErrorModel() { Message = "Student response is null", Type = "student-error-00021" } },
+        { "E1096", new ErrorModel() { Message = "Email is not match with format", Type = "student-error-00022" } },
+        { "E1097", new ErrorModel() { Message = "EmailOrganization is not match with format", Type = "student-error-00023" } },
+        { "E1098", new ErrorModel() { Message = "Course code is not exists or not active", Type = "student-error-00024" } },
     };
 }
 
