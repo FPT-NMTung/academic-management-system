@@ -96,7 +96,7 @@ const RoomScreen = () => {
       <Modal open={isOpenCreateRoom} blur closeButton={true} width={500}>
         <Modal.Header>
           <Text b size={14}>
-            Thêm Phòng mới
+            Thêm phòng mới
           </Text>
         </Modal.Header>
         <Modal.Body>

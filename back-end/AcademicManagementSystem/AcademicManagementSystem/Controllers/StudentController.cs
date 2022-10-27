@@ -132,11 +132,21 @@ public class StudentController : ControllerBase
         request.LastName = request.LastName.Trim();
         request.Email = request.Email.Trim();
         request.EmailOrganization = request.EmailOrganization.Trim();
+        request.CourseCode = request.CourseCode.ToUpper().Trim();
 
         if (string.IsNullOrEmpty(request.FirstName) || string.IsNullOrEmpty(request.LastName) ||
-            string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.EmailOrganization))
+            string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.EmailOrganization) ||
+            string.IsNullOrEmpty(request.CourseCode))
         {
             var error = ErrorDescription.Error["E1093"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // is course code exists
+        var course = _context.Courses.FirstOrDefault(c => c.Code == request.CourseCode && c.IsActive);
+        if (course == null)
+        {
+            var error = ErrorDescription.Error["E1098"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -316,7 +326,7 @@ public class StudentController : ControllerBase
             CompanyAddress = request.CompanyAddress,
             FeePlan = request.FeePlan,
             Promotion = request.Promotion,
-            CourseCode = user.Student.CourseCode
+            CourseCode = request.CourseCode
         };
         _context.Users.Update(user);
         _context.Students.Update(user.Student);
