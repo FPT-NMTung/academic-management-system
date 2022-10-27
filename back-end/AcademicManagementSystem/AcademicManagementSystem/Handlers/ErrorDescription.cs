@@ -215,6 +215,8 @@ public static class ErrorDescription
         { "E1093", new ErrorModel() { Message = "First name, last name, email and email organization cannot be empty", Type = "student-error-00019" } },
         { "E1094", new ErrorModel() { Message = "Status must be between 1-7", Type = "student-error-00020" } },
         { "E1095", new ErrorModel() { Message = "Student response is null", Type = "student-error-00021" } },
+        { "E1096", new ErrorModel() { Message = "Email is not match with format", Type = "student-error-00022" } },
+        { "E1097", new ErrorModel() { Message = "EmailOrganization is not match with format", Type = "student-error-00023" } },
     };
 }
 
