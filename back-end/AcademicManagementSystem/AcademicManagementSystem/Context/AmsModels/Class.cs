@@ -8,7 +8,8 @@ public class Class
 {
     public Class()
     {
-        this.StudentsClasses = new HashSet<StudentClass>();
+        StudentsClasses = new HashSet<StudentClass>();
+        ClassSchedules = new HashSet<ClassSchedule>();
     }
 
     [Key]
@@ -64,4 +65,6 @@ public class Class
     public virtual ClassStatus ClassStatus { get; set; }
     public virtual Sro Sro { get; set; }
     public virtual ICollection<StudentClass> StudentsClasses { get; set; }
+    public virtual ICollection<ClassSchedule> ClassSchedules { get; set; }
+    public virtual ICollection<StudentGrade> StudentGrades { get; set; }
 }

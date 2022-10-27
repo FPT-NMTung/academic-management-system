@@ -52,7 +52,8 @@ public class RoomController : ControllerBase
                 Value = r.RoomType.Value
             },
             Name = r.Name,
-            Capacity = r.Capacity
+            Capacity = r.Capacity,
+            IsActive = r.IsActive
         });
 
         return Ok(CustomResponse.Ok("Get all rooms by centerId successfully", responses));
@@ -167,6 +168,88 @@ public class RoomController : ControllerBase
 
         var roomResponse = GetRoomResponse(roomToUpdate.Id);
         return Ok(CustomResponse.Ok("Update room successfully", roomResponse));
+    }
+
+    //Change status of room
+    [HttpPatch("api/rooms/{roomId:int}/change-status")]
+    [Authorize(Roles = "admin")]
+    public IActionResult ChangeStatusRoom(int roomId)
+    {
+        var roomToUpdate = _context.Rooms.FirstOrDefault(r => r.Id == roomId);
+        if (roomToUpdate == null)
+        {
+            var error = ErrorDescription.Error["E2059"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        roomToUpdate.IsActive = !roomToUpdate.IsActive;
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (DbUpdateException)
+        {
+            var error = ErrorDescription.Error["E2061"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var roomResponse = GetRoomResponse(roomToUpdate.Id);
+        return Ok(CustomResponse.Ok("Change status room successfully", roomResponse));
+    }
+
+    //Check can delete room
+    [HttpGet("api/rooms/{roomId:int}/can-delete")]
+    [Authorize(Roles = "admin")]
+    public IActionResult CanDeleteRoom(int roomId)
+    {
+        var room = _context.Rooms
+            .Include(r => r.ClassSchedulesExamRoom)
+            .Include(r => r.ClassSchedulesLabRoom)
+            .Include(r => r.ClassSchedulesTheoryRoom)
+            .FirstOrDefault(r => r.Id == roomId);
+
+        if (room == null)
+        {
+            var error = ErrorDescription.Error["E2059"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var canDelete = room.ClassSchedulesExamRoom.Any()
+                        || room.ClassSchedulesLabRoom.Any()
+                        || room.ClassSchedulesTheoryRoom.Any();
+
+        return Ok(CustomResponse.Ok("Check can delete room successfully", new CheckRoomCanDeleteResponse()
+        {
+            CanDelete = canDelete
+        }));
+    }
+
+    //Delete room
+    [HttpDelete("api/rooms/{roomId:int}")]
+    [Authorize(Roles = "admin")]
+    public IActionResult DeleteRoom(int roomId)
+    {
+        var roomToDelete = _context.Rooms.FirstOrDefault(r => r.Id == roomId);
+        if (roomToDelete == null)
+        {
+            var error = ErrorDescription.Error["E2059"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        _context.Rooms.Remove(roomToDelete);
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (DbUpdateException)
+        {
+            var error = ErrorDescription.Error["E2060"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        return Ok(CustomResponse.Ok("Delete room successfully", null!));
     }
 
     private bool IsRoomExists(Room room, bool isUpdate, int idUpdate)

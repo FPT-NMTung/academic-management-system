@@ -24,6 +24,7 @@ import DetailClass from './screens/Sro/Manage Class/DetailClass/DetailClass';
 import StudentScreen from './screens/Sro/Student/StudentScreen';
 import ClassCreate from './screens/Sro/Manage Class/ClassCreate/ClassCreate';
 import StudentDetail from './screens/Sro/Student/StudentDetail/StudentDetail';
+import StudentUpdate from './screens/Sro/Student/StudentUpdate/StudentUpdate';
 
 const App = () => {
   return (
@@ -53,7 +54,8 @@ const App = () => {
         <Route path='/sro/manage-class/:id/update' element={<ClassCreate modeUpdate={true}/>}/>
         <Route path="/sro/manage/student" element={<StudentScreen/>} />
         <Route path="/sro/manage/student/:id" element={<StudentDetail/>} />
-        <Route path="/sro/manage/student/:id/update" element={<p>update Student</p>} />
+        <Route path="/sro/manage/student/:id/update" element={<StudentUpdate modeUpdate={true}/>} />
+        {/* <Route path="/sro/manage/student/:id/update" element={<p>grade</p>} /> */}
       </Route>
 
       {/* Routers for role admin */}
