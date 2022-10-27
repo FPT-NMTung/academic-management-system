@@ -86,6 +86,21 @@ export const CourseFamilyApis = {
     method: 'POST',
     contextType: 'application/json',
   },
+  ChangeStatus: {
+    url: 'api/course-families/{0}',
+    method: 'PATCH',
+    contextType: 'application/json',
+  },
+  checkCanDeleteCourseFamily: {
+    url: 'api/course-families/{0}/can-delete',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  deleteCourseFamily: {
+    url: 'api/course-families/{0}',
+    method: 'DELETE',
+    contextType: 'application/json',
+  },
 };
 
 export const CourseApis = {
