@@ -45,6 +45,7 @@ public class TeacherSkillController : ControllerBase
                     Id = t.User.Id,
                     FirstName = t.User.FirstName,
                     LastName = t.User.LastName,
+                    EmailOrganization = t.User.EmailOrganization
                 }).ToList()
             }).Where(s => s.Skill.Id == skillId).ToList();
 
@@ -80,15 +81,15 @@ public class TeacherSkillController : ControllerBase
         {
             return NotFound(CustomResponse.NotFound("Teacher not found"));
         }
-
-        var requestSkills = request.Skills;
-
-        // clear skills of teacher
-        teacher.Skills.Clear();
-
-        // re-add skills
-        if (requestSkills != null && requestSkills.Count != 0)
+        
+            // clear skills of teacher
+            teacher.Skills.Clear();
+            
+        if (request.Skills is { Count: > 0 })
         {
+            var requestSkills = request.Skills.DistinctBy(s => s.Name, StringComparer.OrdinalIgnoreCase).ToList();
+            
+            // re-add skills
             foreach (var skill in requestSkills)
             {
                 if (string.IsNullOrWhiteSpace(skill.Name))
@@ -151,6 +152,7 @@ public class TeacherSkillController : ControllerBase
                     Id = t.User.Id,
                     FirstName = t.User.FirstName,
                     LastName = t.User.LastName,
+                    EmailOrganization = t.User.EmailOrganization
                 },
                 Skills = t.Skills.Select(s => new SkillResponse()
                 {
@@ -164,5 +166,4 @@ public class TeacherSkillController : ControllerBase
     {
         return _context.Skills.FirstOrDefault(s => s.Name.ToLower().Equals(name.ToLower()));
     }
-    
 }

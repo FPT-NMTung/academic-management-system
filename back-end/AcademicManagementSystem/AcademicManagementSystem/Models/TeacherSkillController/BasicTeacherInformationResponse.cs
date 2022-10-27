@@ -12,4 +12,7 @@ public class BasicTeacherInformationResponse
 
     [JsonPropertyName("last_name")] 
     public string LastName { get; set; }
+    
+    [JsonPropertyName("email_organization")]
+    public string EmailOrganization { get; set; }
 }
