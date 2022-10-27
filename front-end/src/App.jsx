@@ -54,6 +54,7 @@ const App = () => {
         <Route path='/sro/manage-class/:id/update' element={<ClassCreate modeUpdate={true}/>}/>  
         <Route path="/sro/manage/student" element={<StudentScreen/>} />
         <Route path="/sro/manage/student/:id" element={<StudentDetail/>} />
+        <Route path="/sro/manage/student/:id/update" element={<p>update Student</p>} />
       </Route>
 
       {/* Routers for role admin */}

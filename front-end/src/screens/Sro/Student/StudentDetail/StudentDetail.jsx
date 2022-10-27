@@ -5,63 +5,86 @@ import { Descriptions, Spin, Tag } from "antd";
 import { useState, useEffect } from "react";
 import { AiFillPhone } from "react-icons/ai";
 import { MdEmail } from "react-icons/md";
-import { HiOfficeBuilding } from "react-icons/hi";
+import { HiHome } from "react-icons/hi";
 import FetchApi from "../../../../apis/FetchApi";
-import { ManageTeacherApis } from "../../../../apis/ListApi";
+import { ManageStudentApis } from "../../../../apis/ListApi";
 import ManImage from "../../../../images/3d-fluency-businessman-1.png";
 import WomanImage from "../../../../images/3d-fluency-businesswoman-1.png";
-import { RiSettingsFill } from "react-icons/ri";
-import { IoArrowBackCircle } from "react-icons/io5";
-
-const StudentDetai = () => {
+import { RiPencilFill } from "react-icons/ri";
+const gender = {
+  1: "Nam",
+  2: "Nữ",
+  3: "Khác",
+  4: "Không xác định",
+};
+const StudentDetail = () => {
   const [dataStudent, setDataStudent] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const getDataStudent = () => {};
+  const getDataStudent = () => {
+    FetchApi(ManageStudentApis.detailStudent, null, null, [`${id}`])
+      .then((res) => {
+        setDataStudent(res.data);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        navigate("/404");
+      });
+  };
+  useEffect(() => {
+    getDataStudent();
+  }, []);
+  const renderStatusStudent = (id) => {
+    if (id === 1) {
+      return (
+        <Badge variant="flat" color="primary">
+          Studying
+        </Badge>
+      );
+    } else if (id === 2) {
+      return (
+        <Badge variant="flat" color="warning">
+          Delay
+        </Badge>
+      );
+    } else if (id === 3) {
+      return (
+        <Badge variant="flat" color="default">
+          Dropout
+        </Badge>
+      );
+    } else if (id === 4) {
+      return (
+        <Badge variant="flat" color="secondary">
+          ClassQueue
+        </Badge>
+      );
+    } else if (id === 5) {
+      return (
+        <Badge variant="flat" color="default">
+          Transfer
+        </Badge>
+      );
+    } else if (id === 6) {
+      return (
+        <Badge variant="flat" color="error">
+          Upgrade
+        </Badge>
+      );
+    } else {
+      return (
+        <Badge variant="flat" color="success">
+          Finished
+        </Badge>
+      );
+    }
+  };
   return (
     <Grid.Container justify="center">
-      <Grid sm={8}>
-        <Card variant="bordered" css={{}}>
-          <Card.Body
-            css={{
-              padding: 10,
-              backgroundColor: "transparent !important",
-            }}
-          >
-            <div className={classes.header}>
-              <div className={classes.groupButton}>
-                <Button
-                  flat
-                  auto
-                  icon={<IoArrowBackCircle size={20} />}
-                  color={"error"}
-                  onPress={() => {
-                    navigate("/sro/manage/student");
-                  }}
-                >
-                  Trở về
-                </Button>
-              </div>
-              <div className={classes.groupButton}>
-              <Button
-                flat
-                auto
-                type="primary"
-                // onPress={() => {
-                //   navigate(`/admin/account/teacher/${id}/update`);
-                // }}
-              >
-                Chỉnh sửa thông tin
-              </Button>
-              </div>
-            </div>
-          </Card.Body>
-        </Card>
-      </Grid>
-      <Grid sm={8}>
+      <Grid sm={12}>
         {isLoading && (
           <div className={classes.loading}>
             <Spin />
@@ -85,61 +108,66 @@ const StudentDetai = () => {
             >
               <div className={classes.contantLogo}>
                 <div className={classes.logo}>
-                  {/* {dataStudent.avatar && (
-                        <img className={classes.avatar} src={dataStudent.avatar} />
-                      )} */}
-                  <img
-                    className={classes.logo}
-                    src="https://media-cldnry.s-nbcnews.com/image/upload/t_fit-1500w,f_auto,q_auto:best/rockcms/2022-09/justin-bieber-te-220906-50b634.jpg"
-                  ></img>
-                  {/* {!dataStudent.avatar && (
-                        <img
-                          className={classes.avatarMini}
-                          src={
-                            dataStudent.gender.id === 1
-                              ? ManImage
-                              : dataStudent.gender.id === 2
-                              ? WomanImage
-                              : ''
-                          }
-                        />
-                      )} */}
+                  {dataStudent.avatar && (
+                    <img className={classes.avatar} src={dataStudent.avatar} />
+                  )}
+
+                  {!dataStudent.avatar && (
+                    <img
+                      className={classes.avatarMini}
+                      src={
+                        dataStudent.gender.id === 1
+                          ? ManImage
+                          : dataStudent.gender.id === 2
+                          ? WomanImage
+                          : ""
+                      }
+                    />
+                  )}
                 </div>
                 <Spacer y={0.7} />
                 <Text h3 size={20} b>
-                  Lê Nhữ Bắc
-                  {/* {dataStudent.first_name} {dataStudent.last_name} */}
+                  {dataStudent.first_name} {dataStudent.last_name}
+                </Text>
+                <Text h6 className={classes.statusStudent}>
+                  {renderStatusStudent(dataStudent.status)}
                 </Text>
               </div>
               <Spacer y={1} />
               <div className={classes.iconInformation}>
-                <AiFillPhone />
-                <Text p size={15}>
-                  {/* {dataStudent.mobile_phone} */}
-                  0375661741
+                <Text size={14} b>
+                  Mã số sinh viên
                 </Text>
+                <Text size={14}>{dataStudent.enroll_number}</Text>
               </div>
+              <Card.Divider />
               <div className={classes.iconInformation}>
-                <MdEmail />
-                <Text p size={15}>
-                  {/* {dataStudent.email} */}
-                  baclnhe141006@fpt.edu.vn
+                <Text size={14} b>
+                  Lớp học
+                </Text>
+                <Text p size={14}>
+                  {dataStudent.class_name}
                 </Text>
               </div>
+              <Card.Divider />
+
               <div className={classes.iconInformation}>
-                <HiOfficeBuilding />
-                <Text p size={15}>
-                  {/* {dataStudent.email_organization} */}
-                  baclnhe141006@fpt.edu.vn
+                <Text size={14} b>
+                  Mã khóa học
+                </Text>
+                <Text p size={14}>
+                  {dataStudent.course_code}
                 </Text>
               </div>
+              <Card.Divider />
+
               <Spacer y={1} />
               <Card variant="bordered">
                 <Card.Header>
                   <Grid.Container alignItems="center">
-                    <Grid sm={6}>
+                    {/* <Grid sm={6}>
                       <Text p size={14} b>
-                        Kỹ năng
+                        Thông tin cơ bản
                       </Text>
                     </Grid>
                     <Grid
@@ -149,43 +177,193 @@ const StudentDetai = () => {
                         justifyContent: "flex-end",
                       }}
                     >
-                      <RiSettingsFill
+                      <MdEmail
                         size={16}
                         style={{
                           cursor: "pointer",
                         }}
                         // onClick={() => setIsEditSkill(!isEditSkill)}
                       />
-                    </Grid>
+                    </Grid> */}
+
+                    <Descriptions
+                      title="Thông tin cá nhân"
+                      column={{ md: 1, lg: 1, xl: 1, xxl: 1 }}
+                      // size="middle"
+                      extra={
+                        <Button
+                          flat
+                          auto
+                          type="primary"
+                          onPress={() => {
+                            navigate(`/sro/manage/student/${id}/update`);
+                          }}
+                        >
+                          <RiPencilFill />
+                        </Button>
+                      }
+                    >
+                      <Descriptions.Item
+                        contentStyle={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text size={14} b>
+                          Giới tính:
+                        </Text>
+                        {gender[dataStudent.gender.id]}
+                      </Descriptions.Item>
+                      <Descriptions.Item
+                        contentStyle={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text size={14} b>
+                          Số điện thoại:
+                        </Text>
+                        {dataStudent.mobile_phone}
+                      </Descriptions.Item>
+                      <Descriptions.Item
+                        contentStyle={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                        span={2}
+                      >
+                        <Text
+                          size={14}
+                          // css={{ display: "block", width: "100%" }}
+                          b
+                        >
+                          Email cá nhân:
+                          <Text size={14}></Text>
+                        </Text>
+                        {dataStudent.email}
+                      </Descriptions.Item>
+                      <Descriptions.Item
+                        contentStyle={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text size={14} b>
+                          Email tổ chức:
+                        </Text>
+                        {dataStudent.email_organization}
+                      </Descriptions.Item>
+
+                      <Descriptions.Item
+                        contentStyle={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text size={14} b>
+                          CCCD/CMT:
+                        </Text>
+                        {dataStudent.citizen_identity_card_no}
+                      </Descriptions.Item>
+                      <Descriptions.Item
+                        contentStyle={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text size={14} b>
+                          Ngày cấp:
+                        </Text>
+
+                        {new Date(
+                          dataStudent.citizen_identity_card_published_date
+                        ).toLocaleDateString("vi-VN")}
+                      </Descriptions.Item>
+                      <Descriptions.Item
+                        contentStyle={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text size={14} b>
+                          Tên phụ huynh:
+                        </Text>
+                        {dataStudent.parental_name}
+                      </Descriptions.Item>
+                      <Descriptions.Item
+                        contentStyle={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text size={14} b>
+                          Mối quan hệ:
+                        </Text>
+                        {dataStudent.parental_relationship}
+                      </Descriptions.Item>
+                      <Descriptions.Item
+                        contentStyle={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text size={14} b>
+                          SĐT phụ huynh:
+                        </Text>
+                        {dataStudent.parental_phone}
+                      </Descriptions.Item>
+
+                      <Descriptions.Item
+                        contentStyle={{
+                          display: "flex",
+                          flex: 1,
+                          // flexDirection: "row",
+                          justifyContent: "start",
+                        }}
+                        span={2}
+                      >
+                        <Text
+                          size={14}
+                          css={{ display: "block", width: "100%" }}
+                          b
+                        >
+                          Địa chỉ thường trú:
+                          <Text size={15}>
+                            {" "}
+                            {dataStudent.ward.prefix} {dataStudent.ward.name},{" "}
+                            {dataStudent.district.prefix}{" "}
+                            {dataStudent.district.name},{" "}
+                            {dataStudent.province.name}
+                          </Text>
+                        </Text>
+                      </Descriptions.Item>
+                    </Descriptions>
                   </Grid.Container>
                 </Card.Header>
                 <Card.Body
                   css={{
                     marginTop: "0rem",
                   }}
-                >
-                  <div>
-                    <Tag>magenta</Tag>
-                    <Tag>magenta</Tag>
-                    <Tag>magenta</Tag>
-                    <Tag>magenta</Tag>
-                    <Tag>magenta</Tag>
-                    <Tag>magenta</Tag>
-                    <Tag>magenta</Tag>
-                    <Tag>magenta</Tag>
-                    <Tag>magenta</Tag>
-                    <Tag>magenta</Tag>
-                  </div>
-                </Card.Body>
+                ></Card.Body>
               </Card>
             </Grid>
-            <Grid sm={8.5} direction="column" css={{ rowGap: 20 }}>
+
+            <Grid sm={8.5} direction="column" css={{ rowGap: 10 }}>
               <Card variant="bordered">
                 <Card.Body>
                   <Descriptions
-                    title="Thông tin cơ bản"
+                    title="Bảng điểm"
                     bordered
-                    column={{ md: 2, lg: 2, xl: 2, xxl: 2 }}
+                    column={{ md: 1, lg: 1, xl: 1, xxl: 1 }}
                     // extra={
                     //   <Button
                     //     flat
@@ -198,130 +376,7 @@ const StudentDetai = () => {
                     //     Chỉnh sửa thông tin
                     //   </Button>
                     // }
-                  >
-                    <Descriptions.Item label="Họ và tên đệm">
-                      Nguyễn Trần Vân Nam
-                      {/* {dataStudent.first_name} */}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Tên">
-                      {/* {dataStudent.last_name} */}
-                      Nam
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Số điện thoại">
-                      {/* {dataStudent.mobile_phone} */}
-                      0375661741
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Giới tính">
-                      {/* {dataStudent.gender.id} */}
-                      Nam
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Địa chỉ" span={2}>
-                      {/* {dataStudent.ward.prefix} {dataStudent.ward.name},{' '}
-                          {dataStudent.district.prefix} {dataStudent.district.name},{' '}
-                          {dataStudent.province.name} */}
-                      Trung Sơn, Sầm Sơn, Thanh Hóa
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Trạng thái">
-                      {dataStudent.is_active && (
-                        <Badge color={"success"} variant={"flat"}>
-                          Đang hoạt động
-                        </Badge>
-                      )}
-                      {!dataStudent.is_active && (
-                        <Badge color={"error"} variant={"flat"}>
-                          Dừng hoạt động
-                        </Badge>
-                      )}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Ngày sinh">
-                      {/* {new Date(dataStudent.birthday).toLocaleDateString('vi-VN')} */}
-                      12/12/2000
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Email cá nhân" span={2}>
-                      {/* {dataStudent.email} */}
-                      baclnhe141006@gmail.com
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Email tổ chức" span={2}>
-                      {/* {dataStudent.email_organization} */}
-                      baclnhe141006@fpt.edu.vn
-                    </Descriptions.Item>
-                  </Descriptions>
-                </Card.Body>
-              </Card>
-              <Card variant="bordered">
-                <Card.Body>
-                  <Descriptions
-                    title="Thông tin bổ sung"
-                    bordered
-                    column={{ md: 2, lg: 2, xl: 2, xxl: 2 }}
-                  >
-                    <Descriptions.Item label="Biệt danh">
-                      {/* {dataStudent.nickname ? (
-                            dataStudent.nickname
-                          ) : (
-                            <i style={{ color: 'lightgray' }}>Không có</i>
-                          )} */}
-                      Bắc
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Ngày bắt đầu dạy">
-                      {/* {new Date(dataStudent.start_working_date).toLocaleDateString(
-                            'vi-VN'
-                          )} */}
-                      Bắc
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Nơi công tác" span={2}>
-                      {/* {dataStudent.company_address ? (
-                            dataStudent.company_address
-                          ) : (
-                            <i style={{ color: 'lightgray' }}>Không có</i>
-                          )} */}
-                      FPT University
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Loại hợp đồng">
-                      {/* {dataStudent.teacher_type.value} */}
-                      CCCCCC
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Mã số thuế">
-                      {/* {dataStudent.tax_code} */}
-                      203923233
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Thời gian dạy">
-                      {/* {dataStudent.working_time.value} */}1 năm
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Mức lương">
-                      {/* {dataStudent.salary
-                            ? String(dataStudent.salary).replace(
-                                /\B(?=(\d{3})+(?!\d))/g,
-                                ','
-                              )
-                            : 0}{' '} */}
-                      233232300 VNĐ
-                    </Descriptions.Item>
-                  </Descriptions>
-                </Card.Body>
-              </Card>
-              <Card variant="bordered">
-                <Card.Body>
-                  <Descriptions
-                    title="Thông tin CMND/CCCD"
-                    bordered
-                    column={{ md: 2, lg: 2, xl: 2, xxl: 2 }}
-                  >
-                    <Descriptions.Item label="Số thẻ">
-                      {/* {dataStudent.citizen_identity_card_no} */}
-                      09302323223
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Ngày cấp">
-                      {/* {new Date(
-                            dataStudent.citizen_identity_card_published_date
-                          ).toLocaleDateString('vi-VN')} */}
-                      23/04/1999
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Nơi cấp">
-                      {/* {dataStudent.citizen_identity_card_published_place} */}
-                      Thanh Hóa
-                    </Descriptions.Item>
-                  </Descriptions>
+                  ></Descriptions>
                 </Card.Body>
               </Card>
             </Grid>
@@ -331,4 +386,4 @@ const StudentDetai = () => {
     </Grid.Container>
   );
 };
-export default StudentDetai;
+export default StudentDetail;
