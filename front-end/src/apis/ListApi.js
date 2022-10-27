@@ -312,4 +312,43 @@ export const ManageClassApis = {
     method: 'PUT',
     contextType: 'application/json',
   },
+  downloadTemplate: {
+    url: 'api/classes/download-template-import-students',
+    method: 'GET',
+    contextType: 'application/json',
+    responseType: 'blob',
+  },
+  importStudent: {
+    url: 'api/classes/{0}/students-from-excel',
+    method: 'POST',
+    contextType: 'multipart/form-data',
+  },
+  getStudentByClassId: {
+    url: 'api/classes/{0}/students',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  clearStudent: {
+    url: 'api/classes/{0}/students-from-excel',
+    method: 'DELETE',
+    contextType: 'application/json',
+  },
+  saveStudent: {
+    url: 'api/classes/{0}/students-from-excel',
+    method: 'PATCH',
+    contextType: 'application/json',
+  },
+};
+export const ManageStudentApis = {
+  searchStudent: {
+    url: 'api/students/search',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  detailStudent: {
+    url: 'api/students/{0}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+
 };

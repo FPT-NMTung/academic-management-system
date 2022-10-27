@@ -192,6 +192,32 @@ public static class ErrorDescription
         { "E1074", new ErrorModel() { Message = "Fail to SaveChange when cancel import Students to Class", Type = "student-class-error-0006" } },
         { "E1075", new ErrorModel() { Message = "Fail to import because this Class had students", Type = "student-class-error-0007" } },
 
+        // student
+        { "E1076", new ErrorModel() { Message = "First name is not match with format", Type = "student-error-0001" } },
+        { "E1077", new ErrorModel() { Message = "Last name is not match with format", Type = "student-error-0002" } },
+        { "E1078", new ErrorModel() { Message = "Mobile phone is existed", Type = "student-error-0003" } },
+        { "E1079", new ErrorModel() { Message = "Mobile phone is not match with format", Type = "student-error-0004" } },
+        { "E1079_1", new ErrorModel() { Message = "Contact phone is not match with format", Type = "student-error-0004_1" } },
+        { "E1079_2", new ErrorModel() { Message = "Home phone is not match with format", Type = "student-error-0004_2" } },
+        { "E1079_3", new ErrorModel() { Message = "Parental phone is not match with format", Type = "student-error-0004_3" } },
+        { "E1080", new ErrorModel() { Message = "Email is existed", Type = "student-error-0005" } },
+        { "E1081", new ErrorModel() { Message = "Email Already Belong To Another EmailOrganization", Type = "student-error-0006" } },
+        { "E1082", new ErrorModel() { Message = "EmailOrganization is not match with format", Type = "student-error-0007" } },
+        { "E1081_1", new ErrorModel() { Message = "EmailOrganization Already Belong To Another Email", Type = "student-error-0008" } },
+        { "E1083", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "student-error-0009" } },
+        { "E1084", new ErrorModel() { Message = "Identity Card No is existed", Type = "student-error-00010" } },
+        { "E1085", new ErrorModel() { Message = "Identity Card No is not match with format", Type = "student-error-00011" } },
+        { "E1088", new ErrorModel() { Message = "Province is not exists", Type = "student-error-00014" } },
+        { "E1089", new ErrorModel() { Message = "District is not exists", Type = "student-error-00015" } },
+        { "E1090", new ErrorModel() { Message = "Ward is not exists", Type = "student-error-00016" } },
+        { "E1091", new ErrorModel() { Message = "Address is not exists", Type = "student-error-00017" } },
+        { "E1092", new ErrorModel() { Message = "Gender is not exists", Type = "student-error-00018" } },
+        { "E1093", new ErrorModel() { Message = "First name, last name, course code, email and email organization cannot be empty", Type = "student-error-00019" } },
+        { "E1094", new ErrorModel() { Message = "Status must be between 1-7", Type = "student-error-00020" } },
+        { "E1095", new ErrorModel() { Message = "Student response is null", Type = "student-error-00021" } },
+        { "E1096", new ErrorModel() { Message = "Email is not match with format", Type = "student-error-00022" } },
+        { "E1097", new ErrorModel() { Message = "EmailOrganization is not match with format", Type = "student-error-00023" } },
+        { "E1098", new ErrorModel() { Message = "Course code is not exists or not active", Type = "student-error-00024" } },
     };
 }
 
