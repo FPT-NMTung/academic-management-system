@@ -81,15 +81,15 @@ public class TeacherSkillController : ControllerBase
         {
             return NotFound(CustomResponse.NotFound("Teacher not found"));
         }
-
-        var requestSkills = request.Skills;
-
-        // clear skills of teacher
-        teacher.Skills.Clear();
-
-        // re-add skills
-        if (requestSkills != null && requestSkills.Count != 0)
+        
+            // clear skills of teacher
+            teacher.Skills.Clear();
+            
+        if (request.Skills is { Count: > 0 })
         {
+            var requestSkills = request.Skills.DistinctBy(s => s.Name, StringComparer.OrdinalIgnoreCase).ToList();
+            
+            // re-add skills
             foreach (var skill in requestSkills)
             {
                 if (string.IsNullOrWhiteSpace(skill.Name))
@@ -166,5 +166,4 @@ public class TeacherSkillController : ControllerBase
     {
         return _context.Skills.FirstOrDefault(s => s.Name.ToLower().Equals(name.ToLower()));
     }
-    
 }
