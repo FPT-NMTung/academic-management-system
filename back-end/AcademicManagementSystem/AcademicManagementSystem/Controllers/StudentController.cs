@@ -207,31 +207,31 @@ public class StudentController : ControllerBase
 
         if (IsEmailExists(request.EmailOrganization, true, id))
         {
-            var error = ErrorDescription.Error["1081"];
+            var error = ErrorDescription.Error["E1081"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         if (!Regex.IsMatch(request.Email, StringConstant.RegexEmailCopilot))
         {
-            var error = ErrorDescription.Error["E1082"];
+            var error = ErrorDescription.Error["E1096"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         if (IsEmailOrganizationExists(request.EmailOrganization, true, id))
         {
-            var error = ErrorDescription.Error["1082"];
+            var error = ErrorDescription.Error["E1082"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         if (IsEmailOrganizationExists(request.Email, true, id))
         {
-            var error = ErrorDescription.Error["1081_1"];
+            var error = ErrorDescription.Error["E1081_1"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         if (!Regex.IsMatch(request.EmailOrganization, StringConstant.RegexEmailCopilot))
         {
-            var error = ErrorDescription.Error["E1082"];
+            var error = ErrorDescription.Error["E1097"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
