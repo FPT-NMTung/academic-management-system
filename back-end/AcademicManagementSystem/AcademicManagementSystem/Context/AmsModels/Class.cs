@@ -37,13 +37,13 @@ public class Class
     [StringLength(255)]
     public string Name { get; set; }
     
-    [Column("start_date")]
+    [Column("start_date",TypeName = "date")]
     public DateTime StartDate { get; set; }
     
-    [Column("completion_date")]
+    [Column("completion_date", TypeName = "date")]
     public DateTime CompletionDate { get; set; }
     
-    [Column("graduation_date")]
+    [Column("graduation_date", TypeName = "date")]
     public DateTime GraduationDate { get; set; }
     
     [Column("class_hour_start", TypeName = "time")]
