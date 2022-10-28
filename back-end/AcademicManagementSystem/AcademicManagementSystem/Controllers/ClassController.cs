@@ -502,9 +502,6 @@ public class ClassController : ControllerBase
                             ? 1
                             : _context.Wards.FirstOrDefault(w => w.Name == ward)!.Id;
 
-                        var centerId = _context.Classes.Include(c => c.Center)
-                            .FirstOrDefault(c => c.Id == id)?.Center.Id!;
-
                         var newBirthday = startDate.AddDays(Convert.ToDouble(birthday)).ToLocalTime();
                         var newIdentityCardPublishedDate =
                             startDate.AddDays(Convert.ToDouble(identityCardPublishedDate)).ToLocalTime();
@@ -547,7 +544,7 @@ public class ClassController : ControllerBase
                             CitizenIdentityCardPublishedDate = newIdentityCardPublishedDate.Date,
                             CitizenIdentityCardPublishedPlace = identityCardPublishedPlace!.Trim(),
                             RoleId = RoleIdStudent,
-                            CenterId = (int)centerId,
+                            CenterId = _user.CenterId,
                             GenderId = genderId,
                             CreatedAt = DateTime.Now,
                             UpdatedAt = DateTime.Now,
@@ -614,9 +611,9 @@ public class ClassController : ControllerBase
         }
     }
 
-    // save imported file
+    // save student from draft
     [HttpPatch]
-    [Route("api/classes/{id:int}/students-from-excel")]
+    [Route("api/classes/{id:int}/students")]
     [Authorize(Roles = "admin, sro")]
     public IActionResult SaveImportedStudents(int id)
     {
