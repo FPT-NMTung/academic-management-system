@@ -1,7 +1,7 @@
 import { Grid, Spacer, Text, Badge, Card, Button } from "@nextui-org/react";
 import classes from "./StudentDetail.module.css";
 import { useParams, useNavigate } from "react-router-dom";
-import { Descriptions, Spin, Tag } from "antd";
+import { Descriptions, Spin, Tag, Tabs } from "antd";
 import { useState, useEffect } from "react";
 import { AiFillPhone } from "react-icons/ai";
 import { MdEmail } from "react-icons/md";
@@ -360,7 +360,7 @@ const StudentDetail = () => {
             <Grid sm={8.5} direction="column" css={{ rowGap: 10 }}>
               <Card variant="bordered">
                 <Card.Body>
-                  <Descriptions
+                  {/* <Descriptions
                     title="Bảng điểm"
                     bordered
                     column={{ md: 1, lg: 1, xl: 1, xxl: 1 }}
@@ -376,7 +376,24 @@ const StudentDetail = () => {
                     //     Chỉnh sửa thông tin
                     //   </Button>
                     // }
-                  ></Descriptions>
+                  ></Descriptions> */}
+                    <Tabs
+                      defaultActiveKey="1"
+                      tabBarStyle={{ fontStyle: "15px" }}
+                      type="card"
+                      size="large"
+                      // closable={false}
+                    >
+                      <Tabs.TabPane tab="Học kỳ" key="1">
+                        Content of Tab Pane 1
+                      </Tabs.TabPane>
+                      <Tabs.TabPane tab="Điểm" key="2">
+                        Content of Tab Pane 2
+                      </Tabs.TabPane>
+                      <Tabs.TabPane tab="Chuyển lớp" key="3">
+                        Content of Tab Pane 3
+                      </Tabs.TabPane>
+                    </Tabs>
                 </Card.Body>
               </Card>
             </Grid>

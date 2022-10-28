@@ -24,6 +24,7 @@ const ManageClass = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const getData = () => {
+    setIsGetData(true);
     const param = {
       className: form.getFieldValue("class_name"),
       courseFamilyCode: form.getFieldValue("course_family_code"),

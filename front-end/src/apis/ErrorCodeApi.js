@@ -197,5 +197,18 @@ export const ErrorCodeApi = {
   "student-error-00020":"Tình trạng phải từ 1 - 7",
   "student-error-00021":"Hệ thống trả về không thành công",
   "student-error-00022":"Email cá nhân không đúng định dạng",
+  "student-error-00023":"Email tổ chức không được trùng với email cá nhân",
+  "student-error-00024":"Mã khóa học không tồn tại hoặc chưa được kích hoạt",
+  "student-error-00025" : "Quan hệ với học viên không tồn tại",
+  "student-error-00026": "Địa chỉ liên lạc không đúng định dạng",
+  "student-error-00027": "Ngày cấp thẻ CMT/CCCD không đúng định dạng",
+  "student-error-00028": "Tên trường cấp 3 không đúng định dạng",
+  "student-error-00029": "Tên trường đại học không đúng định dạng",
+  "student-error-00030": "Tên công ty không đúng định dạng",
+  "student-error-00031": "Tên Chức vụ không đúng định dạng",
+  "student-error-00032": "Địa chỉ công ty không đúng định dạng",
+  "student-error-00033": "Kế hoạch phí không đúng định dạng",
+  "student-error-00034": "Học bổng không đúng định dạng",
+  "student-error-00035": "Mức lương không đúng định dạng",
 
 };
