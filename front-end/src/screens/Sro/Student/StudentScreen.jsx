@@ -20,6 +20,7 @@ const StudentScreen = () => {
   const [IsLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const getData = () => {
+    setIsLoading(true);
     const param = {
       studentName: form.getFieldValue("studentName").trim(  ),
       enrollNumber: form.getFieldValue("enrollNumber"),
