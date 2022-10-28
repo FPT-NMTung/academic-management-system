@@ -10,6 +10,8 @@ public class Class
     {
         StudentsClasses = new HashSet<StudentClass>();
         ClassSchedules = new HashSet<ClassSchedule>();
+        StudentGrades = new HashSet<StudentGrade>();
+        GpaRecords = new HashSet<GpaRecord>();
     }
 
     [Key]
@@ -37,13 +39,13 @@ public class Class
     [StringLength(255)]
     public string Name { get; set; }
     
-    [Column("start_date")]
+    [Column("start_date",TypeName = "date")]
     public DateTime StartDate { get; set; }
     
-    [Column("completion_date")]
+    [Column("completion_date", TypeName = "date")]
     public DateTime CompletionDate { get; set; }
     
-    [Column("graduation_date")]
+    [Column("graduation_date", TypeName = "date")]
     public DateTime GraduationDate { get; set; }
     
     [Column("class_hour_start", TypeName = "time")]
@@ -67,4 +69,6 @@ public class Class
     public virtual ICollection<StudentClass> StudentsClasses { get; set; }
     public virtual ICollection<ClassSchedule> ClassSchedules { get; set; }
     public virtual ICollection<StudentGrade> StudentGrades { get; set; }
+    public virtual ICollection<GpaRecord> GpaRecords { get; set; } 
+
 }

@@ -98,4 +98,10 @@ public class AmsContext : DbContext
     public DbSet<AttendanceStatus> AttendanceStatuses { get; set; }
     public DbSet<Attendance> Attendances { get; set; }
     public DbSet<StudentGrade> StudentGrades { get; set; }
+    public DbSet<DayOff> DaysOff { get; set; }
+    public DbSet<Question> Questions { get; set; }
+    public DbSet<Answer> Answers { get; set; }
+    public DbSet<Form> Forms { get; set; }
+    public DbSet<GpaRecord> GpaRecords { get; set; }
+
 }

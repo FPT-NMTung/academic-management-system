@@ -19,7 +19,7 @@ public class StudentGrade
     public double? Grade { get; set; }
     
     [Column("comment")]
-    [StringLength(255)]
+    [StringLength(1000)]
     public string? Comment { get; set; }
     
     // relationships
