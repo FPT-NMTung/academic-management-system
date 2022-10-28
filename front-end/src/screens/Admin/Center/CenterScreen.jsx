@@ -56,13 +56,22 @@ const CenterScreen = () => {
   };
 
   const handleChangeStatus = (status, id) => {
-    FetchApi(CenterApis.changeStatusCenter, null, null, [String(id)])
-      .then((res) => {
-        toast.success('Thay đổi trạng thái thành công');
-      })
-      .catch((err) => {
-        toast.error('Có lỗi xảy ra khi thay đổi trạng thái');
-      });
+    toast.promise(
+    FetchApi(CenterApis.changeStatusCenter, null, null, [String(id)]),
+      {
+        loading: 'Đang thay đổi ...',
+        success: (res) => {
+          const temp = listCenter.find((e) => e.id === id);
+          temp.is_active = !temp.is_active;
+          setListCenter([...listCenter]);
+
+          return 'Thay đổi trạng thái thành công';
+        },
+        error: (err) => {
+          return 'Thay đổi trạng thái thất bại';
+        }
+      }
+    )
   }
 
   useEffect(() => {
