@@ -86,6 +86,21 @@ export const CourseFamilyApis = {
     method: 'POST',
     contextType: 'application/json',
   },
+  ChangeStatus: {
+    url: 'api/course-families/{0}',
+    method: 'PATCH',
+    contextType: 'application/json',
+  },
+  checkCanDeleteCourseFamily: {
+    url: 'api/course-families/{0}/can-delete',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  deleteCourseFamily: {
+    url: 'api/course-families/{0}',
+    method: 'DELETE',
+    contextType: 'application/json',
+  },
 };
 
 export const CourseApis = {
@@ -166,6 +181,21 @@ export const RoomApis = {
   updateRoom: {
     url: 'api/rooms/{0}',
     method: 'PUT',
+    contextType: 'application/json',
+  },
+  checkCanDeleteRoom: {
+    url: 'api/rooms/{0}/can-delete',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  changeActiveRoom: {
+    url: 'api/rooms/{0}/change-status',
+    method: 'PATCH',
+    contextType: 'application/json',
+  },
+  deleteRoom: {
+    url: 'api/rooms/{0}',
+    method: 'DELETE',
     contextType: 'application/json',
   },
 };
@@ -259,6 +289,16 @@ export const ManageTeacherApis = {
     url: 'api/teachers/{0}/change-active',
     method: 'PATCH',
     contextType: 'application/json',
+  },
+  getListSkillOfTeacher: {
+    url: 'api/teachers/{0}/skills',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  saveSkillOfTeacher: {
+    url: 'api/teachers/{0}/skills',
+    method: 'POST',
+    contextType: 'application/json',
   }
 };
 
@@ -350,5 +390,14 @@ export const ManageStudentApis = {
     method: 'GET',
     contextType: 'application/json',
   },
-
+  getInformationStudent: {
+    url: 'api/students/{0}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  updateStudent: {
+    url: 'api/students/{0}',
+    method: 'PUT',
+    contextType: 'application/json',
+  },
 };

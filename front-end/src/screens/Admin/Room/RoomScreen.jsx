@@ -8,6 +8,7 @@ import {
   Button,
   Table,
   Loading,
+  Switch,
 } from '@nextui-org/react';
 import { Form, Select, Spin } from 'antd';
 import { Fragment, useEffect } from 'react';
@@ -20,6 +21,7 @@ import classes from './RoomScreen.module.css';
 import CreateRoom from '../../../components/CreateRoom/CreateRoom';
 import UpdateRoom from '../../../components/UpdateRoom/UpdateRoom';
 import { FaPen } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 
 const RoomScreen = () => {
   const [listRooms, setListRooms] = useState([]);
@@ -77,6 +79,25 @@ const RoomScreen = () => {
     setSelectRoomId(undefined);
     getListRooms();
   };
+
+  const handleChangeStatus = (data) => {
+    toast.promise(
+      FetchApi(RoomApis.changeActiveRoom, null, null, [String(data.id)]),
+      {
+        loading: 'Đang thay đổi ...',
+        success: () => {
+          const temp = listRooms.find((e) => e.id === data.id)
+          temp.is_active = !temp.is_active
+          setListRooms([...listRooms])
+
+          return 'Thay đổi trạng thái thành công';
+        },
+        error: () => {
+          return 'Thay đổi trạng thái thất bại';
+        }
+      }
+    )
+  }
 
   const renderTypeRoom = (id) => {
     return (
@@ -183,6 +204,7 @@ const RoomScreen = () => {
                   <Table.Column>Cơ sở</Table.Column>
                   <Table.Column>Loại phòng</Table.Column>
                   <Table.Column>Sức chứa</Table.Column>
+                  <Table.Column>Tình trạng</Table.Column>
                   <Table.Column>Trạng thái</Table.Column>
                   <Table.Column width={30}></Table.Column>
                 </Table.Header>
@@ -194,7 +216,14 @@ const RoomScreen = () => {
                       <Table.Cell>{e.center_name}</Table.Cell>
                       <Table.Cell>{renderTypeRoom(e.room_type.id)}</Table.Cell>
                       <Table.Cell>{e.capacity}</Table.Cell>
-                      <Table.Cell>{e.capacity}</Table.Cell>
+                      <Table.Cell>
+                        <Badge variant={'flat'} color={'error'}>
+                          Bận
+                        </Badge>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Switch size={'xs'} onChange={() => handleChangeStatus(e)} checked={e.is_active} color={'success'}/>
+                      </Table.Cell>
                       <Table.Cell>
                         <FaPen
                           size={14}

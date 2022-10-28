@@ -1,12 +1,11 @@
 import { Text } from '@nextui-org/react';
-import { Routes, Route, Outlet, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import NoRequireAuth from './authRoute/NoRequireAuth';
 import RequireAuth from './authRoute/RequireAuth';
 import LoginScreen from './screens/LoginScreen';
 import NotFoundScreen from './screens/NotFoundScreen/NotFoundScreen';
 import FirstLayout from './components/Layout/FirstLayout/FirstLayout';
 import Schedule from './screens/Student/ScheduleScreen/ScheduleScreen';
-import SecondLayout from './components/Layout/SecondLayout/SecondLayout';
 import ThirdLayout from './components/Layout/ThirdLayout/ThirdLayout';
 import CenterScreen from './screens/Admin/Center/CenterScreen';
 import RoomScreen from './screens/Admin/Room/RoomScreen';
@@ -25,6 +24,7 @@ import DetailClass from './screens/Sro/Manage Class/DetailClass/DetailClass';
 import StudentScreen from './screens/Sro/Student/StudentScreen';
 import ClassCreate from './screens/Sro/Manage Class/ClassCreate/ClassCreate';
 import StudentDetail from './screens/Sro/Student/StudentDetail/StudentDetail';
+import StudentUpdate from './screens/Sro/Student/StudentUpdate/StudentUpdate';
 
 const App = () => {
   return (
@@ -47,14 +47,15 @@ const App = () => {
 
       {/* Routers for role sro */}
       <Route path={'/sro'}element={<ThirdLayout><RequireAuth role={'sro'} /></ThirdLayout>} >
-        <Route index element={<Navigate to="/sro/manage-class"/>} />  
+        <Route index element={<Navigate to="/sro/manage-class"/>} />
         <Route path="/sro/manage-class" element={<ManageClass/>} />
         <Route path="/sro/manage-class/:id" element={<DetailClass/>} />
-        <Route path="/sro/manage-class/create" element={<ClassCreate modeUpdate={false}/>} />  
-        <Route path='/sro/manage-class/:id/update' element={<ClassCreate modeUpdate={true}/>}/>  
+        <Route path="/sro/manage-class/create" element={<ClassCreate modeUpdate={false}/>} />
+        <Route path='/sro/manage-class/:id/update' element={<ClassCreate modeUpdate={true}/>}/>
         <Route path="/sro/manage/student" element={<StudentScreen/>} />
         <Route path="/sro/manage/student/:id" element={<StudentDetail/>} />
-        <Route path="/sro/manage/student/:id/update" element={<p>update Student</p>} />
+        <Route path="/sro/manage/student/:id/update" element={<StudentUpdate modeUpdate={true}/>} />
+        {/* <Route path="/sro/manage/student/:id/update" element={<p>grade</p>} /> */}
       </Route>
 
       {/* Routers for role admin */}

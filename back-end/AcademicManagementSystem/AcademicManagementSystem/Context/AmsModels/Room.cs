@@ -30,6 +30,9 @@ public class Room
     [Column("capacity")]
     public int Capacity { get; set; }
     
+    [Column("is_active")]
+    public bool IsActive { get; set; }
+    
     // relationships
     public virtual RoomType RoomType { get; set; }
     public virtual Center Center { get; set; }
