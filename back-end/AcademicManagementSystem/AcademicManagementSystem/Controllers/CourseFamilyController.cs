@@ -198,6 +198,52 @@ public class CourseFamilyController : ControllerBase
         return Ok(CustomResponse.Ok("Update course family success", courseFamilyResponse));
     }
 
+    [HttpGet]
+    [Route("api/course-families/{code}/can-delete")]
+    [Authorize(Roles = "admin")]
+    public IActionResult CanDeleteCourseFamily(string code)
+    {
+        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.Trim());
+        if (courseFamily == null)
+        {
+            return NotFound(CustomResponse.NotFound("Course family not found"));
+        }
+
+        var canDelete = CanDelete(code);
+
+        return Ok(CustomResponse.Ok("Can delete course family", new CheckCourseFamilyCanDeleteResponse()
+        {
+            CanDelete = canDelete
+        }));
+    }
+
+    // change active status
+    [HttpPatch]
+    [Route("api/course-families/{code}")]
+    [Authorize(Roles = "admin")]
+    public IActionResult ChangeActiveStatusCourseFamily(string code)
+    {
+        var selectedCourseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.Trim());
+
+        if (selectedCourseFamily == null)
+            return NotFound(CustomResponse.NotFound("Course family not found"));
+
+        selectedCourseFamily.IsActive = !selectedCourseFamily.IsActive;
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E2059"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var courseFamilyResponse = GetCourseFamilyResponse(selectedCourseFamily);
+        return Ok(CustomResponse.Ok("Change active status course family success", courseFamilyResponse));
+    }
+
     // delete course family
     [HttpDelete]
     [Route("api/course-families/{code}")]
@@ -231,6 +277,26 @@ public class CourseFamilyController : ControllerBase
             IsActive = courseFamily.IsActive, CreatedAt = courseFamily.CreatedAt, UpdatedAt = courseFamily.UpdatedAt
         };
         return courseFamilyResponse;
+    }
+
+    private bool CanDelete(string code)
+    {
+        var selectCourseFamily = _context.CourseFamilies
+            .Include(cf => cf.Courses)
+            .Include(cf => cf.Classes)
+            .FirstOrDefault(cf => cf.Code == code);
+
+        if (selectCourseFamily == null)
+        {
+            return false;
+        }
+
+        if (selectCourseFamily.Courses.Count > 0 || selectCourseFamily.Classes.Count > 0)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     // is course family exists

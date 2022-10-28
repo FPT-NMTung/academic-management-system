@@ -41,6 +41,7 @@ const Module = () => {
   const [form] = Form.useForm();
 
   const getData = () => {
+    setIsLoading(true);
     const param = {
       moduleName: form.getFieldValue("module_name"),
       courseCode: form.getFieldValue("course_code"),

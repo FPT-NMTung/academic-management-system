@@ -9,6 +9,7 @@ public class ClassStatus
     public ClassStatus()
     {
         Classes = new HashSet<Class>();
+        ClassSchedules = new HashSet<ClassSchedule>();
     }
 
     [Key]
@@ -20,4 +21,5 @@ public class ClassStatus
     public string Value { get; set; }
     
     public ICollection<Class> Classes { get; set; }
+    public virtual ICollection<ClassSchedule> ClassSchedules { get; set; }
 }

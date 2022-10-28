@@ -9,6 +9,9 @@ public class Teacher
     public Teacher()
     {
         Skills = new HashSet<Skill>();
+        ClassSchedules = new HashSet<ClassSchedule>();
+        DaysOff = new HashSet<DayOff>();
+        GpaRecords = new HashSet<GpaRecord>();
     }
 
     [Key]
@@ -46,4 +49,8 @@ public class Teacher
     public virtual TeacherType TeacherType { get; set; }
     public virtual WorkingTime WorkingTime { get; set; }
     public virtual ICollection<Skill> Skills { get; set; }
+    public virtual ICollection<ClassSchedule> ClassSchedules { get; set; }
+    public virtual ICollection<DayOff> DaysOff { get; set; }
+    public virtual ICollection<GpaRecord> GpaRecords { get; set; }
+
 }

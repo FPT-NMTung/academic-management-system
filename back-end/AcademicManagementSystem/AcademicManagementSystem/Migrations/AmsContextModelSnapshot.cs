@@ -62,6 +62,84 @@ namespace AcademicManagementSystem.Migrations
                     b.ToTable("admin");
                 });
 
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Answer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AnswerNo")
+                        .HasColumnType("int")
+                        .HasColumnName("answer_no");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("content");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int")
+                        .HasColumnName("question_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("answer");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Attendance", b =>
+                {
+                    b.Property<int>("SessionId")
+                        .HasColumnType("int")
+                        .HasColumnName("session_id");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int")
+                        .HasColumnName("student_id");
+
+                    b.Property<int>("AttendanceStatusId")
+                        .HasColumnType("int")
+                        .HasColumnName("attendance_status_id");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("note");
+
+                    b.HasKey("SessionId", "StudentId");
+
+                    b.HasIndex("AttendanceStatusId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("attendance");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.AttendanceStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("value");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("attendance_status");
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Center", b =>
                 {
                     b.Property<int>("Id")
@@ -144,7 +222,7 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("class_status_id");
 
                     b.Property<DateTime>("CompletionDate")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("date")
                         .HasColumnName("completion_date");
 
                     b.Property<string>("CourseFamilyCode")
@@ -158,7 +236,7 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("created_at");
 
                     b.Property<DateTime>("GraduationDate")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("date")
                         .HasColumnName("graduation_date");
 
                     b.Property<string>("Name")
@@ -172,7 +250,7 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("sro_id");
 
                     b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("date")
                         .HasColumnName("start_date");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -212,6 +290,109 @@ namespace AcademicManagementSystem.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("class_days");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.ClassSchedule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ClassDaysId")
+                        .HasColumnType("int")
+                        .HasColumnName("class_days_id");
+
+                    b.Property<TimeSpan>("ClassHourEnd")
+                        .HasColumnType("time")
+                        .HasColumnName("class_hour_end");
+
+                    b.Property<TimeSpan>("ClassHourStart")
+                        .HasColumnType("time")
+                        .HasColumnName("class_hour_start");
+
+                    b.Property<int>("ClassId")
+                        .HasColumnType("int")
+                        .HasColumnName("class_id");
+
+                    b.Property<int>("ClassStatusId")
+                        .HasColumnType("int")
+                        .HasColumnName("class_status_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("Duration")
+                        .HasColumnType("int")
+                        .HasColumnName("duration");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("end_date");
+
+                    b.Property<int>("ExamRoomId")
+                        .HasColumnType("int")
+                        .HasColumnName("exam_room_id");
+
+                    b.Property<int>("LabRoomId")
+                        .HasColumnType("int")
+                        .HasColumnName("lab_room_id");
+
+                    b.Property<int>("ModuleId")
+                        .HasColumnType("int")
+                        .HasColumnName("module_id");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("note");
+
+                    b.Property<DateTime>("PracticalExamDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("practical_exam_date");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("start_date");
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int")
+                        .HasColumnName("teacher_id");
+
+                    b.Property<DateTime>("TheoryExamDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("theory_exam_date");
+
+                    b.Property<int>("TheoryRoomId")
+                        .HasColumnType("int")
+                        .HasColumnName("theory_room_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassDaysId");
+
+                    b.HasIndex("ClassId");
+
+                    b.HasIndex("ClassStatusId");
+
+                    b.HasIndex("ExamRoomId");
+
+                    b.HasIndex("LabRoomId");
+
+                    b.HasIndex("ModuleId");
+
+                    b.HasIndex("TeacherId");
+
+                    b.HasIndex("TheoryRoomId");
+
+                    b.ToTable("class_schedule");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.ClassStatus", b =>
@@ -288,7 +469,9 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("created_at");
 
                     b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
+                        .HasDefaultValue(true)
                         .HasColumnName("is_active");
 
                     b.Property<string>("Name")
@@ -334,6 +517,36 @@ namespace AcademicManagementSystem.Migrations
                     b.ToTable("course_module_semester");
                 });
 
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.DayOff", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("date")
+                        .HasColumnName("date");
+
+                    b.Property<int?>("TeacherId")
+                        .HasColumnType("int")
+                        .HasColumnName("teacher_id");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("title");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("day_off");
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.District", b =>
                 {
                     b.Property<int>("Id")
@@ -364,6 +577,32 @@ namespace AcademicManagementSystem.Migrations
                     b.ToTable("district");
                 });
 
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Form", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("title");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("form");
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Gender", b =>
                 {
                     b.Property<int>("Id")
@@ -382,6 +621,69 @@ namespace AcademicManagementSystem.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("gender");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.GpaRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ClassId")
+                        .HasColumnType("int")
+                        .HasColumnName("class_id");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnName("comment");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("FormId")
+                        .HasColumnType("int")
+                        .HasColumnName("form_id");
+
+                    b.Property<int>("ModuleId")
+                        .HasColumnType("int")
+                        .HasColumnName("module_id");
+
+                    b.Property<int>("SessionId")
+                        .HasColumnType("int")
+                        .HasColumnName("session_id");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int")
+                        .HasColumnName("student_id");
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int")
+                        .HasColumnName("teacher_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassId");
+
+                    b.HasIndex("FormId");
+
+                    b.HasIndex("ModuleId");
+
+                    b.HasIndex("SessionId");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("gpa_record");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.GradeCategory", b =>
@@ -559,6 +861,26 @@ namespace AcademicManagementSystem.Migrations
                     b.ToTable("province");
                 });
 
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Question", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("content");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("question");
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -595,6 +917,12 @@ namespace AcademicManagementSystem.Migrations
                     b.Property<int>("CenterId")
                         .HasColumnType("int")
                         .HasColumnName("center_id");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -655,6 +983,70 @@ namespace AcademicManagementSystem.Migrations
                     b.ToTable("semester");
                 });
 
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Session", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ClassScheduleId")
+                        .HasColumnType("int")
+                        .HasColumnName("class_schedule_id");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time")
+                        .HasColumnName("end_time");
+
+                    b.Property<DateTime>("LearningDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("learning_date");
+
+                    b.Property<int>("SessionTypeId")
+                        .HasColumnType("int")
+                        .HasColumnName("session_type_id");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time")
+                        .HasColumnName("start_time");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("title");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassScheduleId");
+
+                    b.HasIndex("SessionTypeId");
+
+                    b.ToTable("session");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.SessionType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("value");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("session_type");
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Skill", b =>
                 {
                     b.Property<int>("Id")
@@ -693,7 +1085,7 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("user_id");
 
                     b.Property<DateTime>("ApplicationDate")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("date")
                         .HasColumnName("application_date");
 
                     b.Property<string>("ApplicationDocument")
@@ -794,7 +1186,7 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("status");
 
                     b.Property<DateTime>("StatusDate")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("date")
                         .HasColumnName("status_date");
 
                     b.Property<string>("University")
@@ -840,6 +1232,38 @@ namespace AcademicManagementSystem.Migrations
                     b.HasIndex("ClassId");
 
                     b.ToTable("student_class");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.StudentGrade", b =>
+                {
+                    b.Property<int>("ClassId")
+                        .HasColumnType("int")
+                        .HasColumnName("class_id");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int")
+                        .HasColumnName("student_id");
+
+                    b.Property<int>("GradeItemId")
+                        .HasColumnType("int")
+                        .HasColumnName("grade_item_id");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnName("comment");
+
+                    b.Property<double?>("Grade")
+                        .HasColumnType("float")
+                        .HasColumnName("grade");
+
+                    b.HasKey("ClassId", "StudentId", "GradeItemId");
+
+                    b.HasIndex("GradeItemId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("student_grade");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Teacher", b =>
@@ -1099,6 +1523,36 @@ namespace AcademicManagementSystem.Migrations
                     b.ToTable("working_time");
                 });
 
+            modelBuilder.Entity("AnswerGpaRecord", b =>
+                {
+                    b.Property<int>("AnswersId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GpaRecordsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AnswersId", "GpaRecordsId");
+
+                    b.HasIndex("GpaRecordsId");
+
+                    b.ToTable("AnswerGpaRecord");
+                });
+
+            modelBuilder.Entity("FormQuestion", b =>
+                {
+                    b.Property<int>("FormsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuestionsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("FormsId", "QuestionsId");
+
+                    b.HasIndex("QuestionsId");
+
+                    b.ToTable("FormQuestion");
+                });
+
             modelBuilder.Entity("SkillTeacher", b =>
                 {
                     b.Property<int>("SkillsId")
@@ -1134,6 +1588,44 @@ namespace AcademicManagementSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Answer", b =>
+                {
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Question", "Question")
+                        .WithMany("Answers")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Attendance", b =>
+                {
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.AttendanceStatus", "AttendanceStatus")
+                        .WithMany("Attendances")
+                        .HasForeignKey("AttendanceStatusId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Session", "Session")
+                        .WithMany("Attendances")
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Student", "Student")
+                        .WithMany("Attendances")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.Navigation("AttendanceStatus");
+
+                    b.Navigation("Session");
+
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Center", b =>
@@ -1206,6 +1698,73 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("Sro");
                 });
 
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.ClassSchedule", b =>
+                {
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.ClassDays", "ClassDays")
+                        .WithMany("ClassSchedules")
+                        .HasForeignKey("ClassDaysId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Class", "Class")
+                        .WithMany("ClassSchedules")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.ClassStatus", "ClassStatus")
+                        .WithMany("ClassSchedules")
+                        .HasForeignKey("ClassStatusId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Room", "ExamRoom")
+                        .WithMany("ClassSchedulesExamRoom")
+                        .HasForeignKey("ExamRoomId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Room", "LabRoom")
+                        .WithMany("ClassSchedulesLabRoom")
+                        .HasForeignKey("LabRoomId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Module", "Module")
+                        .WithMany("ClassSchedules")
+                        .HasForeignKey("ModuleId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Teacher", "Teacher")
+                        .WithMany("ClassSchedules")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Room", "TheoryRoom")
+                        .WithMany("ClassSchedulesTheoryRoom")
+                        .HasForeignKey("TheoryRoomId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.Navigation("Class");
+
+                    b.Navigation("ClassDays");
+
+                    b.Navigation("ClassStatus");
+
+                    b.Navigation("ExamRoom");
+
+                    b.Navigation("LabRoom");
+
+                    b.Navigation("Module");
+
+                    b.Navigation("Teacher");
+
+                    b.Navigation("TheoryRoom");
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Course", b =>
                 {
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.CourseFamily", "CourseFamily")
@@ -1244,6 +1803,16 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("Semester");
                 });
 
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.DayOff", b =>
+                {
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Teacher", "Teacher")
+                        .WithMany("DaysOff")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.ClientNoAction);
+
+                    b.Navigation("Teacher");
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.District", b =>
                 {
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Province", "Province")
@@ -1253,6 +1822,57 @@ namespace AcademicManagementSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("Province");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.GpaRecord", b =>
+                {
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Class", "Class")
+                        .WithMany("GpaRecords")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Form", "Form")
+                        .WithMany("GpaRecords")
+                        .HasForeignKey("FormId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Module", "Module")
+                        .WithMany("GpaRecords")
+                        .HasForeignKey("ModuleId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Session", "Session")
+                        .WithMany("GpaRecords")
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Student", "Student")
+                        .WithMany("GpaRecords")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Teacher", "Teacher")
+                        .WithMany("GpaRecords")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.Navigation("Class");
+
+                    b.Navigation("Form");
+
+                    b.Navigation("Module");
+
+                    b.Navigation("Session");
+
+                    b.Navigation("Student");
+
+                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.GradeCategoryModule", b =>
@@ -1315,6 +1935,25 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("RoomType");
                 });
 
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Session", b =>
+                {
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.ClassSchedule", "ClassSchedule")
+                        .WithMany("Sessions")
+                        .HasForeignKey("ClassScheduleId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.SessionType", "SessionType")
+                        .WithMany("Sessions")
+                        .HasForeignKey("SessionTypeId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.Navigation("ClassSchedule");
+
+                    b.Navigation("SessionType");
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Sro", b =>
                 {
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.User", "User")
@@ -1360,6 +1999,33 @@ namespace AcademicManagementSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("Class");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.StudentGrade", b =>
+                {
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Class", "Class")
+                        .WithMany("StudentGrades")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.GradeItem", "GradeItem")
+                        .WithMany("StudentGrades")
+                        .HasForeignKey("GradeItemId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Student", "Student")
+                        .WithMany("StudentGrades")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.Navigation("Class");
+
+                    b.Navigation("GradeItem");
 
                     b.Navigation("Student");
                 });
@@ -1461,6 +2127,36 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("Province");
                 });
 
+            modelBuilder.Entity("AnswerGpaRecord", b =>
+                {
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Answer", null)
+                        .WithMany()
+                        .HasForeignKey("AnswersId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.GpaRecord", null)
+                        .WithMany()
+                        .HasForeignKey("GpaRecordsId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FormQuestion", b =>
+                {
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Form", null)
+                        .WithMany()
+                        .HasForeignKey("FormsId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Question", null)
+                        .WithMany()
+                        .HasForeignKey("QuestionsId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("SkillTeacher", b =>
                 {
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Skill", null)
@@ -1476,6 +2172,11 @@ namespace AcademicManagementSystem.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.AttendanceStatus", b =>
+                {
+                    b.Navigation("Attendances");
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Center", b =>
                 {
                     b.Navigation("Classes");
@@ -1489,16 +2190,31 @@ namespace AcademicManagementSystem.Migrations
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Class", b =>
                 {
+                    b.Navigation("ClassSchedules");
+
+                    b.Navigation("GpaRecords");
+
+                    b.Navigation("StudentGrades");
+
                     b.Navigation("StudentsClasses");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.ClassDays", b =>
                 {
+                    b.Navigation("ClassSchedules");
+
                     b.Navigation("Classes");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.ClassSchedule", b =>
+                {
+                    b.Navigation("Sessions");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.ClassStatus", b =>
                 {
+                    b.Navigation("ClassSchedules");
+
                     b.Navigation("Classes");
                 });
 
@@ -1525,6 +2241,11 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("Wards");
                 });
 
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Form", b =>
+                {
+                    b.Navigation("GpaRecords");
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Gender", b =>
                 {
                     b.Navigation("Users");
@@ -1540,9 +2261,18 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("GradeItems");
                 });
 
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.GradeItem", b =>
+                {
+                    b.Navigation("StudentGrades");
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Module", b =>
                 {
+                    b.Navigation("ClassSchedules");
+
                     b.Navigation("CoursesModulesSemesters");
+
+                    b.Navigation("GpaRecords");
 
                     b.Navigation("GradeCategoryModule");
                 });
@@ -1558,9 +2288,23 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("Wards");
                 });
 
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Question", b =>
+                {
+                    b.Navigation("Answers");
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Role", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Room", b =>
+                {
+                    b.Navigation("ClassSchedulesExamRoom");
+
+                    b.Navigation("ClassSchedulesLabRoom");
+
+                    b.Navigation("ClassSchedulesTheoryRoom");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.RoomType", b =>
@@ -1573,6 +2317,18 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("CoursesModuleSemesters");
                 });
 
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Session", b =>
+                {
+                    b.Navigation("Attendances");
+
+                    b.Navigation("GpaRecords");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.SessionType", b =>
+                {
+                    b.Navigation("Sessions");
+                });
+
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Sro", b =>
                 {
                     b.Navigation("Classes");
@@ -1580,7 +2336,22 @@ namespace AcademicManagementSystem.Migrations
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Student", b =>
                 {
+                    b.Navigation("Attendances");
+
+                    b.Navigation("GpaRecords");
+
+                    b.Navigation("StudentGrades");
+
                     b.Navigation("StudentsClasses");
+                });
+
+            modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.Teacher", b =>
+                {
+                    b.Navigation("ClassSchedules");
+
+                    b.Navigation("DaysOff");
+
+                    b.Navigation("GpaRecords");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.TeacherType", b =>
