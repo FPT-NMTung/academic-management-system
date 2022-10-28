@@ -27,6 +27,9 @@ public class GpaRecord
     [Column("session_id")]
     public int SessionId { get; set; }
     
+    [Column("student_id")]
+    public int StudentId { get; set; }
+    
     [Column("form_id")]
     public int FormId { get; set; }
     
@@ -41,6 +44,11 @@ public class GpaRecord
     public DateTime UpdatedAt { get; set; }
     
     // relationships
+    public virtual Class Class { get; set; }
+    public virtual Teacher Teacher { get; set; }
+    public virtual Module Module { get; set; }
+    public virtual Session Session { get; set; }
+    public virtual Student Student { get; set; }
     public virtual Form Form { get; set; }
     public virtual ICollection<Answer> Answers { get; set; }
 }

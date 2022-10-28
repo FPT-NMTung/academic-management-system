@@ -25,7 +25,7 @@ public class Form
     public string Description { get; set; }
     
     // relationships
-    public virtual ICollection<GpaRecord> GpaRecords { get; set; }
+    public virtual ICollection<GpaRecord> GpaRecords { get; set; } 
     public virtual ICollection<Question> Questions { get; set; }
 
 }

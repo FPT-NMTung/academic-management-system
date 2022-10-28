@@ -6,7 +6,6 @@ namespace AcademicManagementSystem.Context.AmsModels;
 [Table("answer")]
 public class Answer
 {
-
     public Answer()
     {
         GpaRecords = new HashSet<GpaRecord>();
@@ -22,6 +21,7 @@ public class Answer
     public int AnswerNo { get; set; }
     
     [Column("content")]
+    [StringLength(255)]
     public string Content { get; set; }
     
     // relationships

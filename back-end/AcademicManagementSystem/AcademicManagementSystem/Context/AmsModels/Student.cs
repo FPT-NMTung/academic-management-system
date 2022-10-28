@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -11,6 +12,7 @@ public class Student
         this.StudentsClasses = new HashSet<StudentClass>();
         Attendances = new HashSet<Attendance>();
         StudentGrades = new HashSet<StudentGrade>();
+        GpaRecords = new HashSet<GpaRecord>();
     }
 
     [Key]
@@ -109,4 +111,6 @@ public class Student
     public virtual ICollection<StudentClass> StudentsClasses { get; set; }
     public virtual ICollection<Attendance> Attendances { get; set; }
     public virtual ICollection<StudentGrade> StudentGrades { get; set; }
+    public virtual ICollection<GpaRecord> GpaRecords { get; set; }
+
 }

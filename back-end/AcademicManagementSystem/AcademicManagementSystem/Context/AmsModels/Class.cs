@@ -10,6 +10,8 @@ public class Class
     {
         StudentsClasses = new HashSet<StudentClass>();
         ClassSchedules = new HashSet<ClassSchedule>();
+        StudentGrades = new HashSet<StudentGrade>();
+        GpaRecords = new HashSet<GpaRecord>();
     }
 
     [Key]
@@ -67,4 +69,6 @@ public class Class
     public virtual ICollection<StudentClass> StudentsClasses { get; set; }
     public virtual ICollection<ClassSchedule> ClassSchedules { get; set; }
     public virtual ICollection<StudentGrade> StudentGrades { get; set; }
+    public virtual ICollection<GpaRecord> GpaRecords { get; set; } 
+
 }
