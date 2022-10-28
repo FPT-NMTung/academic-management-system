@@ -31,6 +31,7 @@ import {
   CenterApis,
   GenderApis,
   AddressApis,
+  CourseApis,
   ManageStudentApis,
 } from "../../../../apis/ListApi";
 import ManImage from "../../../../images/3d-fluency-businessman-1.png";
@@ -58,6 +59,7 @@ const translateStatusStudent = {
 
 const StudentUpdate = (modeUpdate) => {
   const [listGender, setListGender] = useState([]);
+  const [listCourses, setListCourses] = useState([]);
   const [listProvince, setListProvince] = useState([]);
   const [listDistrict, setListDistrict] = useState([]);
   const [listWard, setListWard] = useState([]);
@@ -70,7 +72,11 @@ const StudentUpdate = (modeUpdate) => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const { id } = useParams();
-
+  const getListCourse = () => {
+    FetchApi(CourseApis.getAllCourse).then((res) => {
+      setListCourses(res.data);
+    });
+  };
   const getListGender = () => {
     FetchApi(GenderApis.getAllGender).then((res) => {
       setListGender(res.data);
@@ -156,7 +162,7 @@ const StudentUpdate = (modeUpdate) => {
         ),
         citizen_identity_card_published_place:
           data.citizen_identity_card_published_place,
-        status: translateStatusStudent[data.status],
+        status: data.status,
         contact_phone: data.mobile_phone,
         parental_name: data.parental_name,
         // parental_name: `${data.parental_first_name} ${data.parental_last_name}`,
@@ -167,6 +173,7 @@ const StudentUpdate = (modeUpdate) => {
         application_date: moment(data.application_date),
         fee_plan: data.fee_plan,
         promotion: data.promotion,
+        course_code: data.course_code,
       });
 
       setIsGettingInformationStudent(false);
@@ -200,13 +207,13 @@ const StudentUpdate = (modeUpdate) => {
       status: data.status,
       contact_phone: data.mobile_phone,
       parental_phone: data.parental_phone,
-        parental_name: data.parental_name,
+      parental_name: data.parental_name,
       application_date: data.application_date.add(7, "hours").toDate(),
       fee_plan: data.fee_plan,
       promotion: data.promotion,
       contact_address: `lolll`,
       parental_relationship: data.parental_relationship,
-
+      course_code: data.course_code,
     };
     console.log(body);
 
@@ -238,7 +245,7 @@ const StudentUpdate = (modeUpdate) => {
     getListProvince();
     // getListWorkingTime();
     // getListTeacherType();
-
+    getListCourse();
     if (modeUpdate) {
       getInformationStudent();
     }
@@ -511,7 +518,7 @@ const StudentUpdate = (modeUpdate) => {
                           return Promise.resolve();
                         }
                         return Promise.reject(
-                          new Error('Số điện thoại không hợp lệ')
+                          new Error("Số điện thoại không hợp lệ")
                         );
                       },
                     },
@@ -693,10 +700,9 @@ const StudentUpdate = (modeUpdate) => {
                         if (Validater.isNumber(promotion)) {
                           return Promise.resolve();
                         }
-                        return Promise.reject(new Error('Phải là số'));
+                        return Promise.reject(new Error("Phải là số"));
                       },
                     },
-
                   ]}
                 >
                   <Input placeholder="20" />
@@ -713,10 +719,9 @@ const StudentUpdate = (modeUpdate) => {
                         if (Validater.isNumber(feeplan)) {
                           return Promise.resolve();
                         }
-                        return Promise.reject(new Error('Phải là số'));
+                        return Promise.reject(new Error("Phải là số"));
                       },
                     },
-
                   ]}
                 >
                   <Input placeholder="20" />
@@ -752,7 +757,7 @@ const StudentUpdate = (modeUpdate) => {
           <Grid
             sm={4.5}
             direction={"column"}
-            css={{ rowGap: 0, position: "relative" }}
+            css={{ rowGap: 20, position: "relative" }}
           >
             <Card
               variant="bordered"
@@ -805,7 +810,11 @@ const StudentUpdate = (modeUpdate) => {
                 </div>
                 <Upload>
                   <Button
-                    css={{ fontSize: "12px", height: "28px", margin: "16px 0" }}
+                    css={{
+                      fontSize: "12px",
+                      height: "28px",
+                      margin: "16px 0 0 0",
+                    }}
                     auto
                     flat
                     icon={<UploadOutlined />}
@@ -813,16 +822,38 @@ const StudentUpdate = (modeUpdate) => {
                     Upload
                   </Button>
                 </Upload>
-                <Text p b size={14}>
-                  Tình trạng
-                </Text>
 
+                {/* </div> */}
+              </Card.Body>
+            </Card>
+            <Card variant="bordered">
+              <Card.Header css={{ margin: "0px 0 0 0" }}>
+                <Text
+                  b
+                  p
+                  size={15}
+                  css={{
+                    width: "100%",
+                    textAlign: "center",
+                    //   margin: '0',
+                    //   padding: '0',
+                  }}
+                >
+                  Thông tin bổ sung
+                </Text>
+              </Card.Header>
+              <Card.Body
+                css={{
+                  width: "100%",
+                  //   textAlign: "center",
+                }}
+              >
                 <Form.Item
                   name="status"
                   label="Thay đổi tình trạng"
                   labelWrap={true}
                   style={{
-                    margin: "auto",
+                    // margin: "auto",
                     width: "100%",
                     textAlign: "left",
                   }}
@@ -854,8 +885,33 @@ const StudentUpdate = (modeUpdate) => {
                     </Select.Option>
                   </Select>
                 </Form.Item>
-
-                {/* </div> */}
+                <Form.Item
+                  name="course_code"
+                  label="Mã khóa học"
+                  labelWrap={true}
+                  style={{
+                    // margin: "auto",
+                    width: "100%",
+                    textAlign: "left",
+                  }}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Hãy chọn khóa học",
+                    },
+                  ]}
+                >
+                  <Select
+                    dropdownStyle={{ zIndex: 9999 }}
+                    onChange={getListCourse}
+                  >
+                    {listCourses.map((e, index) => (
+                      <Select.Option key={index} value={e.code}>
+                        {e.data} {e.code}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
               </Card.Body>
             </Card>
             <Card variant="bordered">
@@ -951,28 +1007,27 @@ const StudentUpdate = (modeUpdate) => {
                 >
                   <Input placeholder="Nơi cấp" />
                 </Form.Item>
-                
               </Card.Body>
             </Card>
             <Form.Item
-                      style={{
-                        display: "inline-block",
-                        textAlign: "right",
-                        width: "100%",
-                      }}
-                    >
-                      {!isCreatingOrUpdating && messageFailed !== undefined && (
-                        <Text
-                          size={14}
-                          css={{
-                            background: "#fff",
-                            color: "red",
-                          }}
-                        >
-                          {messageFailed}
-                        </Text>
-                      )}
-                    </Form.Item>
+              style={{
+                display: "inline-block",
+                textAlign: "right",
+                width: "100%",
+              }}
+            >
+              {!isCreatingOrUpdating && messageFailed !== undefined && (
+                <Text
+                  size={14}
+                  css={{
+                    background: "#fff",
+                    color: "red",
+                  }}
+                >
+                  {messageFailed}
+                </Text>
+              )}
+            </Form.Item>
 
             <div className={classes.buttonCreate}>
               <Button
