@@ -237,7 +237,7 @@ public class StudentController : ControllerBase
         if (request.CompanyPosition != null)
         {
             request.CompanyPosition = Regex.Replace(request.CompanyPosition, StringConstant.RegexWhiteSpaces, " ");
-            if (Regex.IsMatch(request.CompanyPosition, StringConstant.RegexNameWithUnderscoreSpaces))
+            if (Regex.IsMatch(request.CompanyPosition, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
             {
                 var error = ErrorDescription.Error["E1106"];
                 return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
