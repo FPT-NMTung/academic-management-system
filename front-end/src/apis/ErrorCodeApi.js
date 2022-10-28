@@ -173,7 +173,7 @@ export const ErrorCodeApi = {
   "student-class-error-0006": "Hệ thống đã xảy ra lỗi, vui lòng thử lại",
 
   "student-error-0001":"Họ và tên đệm không đúng định dạng",
-  "student-error-0002":"Tên không đúng định dạng",
+  "student-error-0002":"Tên không được chứa ký tự đặc biệt",
   "student-error-0003":"Số điện thoại cá nhân đã tồn tại",
   "student-error-0004":"Số điện thoại không đúng định dạng",
   "student-error-0004_1":"Số điện thoại liên lạc không đúng định dạng",
