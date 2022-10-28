@@ -224,6 +224,7 @@ public static class ErrorDescription
         { "E1096", new ErrorModel() { Message = "Email is not match with email format", Type = "student-error-00022" } },
         { "E1097", new ErrorModel() { Message = "EmailOrganization is not match with email format", Type = "student-error-00023" } },
         { "E1098", new ErrorModel() { Message = "Course code is not exists or not active", Type = "student-error-00024" } },
+        { "E1099", new ErrorModel() { Message = "Parental name is not match with format", Type = "student-error-00036" } },
         { "E1100", new ErrorModel() { Message = "Parental relationship is not match with format", Type = "student-error-00025" } },
         { "E1101", new ErrorModel() { Message = "Contact address is not match with format", Type = "student-error-00026" } },
         { "E1102", new ErrorModel() { Message = "CitizenIdentityCard published date is not match with format", Type = "student-error-00027" } },
