@@ -143,6 +143,7 @@ const StudentUpdate = (modeUpdate) => {
       `${id}`,
     ]).then((res) => {
       const data = res.data;
+      console.log(data);
       setDataUser(data);
 
       form.setFieldsValue({
@@ -174,6 +175,15 @@ const StudentUpdate = (modeUpdate) => {
         fee_plan: data.fee_plan,
         promotion: data.promotion,
         course_code: data.course_code,
+        application_document: data.application_document,
+        high_school: data.high_school,
+        university: data.university,
+        facebook_url: data.facebook_url,
+        portfolio_url: data.portfolio_url,
+        working_company: data.working_company,
+        company_salary: data.company_salary,
+        company_position: data.company_position,
+        company_address: data.company_address,
       });
 
       setIsGettingInformationStudent(false);
@@ -184,6 +194,8 @@ const StudentUpdate = (modeUpdate) => {
 
   const handleSubmitForm = () => {
     const data = form.getFieldsValue();
+    const companysalary = form.getFieldValue("company_salary");
+
     setIsCreatingOrUpdating(true);
     setMessageFailed(undefined);
 
@@ -214,6 +226,15 @@ const StudentUpdate = (modeUpdate) => {
       contact_address: `lolll`,
       parental_relationship: data.parental_relationship,
       course_code: data.course_code,
+      application_document: data.application_document,
+      high_school: data.high_school,
+      university: data.university,
+      facebook_url: data.facebook_url,
+      portfolio_url: data.portfolio_url,
+      working_company: data.working_company ? data.working_company : null,
+      company_salary: data.company_salary ? data.company_salary : null,
+      company_position: data.company_position,
+      company_address: data.company_address,
     };
     console.log(body);
 
@@ -223,7 +244,7 @@ const StudentUpdate = (modeUpdate) => {
     const params = modeUpdate ? [`${id}`] : null;
 
     toast.promise(FetchApi(api, body, null, params), {
-      loading: "...",
+      loading: "Đang xử lý",
       success: (res) => {
         setIsCreatingOrUpdating(false);
         navigate(`/sro/manage/student/${res.data.user_id}`);
@@ -257,6 +278,17 @@ const StudentUpdate = (modeUpdate) => {
       form={form}
       onFinish={handleSubmitForm}
       disabled={modeUpdate && isGettingInformationStudent}
+      // initialValues = {{
+      //   application_document: null,
+      //   high_school: null,
+      //   university: null,
+      //   facebook_url: null,
+      //   portfolio_url: null,
+      //   working_company: null,
+      //   company_salary: null,
+      //   company_position: null,
+      //   company_address: null
+      // }}
     >
       <Grid.Container justify="center" gap={2}>
         <Grid sm={6.5} direction={"column"} css={{ rowGap: 20 }}>
@@ -683,7 +715,7 @@ const StudentUpdate = (modeUpdate) => {
                     //   padding: '0',
                   }}
                 >
-                  Thông tin học tập
+                  Thông tin liên quan đến học viện
                 </Text>
               </Divider>
               <div></div>
@@ -695,12 +727,15 @@ const StudentUpdate = (modeUpdate) => {
                     {
                       required: true,
                       validator: (_, value) => {
-                        const promotion = value.toString();
-                        // check regex phone number viet nam
-                        if (Validater.isNumber(promotion)) {
-                          return Promise.resolve();
+                        if (value !== null && value !== undefined) {
+                          const salary = value.toString();
+                          if (Validater.isNumber(salary)) {
+                            return Promise.resolve();
+                          }
+                          return Promise.reject(new Error("Phải là số"));
                         }
-                        return Promise.reject(new Error("Phải là số"));
+
+                        // check regex phone number viet nam
                       },
                     },
                   ]}
@@ -714,21 +749,40 @@ const StudentUpdate = (modeUpdate) => {
                     {
                       required: true,
                       validator: (_, value) => {
-                        const feeplan = value.toString();
-                        // check regex phone number viet nam
-                        if (Validater.isNumber(feeplan)) {
-                          return Promise.resolve();
+                        if (value !== null && value !== undefined) {
+                          const salary = value.toString();
+                          if (Validater.isNumber(salary)) {
+                            return Promise.resolve();
+                          }
+                          return Promise.reject(new Error("Phải là số"));
                         }
-                        return Promise.reject(new Error("Phải là số"));
+
+                        // check regex phone number viet nam
                       },
                     },
                   ]}
                 >
                   <Input placeholder="20" />
                 </Form.Item>
-
                 <Form.Item
                   label="Hồ sơ"
+                  name="application_document"
+                  style={{
+                    // margin: "auto",
+                    width: "100%",
+                    // textAlign: "left",
+                  }}
+                  // rules={[
+                  //   {
+                  //     required: true,
+                  //     message: "Hãy nhập đường dẫn của hồ sơ",
+                  //   },
+                  // ]}
+                >
+                  <Input placeholder="Đường dẫn tới hồ sơ" />
+                </Form.Item>
+                <Form.Item
+                  label="Ngày nộp"
                   name="application_date"
                   style={{
                     // margin: "auto",
@@ -738,7 +792,7 @@ const StudentUpdate = (modeUpdate) => {
                   rules={[
                     {
                       required: true,
-                      message: "Hãy nhập ngày sinh",
+                      message: "Hãy nhập ngày nộp hồ sơ",
                     },
                   ]}
                 >
@@ -749,7 +803,294 @@ const StudentUpdate = (modeUpdate) => {
                 </Form.Item>
                 <div></div>
               </div>
-              <Spacer y={0.5} />
+              <Divider
+                orientation="left"
+                style={{ marginTop: 0, marginBottom: 24 }}
+              >
+                <Text
+                  b
+                  p
+                  size={15}
+                  css={{
+                    width: "100%",
+                    textAlign: "center",
+                    //   margin: '0',
+                    //   padding: '0',
+                  }}
+                >
+                  Học vấn và công việc
+                </Text>
+              </Divider>
+              <div></div>
+              <div className={classes.layout}>
+                <Form.Item
+                  label="Trường cấp 3"
+                  name="high_school"
+                  style={{
+                    // margin: "auto",
+                    width: "100%",
+                    // textAlign: "left",
+                  }}
+                  rules={[
+                    {
+                      required: false,
+                      validator: (_, value) => {
+                        if (
+                          value === null ||
+                          value === undefined ||
+                          value.trim() === ""
+                        ) {
+                          return Promise.resolve();
+                        }
+                        if (
+                          Validater.isNotHumanName(
+                            value.trim()
+                          )
+                        ) {
+                          return Promise.reject(
+                            "Trường này không được chứa ký tự đặc biệt"
+                          );
+                        }
+                        if (
+                          value.trim().length < 1 ||
+                          value.trim().length > 255
+                        ) {
+                          return Promise.reject(
+                            new Error("Trường phải từ 1 đến 255 ký tự")
+                          );
+                        }
+                        return Promise.resolve();
+                      },
+                    },
+                    {
+                      whitespace: true,
+                      message: "Trường không được chứa khoảng trắng",
+                    },
+                  ]}
+                >
+                  <Input placeholder="Tên trường học" />
+                </Form.Item>
+                <Form.Item
+                  label="Trường đại học"
+                  name="university"
+                  style={{
+                    // margin: "auto",
+                    width: "100%",
+                    // textAlign: "left",
+                  }}
+                  rules={[
+                    {
+                      required: false,
+                      validator: (_, value) => {
+                        if (
+                          value === null ||
+                          value === undefined ||
+                          value.trim() === ""
+                        ) {
+                          return Promise.resolve();
+                        }
+                        if (
+                          Validater.isNotHumanName(
+                            value.trim()
+                          )
+                        ) {
+                          return Promise.reject(
+                            "Trường này không được chứa ký tự đặc biệt"
+                          );
+                        }
+                        if (
+                          value.trim().length < 1 ||
+                          value.trim().length > 255
+                        ) {
+                          return Promise.reject(
+                            new Error("Trường phải từ 1 đến 255 ký tự")
+                          );
+                        }
+                        return Promise.resolve();
+                      },
+                    },
+                    {
+                      whitespace: true,
+                      message: "Trường không được chứa khoảng trắng",
+                    },
+                  ]}
+                >
+                  <Input placeholder="Tên trường học" />
+                </Form.Item>
+                <Form.Item
+                  label="Công ty"
+                  name="working_company"
+                  style={{
+                    // margin: "auto",
+                    width: "100%",
+                    // textAlign: "left",
+                  }}
+                  rules={[
+                    {
+                      required: false,
+                      validator: (_, value) => {
+                        if (
+                          value === null ||
+                          value === undefined ||
+                          value.trim() === ""
+                        ) {
+                          return Promise.resolve();
+                        }
+                        if (
+                          Validater.isNotHumanName(
+                            value.trim()
+                          )
+                        ) {
+                          return Promise.reject(
+                            "Trường này không được chứa ký tự đặc biệt"
+                          );
+                        }
+                        if (
+                          value.trim().length < 1 ||
+                          value.trim().length > 255
+                        ) {
+                          return Promise.reject(
+                            new Error("Trường phải từ 1 đến 255 ký tự")
+                          );
+                        }
+                        return Promise.resolve();
+                      },
+                    },
+                    {
+                      whitespace: true,
+                      message: "Trường không được chứa khoảng trắng",
+                    },
+                  ]}
+                >
+                  <Input placeholder="Tên công ty" />
+                </Form.Item>
+                <Form.Item
+                  label="Địa chỉ công ty"
+                  name="company_address"
+                  style={{
+                    // margin: "auto",
+                    width: "100%",
+                    // textAlign: "left",
+                  }}
+                  rules={[
+                    {
+                      required: false,
+                      validator: (_, value) => {
+                        if (
+                          value === null ||
+                          value === undefined ||
+                          value.trim() === ""
+                        ) {
+                          return Promise.resolve();
+                        }
+                        if (
+                          Validater.isNotHumanName(
+                            value.trim()
+                          )
+                        ) {
+                          return Promise.reject(
+                            "Trường này không được chứa ký tự đặc biệt"
+                          );
+                        }
+                        if (
+                          value.trim().length < 1 ||
+                          value.trim().length > 255
+                        ) {
+                          return Promise.reject(
+                            new Error("Trường phải từ 1 đến 255 ký tự")
+                          );
+                        }
+                        return Promise.resolve();
+                      },
+                    },
+                    {
+                      whitespace: true,
+                      message: "Trường không được chứa khoảng trắng",
+                    },
+                  ]}
+                >
+                  <Input placeholder="Địa chỉ công ty" />
+                </Form.Item>
+                <Form.Item
+                  label="Chức vụ"
+                  name="company_position"
+                  style={{
+                    // margin: "auto",
+                    width: "100%",
+                    // textAlign: "left",
+                  }}
+                  rules={[
+                    {
+                      required: false,
+                      validator: (_, value) => {
+                        if (
+                          value === null ||
+                          value === undefined ||
+                          value.trim() === ""
+                        ) {
+                          return Promise.resolve();
+                        }
+                        if (
+                          Validater.isNotHumanName(
+                            value.trim()
+                          )
+                        ) {
+                          return Promise.reject(
+                            "Trường này không được chứa ký tự đặc biệt"
+                          );
+                        }
+                        if (
+                          value.trim().length < 1 ||
+                          value.trim().length > 255
+                        ) {
+                          return Promise.reject(
+                            new Error("Trường phải từ 1 đến 255 ký tự")
+                          );
+                        }
+                        return Promise.resolve();
+                      },
+                    },
+                    {
+                      whitespace: true,
+                      message: "Trường không được chứa khoảng trắng",
+                    },
+                  ]}
+                >
+                  <Input placeholder="Chức vụ trong công ty" />
+                </Form.Item>
+                <Form.Item
+                  label="Mức lương"
+                  name="company_salary"
+                  rules={[
+                    {
+                      required: false,
+                      validator: (_, value) => {
+                        if (
+                          value === null ||
+                          value === undefined ||
+                          value === ""
+                        ) {
+                          return Promise.resolve();
+                        }
+                        const salary = value.toString();
+                        if (Validater.isNumber(salary)) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(new Error("Phải là số"));
+                      },
+                    },
+                    // {
+                    //   whitespace: true,
+                    //   message: "Trường không được chứa khoảng trắng",
+                    // },
+                  ]}
+                >
+                  <Input placeholder="5000000" />
+                </Form.Item>
+
+                <div></div>
+              </div>
+              <Spacer y={0.1} />
             </Card.Body>
           </Card>
         </Grid>
@@ -839,7 +1180,7 @@ const StudentUpdate = (modeUpdate) => {
                     //   padding: '0',
                   }}
                 >
-                  Thông tin bổ sung
+                  Thông tin quan trọng
                 </Text>
               </Card.Header>
               <Card.Body
@@ -1009,6 +1350,66 @@ const StudentUpdate = (modeUpdate) => {
                 </Form.Item>
               </Card.Body>
             </Card>
+            <Card variant="bordered">
+              <Card.Header css={{ margin: "0px 0 0 0" }}>
+                <Text
+                  b
+                  p
+                  size={15}
+                  css={{
+                    width: "100%",
+                    textAlign: "center",
+                    //   margin: '0',
+                    //   padding: '0',
+                  }}
+                >
+                  Thông tin bổ sung
+                </Text>
+              </Card.Header>
+              <Card.Body
+                css={{
+                  width: "100%",
+                  //   textAlign: "center",
+                }}
+              >
+                <Form.Item
+                  label="Facebook"
+                  name="facebook_url"
+                  style={{
+                    // margin: "auto",
+                    width: "100%",
+                    // textAlign: "left",
+                  }}
+                  // rules={[
+                  //   {
+                  //     // required: true,
+
+                  //     message: "Hãy nhập đường dẫn facebook",
+                  //   },
+                  // ]}
+                >
+                  <Input placeholder="Đường dẫn tới facebook" />
+                </Form.Item>
+
+                <Form.Item
+                  label="CV"
+                  name="portfolio_url"
+                  style={{
+                    // margin: "auto",
+                    width: "100%",
+                    // textAlign: "left",
+                  }}
+                  // rules={[
+                  //   {
+                  //     // required: true,
+                  //     message: "Hãy nhập đường dẫn tới cv",
+                  //   },
+                  // ]}
+                >
+                  <Input placeholder="Đường dẫn tới cv" />
+                </Form.Item>
+              </Card.Body>
+            </Card>
             <Form.Item
               style={{
                 display: "inline-block",
@@ -1057,7 +1458,7 @@ const StudentUpdate = (modeUpdate) => {
                   bottom: "10px",
                 }}
                 onPress={() => {
-                  navigate("/sro/manage/student");
+                  navigate("/sro/manage/student/");
                 }}
                 // disabled={isCreatingOrUpdating}
               >
