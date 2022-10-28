@@ -48,6 +48,12 @@ public class AmsContext : DbContext
         modelBuilder.Entity<User>()
             .Property(u => u.IsActive)
             .HasDefaultValue(true);
+        modelBuilder.Entity<CourseFamily>()
+            .Property(cf => cf.IsActive)
+            .HasDefaultValue(true);
+        modelBuilder.Entity<Room>()
+            .Property(r => r.IsActive)
+            .HasDefaultValue(true);
 
         modelBuilder.Entity<Attendance>()
             .HasKey(a => new { a.SessionId, a.StudentId });

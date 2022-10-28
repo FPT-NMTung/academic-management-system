@@ -1,14 +1,14 @@
-import { Card, Grid, Button, Text } from "@nextui-org/react";
-import { Form, Select, DatePicker, Input, Spin, message } from "antd";
-import { Fragment } from "react";
-import { useEffect, useState } from "react";
-import FetchApi from "../../apis/FetchApi";
-import { CourseFamilyApis } from "../../apis/ListApi";
-import classes from "./CourseFamilyUpdate.module.css";
-import { Validater } from "../../validater/Validater";
-import moment from "moment";
-import toast from "react-hot-toast";
-import { ErrorCodeApi } from "../../apis/ErrorCodeApi";
+import { Card, Grid, Button, Text, Loading } from '@nextui-org/react';
+import { Form, Select, DatePicker, Input, Spin, message } from 'antd';
+import { Fragment } from 'react';
+import { useEffect, useState } from 'react';
+import FetchApi from '../../apis/FetchApi';
+import { CourseFamilyApis } from '../../apis/ListApi';
+import classes from './CourseFamilyUpdate.module.css';
+import { Validater } from '../../validater/Validater';
+import moment from 'moment';
+import toast from 'react-hot-toast';
+import { ErrorCodeApi } from '../../apis/ErrorCodeApi';
 
 const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
   const [isUpdating, setIsUpdating] = useState(false);
@@ -17,6 +17,7 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
   const [form] = Form.useForm();
   const [listCourseFamily, setlistCourseFamily] = useState([]);
   const [messageFailed, setMessageFailed] = useState(undefined);
+  const [canDelete, setCanDelete] = useState(undefined);
 
   const getData = () => {
     setIsLoading(true);
@@ -27,10 +28,46 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
       setlistCourseFamily(res.data);
     });
   };
+
+  const checkCanDelete = () => {
+    FetchApi(CourseFamilyApis.checkCanDeleteCourseFamily, null, null, [
+      String(data.codefamily),
+    ])
+      .then((res) => {
+        if (res.data.can_delete === true) {
+          setCanDelete(true);
+        } else {
+          setCanDelete(false);
+        }
+      })
+      .catch((err) => {
+        toast.error('Lỗi kiểm tra khả năng xóa');
+      });
+  };
+
+  const handleDelete = () => {
+    toast.promise(
+      FetchApi(CourseFamilyApis.deleteCourseFamily, null, null, [
+        String(data.codefamily),
+      ]),
+      {
+        loading: 'Đang xóa',
+        success: (res) => {
+          onUpdateSuccess();
+          return 'Xóa thành công';
+        },
+        error: (err) => {
+          return 'Xóa thất bại';
+        },
+      }
+    );
+  };
+
   useEffect(() => {
     setIsLoading(false);
-    // getData();
+    checkCanDelete();
   }, []);
+
   const handleSubmitForm = (e) => {
     setIsUpdating(true);
 
@@ -46,10 +83,10 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
         `${data.codefamily}`,
       ]),
       {
-        loading: "Đang cập nhật...",
+        loading: 'Đang cập nhật...',
         success: (res) => {
           onUpdateSuccess();
-          return "Cập nhật thành công !";
+          return 'Cập nhật thành công !';
         },
         error: (err) => {
           setIsUpdating(false);
@@ -58,7 +95,7 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
           if (err?.type_error) {
             return ErrorCodeApi[err.type_error];
           }
-          return "Cập nhật thất bại !";
+          return 'Cập nhật thất bại !';
         },
       }
     );
@@ -94,25 +131,25 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
           }}
         >
           <Form.Item
-            name={"coursefamilyname"}
-            label={"Tên"}
+            name={'coursefamilyname'}
+            label={'Tên'}
             rules={[
               {
                 required: true,
                 validator: (_, value) => {
                   if (value === null || value === undefined) {
-                    return Promise.reject("Trường này không được để trống");
+                    return Promise.reject('Trường này không được để trống');
                   }
                   if (
                     Validater.isContaintSpecialCharacterForName(value.trim())
                   ) {
                     return Promise.reject(
-                      "Trường này không được chứa ký tự đặc biệt"
+                      'Trường này không được chứa ký tự đặc biệt'
                     );
                   }
                   if (value.trim().length < 1 || value.trim().length > 255) {
                     return Promise.reject(
-                      new Error("Trường phải từ 1 đến 255 ký tự")
+                      new Error('Trường phải từ 1 đến 255 ký tự')
                     );
                   }
                   return Promise.resolve();
@@ -124,24 +161,24 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
           </Form.Item>
           <Fragment>
             <Form.Item
-              name={"codefamily"}
-              label={"Mã chương trình học"}
+              name={'codefamily'}
+              label={'Mã chương trình học'}
               rules={[
                 {
                   required: true,
-                  message: "Hãy nhập mã chương trình học",
+                  message: 'Hãy nhập mã chương trình học',
                 },
               ]}
             >
               <Input disabled />
             </Form.Item>
             <Form.Item
-              name={"codefamilyyear"}
-              label={"Năm áp dụng"}
+              name={'codefamilyyear'}
+              label={'Năm áp dụng'}
               rules={[
                 {
                   required: true,
-                  message: "Hãy chọn năm áp dụng",
+                  message: 'Hãy chọn năm áp dụng',
                 },
               ]}
             >
@@ -154,42 +191,47 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
           </Fragment>
 
           <Form.Item wrapperCol={{ offset: 7, span: 99 }}>
-            <Button
-              flat
-              auto
-              css={{
-                width: "120px",
+            <div
+              style={{
+                display: 'flex',
+                gap: '10px',
               }}
-              type="primary"
-              htmlType="submit"
-              disabled={isUpdating}
             >
-              Cập nhật
-            </Button>
-            {/* <Button
+              <Button
+                flat
+                auto
+                css={{
+                  width: '120px',
+                }}
+                type="primary"
+                htmlType="submit"
+                disabled={isUpdating}
+              >
+                Cập nhật
+              </Button>
+              <Button
                 flat
                 auto
                 css={{
                   width: '80px',
                 }}
                 color={'error'}
-                disabled={
-                  canDelete === false || canDelete === undefined || isUpdating
-                }
-                onPress={handleDeleteCenter}
+                disabled={!canDelete}
+                onPress={handleDelete}
               >
                 {canDelete === undefined && <Loading size="xs" />}
                 {canDelete !== undefined && 'Xoá'}
-              </Button> */}
+              </Button>{' '}
+            </div>
           </Form.Item>
         </Form>
       )}
-      {!isUpdating  && messageFailed !== undefined && isFailed && (
+      {!isUpdating && messageFailed !== undefined && isFailed && (
         <Text
           size={14}
           css={{
-            color: "red",
-            textAlign: "center",
+            color: 'red',
+            textAlign: 'center',
           }}
         >
           {messageFailed}, vui lòng thử lại
