@@ -208,7 +208,7 @@ public static class ErrorDescription
         { "E1079_3", new ErrorModel() { Message = "Parental phone is not match with format", Type = "student-error-0004_3" } },
         { "E1080", new ErrorModel() { Message = "Email is existed", Type = "student-error-0005" } },
         { "E1081", new ErrorModel() { Message = "Email Already Belong To Another EmailOrganization", Type = "student-error-0006" } },
-        { "E1082", new ErrorModel() { Message = "EmailOrganization is not match with format", Type = "student-error-0007" } },
+        { "E1082", new ErrorModel() { Message = "EmailOrganization is existed", Type = "student-error-0007" } },
         { "E1081_1", new ErrorModel() { Message = "EmailOrganization Already Belong To Another Email", Type = "student-error-0008" } },
         { "E1083", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "student-error-0009" } },
         { "E1084", new ErrorModel() { Message = "Identity Card No is existed", Type = "student-error-00010" } },
