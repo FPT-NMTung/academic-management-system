@@ -82,7 +82,7 @@ public static class ErrorDescription
         { "E1055", new ErrorModel() { Message = "Course family name is existed", Type = "course-family-error-0009" } },
         { "E1056", new ErrorModel() { Message = "Course family name with different code is existed", Type = "course-family-error-0010" } },
         { "E2058", new ErrorModel() { Message = "Can not delete this Course family", Type = "course-family-error-0011" } },
-        { "E2059", new ErrorModel() { Message = "Can not change status this Course family", Type = "course-family-error-0012" } },
+        { "E2063", new ErrorModel() { Message = "Can not change status this Course family", Type = "course-family-error-0012" } },
 
         // course
         { "E1014", new ErrorModel() { Message = "Course code existed", Type = "course-error-0001" } },
@@ -221,8 +221,8 @@ public static class ErrorDescription
         { "E1093", new ErrorModel() { Message = "First name, last name, course code, email and email organization cannot be empty", Type = "student-error-00019" } },
         { "E1094", new ErrorModel() { Message = "Status must be between 1-7", Type = "student-error-00020" } },
         { "E1095", new ErrorModel() { Message = "Student response is null", Type = "student-error-00021" } },
-        { "E1096", new ErrorModel() { Message = "Email is not match with format", Type = "student-error-00022" } },
-        { "E1097", new ErrorModel() { Message = "EmailOrganization is not match with format", Type = "student-error-00023" } },
+        { "E1096", new ErrorModel() { Message = "Email is not match with email format", Type = "student-error-00022" } },
+        { "E1097", new ErrorModel() { Message = "EmailOrganization is not match with email format", Type = "student-error-00023" } },
         { "E1098", new ErrorModel() { Message = "Course code is not exists or not active", Type = "student-error-00024" } },
     };
 }
