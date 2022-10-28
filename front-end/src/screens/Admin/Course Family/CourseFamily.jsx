@@ -28,6 +28,7 @@ const CourseFamily = () => {
   const [isCreate, setIsCreate] = useState(false);
 
   const getData = () => {
+    setIsLoading(true);
     const apiCourseFamily = CourseFamilyApis.getAllCourseFamily;
     // console.log(apiCourseFamily);
     FetchApi(apiCourseFamily).then((res) => {

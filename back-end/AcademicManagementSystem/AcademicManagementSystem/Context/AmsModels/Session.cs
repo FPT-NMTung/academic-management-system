@@ -10,6 +10,7 @@ public class Session
     public Session()
     {
         Attendances = new HashSet<Attendance>();
+        GpaRecords = new HashSet<GpaRecord>();
     }
     [Key]
     [Column("id")]
@@ -38,4 +39,6 @@ public class Session
     public virtual ClassSchedule ClassSchedule { get; set; }
     public virtual SessionType SessionType { get; set; }
     public virtual ICollection<Attendance> Attendances { get; set; }
+    public virtual ICollection<GpaRecord> GpaRecords { get; set; }
+
 }
