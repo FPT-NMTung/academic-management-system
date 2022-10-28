@@ -133,10 +133,16 @@ public class StudentController : ControllerBase
         request.Email = request.Email.Trim();
         request.EmailOrganization = request.EmailOrganization.Trim();
         request.CourseCode = request.CourseCode.ToUpper().Trim();
+        request.ParentalName = request.ParentalName.Trim();
+        request.ParentalRelationship = request.ParentalRelationship.Trim();
+        request.ContactAddress = request.ContactAddress.Trim();
+        request.CitizenIdentityCardPublishedPlace = request.CitizenIdentityCardPublishedPlace.Trim();
 
         if (string.IsNullOrEmpty(request.FirstName) || string.IsNullOrEmpty(request.LastName) ||
             string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.EmailOrganization) ||
-            string.IsNullOrEmpty(request.CourseCode))
+            string.IsNullOrEmpty(request.CourseCode) || string.IsNullOrEmpty(request.ParentalName) ||
+            string.IsNullOrEmpty(request.ParentalRelationship) || string.IsNullOrEmpty(request.ContactAddress) ||
+            string.IsNullOrEmpty(request.CitizenIdentityCardPublishedPlace))
         {
             var error = ErrorDescription.Error["E1093"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -167,6 +173,85 @@ public class StudentController : ControllerBase
         {
             var error = ErrorDescription.Error["E1077"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        request.ParentalName = Regex.Replace(request.ParentalName, StringConstant.RegexWhiteSpaces, " ");
+        request.ParentalName = request.ParentalName.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.ParentalName, StringConstant.RegexSpecialCharsNotAllowForPersonName) ||
+            Regex.IsMatch(request.ParentalName, StringConstant.RegexDigits))
+        {
+            var error = ErrorDescription.Error["E1099"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        request.ParentalRelationship =
+            Regex.Replace(request.ParentalRelationship, StringConstant.RegexWhiteSpaces, " ");
+        if (Regex.IsMatch(request.ParentalRelationship, StringConstant.RegexSpecialCharacter) ||
+            Regex.IsMatch(request.ParentalRelationship, StringConstant.RegexDigits))
+        {
+            var error = ErrorDescription.Error["E1100"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        request.ContactAddress = Regex.Replace(request.ContactAddress, StringConstant.RegexWhiteSpaces, " ");
+        request.ContactAddress = request.ContactAddress.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.ContactAddress, StringConstant.RegexSpecialCharacterForAddress))
+        {
+            var error = ErrorDescription.Error["E1101"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.HighSchool != null)
+        {
+            request.HighSchool = Regex.Replace(request.HighSchool, StringConstant.RegexWhiteSpaces, " ");
+            request.HighSchool = request.HighSchool.Replace(" ' ", "'").Trim();
+            if (Regex.IsMatch(request.HighSchool, StringConstant.RegexSpecialCharacterForSchool))
+            {
+                var error = ErrorDescription.Error["E1103"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+        }
+
+        if (request.University != null)
+        {
+            request.University = Regex.Replace(request.University, StringConstant.RegexWhiteSpaces, " ");
+            request.University = request.University.Replace(" ' ", "'").Trim();
+            if (Regex.IsMatch(request.University, StringConstant.RegexSpecialCharacterForSchool))
+            {
+                var error = ErrorDescription.Error["E1104"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+        }
+
+        if (request.WorkingCompany != null)
+        {
+            request.WorkingCompany = Regex.Replace(request.WorkingCompany, StringConstant.RegexWhiteSpaces, " ");
+            request.WorkingCompany = request.WorkingCompany.Replace(" ' ", "'").Trim();
+            if (Regex.IsMatch(request.WorkingCompany, StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+            {
+                var error = ErrorDescription.Error["E1105"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+        }
+
+        if (request.CompanyPosition != null)
+        {
+            request.CompanyPosition = Regex.Replace(request.CompanyPosition, StringConstant.RegexWhiteSpaces, " ");
+            if (Regex.IsMatch(request.CompanyPosition, StringConstant.RegexNameWithUnderscoreSpaces))
+            {
+                var error = ErrorDescription.Error["E1106"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+        }
+
+        if (request.CompanyAddress != null)
+        {
+            request.CompanyAddress = Regex.Replace(request.CompanyAddress, StringConstant.RegexWhiteSpaces, " ");
+            if (Regex.IsMatch(request.CompanyAddress, StringConstant.RegexSpecialCharacterForAddress))
+            {
+                var error = ErrorDescription.Error["E1107"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
         }
 
         if (IsMobilePhoneExists(request.MobilePhone, true, id))
@@ -247,6 +332,16 @@ public class StudentController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        request.CitizenIdentityCardPublishedPlace = Regex.Replace(request.CitizenIdentityCardPublishedPlace,
+            StringConstant.RegexWhiteSpaces, " ");
+        request.CitizenIdentityCardPublishedPlace =
+            request.CitizenIdentityCardPublishedPlace.Replace(" ' ", "'").Trim();
+        if (Regex.IsMatch(request.CitizenIdentityCardPublishedPlace, StringConstant.RegexSpecialCharacterForAddress))
+        {
+            var error = ErrorDescription.Error["E1102"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         if (!Regex.IsMatch(request.CitizenIdentityCardNo, StringConstant.RegexCitizenIdCardNo))
         {
             var error = ErrorDescription.Error["E1085"];
@@ -289,6 +384,24 @@ public class StudentController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        if (request.FeePlan < 0)
+        {
+            var error = ErrorDescription.Error["E1108"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.Promotion < 0)
+        {
+            var error = ErrorDescription.Error["E1109"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
+        if (request.CompanySalary is < 0)
+        {
+            var error = ErrorDescription.Error["E1110"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         user.FirstName = request.FirstName;
         user.LastName = request.LastName;
         user.MobilePhone = request.MobilePhone;
@@ -298,16 +411,16 @@ public class StudentController : ControllerBase
         user.DistrictId = request.DistrictId;
         user.WardId = request.WardId;
         user.GenderId = request.GenderId;
-        user.Birthday = request.Birthday;
+        user.Birthday = request.Birthday.Date;
         user.CitizenIdentityCardNo = request.CitizenIdentityCardNo;
-        user.CitizenIdentityCardPublishedDate = request.CitizenIdentityCardPublishedDate;
+        user.CitizenIdentityCardPublishedDate = request.CitizenIdentityCardPublishedDate.Date;
         user.CitizenIdentityCardPublishedPlace = request.CitizenIdentityCardPublishedPlace;
         user.UpdatedAt = DateTime.Now;
         user.Student = new Student()
         {
             EnrollNumber = user.Student.EnrollNumber,
             Status = request.Status,
-            StatusDate = request.Status == user.Student.Status ? user.Student.StatusDate : DateTime.Now,
+            StatusDate = request.Status == user.Student.Status ? user.Student.StatusDate : DateTime.Now.Date,
             HomePhone = request.HomePhone,
             ContactPhone = request.ContactPhone,
             ParentalName = request.ParentalName,

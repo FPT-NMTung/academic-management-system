@@ -224,6 +224,17 @@ public static class ErrorDescription
         { "E1096", new ErrorModel() { Message = "Email is not match with email format", Type = "student-error-00022" } },
         { "E1097", new ErrorModel() { Message = "EmailOrganization is not match with email format", Type = "student-error-00023" } },
         { "E1098", new ErrorModel() { Message = "Course code is not exists or not active", Type = "student-error-00024" } },
+        { "E1100", new ErrorModel() { Message = "Parental relationship is not match with format", Type = "student-error-00025" } },
+        { "E1101", new ErrorModel() { Message = "Contact address is not match with format", Type = "student-error-00026" } },
+        { "E1102", new ErrorModel() { Message = "CitizenIdentityCard published date is not match with format", Type = "student-error-00027" } },
+        { "E1103", new ErrorModel() { Message = "School is not match with format", Type = "student-error-00028" } },
+        { "E1104", new ErrorModel() { Message = "University is not match with format", Type = "student-error-00029" } },
+        { "E1105", new ErrorModel() { Message = "Working company is not match with format", Type = "student-error-00030" } },
+        { "E1106", new ErrorModel() { Message = "Company position is not match with format", Type = "student-error-00031" } },
+        { "E1107", new ErrorModel() { Message = "Company address is not match with format", Type = "student-error-00032" } },
+        { "E1108", new ErrorModel() { Message = "Free plan must be positive", Type = "student-error-00033" } },
+        { "E1109", new ErrorModel() { Message = "Promotion must be positive", Type = "student-error-00034" } },
+        { "E1110", new ErrorModel() { Message = "Company salary must be positive", Type = "student-error-00035" } },
     };
 }
 
