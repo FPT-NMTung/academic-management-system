@@ -6,16 +6,18 @@ import {
   Button,
   Table,
   Loading,
-} from "@nextui-org/react";
-import { Form, Select, Input, Divider } from "antd";
-import { useEffect, useState } from "react";
-import FetchApi from "../../../apis/FetchApi";
-import { CourseFamilyApis } from "../../../apis/ListApi";
-import classes from "./CourseFamily.module.css";
-import { MdEdit } from "react-icons/md";
-import CouseFamilyCreate from "../../../components/CourseFamilyCreate/CourseFamilyCreate";
-import CourseFamilyUpdate from "../../../components/CourseFamilyUpdate/CourseFamilyUpdate";
-import { FaPen } from "react-icons/fa";
+  Switch,
+} from '@nextui-org/react';
+import { Form, Select, Input, Divider } from 'antd';
+import { useEffect, useState } from 'react';
+import FetchApi from '../../../apis/FetchApi';
+import { CourseFamilyApis } from '../../../apis/ListApi';
+import classes from './CourseFamily.module.css';
+import { MdEdit } from 'react-icons/md';
+import CouseFamilyCreate from '../../../components/CourseFamilyCreate/CourseFamilyCreate';
+import CourseFamilyUpdate from '../../../components/CourseFamilyUpdate/CourseFamilyUpdate';
+import { FaPen } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 
 const CourseFamily = () => {
   const [listCourseFamily, setlistCourseFamily] = useState([]);
@@ -26,6 +28,7 @@ const CourseFamily = () => {
   const [isCreate, setIsCreate] = useState(false);
 
   const getData = () => {
+    setIsLoading(true);
     const apiCourseFamily = CourseFamilyApis.getAllCourseFamily;
     // console.log(apiCourseFamily);
     FetchApi(apiCourseFamily).then((res) => {
@@ -50,25 +53,45 @@ const CourseFamily = () => {
     setIsCreate(false);
     getData();
   };
+
   const handleUpdateSuccess = () => {
     setselectedCourseFamilyCode(null);
-
     getData();
   };
+
   useEffect(() => {
     getData();
   }, []);
 
+  const handleChangeStatue = (data, e) => {
+    toast.promise(
+      FetchApi(CourseFamilyApis.ChangeStatus, null, null, [String(data.codefamily)]),
+      {
+        loading: 'Cập nhật ... ',
+        success: () => {
+          const temp = listCourseFamily.find(item => item.codefamily === data.codefamily);
+          temp.activatecourse = !temp.activatecourse;
+          setlistCourseFamily([...listCourseFamily]);
+
+          return 'Cập nhật trạng thái thành công';
+        },
+        error: () => {
+          return 'Cập nhật trạng thái thất bại';
+        },
+      }
+    );
+  };
+
   return (
     <div>
       <Grid.Container gap={2} justify="center">
-        <Grid xs={6.5}>
+        <Grid xs={8}>
           <Card
             variant="bordered"
             css={{
-              width: "100%",
-              height: "fit-content",
-              minHeight: "200px",
+              width: '100%',
+              height: 'fit-content',
+              minHeight: '200px',
             }}
           >
             <Card.Header>
@@ -81,8 +104,8 @@ const CourseFamily = () => {
                       size={14}
                       p
                       css={{
-                        width: "100%",
-                        textAlign: "center",
+                        width: '100%',
+                        textAlign: 'center',
                       }}
                     >
                       Danh sách chương trình học
@@ -110,8 +133,21 @@ const CourseFamily = () => {
                   <Table.Column>STT</Table.Column>
                   <Table.Column>Tên</Table.Column>
                   <Table.Column>Mã chương trình học</Table.Column>
-                  <Table.Column>Năm áp dụng</Table.Column>
-                  <Table.Column>Chỉnh sửa</Table.Column>
+                  <Table.Column
+                    css={{
+                      textAlign: 'center',
+                    }}
+                  >
+                    Năm áp dụng
+                  </Table.Column>
+                  <Table.Column
+                    css={{
+                      textAlign: 'center',
+                    }}
+                  >
+                    Trạng thái
+                  </Table.Column>
+                  <Table.Column width={30}></Table.Column>
                 </Table.Header>
                 <Table.Body>
                   {listCourseFamily.map((data, index) => (
@@ -119,14 +155,26 @@ const CourseFamily = () => {
                       <Table.Cell>{index + 1}</Table.Cell>
                       <Table.Cell>{data.namecoursefamily}</Table.Cell>
                       <Table.Cell>{data.codefamily}</Table.Cell>
-                      <Table.Cell css={{ textAlign: "center" }}>
+                      <Table.Cell css={{ textAlign: 'center' }}>
                         {data.codefamilyyear}
                       </Table.Cell>
-                      <Table.Cell css={{ textAlign: "center" }}>
+                      <Table.Cell
+                        css={{
+                          textAlign: 'center',
+                        }}
+                      >
+                        <Switch
+                          onChange={(e) => handleChangeStatue(data, e)}
+                          checked={data.activatecourse}
+                          color={'success'}
+                          size={'xs'}
+                        />
+                      </Table.Cell>
+                      <Table.Cell css={{ textAlign: 'center' }}>
                         <FaPen
                           size={14}
                           color="5EA2EF"
-                          style={{ cursor: "pointer" }}
+                          style={{ cursor: 'pointer' }}
                           onClick={() => {
                             setselectedCourseFamilyCode(data.codefamily);
                           }}

@@ -9,6 +9,7 @@ public class ClassDays
     public ClassDays()
     {
         Classes = new HashSet<Class>();
+        ClassSchedules = new HashSet<ClassSchedule>();
     }
 
     [Key]
@@ -21,4 +22,5 @@ public class ClassDays
 
     // relationships
     public virtual ICollection<Class> Classes { get; set; }
+    public virtual ICollection<ClassSchedule> ClassSchedules { get; set; }
 }
