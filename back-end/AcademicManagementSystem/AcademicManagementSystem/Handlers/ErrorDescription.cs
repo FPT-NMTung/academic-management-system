@@ -197,6 +197,10 @@ public static class ErrorDescription
         { "E1073", new ErrorModel() { Message = "Class is not exists", Type = "student-class-error-0005" } },
         { "E1074", new ErrorModel() { Message = "Fail to SaveChange when cancel import Students to Class", Type = "student-class-error-0006" } },
         { "E1075", new ErrorModel() { Message = "Fail to import because this Class had students", Type = "student-class-error-0007" } },
+        { "E1111", new ErrorModel() { Message = "Email or EmailOrganization or PhoneNumber or IdentityCardNo is existed", Type = "student-class-error-0008" } },
+        { "E1112", new ErrorModel() { Message = "Student EnrollNumber is existed", Type = "student-class-error-0009" } },
+        { "E1113", new ErrorModel() { Message = "Fail to SaveChange when add Student", Type = "student-class-error-0010" } },
+        { "E1115", new ErrorModel() { Message = "EnrollNumber is existed", Type = "student-class-error-0011" } },
 
         // student
         { "E1076", new ErrorModel() { Message = "First name is not match with format", Type = "student-error-0001" } },
@@ -218,7 +222,7 @@ public static class ErrorDescription
         { "E1090", new ErrorModel() { Message = "Ward is not exists", Type = "student-error-00016" } },
         { "E1091", new ErrorModel() { Message = "Address is not exists", Type = "student-error-00017" } },
         { "E1092", new ErrorModel() { Message = "Gender is not exists", Type = "student-error-00018" } },
-        { "E1093", new ErrorModel() { Message = "First name, last name, course code, email and email organization cannot be empty", Type = "student-error-00019" } },
+        { "E1093", new ErrorModel() { Message = "Some input cannot be empty", Type = "student-error-00019" } },
         { "E1094", new ErrorModel() { Message = "Status must be between 1-7", Type = "student-error-00020" } },
         { "E1095", new ErrorModel() { Message = "Student response is null", Type = "student-error-00021" } },
         { "E1096", new ErrorModel() { Message = "Email is not match with email format", Type = "student-error-00022" } },
@@ -236,6 +240,7 @@ public static class ErrorDescription
         { "E1108", new ErrorModel() { Message = "Free plan must be positive", Type = "student-error-00033" } },
         { "E1109", new ErrorModel() { Message = "Promotion must be positive", Type = "student-error-00034" } },
         { "E1110", new ErrorModel() { Message = "Company salary must be positive", Type = "student-error-00035" } },
+        { "E1114", new ErrorModel() { Message = "Fail to SaveChange when update student", Type = "student-error-00035" } },
     };
 }
 

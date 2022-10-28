@@ -449,7 +449,8 @@ public class StudentController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+            var error = ErrorDescription.Error["E1114"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         var studentResponse = GetAllStudentsInThisCenterByContext().FirstOrDefault(s => s.UserId == id);
