@@ -6,6 +6,13 @@ namespace AcademicManagementSystem.Context.AmsModels;
 [Table("room")]
 public class Room
 {
+    public Room()
+    {
+        ClassSchedulesTheoryRoom = new HashSet<ClassSchedule>();
+        ClassSchedulesLabRoom = new HashSet<ClassSchedule>();
+        ClassSchedulesExamRoom = new HashSet<ClassSchedule>();
+    }
+
     [Key]
     [Column("id")]
     public int Id { get; set; }
@@ -23,7 +30,16 @@ public class Room
     [Column("capacity")]
     public int Capacity { get; set; }
     
+    [Column("is_active")]
+    public bool IsActive { get; set; }
+    
     // relationships
     public virtual RoomType RoomType { get; set; }
     public virtual Center Center { get; set; }
+    [InverseProperty("TheoryRoom")]
+    public virtual ICollection<ClassSchedule> ClassSchedulesTheoryRoom { get; set; }
+    [InverseProperty("LabRoom")]
+    public virtual ICollection<ClassSchedule> ClassSchedulesLabRoom { get; set; }
+    [InverseProperty("ExamRoom")]
+    public virtual ICollection<ClassSchedule> ClassSchedulesExamRoom { get; set; }
 }

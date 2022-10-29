@@ -20,6 +20,10 @@ public static class ErrorDescription
         { "E0013", new ErrorModel() { Message = "roomTypeId for UPDATE room not found", Type = "room-error-0013" } },
         { "E0014", new ErrorModel() { Message = "Capacity for UPDATE room must be between 20 and 100", Type = "room-error-0014" } },
         { "E0015", new ErrorModel() { Message = "This room already exists for UPDATE", Type = "room-error-0015" } },
+        { "E2059", new ErrorModel() { Message = "This room not found", Type = "room-error-0016" } },
+        { "E2060", new ErrorModel() { Message = "Delete room failed", Type = "room-error-0017" } },
+        { "E2061", new ErrorModel() { Message = "Change status room failed", Type = "room-error-0018" } },
+        { "E2062", new ErrorModel() { Message = "Can not delete room", Type = "room-error-0019" } },
 
         // center
         { "E1001", new ErrorModel() { Message = "Center Not Found", Type = "center-error-0001" } },
@@ -77,7 +81,9 @@ public static class ErrorDescription
         { "E1013", new ErrorModel() { Message = "Course family code is existed", Type = "course-family-error-0008" } },
         { "E1055", new ErrorModel() { Message = "Course family name is existed", Type = "course-family-error-0009" } },
         { "E1056", new ErrorModel() { Message = "Course family name with different code is existed", Type = "course-family-error-0010" } },
-        
+        { "E2058", new ErrorModel() { Message = "Can not delete this Course family", Type = "course-family-error-0011" } },
+        { "E2063", new ErrorModel() { Message = "Can not change status this Course family", Type = "course-family-error-0012" } },
+
         // course
         { "E1014", new ErrorModel() { Message = "Course code existed", Type = "course-error-0001" } },
         { "E1015", new ErrorModel() { Message = "Course family not found", Type = "course-error-0002" } },
@@ -191,6 +197,10 @@ public static class ErrorDescription
         { "E1073", new ErrorModel() { Message = "Class is not exists", Type = "student-class-error-0005" } },
         { "E1074", new ErrorModel() { Message = "Fail to SaveChange when cancel import Students to Class", Type = "student-class-error-0006" } },
         { "E1075", new ErrorModel() { Message = "Fail to import because this Class had students", Type = "student-class-error-0007" } },
+        { "E1111", new ErrorModel() { Message = "Email or EmailOrganization or PhoneNumber or IdentityCardNo is existed", Type = "student-class-error-0008" } },
+        { "E1112", new ErrorModel() { Message = "Student EnrollNumber is existed", Type = "student-class-error-0009" } },
+        { "E1113", new ErrorModel() { Message = "Fail to SaveChange when add Student", Type = "student-class-error-0010" } },
+        { "E1115", new ErrorModel() { Message = "EnrollNumber is existed", Type = "student-class-error-0011" } },
 
         // student
         { "E1076", new ErrorModel() { Message = "First name is not match with format", Type = "student-error-0001" } },
@@ -202,7 +212,7 @@ public static class ErrorDescription
         { "E1079_3", new ErrorModel() { Message = "Parental phone is not match with format", Type = "student-error-0004_3" } },
         { "E1080", new ErrorModel() { Message = "Email is existed", Type = "student-error-0005" } },
         { "E1081", new ErrorModel() { Message = "Email Already Belong To Another EmailOrganization", Type = "student-error-0006" } },
-        { "E1082", new ErrorModel() { Message = "EmailOrganization is not match with format", Type = "student-error-0007" } },
+        { "E1082", new ErrorModel() { Message = "EmailOrganization is existed", Type = "student-error-0007" } },
         { "E1081_1", new ErrorModel() { Message = "EmailOrganization Already Belong To Another Email", Type = "student-error-0008" } },
         { "E1083", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "student-error-0009" } },
         { "E1084", new ErrorModel() { Message = "Identity Card No is existed", Type = "student-error-00010" } },
@@ -212,9 +222,25 @@ public static class ErrorDescription
         { "E1090", new ErrorModel() { Message = "Ward is not exists", Type = "student-error-00016" } },
         { "E1091", new ErrorModel() { Message = "Address is not exists", Type = "student-error-00017" } },
         { "E1092", new ErrorModel() { Message = "Gender is not exists", Type = "student-error-00018" } },
-        { "E1093", new ErrorModel() { Message = "First name, last name, email and email organization cannot be empty", Type = "student-error-00019" } },
+        { "E1093", new ErrorModel() { Message = "Some input cannot be empty", Type = "student-error-00019" } },
         { "E1094", new ErrorModel() { Message = "Status must be between 1-7", Type = "student-error-00020" } },
         { "E1095", new ErrorModel() { Message = "Student response is null", Type = "student-error-00021" } },
+        { "E1096", new ErrorModel() { Message = "Email is not match with email format", Type = "student-error-00022" } },
+        { "E1097", new ErrorModel() { Message = "EmailOrganization is not match with email format", Type = "student-error-00023" } },
+        { "E1098", new ErrorModel() { Message = "Course code is not exists or not active", Type = "student-error-00024" } },
+        { "E1099", new ErrorModel() { Message = "Parental name is not match with format", Type = "student-error-00036" } },
+        { "E1100", new ErrorModel() { Message = "Parental relationship is not match with format", Type = "student-error-00025" } },
+        { "E1101", new ErrorModel() { Message = "Contact address is not match with format", Type = "student-error-00026" } },
+        { "E1102", new ErrorModel() { Message = "CitizenIdentityCard published date is not match with format", Type = "student-error-00027" } },
+        { "E1103", new ErrorModel() { Message = "School is not match with format", Type = "student-error-00028" } },
+        { "E1104", new ErrorModel() { Message = "University is not match with format", Type = "student-error-00029" } },
+        { "E1105", new ErrorModel() { Message = "Working company is not match with format", Type = "student-error-00030" } },
+        { "E1106", new ErrorModel() { Message = "Company position is not match with format", Type = "student-error-00031" } },
+        { "E1107", new ErrorModel() { Message = "Company address is not match with format", Type = "student-error-00032" } },
+        { "E1108", new ErrorModel() { Message = "Free plan must be positive", Type = "student-error-00033" } },
+        { "E1109", new ErrorModel() { Message = "Promotion must be positive", Type = "student-error-00034" } },
+        { "E1110", new ErrorModel() { Message = "Company salary must be positive", Type = "student-error-00035" } },
+        { "E1114", new ErrorModel() { Message = "Fail to SaveChange when update student", Type = "student-error-00035" } },
     };
 }
 

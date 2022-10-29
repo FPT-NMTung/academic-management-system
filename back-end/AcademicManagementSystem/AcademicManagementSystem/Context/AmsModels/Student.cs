@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -9,6 +10,9 @@ public class Student
     public Student()
     {
         this.StudentsClasses = new HashSet<StudentClass>();
+        Attendances = new HashSet<Attendance>();
+        StudentGrades = new HashSet<StudentGrade>();
+        GpaRecords = new HashSet<GpaRecord>();
     }
 
     [Key]
@@ -27,7 +31,7 @@ public class Student
     [Column("status")]
     public int Status { get; set; }
     
-    [Column("status_date")]
+    [Column("status_date", TypeName = "date")]
     public DateTime StatusDate { get; set; }
     
     [Column("home_phone")]
@@ -54,7 +58,7 @@ public class Student
     [StringLength(15)]
     public string ParentalPhone { get; set; }
     
-    [Column("application_date")]
+    [Column("application_date", TypeName = "date")]
     public DateTime ApplicationDate { get; set; }
     
     [Column("application_document")]
@@ -105,4 +109,8 @@ public class Student
     public virtual User User { get; set; }
     public virtual Course Course { get; set; }
     public virtual ICollection<StudentClass> StudentsClasses { get; set; }
+    public virtual ICollection<Attendance> Attendances { get; set; }
+    public virtual ICollection<StudentGrade> StudentGrades { get; set; }
+    public virtual ICollection<GpaRecord> GpaRecords { get; set; }
+
 }

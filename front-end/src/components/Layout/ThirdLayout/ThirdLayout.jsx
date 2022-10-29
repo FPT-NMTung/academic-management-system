@@ -30,44 +30,44 @@ const menu = {
     {
       key: '1',
       label: 'Thông tin các cơ sở',
-      icon: <IoHome size={16} />,
+      icon: <IoHome size={16}/>,
       url: '/admin/center',
     },
     {
       key: '2',
       label: 'Tài khoản giáo viên',
-      icon: <MdManageAccounts size={20} />,
+      icon: <MdManageAccounts size={20}/>,
       url: '/admin/account/teacher',
     },
     {
       key: '3',
       label: 'Tài khoản SRO',
-      icon: <MdSupervisedUserCircle size={20} />,
+      icon: <MdSupervisedUserCircle size={20}/>,
       url: '/admin/account/sro',
     },
     {
       key: '4',
       label: 'Chương Trình Học',
-      icon: <ImLibrary size={18} />,
+      icon: <ImLibrary size={18}/>,
       url: '/admin/manage-course/course-family',
     },
     {
       key: '5',
       label: 'Thông Tin Khóa Học',
-      icon: <ImBook size={18} />,
+      icon: <ImBook size={18}/>,
       url: '/admin/manage-course/courses',
     },
     {
       key: '6',
       label: 'Thông Tin Môn Học',
-      icon: <MdMenuBook size={18} />,
+      icon: <MdMenuBook size={18}/>,
       url: '/admin/manage-course/module',
     },
 
     {
       key: '7',
       label: 'Quản lý phòng học',
-      icon: <FaDoorOpen size={18} />,
+      icon: <FaDoorOpen size={18}/>,
       url: '/admin/room',
     },
   ],
@@ -75,13 +75,13 @@ const menu = {
     {
       key: '8',
       label: 'Quản lý lớp học',
-      icon: <IoHome size={16} />,
+      icon: <IoHome size={16}/>,
       url: '/sro/manage-class',
     },
     {
       key: '9',
       label: 'Quản lý học viên',
-      icon: <IoHome size={16} />,
+      icon: <IoHome size={16}/>,
       url: '/sro/manage/student',
     },
   ],
@@ -89,7 +89,7 @@ const menu = {
   student: [],
 };
 
-const ThirdLayout = ({ children }) => {
+const ThirdLayout = ({children}) => {
   const [dataUser, setDataUser] = useState({});
   const [isOpenDropdown, setIsOpenDropdown] = useState(true);
 
@@ -128,14 +128,14 @@ const ThirdLayout = ({ children }) => {
       <div className={classes.main}>
         <div className={classes.leftSide}>
           <div className={classes.logo}>
-            <img src={Logo} alt="logo" />
+            <img src={Logo} alt="logo"/>
           </div>
           <div className={classes.menu}>
             {menu[localStorage.getItem('role')].map((item) => (
               <NavLink
                 key={item.key}
                 to={item.url}
-                className={({ isActive }) => {
+                className={({isActive}) => {
                   return isActive
                     ? `${classes.menuItem} ${classes.menuItemActive}`
                     : classes.menuItem;
@@ -151,11 +151,11 @@ const ThirdLayout = ({ children }) => {
         </div>
         <div className={classes.rightSide}>
           <div className={classes.header}>
-            <Badge variant={'flat'} color="success" size="md">
+            {dataUser?.role !== 'Admin' && <Badge variant={'flat'} color="success" size="md">
               {dataUser.centerName}
-            </Badge>
+            </Badge>}
             <Dropdown placement="bottom">
-              <Dropdown.Trigger css={{ cursor: 'pointer' }}>
+              <Dropdown.Trigger css={{cursor: 'pointer'}}>
                 <User
                   size="lg"
                   src={dataUser.avatar}
@@ -163,10 +163,10 @@ const ThirdLayout = ({ children }) => {
                     dataUser.role === 'Admin'
                       ? 'error'
                       : dataUser.role === 'SRO'
-                      ? 'warning'
-                      : dataUser.role === 'Teacher'
-                      ? 'secondary'
-                      : 'success'
+                        ? 'warning'
+                        : dataUser.role === 'Teacher'
+                          ? 'secondary'
+                          : 'success'
                   }
                   bordered
                   squared
@@ -194,7 +194,7 @@ const ThirdLayout = ({ children }) => {
                 <Dropdown.Item
                   key="logout"
                   color="error"
-                  icon={<FaPowerOff />}
+                  icon={<FaPowerOff/>}
                   description={'Đăng xuất tài khoản'}
                 >
                   Đăng xuất

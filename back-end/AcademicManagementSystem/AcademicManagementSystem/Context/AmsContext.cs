@@ -40,7 +40,7 @@ public class AmsContext : DbContext
             .HasKey(cms => new { cms.CourseCode, cms.ModuleId, cms.SemesterId });
         modelBuilder.Entity<StudentClass>()
             .HasKey(sc => new { sc.StudentId, sc.ClassId });
-        
+
         // default value
         modelBuilder.Entity<Center>()
             .Property(c => c.IsActive)
@@ -48,6 +48,18 @@ public class AmsContext : DbContext
         modelBuilder.Entity<User>()
             .Property(u => u.IsActive)
             .HasDefaultValue(true);
+        modelBuilder.Entity<CourseFamily>()
+            .Property(cf => cf.IsActive)
+            .HasDefaultValue(true);
+        modelBuilder.Entity<Room>()
+            .Property(r => r.IsActive)
+            .HasDefaultValue(true);
+
+        modelBuilder.Entity<Attendance>()
+            .HasKey(a => new { a.SessionId, a.StudentId });
+        
+        modelBuilder.Entity<StudentGrade>()
+            .HasKey(sg => new { sg.ClassId, sg.StudentId, sg.GradeItemId });
     }
 
     public DbSet<Province> Provinces { get; set; }
@@ -58,7 +70,7 @@ public class AmsContext : DbContext
     public DbSet<Role> Roles { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<ActiveRefreshToken> ActiveRefreshTokens { get; set; }
-    
+
     public DbSet<Admin> Admins { get; set; }
     public DbSet<Sro> Sros { get; set; }
     public DbSet<RoomType> RoomTypes { get; set; }
@@ -80,4 +92,16 @@ public class AmsContext : DbContext
     public DbSet<Student> Students { get; set; }
     public DbSet<StudentClass> StudentsClasses { get; set; }
     public DbSet<Skill> Skills { get; set; }
+    public DbSet<ClassSchedule> ClassSchedules { get; set; }
+    public DbSet<SessionType> SessionTypes { get; set; }
+    public DbSet<Session> Sessions { get; set; }
+    public DbSet<AttendanceStatus> AttendanceStatuses { get; set; }
+    public DbSet<Attendance> Attendances { get; set; }
+    public DbSet<StudentGrade> StudentGrades { get; set; }
+    public DbSet<DayOff> DaysOff { get; set; }
+    public DbSet<Question> Questions { get; set; }
+    public DbSet<Answer> Answers { get; set; }
+    public DbSet<Form> Forms { get; set; }
+    public DbSet<GpaRecord> GpaRecords { get; set; }
+
 }
