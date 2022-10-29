@@ -168,7 +168,7 @@ const StudentUpdate = () => {
         parental_name: data.parental_name,
         // parental_name: `${data.parental_first_name} ${data.parental_last_name}`,
         parental_relationship: data.parental_relationship,
-        // contact_address: `${data.ward.prefix}` `${data.ward.name}``${data.district.prefix}``${data.district.name}``${data.province.name}`,
+        contact_address: data.contact_address,
 
         parental_phone: data.parental_phone,
         application_date: moment(data.application_date),
@@ -223,7 +223,7 @@ const StudentUpdate = () => {
       application_date: data.application_date.add(7, "hours").toDate(),
       fee_plan: data.fee_plan,
       promotion: data.promotion,
-      contact_address: `lolll`,
+      contact_address: data.contact_address,
       parental_relationship: data.parental_relationship,
       course_code: data.course_code,
       application_document: data.application_document,
@@ -500,6 +500,53 @@ Cập nhật thông tin học viên
                     ))}
                   </Select>
                 </Form.Item>
+                <Form.Item
+                    label="Địa chỉ cụ thể"
+                    name="contact_address"
+                    style={{
+                      // margin: "auto",
+                      width: "100%",
+                      // textAlign: "left",
+                    }}
+                    rules={[
+                      {
+                        required: false,
+                        validator: (_, value) => {
+                          if (
+                            value === null ||
+                            value === undefined ||
+                            value.trim() === ""
+                          ) {
+                            return Promise.resolve();
+                          }
+                          if (
+                            Validater.isContaintSpecialCharacterForAddress(
+                              value.trim()
+                            )
+                          ) {
+                            return Promise.reject(
+                              "Trường này không được chứa ký tự đặc biệt"
+                            );
+                          }
+                          if (
+                            value.trim().length < 1 ||
+                            value.trim().length > 255
+                          ) {
+                            return Promise.reject(
+                              new Error("Trường phải từ 1 đến 255 ký tự")
+                            );
+                          }
+                          return Promise.resolve();
+                        },
+                      },
+                      {
+                        whitespace: true,
+                        message: "Trường không được chứa khoảng trắng",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Địa chỉ liên hệ cụ thể" />
+                  </Form.Item>
                 <Form.Item
                   label="Email cá nhân"
                   name="email"
@@ -967,7 +1014,7 @@ Cập nhật thông tin học viên
                         ) {
                           return Promise.resolve();
                         }
-                        if (Validater.isNotHumanName(value.trim())) {
+                        if (Validater.isContaintSpecialCharacter(value.trim())) {
                           return Promise.reject(
                             "Trường này không được chứa ký tự đặc biệt"
                           );
@@ -1393,7 +1440,7 @@ Cập nhật thông tin học viên
                 width: "100%",
               }}
             >
-              {!isCreatingOrUpdating && messageFailed !== undefined && (
+              {/* {!isCreatingOrUpdating && messageFailed !== undefined && (
                 <Text
                   size={14}
                   css={{
@@ -1403,7 +1450,7 @@ Cập nhật thông tin học viên
                 >
                   {messageFailed}
                 </Text>
-              )}
+              )} */}
             </Form.Item>
 
             <div className={classes.buttonCreate}>
@@ -1414,7 +1461,7 @@ Cập nhật thông tin học viên
                   width: "150px",
                   position: "absolute",
                   right: "10px",
-                  bottom: "10px",
+                  bottom: "44px",
                 }}
                 type="primary"
                 htmlType="submit"
@@ -1430,7 +1477,7 @@ Cập nhật thông tin học viên
                   width: "150px",
                   position: "absolute",
                   right: "180px",
-                  bottom: "10px",
+                  bottom: "44px",
                 }}
                 onPress={() => {
                   navigate("/sro/manage/student/");
