@@ -57,7 +57,7 @@ const translateStatusStudent = {
 //      "Finished":7,
 //   };
 
-const StudentUpdate = (modeUpdate) => {
+const StudentUpdate = () => {
   const [listGender, setListGender] = useState([]);
   const [listCourses, setListCourses] = useState([]);
   const [listProvince, setListProvince] = useState([]);
@@ -238,10 +238,8 @@ const StudentUpdate = (modeUpdate) => {
     };
     console.log(body);
 
-    const api = modeUpdate
-      ? ManageStudentApis.updateStudent
-      : ManageStudentApis.createTeacher;
-    const params = modeUpdate ? [`${id}`] : null;
+    const api =  ManageStudentApis.updateStudent;
+    const params = [`${id}`];
 
     toast.promise(FetchApi(api, body, null, params), {
       loading: "Đang xử lý",
@@ -267,9 +265,7 @@ const StudentUpdate = (modeUpdate) => {
     // getListWorkingTime();
     // getListTeacherType();
     getListCourse();
-    if (modeUpdate) {
-      getInformationStudent();
-    }
+    getInformationStudent();
   }, []);
   return (
     <Form
@@ -277,7 +273,7 @@ const StudentUpdate = (modeUpdate) => {
       wrapperCol={{ span: 15 }}
       form={form}
       onFinish={handleSubmitForm}
-      disabled={modeUpdate && isGettingInformationStudent}
+      // disabled={modeUpdate && isGettingInformationStudent}
       // initialValues = {{
       //   application_document: null,
       //   high_school: null,
@@ -303,8 +299,8 @@ const StudentUpdate = (modeUpdate) => {
                   textAlign: "center",
                 }}
               >
-                {!modeUpdate && "Tạo học viên mới"}
-                {modeUpdate && "Cập nhật thông tin học viên"}
+Cập nhật thông tin học viên
+
               </Text>
             </Card.Header>
             <Card.Body>
@@ -842,11 +838,7 @@ const StudentUpdate = (modeUpdate) => {
                         ) {
                           return Promise.resolve();
                         }
-                        if (
-                          Validater.isNotHumanName(
-                            value.trim()
-                          )
-                        ) {
+                        if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
                             "Trường này không được chứa ký tự đặc biệt"
                           );
@@ -889,11 +881,7 @@ const StudentUpdate = (modeUpdate) => {
                         ) {
                           return Promise.resolve();
                         }
-                        if (
-                          Validater.isNotHumanName(
-                            value.trim()
-                          )
-                        ) {
+                        if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
                             "Trường này không được chứa ký tự đặc biệt"
                           );
@@ -936,11 +924,7 @@ const StudentUpdate = (modeUpdate) => {
                         ) {
                           return Promise.resolve();
                         }
-                        if (
-                          Validater.isNotHumanName(
-                            value.trim()
-                          )
-                        ) {
+                        if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
                             "Trường này không được chứa ký tự đặc biệt"
                           );
@@ -983,11 +967,7 @@ const StudentUpdate = (modeUpdate) => {
                         ) {
                           return Promise.resolve();
                         }
-                        if (
-                          Validater.isNotHumanName(
-                            value.trim()
-                          )
-                        ) {
+                        if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
                             "Trường này không được chứa ký tự đặc biệt"
                           );
@@ -1030,11 +1010,7 @@ const StudentUpdate = (modeUpdate) => {
                         ) {
                           return Promise.resolve();
                         }
-                        if (
-                          Validater.isNotHumanName(
-                            value.trim()
-                          )
-                        ) {
+                        if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
                             "Trường này không được chứa ký tự đặc biệt"
                           );
@@ -1094,7 +1070,7 @@ const StudentUpdate = (modeUpdate) => {
             </Card.Body>
           </Card>
         </Grid>
-        {modeUpdate && (
+    
           <Grid
             sm={4.5}
             direction={"column"}
@@ -1444,8 +1420,7 @@ const StudentUpdate = (modeUpdate) => {
                 htmlType="submit"
                 // disabled={isCreatingOrUpdating}
               >
-                {!modeUpdate && "Tạo mới"}
-                {modeUpdate && "Cập nhật"}
+             Cập nhật
               </Button>
               <Button
                 flat
@@ -1466,7 +1441,7 @@ const StudentUpdate = (modeUpdate) => {
               </Button>
             </div>
           </Grid>
-        )}
+        
       </Grid.Container>
     </Form>
   );
