@@ -222,7 +222,7 @@ public static class ErrorDescription
         { "E1090", new ErrorModel() { Message = "Ward is not exists", Type = "student-error-00016" } },
         { "E1091", new ErrorModel() { Message = "Address is not exists", Type = "student-error-00017" } },
         { "E1092", new ErrorModel() { Message = "Gender is not exists", Type = "student-error-00018" } },
-        { "E1093", new ErrorModel() { Message = "Some input cannot be empty", Type = "student-error-00019" } },
+        { "E1093", new ErrorModel() { Message = "Required input cannot be empty", Type = "student-error-00019" } },
         { "E1094", new ErrorModel() { Message = "Status must be between 1-7", Type = "student-error-00020" } },
         { "E1095", new ErrorModel() { Message = "Student response is null", Type = "student-error-00021" } },
         { "E1096", new ErrorModel() { Message = "Email is not match with email format", Type = "student-error-00022" } },
@@ -240,7 +240,7 @@ public static class ErrorDescription
         { "E1108", new ErrorModel() { Message = "Free plan must be positive", Type = "student-error-00033" } },
         { "E1109", new ErrorModel() { Message = "Promotion must be positive", Type = "student-error-00034" } },
         { "E1110", new ErrorModel() { Message = "Company salary must be positive", Type = "student-error-00035" } },
-        { "E1114", new ErrorModel() { Message = "Fail to SaveChange when update student", Type = "student-error-00035" } },
+        { "E1114", new ErrorModel() { Message = "Fail to SaveChange when update student", Type = "student-error-00037" } },
     };
 }
 
