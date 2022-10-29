@@ -625,25 +625,6 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // check if user exist
-        var existedUser = _context.Users.FirstOrDefault(u =>
-            u.Email == request.Email || u.EmailOrganization == request.EmailOrganization ||
-            u.MobilePhone == request.MobilePhone || u.CitizenIdentityCardNo == request.CitizenIdentityCardNo);
-        if (existedUser != null)
-        {
-            var error = ErrorDescription.Error["E1111"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        // check if students exist
-        var existedStudent = _context.Students.FirstOrDefault(u =>
-            string.Equals(u.EnrollNumber.ToLower(), request.EnrollNumber.ToLower()));
-        if (existedStudent != null)
-        {
-            var error = ErrorDescription.Error["E1112"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
         request.FirstName = request.FirstName.Trim();
         request.LastName = request.LastName.Trim();
         request.Email = request.Email.Trim();
@@ -676,7 +657,8 @@ public class ClassController : ControllerBase
         }
 
         // is enroll number exists
-        var existedEnrollNumber = _context.Students.Any(s => s.EnrollNumber == request.EnrollNumber);
+        var existedEnrollNumber =
+            _context.Students.Any(s => string.Equals(s.EnrollNumber.ToLower(), request.EnrollNumber.ToLower()));
         if (existedEnrollNumber)
         {
             var error = ErrorDescription.Error["E1115"];
@@ -1242,22 +1224,22 @@ public class ClassController : ControllerBase
         }
     }
 
-    private bool IsMobilePhoneExists(string? mobilePhone)
+    private bool IsMobilePhoneExists(string mobilePhone)
     {
-        return _context.Users.Any(u => u.MobilePhone == mobilePhone);
+        return _context.Users.Any(u => u.MobilePhone.Trim() == mobilePhone.Trim());
     }
 
-    private bool IsEmailExists(string? email)
+    private bool IsEmailExists(string email)
     {
-        return _context.Users.Any(e => e.Email == email);
+        return _context.Users.Any(e => e.Email.ToLower().Trim() == email.ToLower().Trim());
     }
 
-    private bool IsEmailOrganizationExists(string? emailOrganization)
+    private bool IsEmailOrganizationExists(string emailOrganization)
     {
-        return _context.Users.Any(e => e.EmailOrganization == emailOrganization);
+        return _context.Users.Any(e => e.EmailOrganization.ToLower().Trim() == emailOrganization.ToLower().Trim());
     }
 
-    private bool IsCitizenIdentityCardNoExists(string? citizenIdentityCardNo)
+    private bool IsCitizenIdentityCardNoExists(string citizenIdentityCardNo)
     {
         return _context.Users.Any(e => e.CitizenIdentityCardNo == citizenIdentityCardNo);
     }
