@@ -625,25 +625,6 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // check if user exist
-        var existedUser = _context.Users.FirstOrDefault(u =>
-            u.Email == request.Email || u.EmailOrganization == request.EmailOrganization ||
-            u.MobilePhone == request.MobilePhone || u.CitizenIdentityCardNo == request.CitizenIdentityCardNo);
-        if (existedUser != null)
-        {
-            var error = ErrorDescription.Error["E1111"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        // check if students exist
-        var existedStudent = _context.Students.FirstOrDefault(u =>
-            string.Equals(u.EnrollNumber.ToLower(), request.EnrollNumber.ToLower()));
-        if (existedStudent != null)
-        {
-            var error = ErrorDescription.Error["E1112"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
         request.FirstName = request.FirstName.Trim();
         request.LastName = request.LastName.Trim();
         request.Email = request.Email.Trim();
@@ -676,7 +657,8 @@ public class ClassController : ControllerBase
         }
 
         // is enroll number exists
-        var existedEnrollNumber = _context.Students.Any(s => s.EnrollNumber == request.EnrollNumber);
+        var existedEnrollNumber =
+            _context.Students.Any(s => string.Equals(s.EnrollNumber.ToLower(), request.EnrollNumber.ToLower()));
         if (existedEnrollNumber)
         {
             var error = ErrorDescription.Error["E1115"];

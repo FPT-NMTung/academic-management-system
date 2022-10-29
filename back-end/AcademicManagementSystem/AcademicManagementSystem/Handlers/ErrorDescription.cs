@@ -197,7 +197,6 @@ public static class ErrorDescription
         { "E1073", new ErrorModel() { Message = "Class is not exists", Type = "student-class-error-0005" } },
         { "E1074", new ErrorModel() { Message = "Fail to SaveChange when cancel import Students to Class", Type = "student-class-error-0006" } },
         { "E1075", new ErrorModel() { Message = "Fail to import because this Class had students", Type = "student-class-error-0007" } },
-        { "E1111", new ErrorModel() { Message = "Email or EmailOrganization or PhoneNumber or IdentityCardNo is existed", Type = "student-class-error-0008" } },
         { "E1112", new ErrorModel() { Message = "Student EnrollNumber is existed", Type = "student-class-error-0009" } },
         { "E1113", new ErrorModel() { Message = "Fail to SaveChange when add Student", Type = "student-class-error-0010" } },
         { "E1115", new ErrorModel() { Message = "EnrollNumber is existed", Type = "student-class-error-0011" } },
