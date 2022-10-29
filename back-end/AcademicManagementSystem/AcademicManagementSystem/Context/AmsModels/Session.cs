@@ -30,7 +30,7 @@ public class Session
     [StringLength(255)]
     public string Room { get; set; }
     
-    [Column("learning_date")]
+    [Column("learning_date", TypeName = "date")]
     public DateTime LearningDate { get; set; }
     
     [Column("start_time")]
