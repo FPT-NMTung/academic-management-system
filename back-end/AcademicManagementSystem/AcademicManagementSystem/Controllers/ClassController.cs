@@ -1224,22 +1224,22 @@ public class ClassController : ControllerBase
         }
     }
 
-    private bool IsMobilePhoneExists(string? mobilePhone)
+    private bool IsMobilePhoneExists(string mobilePhone)
     {
-        return _context.Users.Any(u => u.MobilePhone == mobilePhone);
+        return _context.Users.Any(u => u.MobilePhone.Trim() == mobilePhone.Trim());
     }
 
-    private bool IsEmailExists(string? email)
+    private bool IsEmailExists(string email)
     {
-        return _context.Users.Any(e => e.Email == email);
+        return _context.Users.Any(e => e.Email.ToLower().Trim() == email.ToLower().Trim());
     }
 
-    private bool IsEmailOrganizationExists(string? emailOrganization)
+    private bool IsEmailOrganizationExists(string emailOrganization)
     {
-        return _context.Users.Any(e => e.EmailOrganization == emailOrganization);
+        return _context.Users.Any(e => e.EmailOrganization.ToLower().Trim() == emailOrganization.ToLower().Trim());
     }
 
-    private bool IsCitizenIdentityCardNoExists(string? citizenIdentityCardNo)
+    private bool IsCitizenIdentityCardNoExists(string citizenIdentityCardNo)
     {
         return _context.Users.Any(e => e.CitizenIdentityCardNo == citizenIdentityCardNo);
     }
