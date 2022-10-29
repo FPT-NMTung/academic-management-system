@@ -26,6 +26,10 @@ public class Session
     [StringLength(255)]
     public string Title { get; set; }
     
+    [Column("room", Order = 5)]
+    [StringLength(255)]
+    public string Room { get; set; }
+    
     [Column("learning_date")]
     public DateTime LearningDate { get; set; }
     

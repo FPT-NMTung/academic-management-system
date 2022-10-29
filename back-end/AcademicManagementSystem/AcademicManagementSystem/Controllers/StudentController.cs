@@ -395,7 +395,7 @@ public class StudentController : ControllerBase
             var error = ErrorDescription.Error["E1109"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         if (request.CompanySalary is < 0)
         {
             var error = ErrorDescription.Error["E1110"];
@@ -449,7 +449,8 @@ public class StudentController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+            var error = ErrorDescription.Error["E1114"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         var studentResponse = GetAllStudentsInThisCenterByContext().FirstOrDefault(s => s.UserId == id);
@@ -540,32 +541,33 @@ public class StudentController : ControllerBase
         return students;
     }
 
-    private bool IsMobilePhoneExists(string? mobilePhone, bool isUpdate, int userId)
+    private bool IsMobilePhoneExists(string mobilePhone, bool isUpdate, int userId)
     {
         return isUpdate
-            ? _context.Users.Any(e => e.MobilePhone == mobilePhone && e.Id != userId)
-            : _context.Users.Any(e => e.MobilePhone == mobilePhone);
+            ? _context.Users.Any(e => e.MobilePhone.Trim() == mobilePhone.Trim() && e.Id != userId)
+            : _context.Users.Any(e => e.MobilePhone.Trim() == mobilePhone.Trim());
     }
 
-    private bool IsEmailExists(string? email, bool isUpdate, int userId)
+    private bool IsEmailExists(string email, bool isUpdate, int userId)
     {
         return isUpdate
-            ? _context.Users.Any(e => e.Email == email && e.Id != userId)
-            : _context.Users.Any(e => e.Email == email);
+            ? _context.Users.Any(e => e.Email.ToLower().Trim() == email.ToLower().Trim() && e.Id != userId)
+            : _context.Users.Any(e => e.Email.ToLower().Trim() == email.ToLower().Trim());
     }
 
-    private bool IsEmailOrganizationExists(string? emailOrganization, bool isUpdate, int userId)
+    private bool IsEmailOrganizationExists(string emailOrganization, bool isUpdate, int userId)
     {
         return isUpdate
-            ? _context.Users.Any(e => e.EmailOrganization == emailOrganization && e.Id != userId)
-            : _context.Users.Any(e => e.EmailOrganization == emailOrganization);
+            ? _context.Users.Any(e =>
+                e.EmailOrganization.ToLower().Trim() == emailOrganization.ToLower().Trim() && e.Id != userId)
+            : _context.Users.Any(e => e.EmailOrganization.ToLower().Trim() == emailOrganization.ToLower().Trim());
     }
 
-    private bool IsCitizenIdentityCardNoExists(string? citizenIdentityCardNo, bool isUpdate, int userId)
+    private bool IsCitizenIdentityCardNoExists(string citizenIdentityCardNo, bool isUpdate, int userId)
     {
         return isUpdate
-            ? _context.Users.Any(e => e.CitizenIdentityCardNo == citizenIdentityCardNo && e.Id != userId)
-            : _context.Users.Any(e => e.CitizenIdentityCardNo == citizenIdentityCardNo);
+            ? _context.Users.Any(e => e.CitizenIdentityCardNo.Trim() == citizenIdentityCardNo.Trim() && e.Id != userId)
+            : _context.Users.Any(e => e.CitizenIdentityCardNo.Trim() == citizenIdentityCardNo.Trim());
     }
 
     private bool IsProvinceExists(int provinceId)
