@@ -4,6 +4,7 @@ using AcademicManagementSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    partial class AmsContextModelSnapshot : ModelSnapshot
+    [Migration("20221029031429_Add Attribute Room To Session")]
+    partial class AddAttributeRoomToSession
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -330,14 +332,14 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("duration");
 
                     b.Property<DateTime>("EndDate")
-                        .HasColumnType("date")
+                        .HasColumnType("datetime2")
                         .HasColumnName("end_date");
 
-                    b.Property<int?>("ExamRoomId")
+                    b.Property<int>("ExamRoomId")
                         .HasColumnType("int")
                         .HasColumnName("exam_room_id");
 
-                    b.Property<int?>("LabRoomId")
+                    b.Property<int>("LabRoomId")
                         .HasColumnType("int")
                         .HasColumnName("lab_room_id");
 
@@ -350,23 +352,23 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("note");
 
-                    b.Property<DateTime?>("PracticalExamDate")
-                        .HasColumnType("date")
+                    b.Property<DateTime>("PracticalExamDate")
+                        .HasColumnType("datetime2")
                         .HasColumnName("practical_exam_date");
 
                     b.Property<DateTime>("StartDate")
-                        .HasColumnType("date")
+                        .HasColumnType("datetime2")
                         .HasColumnName("start_date");
 
                     b.Property<int>("TeacherId")
                         .HasColumnType("int")
                         .HasColumnName("teacher_id");
 
-                    b.Property<DateTime?>("TheoryExamDate")
-                        .HasColumnType("date")
+                    b.Property<DateTime>("TheoryExamDate")
+                        .HasColumnType("datetime2")
                         .HasColumnName("theory_exam_date");
 
-                    b.Property<int?>("TheoryRoomId")
+                    b.Property<int>("TheoryRoomId")
                         .HasColumnType("int")
                         .HasColumnName("theory_room_id");
 
@@ -1728,12 +1730,14 @@ namespace AcademicManagementSystem.Migrations
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Room", "ExamRoom")
                         .WithMany("ClassSchedulesExamRoom")
                         .HasForeignKey("ExamRoomId")
-                        .OnDelete(DeleteBehavior.ClientNoAction);
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
 
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Room", "LabRoom")
                         .WithMany("ClassSchedulesLabRoom")
                         .HasForeignKey("LabRoomId")
-                        .OnDelete(DeleteBehavior.ClientNoAction);
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
 
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Module", "Module")
                         .WithMany("ClassSchedules")
@@ -1750,7 +1754,8 @@ namespace AcademicManagementSystem.Migrations
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Room", "TheoryRoom")
                         .WithMany("ClassSchedulesTheoryRoom")
                         .HasForeignKey("TheoryRoomId")
-                        .OnDelete(DeleteBehavior.ClientNoAction);
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
 
                     b.Navigation("Class");
 
