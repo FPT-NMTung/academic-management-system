@@ -32,31 +32,31 @@ public class ClassSchedule
     
     [ForeignKey("TheoryRoom")]
     [Column("theory_room_id")]
-    public int TheoryRoomId { get; set; }
+    public int? TheoryRoomId { get; set; }
     
     [ForeignKey("LabRoom")]
     [Column("lab_room_id")]
-    public int LabRoomId { get; set; }
+    public int? LabRoomId { get; set; }
     
     [ForeignKey("ExamRoom")]
     [Column("exam_room_id")]
-    public int ExamRoomId { get; set; }
+    public int? ExamRoomId { get; set; }
     
     //days
     [Column("duration")]
     public int Duration { get; set; }
     
-    [Column("start_date")]
+    [Column("start_date", TypeName = "date")]
     public DateTime StartDate { get; set; }
     
-    [Column("end_date")]
+    [Column("end_date", TypeName = "date")]
     public DateTime EndDate { get; set; }
     
-    [Column("theory_exam_date")]
-    public DateTime TheoryExamDate { get; set; }
+    [Column("theory_exam_date", TypeName = "date")]
+    public DateTime? TheoryExamDate { get; set; }
     
-    [Column("practical_exam_date")]
-    public DateTime PracticalExamDate { get; set; }
+    [Column("practical_exam_date", TypeName = "date")]
+    public DateTime? PracticalExamDate { get; set; }
     
     [Column("class_hour_start", TypeName = "time")]
     public TimeSpan ClassHourStart { get; set; }
@@ -80,8 +80,8 @@ public class ClassSchedule
     public virtual Teacher Teacher { get; set; }
     public virtual ClassDays ClassDays { get; set; }
     public virtual ClassStatus ClassStatus { get; set; }
-    public virtual Room TheoryRoom { get; set; }
-    public virtual Room LabRoom { get; set; }
-    public virtual Room ExamRoom { get; set; }
+    public virtual Room? TheoryRoom { get; set; }
+    public virtual Room? LabRoom { get; set; }
+    public virtual Room? ExamRoom { get; set; }
     public virtual ICollection<Session> Sessions { get; set; }
 }
