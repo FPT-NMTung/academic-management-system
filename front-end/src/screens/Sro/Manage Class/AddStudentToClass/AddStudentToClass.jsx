@@ -209,6 +209,9 @@ const AddStudentToClass = () => {
       },
     });
   };
+  const handleCancel = () => {
+    navigate(`/sro/manage-class/${id}`);
+    };
 
   useEffect(() => {
     getListGender();
@@ -1520,7 +1523,7 @@ const AddStudentToClass = () => {
                 bottom: "10px",
               }}
               onPress={() => {
-                navigate("/sro/manage/student/");
+                handleCancel();
               }}
               // disabled={isCreatingOrUpdating}
             >

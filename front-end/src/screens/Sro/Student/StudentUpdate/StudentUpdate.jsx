@@ -258,7 +258,9 @@ const StudentUpdate = () => {
       },
     });
   };
-
+  const handleCancel = () => {
+    navigate(`/sro/manage/student/${id}`);
+    };
   useEffect(() => {
     getListGender();
     getListProvince();
@@ -1480,7 +1482,7 @@ Cập nhật thông tin học viên
                   bottom: "44px",
                 }}
                 onPress={() => {
-                  navigate("/sro/manage/student/");
+                  handleCancel();
                 }}
                 // disabled={isCreatingOrUpdating}
               >
