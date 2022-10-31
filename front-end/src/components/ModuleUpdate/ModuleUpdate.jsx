@@ -1,14 +1,5 @@
-import { Card, Grid, Text } from '@nextui-org/react';
-import {
-  Form,
-  Select,
-  Input,
-  Button,
-  Spin,
-  Divider,
-  InputNumber,
-  message,
-} from 'antd';
+import { Card, Grid, Spacer, Text, Button } from '@nextui-org/react';
+import { Form, Select, Input, Spin, Divider, InputNumber, message } from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
 import {
@@ -20,6 +11,7 @@ import classes from './ModuleUpdate.module.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import ModuleGradeType from '../ModuleGradeType/ModuleGradeType';
 import { Validater } from '../../validater/Validater';
+import toast from 'react-hot-toast';
 
 const TYPE_MODULE = {
   'Lý thuyết': 1,
@@ -35,6 +27,7 @@ const ModuleUpdate = () => {
   const [listGrade, setListGrade] = useState([]);
   const [isFailed, setIsFailed] = useState(false);
   const [typeExam, setTypeExam] = useState(4);
+  const [typeExamSubmit, setTypeExamSubmit] = useState(4);
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -55,16 +48,20 @@ const ModuleUpdate = () => {
       days: data.days,
       exam_type: data.exam_type,
     };
-    FetchApi(ModulesApis.updateModule, body, null, [`${id}`])
-      .then((res) => {
-        message.success('Cập nhật thành công');
+    toast.promise(FetchApi(ModulesApis.updateModule, body, null, [`${id}`]), {
+      loading: 'Đang cập nhật...',
+      success: (res) => {
         setIsUpdating(false);
+        setTypeExamSubmit(data.exam_type);
         getListGrade();
-      })
-      .catch((err) => {
+        return 'Cập nhật thành công';
+      },
+      error: (err) => {
         setIsUpdating(false);
         setIsFailed(true);
-      });
+        return 'Cập nhật thất bại';
+      },
+    });
   };
 
   const getListCenter = () => {
@@ -97,6 +94,7 @@ const ModuleUpdate = () => {
           exam_type: data.exam_type,
         });
         setTypeExam(data.exam_type);
+        setTypeExamSubmit(data.exam_type);
         setisLoading(false);
       })
       .catch(() => {
@@ -165,8 +163,6 @@ const ModuleUpdate = () => {
   };
 
   const handleSave = () => {
-    console.log(123);
-
     const data = listGrade.map((item) => {
       return {
         grade_category_id: item.grade_id,
@@ -179,13 +175,20 @@ const ModuleUpdate = () => {
       grade_category_details: data,
     };
 
-    FetchApi(GradeModuleSemesterApis.updateGradeModule, body, null, [
-      String(id),
-    ])
-      .then(() => {
-        message.success('Cập nhật điểm thành công');
-      })
-      .catch(() => {});
+    toast.promise(
+      FetchApi(GradeModuleSemesterApis.updateGradeModule, body, null, [
+        String(id),
+      ]),
+      {
+        loading: 'Đang cập nhật...',
+        success: (res) => {
+          return 'Cập nhật thành công';
+        },
+        error: (err) => {
+          return 'Cập nhật thất bại';
+        },
+      }
+    );
   };
 
   useEffect(() => {
@@ -198,6 +201,7 @@ const ModuleUpdate = () => {
     <Grid.Container justify="center" gap={2}>
       <Grid xs={6}>
         <Card
+          variant="bordered"
           css={{
             height: 'fit-content',
           }}
@@ -259,7 +263,10 @@ const ModuleUpdate = () => {
                               'Trường này không được chứa ký tự đặc biệt'
                             );
                           }
-                          if (value.trim().length < 1 || value.trim().length > 255) {
+                          if (
+                            value.trim().length < 1 ||
+                            value.trim().length > 255
+                          ) {
                             return Promise.reject(
                               new Error('Trường phải từ 1 đến 255 ký tự')
                             );
@@ -289,13 +296,15 @@ const ModuleUpdate = () => {
                       loading={listCenters.length === 0}
                       placeholder="Chọn cơ sở"
                     >
-                      {listCenters.filter(e => e.is_active).map((e, index) => {
-                        return (
-                          <Select.Option key={index} value={e.key}>
-                            {e.name}
-                          </Select.Option>
-                        );
-                      })}
+                      {listCenters
+                        .filter((e) => e.is_active)
+                        .map((e, index) => {
+                          return (
+                            <Select.Option key={index} value={e.key}>
+                              {e.name}
+                            </Select.Option>
+                          );
+                        })}
                     </Select>
                   </Form.Item>
                 </div>
@@ -469,7 +478,10 @@ const ModuleUpdate = () => {
                               'Trường này không được chứa ký tự đặc biệt'
                             );
                           }
-                          if (value.trim().length < 1 || value.trim().length > 255) {
+                          if (
+                            value.trim().length < 1 ||
+                            value.trim().length > 255
+                          ) {
                             return Promise.reject(
                               new Error('Trường phải từ 1 đến 255 ký tự')
                             );
@@ -506,7 +518,10 @@ const ModuleUpdate = () => {
                               'Trường này không được chứa ký tự đặc biệt'
                             );
                           }
-                          if (value.trim().length < 1 || value.trim().length > 255) {
+                          if (
+                            value.trim().length < 1 ||
+                            value.trim().length > 255
+                          ) {
                             return Promise.reject(
                               new Error('Trường phải từ 1 đến 255 ký tự')
                             );
@@ -531,9 +546,11 @@ const ModuleUpdate = () => {
                 >
                   <Form.Item>
                     <Button
+                      auto
+                      flat
                       type="primary"
                       htmlType="submit"
-                      loading={isUpdating}
+                      disabled={isUpdating}
                     >
                       Cập nhật
                     </Button>
@@ -541,22 +558,12 @@ const ModuleUpdate = () => {
                 </div>
               </Form>
             )}
-            {!isUpdating && isFailed && (
-              <Text
-                size={14}
-                css={{
-                  color: 'red',
-                  textAlign: 'center',
-                }}
-              >
-                Cập nhật môn học thất bại, vui lòng thử lại
-              </Text>
-            )}
           </Card.Body>
         </Card>
       </Grid>
       <Grid xs={4}>
         <Card
+          variant="bordered"
           css={{
             height: 'fit-content',
           }}
@@ -575,13 +582,31 @@ const ModuleUpdate = () => {
             </Text>
           </Card.Header>
           <Card.Body>
-            <ModuleGradeType
-              typeExam={typeExam}
-              listGrade={listGrade}
-              onAddRow={handleAddRow}
-              onDeleteRow={handleDeleteRow}
-              onSave={handleSave}
-            />
+            {(typeExamSubmit === 2 || typeExamSubmit === 3) && (
+              <ModuleGradeType
+                typeExam={typeExam}
+                listGrade={listGrade}
+                onAddRow={handleAddRow}
+                onDeleteRow={handleDeleteRow}
+                onSave={handleSave}
+              />
+            )}
+            {!(typeExamSubmit === 2 || typeExamSubmit === 3) && (
+              <div
+                style={{
+                  textAlign: 'center',
+                  padding: '80px 0 100px',
+                }}
+              >
+                <Text p i size={12}>
+                  Không áp dụng điểm thành phần cho loại thi mà bạn đang chọn
+                </Text>
+                <Spacer y={0.5} />
+                <Text p i size={12}>
+                  Chỉ áp dụng cho loại có thi thực hành.
+                </Text>
+              </div>
+            )}
           </Card.Body>
         </Card>
       </Grid>

@@ -369,12 +369,12 @@ export const ManageClassApis = {
     contextType: 'application/json',
   },
   clearStudent: {
-    url: 'api/classes/{0}/students-from-excel',
+    url: 'api/classes/{0}/students-draft',
     method: 'DELETE',
     contextType: 'application/json',
   },
   saveStudent: {
-    url: 'api/classes/{0}/students-from-excel',
+    url: 'api/classes/{0}/students',
     method: 'PATCH',
     contextType: 'application/json',
   },
