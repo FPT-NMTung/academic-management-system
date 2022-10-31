@@ -11,6 +11,8 @@ public class Module
     {
         CoursesModulesSemesters = new HashSet<CourseModuleSemester>();
         GradeCategoryModule = new HashSet<GradeCategoryModule>();
+        ClassSchedules = new HashSet<ClassSchedule>();
+        GpaRecords = new HashSet<GpaRecord>();
     }
     
     [Key]
@@ -60,4 +62,8 @@ public class Module
     public virtual Center Center { get; set; }
     public virtual ICollection<CourseModuleSemester> CoursesModulesSemesters { get; set; }
     public virtual ICollection<GradeCategoryModule> GradeCategoryModule { get; set; }
+    public virtual ICollection<ClassSchedule> ClassSchedules { get; set; }
+    public virtual ICollection<GpaRecord> GpaRecords { get; set; }
+
+
 }

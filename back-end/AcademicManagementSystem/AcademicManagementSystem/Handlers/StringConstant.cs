@@ -41,6 +41,11 @@ public struct StringConstant
     public const string RegexName =
         @"^[a-zA-Z0-9][a-zA-Z0-9_]*[a-zA-Z0-9]$";
 
+    // regex email
+    public const string RegexEmailCopilot =
+        @"^(([\w-]+\.)+[\w-]+|([a-zA-Z]{1}|[\w-]{2,}))@" + @"((([0-1]?[0-9]{1,2}\.){3}[0-1]?[0-9]{1,2})|" +
+        @"(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,4}))$";
+
     // regex phone number
     public const string RegexPhoneNumber =
         @"^((\+84|84|0)3[2-9]\d{7})|((\+84|84|0)9[01]\d{7})|((\+84|84|0)7[0|6|7|8|9]\d{7})|((\+84|84|0)8[1-9]\d{7})$";
@@ -68,6 +73,10 @@ public struct StringConstant
     public const string RegexSpecialCharacterNotAllowForModuleName = @"[~`!@$%^*+=|\\{}':;<>/?[\]]";
 
     public const string RegexSpecialCharacterForSkillName = @"[!@$%^*_=\[{\]};:<>|/?,]";
+    
+    public const string RegexSpecialCharacterForAddress = @"[~!@#$%^&*+=|\\{}':.;<>/?[\]""]";
+    
+    public const string RegexSpecialCharacterForSchool = @"[~`!@#$%^*()+=|\\{}':;.,<>/?[\]""_]";
 
     // all special characters 
     public const string RegexSpecialCharacters = @"[~`!@#$%^&*()-_+=""\[{\]};:<>|.'\\/?,";

@@ -22,4 +22,7 @@ public class RoomResponse
     
     [JsonPropertyName("capacity")]
     public int Capacity { get; set; }
+    
+    [JsonPropertyName("is_active")]
+    public bool IsActive { get; set; }
 }

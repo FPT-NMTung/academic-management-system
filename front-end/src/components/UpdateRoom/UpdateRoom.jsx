@@ -19,6 +19,7 @@ const UpdateRoom = ({ data, onUpdateSuccess }) => {
   const [isFailedCreateRoom, setIsFailedCreateRoom] = useState(false);
 
   const [errorValue, setErrorValue] = useState(undefined);
+  const [canDelete, setCanDelete] = useState(undefined);
 
   const getListCenter = () => {
     setIsGetListCenter(true);
@@ -48,9 +49,36 @@ const UpdateRoom = ({ data, onUpdateSuccess }) => {
     });
   };
 
+  const checkCanDelete = () => {
+    FetchApi(RoomApis.checkCanDeleteRoom, null, null, [String(data?.id)])
+      .then((res) => {
+        setCanDelete(res.data.can_delete);
+      })
+      .catch((err) => {
+        setCanDelete(false);
+      });
+  };
+
+  const handleDelete = () => {
+    toast.promise(
+      FetchApi(RoomApis.deleteRoom, null, null, [String(data?.id)]),
+      {
+        loading: 'Đang xóa phòng...',
+        success: (res) => {
+          onUpdateSuccess();
+          return 'Xóa phòng thành công';
+        },
+        error: (err) => {
+          return 'Xóa phòng thất bại';
+        },
+      }
+    )
+  }
+
   useEffect(() => {
     getListCenter();
     getListTypeRoom();
+    checkCanDelete();
   }, []);
 
   const handleSubmitForm = (e) => {
@@ -63,31 +91,20 @@ const UpdateRoom = ({ data, onUpdateSuccess }) => {
 
     setIsCreatingRoom(true);
     setErrorValue(undefined);
-    FetchApi(RoomApis.updateRoom, body, null, [`${data?.id}`])
-      .then((res) => {
+
+    toast.promise(FetchApi(RoomApis.updateRoom, body, null, [`${data?.id}`]), {
+      loading: 'Đang cập nhật phòng',
+      success: () => {
         setIsCreatingRoom(false);
         onUpdateSuccess();
-      })
-      .catch((err) => {
-        
-      });
-
-    toast.promise(
-      FetchApi(RoomApis.updateRoom, body, null, [`${data?.id}`]),
-      {
-        loading: 'Đang cập nhật phòng',
-        success: () => {
-          setIsCreatingRoom(false);
-          onUpdateSuccess();
-          return 'Cập nhật phòng thành công';
-        },
-        error: (err) => {
-          setIsCreatingRoom(false);
-          setIsFailedCreateRoom(true);
-          return ErrorCodeApi[err.type_error];
-        }
-      }
-    )
+        return 'Cập nhật phòng thành công';
+      },
+      error: (err) => {
+        setIsCreatingRoom(false);
+        setIsFailedCreateRoom(true);
+        return ErrorCodeApi[err.type_error];
+      },
+    });
   };
 
   return (
@@ -96,37 +113,12 @@ const UpdateRoom = ({ data, onUpdateSuccess }) => {
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 16 }}
         initialValues={{
-          center_id: data?.center_id,
           name: data?.name,
           room_type_id: data?.room_type.id,
           capacity: data?.capacity,
         }}
         onFinish={handleSubmitForm}
       >
-        <Form.Item
-          name={'center_id'}
-          label="Cơ sở"
-          wrapperCol={{ span: 10 }}
-          rules={[
-            {
-              required: true,
-              message: 'Hãy chọn cơ sở',
-            },
-          ]}
-        >
-          <Select
-            placeholder="Chọn cơ sở"
-            style={{ width: '100%' }}
-            dropdownStyle={{ zIndex: 9999 }}
-            loading={isGetListCenter}
-          >
-            {listCenters.map((e) => (
-              <Select.Option key={e.key} value={e.id}>
-                {e.name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
         <Form.Item
           name={'name'}
           label="Tên"
@@ -209,13 +201,19 @@ const UpdateRoom = ({ data, onUpdateSuccess }) => {
               gap: '10px',
             }}
           >
-            <Button css={{
-              width: '130px',
-            }} flat auto type="primary" htmlType="submit">
+            <Button
+              css={{
+                width: '130px',
+              }}
+              flat
+              auto
+              type="primary"
+              htmlType="submit"
+            >
               {isCreatingRoom && <Loading size="xs" />}
               {!isCreatingRoom && 'Cập nhật'}
             </Button>
-            <Button flat auto disabled danger type="primary" htmlType="submit">
+            <Button flat auto disabled={canDelete} onPress={handleDelete} color="error">
               Xoá
             </Button>
           </div>
