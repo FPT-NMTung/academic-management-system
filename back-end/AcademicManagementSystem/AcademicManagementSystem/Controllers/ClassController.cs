@@ -408,8 +408,6 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        //format date time from excel
-        var startDate = new DateTime(1900, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var studentNo = 0;
         try
         {
@@ -502,11 +500,11 @@ public class ClassController : ControllerBase
                             ? 1
                             : _context.Wards.FirstOrDefault(w => w.Name == ward)!.Id;
 
-                        var newBirthday = startDate.AddDays(Convert.ToDouble(birthday)).ToLocalTime();
+                        var newBirthday = DateTime.Parse(birthday ?? throw new InvalidOperationException());
                         var newIdentityCardPublishedDate =
-                            startDate.AddDays(Convert.ToDouble(identityCardPublishedDate)).ToLocalTime();
-                        var newStatusDate = startDate.AddDays(Convert.ToDouble(statusDate)).ToLocalTime();
-                        var newApplicationDate = startDate.AddDays(Convert.ToDouble(applicationDate)).ToLocalTime();
+                            DateTime.Parse(identityCardPublishedDate ?? throw new InvalidOperationException());
+                        var newStatusDate = DateTime.Parse(statusDate ?? throw new InvalidOperationException());
+                        var newApplicationDate = DateTime.Parse(applicationDate ?? throw new InvalidOperationException());
 
                         var genderId = gender switch
                         {
