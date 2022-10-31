@@ -12,6 +12,9 @@ public class Attendance
     [Column("student_id")]
     public int StudentId { get; set; }
     
+    [Column("attendance_status_id")]
+    public int AttendanceStatusId { get; set; }
+    
     [Column("note")]
     [StringLength(255)]
     public string? Note { get; set; }

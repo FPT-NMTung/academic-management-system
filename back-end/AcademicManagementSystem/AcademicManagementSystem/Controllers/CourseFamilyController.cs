@@ -236,7 +236,7 @@ public class CourseFamilyController : ControllerBase
         }
         catch (Exception e)
         {
-            var error = ErrorDescription.Error["E2059"];
+            var error = ErrorDescription.Error["E2063"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 

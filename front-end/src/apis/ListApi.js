@@ -378,6 +378,11 @@ export const ManageClassApis = {
     method: 'PATCH',
     contextType: 'application/json',
   },
+  addStudentToClass: {
+    url: '/api/classes/{0}/students',
+    method: 'POST',
+    contextType: 'application/json',
+  },
 };
 export const ManageStudentApis = {
   searchStudent: {
