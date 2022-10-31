@@ -1,7 +1,7 @@
 import { Grid, Spacer, Text, Badge, Card, Button } from "@nextui-org/react";
 import classes from "./StudentDetail.module.css";
 import { useParams, useNavigate } from "react-router-dom";
-import { Descriptions, Spin, Tag, Tabs } from "antd";
+import { Descriptions, Spin, Tag, Tabs, Divider } from "antd";
 import { useState, useEffect } from "react";
 import { AiFillPhone } from "react-icons/ai";
 import { MdEmail } from "react-icons/md";
@@ -11,6 +11,7 @@ import { ManageStudentApis } from "../../../../apis/ListApi";
 import ManImage from "../../../../images/3d-fluency-businessman-1.png";
 import WomanImage from "../../../../images/3d-fluency-businesswoman-1.png";
 import { RiPencilFill } from "react-icons/ri";
+
 const gender = {
   1: "Nam",
   2: "Nữ",
@@ -136,7 +137,7 @@ const StudentDetail = () => {
               <Spacer y={1} />
               <div className={classes.iconInformation}>
                 <Text size={14} b>
-                  Mã số sinh viên
+                  Mã số học viên
                 </Text>
                 <Text size={14}>{dataStudent.enroll_number}</Text>
               </div>
@@ -162,7 +163,7 @@ const StudentDetail = () => {
               <Card.Divider />
 
               <Spacer y={1} />
-              <Card variant="bordered">
+              <Card variant="bordered" css={{ marginBottom: "20px" }}>
                 <Card.Header>
                   <Grid.Container alignItems="center">
                     {/* <Grid sm={6}>
@@ -187,21 +188,10 @@ const StudentDetail = () => {
                     </Grid> */}
 
                     <Descriptions
-                      title="Thông tin cá nhân"
+                      title="Thông tin bổ sung"
                       column={{ md: 1, lg: 1, xl: 1, xxl: 1 }}
                       // size="middle"
-                      extra={
-                        <Button
-                          flat
-                          auto
-                          type="primary"
-                          onPress={() => {
-                            navigate(`/sro/manage/student/${id}/update`);
-                          }}
-                        >
-                          <RiPencilFill />
-                        </Button>
-                      }
+                   
                     >
                       <Descriptions.Item
                         contentStyle={{
@@ -223,28 +213,11 @@ const StudentDetail = () => {
                         }}
                       >
                         <Text size={14} b>
-                          Số điện thoại:
+                          SĐT:
                         </Text>
                         {dataStudent.mobile_phone}
                       </Descriptions.Item>
-                      <Descriptions.Item
-                        contentStyle={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                        }}
-                        span={2}
-                      >
-                        <Text
-                          size={14}
-                          // css={{ display: "block", width: "100%" }}
-                          b
-                        >
-                          Email cá nhân:
-                          <Text size={14}></Text>
-                        </Text>
-                        {dataStudent.email}
-                      </Descriptions.Item>
+
                       <Descriptions.Item
                         contentStyle={{
                           display: "flex",
@@ -258,7 +231,7 @@ const StudentDetail = () => {
                         {dataStudent.email_organization}
                       </Descriptions.Item>
 
-                      <Descriptions.Item
+                      {/* <Descriptions.Item
                         contentStyle={{
                           display: "flex",
                           flexDirection: "row",
@@ -267,6 +240,121 @@ const StudentDetail = () => {
                       >
                         <Text size={14} b>
                           CCCD/CMT:
+                        </Text>
+                        {dataStudent.citizen_identity_card_no}
+                      </Descriptions.Item> */}
+                      {/* <Descriptions.Item
+                        contentStyle={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text size={14} b>
+                          Ngày cấp:
+                        </Text>
+
+                        {new Date(
+                          dataStudent.citizen_identity_card_published_date
+                        ).toLocaleDateString("vi-VN")}
+                      </Descriptions.Item> */}
+                      {/* <Descriptions.Item
+                        contentStyle={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text size={14} b>
+                          Tên phụ huynh:
+                        </Text>
+                        {dataStudent.parental_name}
+                      </Descriptions.Item> */}
+                      {/* <Descriptions.Item
+                        contentStyle={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text size={14} b>
+                          Mối quan hệ:
+                        </Text>
+                        {dataStudent.parental_relationship}
+                      </Descriptions.Item> */}
+
+                      <Descriptions.Item
+                        contentStyle={{
+                          display: "flex",
+                          // flex: 1,
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text
+                          size={14}
+                          // css={{ display: "inline", width: "100%" }}
+                          b
+                        >
+                          Địa chỉ
+                        </Text>{" "}
+                        {dataStudent.ward.prefix} {dataStudent.ward.name},{" "}
+                        {dataStudent.district.prefix}{" "}
+                        {dataStudent.district.name}, {dataStudent.province.name}
+                      </Descriptions.Item>
+                      <Descriptions.Item
+                        contentStyle={{
+                          display: "flex",
+                          // flex: 1,
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text size={14} b>
+                          Facebook:
+                        </Text>
+                        <Text size={14} b></Text>
+                        <a href={dataStudent.facebook_url}>Facebook_URL</a>
+                      </Descriptions.Item>
+                      <Descriptions.Item
+                        contentStyle={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text
+                          size={14}
+                          // css={{ display: "block", width: "100%" }}
+                          b
+                        >
+                          Portfolio:
+                        </Text>
+                        <Text size={14} b></Text>
+                        <a href={dataStudent.portfolio_url}>Portfolio_URL</a>
+                      </Descriptions.Item>
+                    </Descriptions>
+                  </Grid.Container>
+                </Card.Header>
+              </Card>
+              <Card variant="bordered">
+                <Card.Header>
+                  <Grid.Container alignItems="baseline">
+                    <Descriptions
+                      title="CCCD/CMT"
+                      column={{ md: 1, lg: 1, xl: 1, xxl: 1 }}
+                      // size="middle"
+                      
+                    >
+                      <Descriptions.Item
+                        contentStyle={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text size={14} b>
+                          Số CCCD/CMT:
                         </Text>
                         {dataStudent.citizen_identity_card_no}
                       </Descriptions.Item>
@@ -293,11 +381,37 @@ const StudentDetail = () => {
                         }}
                       >
                         <Text size={14} b>
+                          Nơi cấp:
+                        </Text>
+                        {dataStudent.citizen_identity_card_published_place}
+                      </Descriptions.Item>
+                 
+                      {/* <Descriptions.Item
+                        contentStyle={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text size={14} b>
+                          CCCD/CMT:
+                        </Text>
+                        {dataStudent.citizen_identity_card_no}
+                      </Descriptions.Item> */}
+
+                      {/* <Descriptions.Item
+                        contentStyle={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text size={14} b>
                           Tên phụ huynh:
                         </Text>
                         {dataStudent.parental_name}
-                      </Descriptions.Item>
-                      <Descriptions.Item
+                      </Descriptions.Item> */}
+                      {/* <Descriptions.Item
                         contentStyle={{
                           display: "flex",
                           flexDirection: "row",
@@ -308,57 +422,16 @@ const StudentDetail = () => {
                           Mối quan hệ:
                         </Text>
                         {dataStudent.parental_relationship}
-                      </Descriptions.Item>
-                      <Descriptions.Item
-                        contentStyle={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <Text size={14} b>
-                          SĐT phụ huynh:
-                        </Text>
-                        {dataStudent.parental_phone}
-                      </Descriptions.Item>
-
-                      <Descriptions.Item
-                        contentStyle={{
-                          display: "flex",
-                          flex: 1,
-                          // flexDirection: "row",
-                          justifyContent: "start",
-                        }}
-                        span={2}
-                      >
-                        <Text
-                          size={14}
-                          css={{ display: "block", width: "100%" }}
-                          b
-                        >
-                          Địa chỉ thường trú:
-                          <Text size={15}>
-                            {" "}
-                            {dataStudent.ward.prefix} {dataStudent.ward.name},{" "}
-                            {dataStudent.district.prefix}{" "}
-                            {dataStudent.district.name},{" "}
-                            {dataStudent.province.name}
-                          </Text>
-                        </Text>
-                      </Descriptions.Item>
+                      </Descriptions.Item> */}
                     </Descriptions>
+                    {/* <Spacer y={5}/> */}
                   </Grid.Container>
                 </Card.Header>
-                <Card.Body
-                  css={{
-                    marginTop: "0rem",
-                  }}
-                ></Card.Body>
               </Card>
             </Grid>
 
             <Grid sm={8.5} direction="column" css={{ rowGap: 10 }}>
-              <Card variant="bordered">
+              <Card variant="bordered" css={{ position: "relative" }}>
                 <Card.Body>
                   {/* <Descriptions
                     title="Bảng điểm"
@@ -377,23 +450,213 @@ const StudentDetail = () => {
                     //   </Button>
                     // }
                   ></Descriptions> */}
-                    <Tabs
-                      defaultActiveKey="1"
-                      tabBarStyle={{ fontStyle: "15px" }}
-                      type="card"
-                      size="large"
-                      // closable={false}
-                    >
-                      <Tabs.TabPane tab="Học kỳ" key="1">
-                        Content of Tab Pane 1
-                      </Tabs.TabPane>
-                      <Tabs.TabPane tab="Điểm" key="2">
-                        Content of Tab Pane 2
-                      </Tabs.TabPane>
-                      <Tabs.TabPane tab="Chuyển lớp" key="3">
-                        Content of Tab Pane 3
-                      </Tabs.TabPane>
-                    </Tabs>
+                  <Tabs
+                    defaultActiveKey="1"
+                    tabBarStyle={{ fontStyle: "15px", color: "black" }}
+                    type="card"
+                    size="large"
+
+                    // closable={false}
+                  >
+                    <Tabs.TabPane tab="Thông tin học viên" key="1">
+                      <Divider orientation="left" style={{ marginTop: 10 }}>
+                        <Text
+                          b
+                          p
+                          size={16}
+                          css={{
+                            width: "100%",
+                            textAlign: "center",
+                            //   margin: '0',
+                            //   padding: '0',
+                          }}
+                        >
+                          Thông tin cơ bản
+                        </Text>
+                      </Divider>
+                      <div></div>
+                      <Descriptions
+                        bordered
+                        column={{ md: 2, lg: 2, xl: 2, xxl: 2 }}
+                        // extra={
+
+                        // }
+                      >
+                        <Descriptions.Item label="Họ và tên đệm">
+                          {dataStudent.first_name}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Tên">
+                          {dataStudent.last_name}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Mã số học viên">
+                          {dataStudent.enroll_number}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Số điện thoại">
+                          {dataStudent.mobile_phone}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Giới tính">
+                          {gender[dataStudent.gender.id]}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Địa chỉ thường trú" span={2}>
+                          {dataStudent.ward.prefix} {dataStudent.ward.name},{" "}
+                          {dataStudent.district.prefix}{" "}
+                          {dataStudent.district.name},{" "}
+                          {dataStudent.province.name}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Địa chỉ cụ thể" span={2}>
+                          {dataStudent.contact_address},{" "}
+                          {dataStudent.ward.prefix} {dataStudent.ward.name},{" "}
+                          {dataStudent.district.prefix}{" "}
+                          {dataStudent.district.name},{" "}
+                          {dataStudent.province.name}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Trạng thái">
+                          {renderStatusStudent(dataStudent.status)}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Ngày sinh">
+                          {new Date(dataStudent.birthday).toLocaleDateString(
+                            "vi-VN"
+                          )}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Email cá nhân" span={1}>
+                          {dataStudent.email}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Email tổ chức" span={1}>
+                          {dataStudent.email_organization}
+                        </Descriptions.Item>
+                      </Descriptions>
+                      <Divider orientation="left" style={{ marginTop: 10 }}>
+                        <Text
+                          b
+                          p
+                          size={16}
+                          css={{
+                            width: "100%",
+                            textAlign: "center",
+                            //   margin: '0',
+                            //   padding: '0',
+                          }}
+                        >
+                          Thông tin phụ huynh
+                        </Text>
+                      </Divider>
+                      <div></div>
+                      <Descriptions
+                        bordered
+                        column={{ md: 2, lg: 2, xl: 2, xxl: 2 }}
+                        // extra={
+
+                        // }
+                      >
+                        <Descriptions.Item label="Họ và tên phụ huynh">
+                          {dataStudent.parental_name}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Số điện thoại">
+                          {dataStudent.parental_phone}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Quan hệ">
+                          {dataStudent.parental_relationship}
+                        </Descriptions.Item>
+                      </Descriptions>
+                      <Divider orientation="left" style={{ marginTop: 10 }}>
+                        <Text
+                          b
+                          p
+                          size={16}
+                          css={{
+                            width: "100%",
+                            textAlign: "center",
+                            //   margin: '0',
+                            //   padding: '0',
+                          }}
+                        >
+                          Thông tin liên quan đến học viện
+                        </Text>
+                      </Divider>
+                      <div></div>
+                      <Descriptions
+                        bordered
+                        column={{ md: 2, lg: 2, xl: 2, xxl: 2 }}
+                        // extra={
+
+                        // }
+                      >
+                        <Descriptions.Item label="Học bổng">
+                          {dataStudent.promotion}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Kế hoạch phí">
+                          {dataStudent.fee_plan}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Hồ Sơ">
+                          <a href={dataStudent.application_document}>
+                            Link hồ sơ
+                          </a>
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Ngày nộp">
+                          {new Date(
+                            dataStudent.application_date
+                          ).toLocaleDateString("vi-VN")}
+                        </Descriptions.Item>
+                      </Descriptions>
+                      <Divider orientation="left" style={{ marginTop: 10 }}>
+                        <Text
+                          b
+                          p
+                          size={16}
+                          css={{
+                            width: "100%",
+                            textAlign: "center",
+                            //   margin: '0',
+                            //   padding: '0',
+                          }}
+                        >
+                          Học vấn và công việc
+                        </Text>
+                      </Divider>
+                      <div></div>
+                      <Descriptions
+                        bordered
+                        column={{ md: 2, lg: 2, xl: 2, xxl: 2 }}
+                        // extra={
+
+                        // }
+                      >
+                        <Descriptions.Item label="Trường cấp 3">
+                          {dataStudent.high_school}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Trường đại học">
+                          {dataStudent.university}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Công ty">
+                          {dataStudent.working_company}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Địa chỉ công ty">
+                          {dataStudent.company_address}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Chức vụ">
+                          {dataStudent.company_position}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Mức lương">
+                          {dataStudent.company_salary}
+                        </Descriptions.Item>
+                      </Descriptions>
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab="Thông tin học tập" key="2">
+                      Content of Tab Pane 2
+                    </Tabs.TabPane>
+                    
+                  </Tabs>
+                  <Button
+                    css={{ position: "absolute", top: 8, right: 12 }}
+                    flat
+                    auto
+                    type="primary"
+                    onPress={() => {
+                      navigate(`/sro/manage/student/${id}/update`);
+                    }}
+                  >
+                    Chỉnh sửa thông tin
+                  </Button>
                 </Card.Body>
               </Card>
             </Grid>

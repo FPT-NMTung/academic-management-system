@@ -19,11 +19,12 @@ import {
   Divider,
   Image,
   Upload,
+  message,
 } from "antd";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import classes from "./StudentUpdate.module.css";
+import classes from "../../Student/StudentUpdate/StudentUpdate.module.css";
 import toast from "react-hot-toast";
 import FetchApi from "../../../../apis/FetchApi";
 import { Validater } from "../../../../validater/Validater";
@@ -32,14 +33,12 @@ import {
   GenderApis,
   AddressApis,
   CourseApis,
-  ManageStudentApis,
+  ManageClassApis,
 } from "../../../../apis/ListApi";
 import ManImage from "../../../../images/3d-fluency-businessman-1.png";
 import WomanImage from "../../../../images/3d-fluency-businesswoman-1.png";
 import moment from "moment";
 import { ErrorCodeApi } from "../../../../apis/ErrorCodeApi";
-
-
 const translateStatusStudent = {
   1: "Studying",
   2: "Delay",
@@ -59,7 +58,7 @@ const translateStatusStudent = {
 //      "Finished":7,
 //   };
 
-const StudentUpdate = () => {
+const AddStudentToClass = () => {
   const [listGender, setListGender] = useState([]);
   const [listCourses, setListCourses] = useState([]);
   const [listProvince, setListProvince] = useState([]);
@@ -138,65 +137,9 @@ const StudentUpdate = () => {
       setListWard(res.data);
     });
   };
-  const getInformationStudent = () => {
-    setIsGettingInformationStudent(true);
-
-    FetchApi(ManageStudentApis.getInformationStudent, null, null, [
-      `${id}`,
-    ]).then((res) => {
-      const data = res.data;
-      console.log(data);
-      setDataUser(data);
-
-      form.setFieldsValue({
-        first_name: data.first_name,
-        last_name: data.last_name,
-        mobile_phone: data.mobile_phone,
-        email: data.email,
-        email_organization: data.email_organization,
-        province_id: data.province.id,
-        district_id: data.district.id,
-        ward_id: data.ward.id,
-        gender_id: data.gender.id,
-        birthday: moment(data.birthday),
-        citizen_identity_card_no: data.citizen_identity_card_no,
-        citizen_identity_card_published_date: moment(
-          data.citizen_identity_card_published_date
-        ),
-        citizen_identity_card_published_place:
-          data.citizen_identity_card_published_place,
-        status: data.status,
-        contact_phone: data.mobile_phone,
-        parental_name: data.parental_name,
-        // parental_name: `${data.parental_first_name} ${data.parental_last_name}`,
-        parental_relationship: data.parental_relationship,
-        contact_address: data.contact_address,
-
-        parental_phone: data.parental_phone,
-        application_date: moment(data.application_date),
-        fee_plan: data.fee_plan,
-        promotion: data.promotion,
-        course_code: data.course_code,
-        application_document: data.application_document,
-        high_school: data.high_school,
-        university: data.university,
-        facebook_url: data.facebook_url,
-        portfolio_url: data.portfolio_url,
-        working_company: data.working_company,
-        company_salary: data.company_salary,
-        company_position: data.company_position,
-        company_address: data.company_address,
-      });
-
-      setIsGettingInformationStudent(false);
-      getListDistrictForUpdate();
-      getListWardForUpdate();
-    });
-  };
 
   const handleSubmitForm = () => {
     const data = form.getFieldsValue();
-    const companysalary = form.getFieldValue("company_salary");
 
     setIsCreatingOrUpdating(true);
     setMessageFailed(undefined);
@@ -212,7 +155,6 @@ const StudentUpdate = () => {
       ward_id: data.ward_id,
       gender_id: data.gender_id,
       birthday: data.birthday.add(7, "hours").toDate(),
-      center_id: data.center_id,
       citizen_identity_card_no: data.citizen_identity_card_no?.trim(),
       citizen_identity_card_published_date:
         data.citizen_identity_card_published_date.add(7, "hours").toDate(),
@@ -228,48 +170,55 @@ const StudentUpdate = () => {
       contact_address: data.contact_address,
       parental_relationship: data.parental_relationship,
       course_code: data.course_code,
-      application_document: data.application_document,
-      high_school: data.high_school,
-      university: data.university,
-      facebook_url: data.facebook_url,
-      portfolio_url: data.portfolio_url,
+      application_document: data.application_document
+        ? data.application_document
+        : null,
+      high_school: data.high_school ? data.high_school : null,
+      university: data.university ? data.university : null,
+      facebook_url: data.facebook_url ? data.facebook_url : null,
+      portfolio_url: data.portfolio_url ? data.portfolio_url : null,
       working_company: data.working_company ? data.working_company : null,
       company_salary: data.company_salary ? data.company_salary : null,
-      company_position: data.company_position,
-      company_address: data.company_address,
+      company_position: data.company_position ? data.company_position : null,
+      company_address: data.company_address ? data.company_address : null,
+      enroll_number: data.enroll_number ? data.enroll_number : null,
+      home_phone: data.parental_phone ? data.parental_phone : null,
     };
     console.log(body);
 
-    const api =  ManageStudentApis.updateStudent;
+    const api = ManageClassApis.addStudentToClass;
     const params = [`${id}`];
+    console.log(params);
 
     toast.promise(FetchApi(api, body, null, params), {
       loading: "Đang xử lý",
       success: (res) => {
         setIsCreatingOrUpdating(false);
-        navigate(`/sro/manage/student/${res.data.user_id}`);
+        navigate(`/sro/manage-class/${id}`);
         return "Thành công";
       },
       error: (err) => {
+        console.log("Ádasdasd");
         setMessageFailed(ErrorCodeApi[err.type_error]);
         setIsCreatingOrUpdating(false);
         if (err?.type_error) {
           return ErrorCodeApi[err.type_error];
         }
+
         return "Thất bại";
       },
     });
   };
   const handleCancel = () => {
-    navigate(`/sro/manage/student/${id}`);
+    navigate(`/sro/manage-class/${id}`);
     };
+
   useEffect(() => {
     getListGender();
     getListProvince();
     // getListWorkingTime();
     // getListTeacherType();
     getListCourse();
-    getInformationStudent();
   }, []);
   return (
     <Form
@@ -278,17 +227,9 @@ const StudentUpdate = () => {
       form={form}
       onFinish={handleSubmitForm}
       // disabled={modeUpdate && isGettingInformationStudent}
-      // initialValues = {{
-      //   application_document: null,
-      //   high_school: null,
-      //   university: null,
-      //   facebook_url: null,
-      //   portfolio_url: null,
-      //   working_company: null,
-      //   company_salary: null,
-      //   company_position: null,
-      //   company_address: null
-      // }}
+      initialValues={{
+        status: 4,
+      }}
     >
       <Grid.Container justify="center" gap={2}>
         <Grid sm={6.5} direction={"column"} css={{ rowGap: 20 }}>
@@ -303,8 +244,7 @@ const StudentUpdate = () => {
                   textAlign: "center",
                 }}
               >
-Cập nhật thông tin học viên
-
+                Tạo học viên mới
               </Text>
             </Card.Header>
             <Card.Body>
@@ -471,6 +411,7 @@ Cập nhật thông tin học viên
                 >
                   <Select
                     placeholder="Quận/Huyện"
+                    disabled={listDistrict.length === 0}
                     loading={listDistrict.length === 0}
                     onChange={() => {
                       getListWard();
@@ -495,6 +436,7 @@ Cập nhật thông tin học viên
                 >
                   <Select
                     placeholder="Phường/Xã"
+                    disabled={listWard.length === 0}
                     loading={listWard.length === 0}
                   >
                     {listWard.map((e) => (
@@ -505,52 +447,52 @@ Cập nhật thông tin học viên
                   </Select>
                 </Form.Item>
                 <Form.Item
-                    label="Địa chỉ cụ thể"
-                    name="contact_address"
-                    style={{
-                      // margin: "auto",
-                      width: "100%",
-                      // textAlign: "left",
-                    }}
-                    rules={[
-                      {
-                        required: false,
-                        validator: (_, value) => {
-                          if (
-                            value === null ||
-                            value === undefined ||
-                            value.trim() === ""
-                          ) {
-                            return Promise.resolve();
-                          }
-                          if (
-                            Validater.isContaintSpecialCharacterForAddress(
-                              value.trim()
-                            )
-                          ) {
-                            return Promise.reject(
-                              "Trường này không được chứa ký tự đặc biệt"
-                            );
-                          }
-                          if (
-                            value.trim().length < 1 ||
-                            value.trim().length > 255
-                          ) {
-                            return Promise.reject(
-                              new Error("Trường phải từ 1 đến 255 ký tự")
-                            );
-                          }
+                  label="Địa chỉ cụ thể"
+                  name="contact_address"
+                  style={{
+                    // margin: "auto",
+                    width: "100%",
+                    // textAlign: "left",
+                  }}
+                  rules={[
+                    {
+                      required: false,
+                      validator: (_, value) => {
+                        if (
+                          value === null ||
+                          value === undefined ||
+                          value.trim() === ""
+                        ) {
                           return Promise.resolve();
-                        },
+                        }
+                        if (
+                          Validater.isContaintSpecialCharacterForAddress(
+                            value.trim()
+                          )
+                        ) {
+                          return Promise.reject(
+                            "Trường này không được chứa ký tự đặc biệt"
+                          );
+                        }
+                        if (
+                          value.trim().length < 1 ||
+                          value.trim().length > 255
+                        ) {
+                          return Promise.reject(
+                            new Error("Trường phải từ 1 đến 255 ký tự")
+                          );
+                        }
+                        return Promise.resolve();
                       },
-                      {
-                        whitespace: true,
-                        message: "Trường không được chứa khoảng trắng",
-                      },
-                    ]}
-                  >
-                    <Input placeholder="Địa chỉ liên hệ cụ thể" />
-                  </Form.Item>
+                    },
+                    {
+                      whitespace: true,
+                      message: "Trường không được chứa khoảng trắng",
+                    },
+                  ]}
+                >
+                  <Input placeholder="Địa chỉ liên hệ cụ thể" />
+                </Form.Item>
                 <Form.Item
                   label="Email cá nhân"
                   name="email"
@@ -558,6 +500,13 @@ Cập nhật thông tin học viên
                     {
                       required: true,
                       validator: (_, value) => {
+                        if (
+                            value === null ||
+                            value === undefined ||
+                            value === ""
+                          ) {
+                            return Promise.reject("Trường này không được để trống");
+                          }
                         if (Validater.isEmail(value)) {
                           return Promise.resolve();
                         }
@@ -575,6 +524,13 @@ Cập nhật thông tin học viên
                     {
                       required: true,
                       validator: (_, value) => {
+                        if (
+                            value === null ||
+                            value === undefined ||
+                            value === ""
+                          ) {
+                            return Promise.reject("Trường này không được để trống");
+                          }
                         if (Validater.isEmail(value)) {
                           return Promise.resolve();
                         }
@@ -592,6 +548,13 @@ Cập nhật thông tin học viên
                     {
                       required: true,
                       validator: (_, value) => {
+                        if (
+                            value === null ||
+                            value === undefined ||
+                            value === ""
+                          ) {
+                            return Promise.reject("Trường này không được để trống");
+                          }
                         // check regex phone number viet nam
                         if (Validater.isPhone(value)) {
                           return Promise.resolve();
@@ -671,6 +634,13 @@ Cập nhật thông tin học viên
                     {
                       required: true,
                       validator: (_, value) => {
+                        if (
+                            value === null ||
+                            value === undefined ||
+                            value === ""
+                          ) {
+                            return Promise.reject("Trường này không được để trống");
+                          }
                         // check regex phone number viet nam
                         if (Validater.isPhone(value)) {
                           return Promise.resolve();
@@ -774,13 +744,20 @@ Cập nhật thông tin học viên
                     {
                       required: true,
                       validator: (_, value) => {
-                        if (value !== null && value !== undefined) {
-                          const salary = value.toString();
-                          if (Validater.isNumber(salary)) {
-                            return Promise.resolve();
-                          }
-                          return Promise.reject(new Error("Phải là số"));
+                        if (
+                          value === null ||
+                          value === undefined ||
+                          value === ""
+                        ) {
+                          return Promise.reject(
+                            "Trường này không được để trống"
+                          );
                         }
+                        const salary = value.toString();
+                        if (Validater.isNumber(salary)) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(new Error("Phải là số"));
 
                         // check regex phone number viet nam
                       },
@@ -796,13 +773,21 @@ Cập nhật thông tin học viên
                     {
                       required: true,
                       validator: (_, value) => {
-                        if (value !== null && value !== undefined) {
-                          const salary = value.toString();
-                          if (Validater.isNumber(salary)) {
-                            return Promise.resolve();
-                          }
-                          return Promise.reject(new Error("Phải là số"));
+                        if (
+                          value === null ||
+                          value === undefined ||
+                          value === ""
+                        ) {
+                          return Promise.reject(
+                            "Trường này không được để trống"
+                          );
                         }
+
+                        const salary = value.toString();
+                        if (Validater.isNumber(salary)) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(new Error("Phải là số"));
 
                         // check regex phone number viet nam
                       },
@@ -1018,7 +1003,9 @@ Cập nhật thông tin học viên
                         ) {
                           return Promise.resolve();
                         }
-                        if (Validater.isContaintSpecialCharacter(value.trim())) {
+                        if (
+                          Validater.isContaintSpecialCharacter(value.trim())
+                        ) {
                           return Promise.reject(
                             "Trường này không được chứa ký tự đặc biệt"
                           );
@@ -1117,384 +1104,435 @@ Cập nhật thông tin học viên
 
                 <div></div>
               </div>
-              <Spacer y={0.1} />
+              <Spacer y={0.2} />
             </Card.Body>
           </Card>
         </Grid>
-    
-          <Grid
-            sm={4.5}
-            direction={"column"}
-            css={{ rowGap: 20, position: "relative" }}
+
+        <Grid
+          sm={4.5}
+          direction={"column"}
+          css={{ rowGap: 20, position: "relative" }}
+        >
+          <Card
+            variant="bordered"
+            css={{ backgroundColor: "transparent", border: "none" }}
           >
-            <Card
-              variant="bordered"
-              css={{ backgroundColor: "transparent", border: "none" }}
-            >
-              <Card.Header css={{ margin: "12px 0 0 0" }}>
-                <Text
-                  p
-                  b
-                  size={17}
-                  css={{
-                    width: "100%",
-                    textAlign: "center",
-                    margin: "0",
-                  }}
-                >
-                  Ảnh đại diện
-                </Text>
-              </Card.Header>
-              <Card.Body
+            <Card.Header css={{ margin: "12px 0 0 0" }}>
+              <Text
+                p
+                b
+                size={17}
                 css={{
                   width: "100%",
                   textAlign: "center",
+                  margin: "0",
                 }}
               >
-                <div className={classes.contantLogo}>
-                  <div className={classes.logo}>
-                    <Image
-                      className={classes.avatarMini}
-                      width={250}
-                      src="https://cdna.artstation.com/p/assets/images/images/048/859/290/large/xu-weili-4d6e20d94309f4e40f1a252e5f8711e.jpg?1651098275"
-                    />
-                    {/* {dataStudent.avatar && (
-                    <img className={classes.avatar} src={dataStudent.avatar} />
-                  )} */}
-
-                    {/* {!dataStudent.avatar && (
-                    <img
-                      className={classes.avatarMini}
-                      src={
-                        dataStudent.gender.id === 1
-                          ? ManImage
-                          : dataStudent.gender.id === 2
-                          ? WomanImage
-                          : ""
-                      }
-                    />
-                  )} */}
-                  </div>
-                </div>
-                <Upload>
-                  <Button
-                    css={{
-                      fontSize: "12px",
-                      height: "28px",
-                      margin: "16px 0 0 0",
-                    }}
-                    auto
-                    flat
-                    icon={<UploadOutlined />}
-                  >
-                    Upload
-                  </Button>
-                </Upload>
-
-                {/* </div> */}
-              </Card.Body>
-            </Card>
-            <Card variant="bordered">
-              <Card.Header css={{ margin: "0px 0 0 0" }}>
-                <Text
-                  b
-                  p
-                  size={15}
-                  css={{
-                    width: "100%",
-                    textAlign: "center",
-                    //   margin: '0',
-                    //   padding: '0',
-                  }}
-                >
-                  Thông tin quan trọng
-                </Text>
-              </Card.Header>
-              <Card.Body
-                css={{
-                  width: "100%",
-                  //   textAlign: "center",
-                }}
-              >
-                <Form.Item
-                  name="status"
-                  label="Thay đổi tình trạng"
-                  labelWrap={true}
-                  style={{
-                    // margin: "auto",
-                    width: "100%",
-                    textAlign: "left",
-                  }}
-                >
-                  <Select
-                    placeholder="Tình trạng học viên"
-                    dropdownStyle={{ zIndex: 9999 }}
-                  >
-                    <Select.Option key={100} value={1}>
-                      Studying
-                    </Select.Option>
-                    <Select.Option key={101} value={2}>
-                      Delay
-                    </Select.Option>
-                    <Select.Option key={102} value={3}>
-                      Dropout
-                    </Select.Option>
-                    <Select.Option key={103} value={4}>
-                      ClassQueue
-                    </Select.Option>
-                    <Select.Option key={104} value={5}>
-                      Transfer
-                    </Select.Option>
-                    <Select.Option key={105} value={6}>
-                      Upgrade
-                    </Select.Option>
-                    <Select.Option key={106} value={7}>
-                      Finished
-                    </Select.Option>
-                  </Select>
-                </Form.Item>
-                <Form.Item
-                  name="course_code"
-                  label="Mã khóa học"
-                  labelWrap={true}
-                  style={{
-                    // margin: "auto",
-                    width: "100%",
-                    textAlign: "left",
-                  }}
-                  rules={[
-                    {
-                      required: true,
-                      message: "Hãy chọn khóa học",
-                    },
-                  ]}
-                >
-                  <Select
-                    dropdownStyle={{ zIndex: 9999 }}
-                    onChange={getListCourse}
-                  >
-                    {listCourses.map((e, index) => (
-                      <Select.Option key={index} value={e.code}>
-                        {e.data} {e.code}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Card.Body>
-            </Card>
-            <Card variant="bordered">
-              <Card.Header css={{ margin: "0px 0 0 0" }}>
-                <Text
-                  b
-                  p
-                  size={15}
-                  css={{
-                    width: "100%",
-                    textAlign: "center",
-                    //   margin: '0',
-                    //   padding: '0',
-                  }}
-                >
-                  Thông tin CMND/CCCD
-                </Text>
-              </Card.Header>
-              <Card.Body
-                css={{
-                  width: "100%",
-                  //   textAlign: "center",
-                }}
-              >
-                <Form.Item
-                  label="Số CMND/CCCD"
-                  name="citizen_identity_card_no"
-                  rules={[
-                    {
-                      required: true,
-                      validator: (_, value) => {
-                        if (Validater.isCitizenId(value)) {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(
-                          new Error("Số CMND/CCCD không hợp lệ")
-                        );
-                      },
-                    },
-                  ]}
-                >
-                  <Input placeholder="CMND/CCCD" />
-                </Form.Item>
-                <Form.Item
-                  label="Ngày cấp"
-                  name="citizen_identity_card_published_date"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Hãy nhập ngày cấp",
-                    },
-                  ]}
-                >
-                  <DatePicker format={"DD/MM/YYYY"} />
-                </Form.Item>
-                <Form.Item
-                  label="Nơi cấp"
-                  name="citizen_identity_card_published_place"
-                  rules={[
-                    {
-                      required: true,
-                      validator: (_, value) => {
-                        if (value === null || value === undefined) {
-                          return Promise.reject(
-                            "Trường này không được để trống"
-                          );
-                        }
-                        if (
-                          Validater.isContaintSpecialCharacterForName(
-                            value.trim()
-                          )
-                        ) {
-                          return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
-                          );
-                        }
-                        if (
-                          value.trim().length < 1 ||
-                          value.trim().length > 255
-                        ) {
-                          return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
-                          );
-                        }
-                        return Promise.resolve();
-                      },
-                    },
-                    {
-                      whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
-                    },
-                  ]}
-                >
-                  <Input placeholder="Nơi cấp" />
-                </Form.Item>
-              </Card.Body>
-            </Card>
-            <Card variant="bordered">
-              <Card.Header css={{ margin: "0px 0 0 0" }}>
-                <Text
-                  b
-                  p
-                  size={15}
-                  css={{
-                    width: "100%",
-                    textAlign: "center",
-                    //   margin: '0',
-                    //   padding: '0',
-                  }}
-                >
-                  Thông tin bổ sung
-                </Text>
-              </Card.Header>
-              <Card.Body
-                css={{
-                  width: "100%",
-                  //   textAlign: "center",
-                }}
-              >
-                <Form.Item
-                  label="Facebook"
-                  name="facebook_url"
-                  style={{
-                    // margin: "auto",
-                    width: "100%",
-                    // textAlign: "left",
-                  }}
-                  // rules={[
-                  //   {
-                  //     // required: true,
-
-                  //     message: "Hãy nhập đường dẫn facebook",
-                  //   },
-                  // ]}
-                >
-                  <Input placeholder="Đường dẫn tới facebook" />
-                </Form.Item>
-
-                <Form.Item
-                  label="CV"
-                  name="portfolio_url"
-                  style={{
-                    // margin: "auto",
-                    width: "100%",
-                    // textAlign: "left",
-                  }}
-                  // rules={[
-                  //   {
-                  //     // required: true,
-                  //     message: "Hãy nhập đường dẫn tới cv",
-                  //   },
-                  // ]}
-                >
-                  <Input placeholder="Đường dẫn tới cv" />
-                </Form.Item>
-              </Card.Body>
-            </Card>
-            <Form.Item
-              style={{
-                display: "inline-block",
-                textAlign: "right",
+                Ảnh đại diện
+              </Text>
+            </Card.Header>
+            <Card.Body
+              css={{
                 width: "100%",
+                textAlign: "center",
               }}
             >
-              {/* {!isCreatingOrUpdating && messageFailed !== undefined && (
-                <Text
-                  size={14}
-                  css={{
-                    background: "#fff",
-                    color: "red",
-                  }}
-                >
-                  {messageFailed}
-                </Text>
-              )} */}
-            </Form.Item>
+              <div className={classes.contantLogo}>
+                <div className={classes.logo}>
+                  <Image
+                    className={classes.avatarMini}
+                    width={250}
+                    src="https://cdna.artstation.com/p/assets/images/images/048/859/290/large/xu-weili-4d6e20d94309f4e40f1a252e5f8711e.jpg?1651098275"
+                  />
+                  {/* {dataStudent.avatar && (
+                      <img className={classes.avatar} src={dataStudent.avatar} />
+                    )} */}
 
-            <div className={classes.buttonCreate}>
-              <Button
-                flat
-                auto
+                  {/* {!dataStudent.avatar && (
+                      <img
+                        className={classes.avatarMini}
+                        src={
+                          dataStudent.gender.id === 1
+                            ? ManImage
+                            : dataStudent.gender.id === 2
+                            ? WomanImage
+                            : ""
+                        }
+                      />
+                    )} */}
+                </div>
+              </div>
+              <Upload>
+                <Button
+                  css={{
+                    fontSize: "12px",
+                    height: "28px",
+                    margin: "16px 0 0 0",
+                  }}
+                  auto
+                  flat
+                  icon={<UploadOutlined />}
+                >
+                  Upload
+                </Button>
+              </Upload>
+
+              {/* </div> */}
+            </Card.Body>
+          </Card>
+          <Card variant="bordered">
+            <Card.Header css={{ margin: "0px 0 0 0" }}>
+              <Text
+                b
+                p
+                size={15}
                 css={{
-                  width: "150px",
-                  position: "absolute",
-                  right: "10px",
-                  bottom: "44px",
+                  width: "100%",
+                  textAlign: "center",
+                  //   margin: '0',
+                  //   padding: '0',
                 }}
-                type="primary"
-                htmlType="submit"
-                // disabled={isCreatingOrUpdating}
               >
-             Cập nhật
-              </Button>
-              <Button
-                flat
-                auto
-                color="error"
+                Thông tin quan trọng
+              </Text>
+            </Card.Header>
+            <Card.Body
+              css={{
+                width: "100%",
+                //   textAlign: "center",
+              }}
+            >
+              <Form.Item
+                name="enroll_number"
+                label="Mã số sinh viên"
+                labelWrap={true}
+                style={{
+                  // margin: "auto",
+                  width: "100%",
+                  textAlign: "left",
+                }}
+                rules={[
+                  {
+                    required: true,
+                    validator: (_, value) => {
+                      if (
+                        value === null ||
+                        value === undefined ||
+                        value === ""
+                      ) {
+                        return Promise.reject("Trường này không được để trống");
+                      }
+
+                      if (Validater.isContaintSpecialCharacter(value.trim())) {
+                        return Promise.reject(
+                          "Trường này không được chứa ký tự đặc biệt"
+                        );
+                      }
+                      if (
+                        value.trim().length < 1 ||
+                        value.trim().length > 100
+                      ) {
+                        return Promise.reject(
+                          new Error("Trường phải từ 1 đến 100 ký tự")
+                        );
+                      } else {
+                        return Promise.resolve();
+                      }
+                    },
+                  },
+                  {
+                    whitespace: true,
+                    message: "Trường không được chứa khoảng trắng",
+                  },
+                ]}
+              >
+                <Input placeholder="Hãy nhập mã số sinh viên" />
+              </Form.Item>
+              <Form.Item
+                name="status"
+                label="Tình trạng"
+                labelWrap={true}
+                style={{
+                  // margin: "auto",
+                  width: "100%",
+                  textAlign: "left",
+                }}
+              >
+                <Select
+                  placeholder="Tình trạng học viên"
+                  dropdownStyle={{ zIndex: 9999 }}
+                >
+                  <Select.Option key={100} value={1}>
+                    Studying
+                  </Select.Option>
+                  <Select.Option key={101} value={2}>
+                    Delay
+                  </Select.Option>
+                  <Select.Option key={102} value={3}>
+                    Dropout
+                  </Select.Option>
+                  <Select.Option key={103} value={4}>
+                    ClassQueue
+                  </Select.Option>
+                  <Select.Option key={104} value={5}>
+                    Transfer
+                  </Select.Option>
+                  <Select.Option key={105} value={6}>
+                    Upgrade
+                  </Select.Option>
+                  <Select.Option key={106} value={7}>
+                    Finished
+                  </Select.Option>
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name="course_code"
+                label="Mã khóa học"
+                labelWrap={true}
+                style={{
+                  // margin: "auto",
+                  width: "100%",
+                  textAlign: "left",
+                }}
+                rules={[
+                  {
+                    required: true,
+                    message: "Hãy chọn khóa học",
+                  },
+                ]}
+              >
+                <Select
+                  dropdownStyle={{ zIndex: 9999 }}
+                  placeholder="Chọn khóa học"
+                  onChange={getListCourse}
+                >
+                  {listCourses.map((e, index) => (
+                    <Select.Option key={index} value={e.code}>
+                      {e.data} {e.code}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Card.Body>
+          </Card>
+          <Card variant="bordered">
+            <Card.Header css={{ margin: "0px 0 0 0" }}>
+              <Text
+                b
+                p
+                size={15}
                 css={{
-                  width: "150px",
-                  position: "absolute",
-                  right: "180px",
-                  bottom: "44px",
+                  width: "100%",
+                  textAlign: "center",
+                  //   margin: '0',
+                  //   padding: '0',
                 }}
-                onPress={() => {
-                  handleCancel();
-                }}
-                // disabled={isCreatingOrUpdating}
               >
-                Hủy
-              </Button>
-            </div>
-          </Grid>
-        
+                Thông tin CMND/CCCD
+              </Text>
+            </Card.Header>
+            <Card.Body
+              css={{
+                width: "100%",
+                //   textAlign: "center",
+              }}
+            >
+              <Form.Item
+                label="Số CMND/CCCD"
+                name="citizen_identity_card_no"
+                rules={[
+                  {
+                    required: true,
+                    validator: (_, value) => {
+                        if (
+                            value === null ||
+                            value === undefined ||
+                            value === ""
+                          ) {
+                            return Promise.reject("Trường này không được để trống");
+                          }
+                      if (Validater.isCitizenId(value)) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error("Số CMND/CCCD không hợp lệ")
+                      );
+                    },
+                  },
+                ]}
+              >
+                <Input placeholder="CMND/CCCD" />
+              </Form.Item>
+              <Form.Item
+                label="Ngày cấp"
+                name="citizen_identity_card_published_date"
+                rules={[
+                  {
+                    required: true,
+                    message: "Hãy nhập ngày cấp",
+                  },
+                ]}
+              >
+                <DatePicker format={"DD/MM/YYYY"} />
+              </Form.Item>
+              <Form.Item
+                label="Nơi cấp"
+                name="citizen_identity_card_published_place"
+                rules={[
+                  {
+                    required: true,
+                    validator: (_, value) => {
+                      if (value === null || value === undefined) {
+                        return Promise.reject("Trường này không được để trống");
+                      }
+                      if (
+                        Validater.isContaintSpecialCharacterForName(
+                          value.trim()
+                        )
+                      ) {
+                        return Promise.reject(
+                          "Trường này không được chứa ký tự đặc biệt"
+                        );
+                      }
+                      if (
+                        value.trim().length < 1 ||
+                        value.trim().length > 255
+                      ) {
+                        return Promise.reject(
+                          new Error("Trường phải từ 1 đến 255 ký tự")
+                        );
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                  {
+                    whitespace: true,
+                    message: "Trường không được chứa khoảng trắng",
+                  },
+                ]}
+              >
+                <Input placeholder="Nơi cấp" />
+              </Form.Item>
+            </Card.Body>
+          </Card>
+          <Card variant="bordered">
+            <Card.Header css={{ margin: "0px 0 0 0" }}>
+              <Text
+                b
+                p
+                size={15}
+                css={{
+                  width: "100%",
+                  textAlign: "center",
+                  //   margin: '0',
+                  //   padding: '0',
+                }}
+              >
+                Thông tin bổ sung
+              </Text>
+            </Card.Header>
+            <Card.Body
+              css={{
+                width: "100%",
+                //   textAlign: "center",
+              }}
+            >
+              <Form.Item
+                label="Facebook"
+                name="facebook_url"
+                style={{
+                  // margin: "auto",
+                  width: "100%",
+                  // textAlign: "left",
+                }}
+                // rules={[
+                //   {
+                //     // required: true,
+
+                //     message: "Hãy nhập đường dẫn facebook",
+                //   },
+                // ]}
+              >
+                <Input placeholder="Đường dẫn tới facebook" />
+              </Form.Item>
+
+              <Form.Item
+                label="CV"
+                name="portfolio_url"
+                style={{
+                  // margin: "auto",
+                  width: "100%",
+                  // textAlign: "left",
+                }}
+                // rules={[
+                //   {
+                //     // required: true,
+                //     message: "Hãy nhập đường dẫn tới cv",
+                //   },
+                // ]}
+              >
+                <Input placeholder="Đường dẫn tới cv" />
+              </Form.Item>
+            </Card.Body>
+          </Card>
+          <Form.Item
+            style={{
+              display: "inline-block",
+              textAlign: "right",
+              width: "100%",
+            }}
+          >
+            {/* {!isCreatingOrUpdating && messageFailed !== undefined && (
+                  <Text
+                    size={14}
+                    css={{
+                      background: "#fff",
+                      color: "red",
+                    }}
+                  >
+                    {messageFailed}
+                  </Text>
+                )} */}
+          </Form.Item>
+
+          <div className={classes.buttonCreate}>
+            <Button
+              flat
+              auto
+              css={{
+                width: "150px",
+                position: "absolute",
+                right: "10px",
+                bottom: "10px",
+              }}
+              type="primary"
+              htmlType="submit"
+              // disabled={isCreatingOrUpdating}
+            >
+              Tạo mới
+            </Button>
+            <Button
+              flat
+              auto
+              color="error"
+              css={{
+                width: "150px",
+                position: "absolute",
+                right: "180px",
+                bottom: "10px",
+              }}
+              onPress={() => {
+                handleCancel();
+              }}
+              // disabled={isCreatingOrUpdating}
+            >
+              Hủy
+            </Button>
+          </div>
+        </Grid>
       </Grid.Container>
     </Form>
   );
 };
-export default StudentUpdate;
+export default AddStudentToClass;
