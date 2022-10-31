@@ -4,6 +4,7 @@ using AcademicManagementSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    partial class AmsContextModelSnapshot : ModelSnapshot
+    [Migration("20221029035144_Set Nullable Properties For Class Schedule")]
+    partial class SetNullablePropertiesForClassSchedule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1001,7 +1003,7 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnName("end_time");
 
                     b.Property<DateTime>("LearningDate")
-                        .HasColumnType("date")
+                        .HasColumnType("datetime2")
                         .HasColumnName("learning_date");
 
                     b.Property<string>("Room")
