@@ -13,6 +13,9 @@ public class DayOff
     [Column("teacher_id")]
     public int? TeacherId { get; set; }
     
+    [Column("working_hour_id", Order = 2)]
+    public int WorkingHourId { get; set; }
+
     [Column("title")]
     [StringLength(255)]
     public string Title { get; set; }
