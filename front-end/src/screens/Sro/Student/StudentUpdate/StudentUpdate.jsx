@@ -38,6 +38,8 @@ import ManImage from "../../../../images/3d-fluency-businessman-1.png";
 import WomanImage from "../../../../images/3d-fluency-businesswoman-1.png";
 import moment from "moment";
 import { ErrorCodeApi } from "../../../../apis/ErrorCodeApi";
+
+
 const translateStatusStudent = {
   1: "Studying",
   2: "Delay",
