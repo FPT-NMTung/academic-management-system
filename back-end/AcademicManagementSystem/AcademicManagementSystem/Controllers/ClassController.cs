@@ -246,6 +246,11 @@ public class ClassController : ControllerBase
         {
             return "E0072";
         }
+        
+        if(request.ClassHourEnd > TimeSpan.FromHours(22) || request.ClassHourStart < TimeSpan.FromHours(8))
+        {
+            return "E0072_1";
+        }
 
         if (request.StartDate.Date < DateTime.Now.Date)
         {
@@ -282,6 +287,11 @@ public class ClassController : ControllerBase
             || request.ClassHourEnd - request.ClassHourStart > TimeSpan.FromHours(4))
         {
             return "E0072";
+        }
+        
+        if(request.ClassHourEnd > TimeSpan.FromHours(22) || request.ClassHourStart < TimeSpan.FromHours(8))
+        {
+            return "E0072_1";
         }
 
         if (request.StartDate.Date < createdStartDate.Date)
