@@ -11,6 +11,7 @@ public class Room
         ClassSchedulesTheoryRoom = new HashSet<ClassSchedule>();
         ClassSchedulesLabRoom = new HashSet<ClassSchedule>();
         ClassSchedulesExamRoom = new HashSet<ClassSchedule>();
+        Sessions = new HashSet<Session>();
     }
 
     [Key]
@@ -42,4 +43,5 @@ public class Room
     public virtual ICollection<ClassSchedule> ClassSchedulesLabRoom { get; set; }
     [InverseProperty("ExamRoom")]
     public virtual ICollection<ClassSchedule> ClassSchedulesExamRoom { get; set; }
+    public virtual ICollection<Session> Sessions { get; set; } 
 }
