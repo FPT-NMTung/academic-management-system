@@ -5,6 +5,7 @@ using AcademicManagementSystem.Models.ClassDaysController;
 using AcademicManagementSystem.Models.ClassScheduleController.ClassScheduleModel;
 using AcademicManagementSystem.Models.ClassStatusController;
 using AcademicManagementSystem.Models.TeacherSkillController;
+using AcademicManagementSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,15 +16,17 @@ namespace AcademicManagementSystem.Controllers;
 public class ClassScheduleController : ControllerBase
 {
     private readonly AmsContext _context;
+    private readonly IUserService _userService;
     private const int StatusScheduled = 1;
     private const int Theory = 1;
     private const int Practice = 2;
     private const int TheoryExam = 3;
     private const int PracticeExam = 4;
 
-    public ClassScheduleController(AmsContext context)
+    public ClassScheduleController(AmsContext context, IUserService userService)
     {
         _context = context;
+        _userService = userService;
     }
 
     [HttpGet]
@@ -46,14 +49,17 @@ public class ClassScheduleController : ControllerBase
     [Authorize(Roles = "sro")]
     public IActionResult CreateClassSchedule(int classId, [FromBody] CreateClassScheduleRequest request)
     {
-        var classContext = _context.Classes.Find(classId);
+        var centerId = _context.Sros.Include(sro => sro.User)
+            .FirstOrDefault(sro => sro.UserId == Int32.Parse(_userService.GetUserId()))?.User.CenterId;
+
+        var classContext = _context.Classes.FirstOrDefault(cl => cl.CenterId == centerId && cl.Id == classId);
         if (classContext == null)
         {
             return NotFound(CustomResponse.NotFound("Class not found"));
         }
 
         var module = GetModulesBelongToThisClass(classId)
-            .FirstOrDefault(m => m.Id == request.ModuleId);
+            .FirstOrDefault(m => m.Id == request.ModuleId && centerId == m.CenterId);
 
         if (module == null)
         {
@@ -111,12 +117,17 @@ public class ClassScheduleController : ControllerBase
 
         var learningDate = request.StartDate;
         var endDate = new DateTime();
+        
+        // get list day off of teacher
+        var dayOff = _context.DaysOff.Where(t => t.TeacherId == null || t.TeacherId == request.TeacherId);
+        var teacherDayOff = dayOff.ToList();
+        var globalDayOff = dayOff.Where(d => d.TeacherId == null).ToList();
 
-        // auto add session base on durations
+            // auto add session base on durations
         var i = 0;
         while (i < request.Duration)
         {
-            if (IsValidLearningDate(request, learningDate))
+            if (IsValidLearningDate(request, learningDate, teacherDayOff))
             {
                 i++;
                 var session = new Session
@@ -140,76 +151,61 @@ public class ClassScheduleController : ControllerBase
             }
 
             if (i == request.Duration)
-            {
                 endDate = learningDate;
-            }
 
             learningDate += TimeSpan.FromDays(1);
         }
-
         classScheduleToCreate.EndDate = endDate;
 
-        var theoryExamDate = endDate + TimeSpan.FromDays(2);
-
-        // increase day to check if day is not valid
-        while (!IsValidLearningDate(request, theoryExamDate))
+        // check if module has theory exam
+        if (new List<int>() {1, 3}.Contains(module.ExamType))
         {
-            theoryExamDate += TimeSpan.FromDays(1);
+            while (true)
+            {
+                if (IsValidLearningDate(request, learningDate, globalDayOff))
+                {
+                    var session = new Session
+                    {
+                        SessionTypeId = TheoryExam,
+                        RoomId = request.TheoryRoomId,
+                        Title = module.ModuleName + " - TheoryExam",
+                        LearningDate = learningDate,
+                        StartTime = request.ClassHourStart + TimeSpan.FromHours(1),
+                        EndTime = request.ClassHourStart + TimeSpan.FromHours(2),
+                    };
+                    
+                    learningDate += TimeSpan.FromDays(1);
+                    classScheduleToCreate.Sessions.Add(session);
+                    break;
+                }
+                
+                learningDate += TimeSpan.FromDays(1);
+            }
         }
-
-        // theory exam take 1 hour
-        var theoryExamSession = new Session()
+        
+        // check if module has practice exam
+        if (new List<int>() {2, 3}.Contains(module.ExamType))
         {
-            SessionTypeId = TheoryExam,
-            Title = module.ModuleName + " Theory Exam",
-            LearningDate = theoryExamDate,
-            StartTime = request.ClassHourStart + TimeSpan.FromHours(1),
-            EndTime = request.ClassHourStart + TimeSpan.FromHours(2),
-            RoomId = request.ExamRoomId
-        };
-
-        var practiceExamDate = theoryExamDate + TimeSpan.FromDays(2);
-
-        // increase day to check if day is not valid
-        while (!IsValidLearningDate(request, practiceExamDate))
-        {
-            practiceExamDate += TimeSpan.FromDays(1);
-        }
-
-        // practice exam take 1.5 hours
-        var practiceExamSession = new Session()
-        {
-            SessionTypeId = PracticeExam,
-            Title = module.ModuleName + " Practice Exam",
-            LearningDate = practiceExamDate,
-            StartTime = request.ClassHourStart + TimeSpan.FromHours(1),
-            EndTime = request.ClassHourStart + TimeSpan.FromHours(2.5),
-            RoomId = request.ExamRoomId
-        };
-
-        // add exam session base on exam type
-        switch (module.ExamType)
-        {
-            // theory exam
-            case 1:
-                classScheduleToCreate.TheoryExamDate = theoryExamDate;
-                classScheduleToCreate.Sessions.Add(theoryExamSession);
-                break;
-            // practice exam
-            case 2:
-                classScheduleToCreate.PracticalExamDate = practiceExamDate;
-                classScheduleToCreate.Sessions.Add(practiceExamSession);
-                break;
-            // both theory and practice exam
-            case 3:
-                classScheduleToCreate.TheoryExamDate = theoryExamDate;
-                classScheduleToCreate.PracticalExamDate = practiceExamDate;
-                classScheduleToCreate.Sessions.Add(theoryExamSession);
-                classScheduleToCreate.Sessions.Add(practiceExamSession);
-                break;
-            // no exam
-            case 4:
-                break;
+            while (true)
+            {
+                if (IsValidLearningDate(request, learningDate, globalDayOff))
+                {
+                    var session = new Session
+                    {
+                        SessionTypeId = PracticeExam,
+                        RoomId = request.LabRoomId,
+                        Title = module.ModuleName + " - PracticeExam",
+                        LearningDate = learningDate,
+                        StartTime = request.ClassHourStart + TimeSpan.FromHours(1),
+                        EndTime = request.ClassHourStart + TimeSpan.FromHours(2.5),
+                    };
+                    
+                    classScheduleToCreate.Sessions.Add(session);
+                    break;
+                }
+                
+                learningDate += TimeSpan.FromDays(1);
+            }
         }
 
         _context.ClassSchedules.Add(classScheduleToCreate);
@@ -243,33 +239,28 @@ public class ClassScheduleController : ControllerBase
         return request.StartDate.Date <= lastSession.LearningDate.Date ? "E0089" : null;
     }
 
-    private bool IsValidLearningDate(CreateClassScheduleRequest request, DateTime learningDate)
+    private bool IsValidLearningDate(CreateClassScheduleRequest request, DateTime learningDate, List<DayOff> listDayOff)
     {
-        var isDayOff = _context.DaysOff.Any(dayOff =>
-            dayOff.Date.Date == learningDate.Date &&
-            (dayOff.TeacherId == null || dayOff.TeacherId == request.TeacherId));
+        if (learningDate.DayOfWeek is DayOfWeek.Sunday)
+            return false;
+        
+        var isDayOff = listDayOff.Find(item => item.Date == learningDate);
+        if (isDayOff != null)
+            return false;
+        
         switch (request.ClassDaysId)
         {
             // monday, wednesday, friday
             case 1:
-                if (isDayOff || learningDate.DayOfWeek is DayOfWeek.Tuesday
-                        or DayOfWeek.Thursday or DayOfWeek.Saturday or DayOfWeek.Sunday)
-                {
+                if (learningDate.DayOfWeek is DayOfWeek.Tuesday or DayOfWeek.Thursday or DayOfWeek.Saturday)
                     return false;
-                }
-
                 break;
             // tuesday, thursday, saturday
             case 2:
-                if (isDayOff || learningDate.DayOfWeek is DayOfWeek.Monday
-                        or DayOfWeek.Wednesday or DayOfWeek.Friday or DayOfWeek.Sunday)
-                {
+                if (learningDate.DayOfWeek is DayOfWeek.Monday or DayOfWeek.Wednesday or DayOfWeek.Friday)
                     return false;
-                }
-
                 break;
         }
-
         return true;
     }
 
@@ -281,50 +272,40 @@ public class ClassScheduleController : ControllerBase
         var theoryRoom = _context.Rooms.Find(request.TheoryRoomId);
         var labRoom = _context.Rooms.Find(request.LabRoomId);
 
-        var isDayOff =
-            _context.DaysOff.Any(dayOff => dayOff.Date.Date == request.StartDate.Date && dayOff.TeacherId == null);
-        var isTeacherDayOff =
-            _context.DaysOff.Any(d => d.Date.Date == request.StartDate.Date && d.TeacherId == request.TeacherId);
+        // var isDayOff =
+        //     _context.DaysOff.Any(dayOff => dayOff.Date.Date == request.StartDate.Date && dayOff.TeacherId == null);
+        // var isTeacherDayOff =
+        //     _context.DaysOff.Any(d => d.Date.Date == request.StartDate.Date && d.TeacherId == request.TeacherId);
 
         // Check if module is already scheduled for this class -> can't create new schedule
         if (isModuleScheduledForThisClass)
-        {
             return "E0079";
-        }
 
         if (request.Duration <= 0)
-        {
             return "E0080";
-        }
 
         if (request.StartDate.Date < DateTime.Now.Date)
-        {
             return "E0081";
-        }
 
         // sunday or day off  
-        if (isDayOff || request.StartDate.DayOfWeek == DayOfWeek.Sunday)
-        {
-            return "E0085";
-        }
-
-        if (isTeacherDayOff)
-        {
-            return "E0086";
-        }
-
-        switch (request.ClassDaysId)
-        {
-            // check if request start date match to class days
-            case 1 when request.StartDate.DayOfWeek != DayOfWeek.Monday &&
-                        request.StartDate.DayOfWeek != DayOfWeek.Wednesday &&
-                        request.StartDate.DayOfWeek != DayOfWeek.Friday:
-
-            case 2 when request.StartDate.DayOfWeek != DayOfWeek.Tuesday &&
-                        request.StartDate.DayOfWeek != DayOfWeek.Thursday &&
-                        request.StartDate.DayOfWeek != DayOfWeek.Saturday:
-                return "E0087";
-        }
+        // if (isDayOff || request.StartDate.DayOfWeek == DayOfWeek.Sunday)
+        //     return "E0085";
+        //
+        // if (isTeacherDayOff)
+        //     return "E0086";
+        //
+        // switch (request.ClassDaysId)
+        // {
+        //     // check if request start date match to class days
+        //     case 1 when request.StartDate.DayOfWeek != DayOfWeek.Monday &&
+        //                 request.StartDate.DayOfWeek != DayOfWeek.Wednesday &&
+        //                 request.StartDate.DayOfWeek != DayOfWeek.Friday:
+        //
+        //     case 2 when request.StartDate.DayOfWeek != DayOfWeek.Tuesday &&
+        //                 request.StartDate.DayOfWeek != DayOfWeek.Thursday &&
+        //                 request.StartDate.DayOfWeek != DayOfWeek.Saturday:
+        //         return "E0087";
+        // }
 
         if (request.PracticeSession != null && request.PracticeSession.Any() &&
             request.PracticeSession.Any(practice => practice > request.Duration || practice <= 0))
@@ -361,52 +342,51 @@ public class ClassScheduleController : ControllerBase
     // check all resource in class schedule is busy in session date
     private string? GetErrorCodeWhenConflictResource(int classId, CreateClassScheduleRequest request)
     {
-
         var classSchedule = _context.ClassSchedules
             .Include(cs => cs.Sessions)
             .FirstOrDefault(cs => cs.ClassId != classId);
 
         if (classSchedule == null) return null;
-        
+
         // check teacher busy in schedule
-        var isTeacherBusy = classSchedule.Sessions.Any(s =>
-            s.ClassSchedule.TeacherId == request.TeacherId && s.LearningDate.Date == request.StartDate.Date
-                                                           && (IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourStart)
-                                                               || IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourEnd)));
+        var isTeacherBusy = classSchedule.Sessions.Any(s
+            => s.ClassSchedule.TeacherId == request.TeacherId &&
+               s.LearningDate.Date == request.StartDate.Date &&
+               (IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourStart) ||
+                IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourEnd)));
 
-
-        var isTheoryRoomBusy = classSchedule.Sessions.Any(s =>
-            s.RoomId == request.TheoryRoomId && s.LearningDate.Date == request.StartDate.Date
-                                             && (IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourStart)
-                                             || IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourEnd)));
-        
-        var isLabRoomBusy = classSchedule.Sessions.Any(s =>
-            s.RoomId == request.LabRoomId && s.LearningDate.Date == request.StartDate.Date
-                                          && (IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourStart)
-                                              || IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourEnd)));
-
-        var isExamRoomBusy = classSchedule.Sessions.Any(s => s.SessionTypeId is PracticeExam or TheoryExam &&
-                                                             s.RoomId == request.ExamRoomId &&
-                                                             s.LearningDate.Date == request.StartDate.Date
-                                                             && (IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourStart)
-                                                                 || IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourEnd)));
-        
         if (isTeacherBusy)
-        {
             return "E0093";
-        }
+
+        var isTheoryRoomBusy = classSchedule.Sessions.Any(s
+            => s.RoomId == request.TheoryRoomId &&
+               s.LearningDate.Date == request.StartDate.Date &&
+               (IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourStart) ||
+                IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourEnd)));
 
         if (isTheoryRoomBusy)
-        {
             return "E0090";
-        }
+
+        var isLabRoomBusy = classSchedule.Sessions.Any(s
+            => s.RoomId == request.LabRoomId &&
+               s.LearningDate.Date == request.StartDate.Date &&
+               (IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourStart) ||
+                IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourEnd)));
 
         if (isLabRoomBusy)
-        {
             return "E0091";
-        }
 
-        return isExamRoomBusy ? "E0092" : null;
+        var isExamRoomBusy = classSchedule.Sessions.Any(s
+            => s.SessionTypeId is PracticeExam or TheoryExam &&
+               s.RoomId == request.ExamRoomId &&
+               s.LearningDate.Date == request.StartDate.Date &&
+               (IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourStart) ||
+                IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourEnd)));
+
+        if (isExamRoomBusy)
+            return "E0092";
+
+        return null;
     }
 
     private IQueryable<ClassScheduleResponse> GetClassSchedulesResponse(int classId)

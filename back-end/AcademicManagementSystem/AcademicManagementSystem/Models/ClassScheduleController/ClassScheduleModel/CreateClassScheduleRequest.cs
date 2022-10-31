@@ -38,6 +38,10 @@ public class CreateClassScheduleRequest
     [JsonPropertyName("class_hour_end")]
     public TimeSpan ClassHourEnd { get; set; }
     
+    // 1: morning, 2: afternoon, 3: evening
+    [JsonPropertyName("slot")]
+    public int Slot { get; set; }
+    
     [JsonPropertyName("note")]
     public string? Note { get; set; }
 }
