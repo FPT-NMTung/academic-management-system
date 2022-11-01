@@ -263,6 +263,8 @@ public static class ErrorDescription
         { "E0092", new ErrorModel() { Message = "Exam Room Busy", Type = "class-schedule-error-0016" } },
         { "E0093", new ErrorModel() { Message = "Teacher Busy", Type = "class-schedule-error-0017" } },
         { "E0094", new ErrorModel() { Message = "Class not ready to add schedule", Type = "class-schedule-error-0018" } },
+        { "E0095", new ErrorModel() { Message = "learning time not match with working time id", Type = "class-schedule-error-0019" } },
+
     };
 }
 

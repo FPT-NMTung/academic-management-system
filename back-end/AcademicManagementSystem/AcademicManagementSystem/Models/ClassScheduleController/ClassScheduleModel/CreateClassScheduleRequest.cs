@@ -13,6 +13,9 @@ public class CreateClassScheduleRequest
     [JsonPropertyName("class_days_id")]
     public int ClassDaysId { get; set; }
 
+    [JsonPropertyName("working_time_id")]
+    public int WorkingTimeId { get; set; }
+    
     [JsonPropertyName("theory_room_id")]
     public int TheoryRoomId { get; set; }
     
