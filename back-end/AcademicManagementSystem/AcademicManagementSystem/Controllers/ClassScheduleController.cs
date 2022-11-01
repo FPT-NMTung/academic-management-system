@@ -113,6 +113,7 @@ public class ClassScheduleController : ControllerBase
             ModuleId = request.ModuleId,
             TeacherId = request.TeacherId,
             ClassDaysId = request.ClassDaysId,
+            WorkingTimeId = request.WorkingTimeId,
             ClassStatusId = StatusScheduled,
             TheoryRoomId = request.TheoryRoomId,
             LabRoomId = request.LabRoomId,
@@ -288,26 +289,26 @@ public class ClassScheduleController : ControllerBase
 
         if (isTeacherDayOff && isDayOff != null)
         {
-            if (isDayOff.WorkingHourId == 7)
+            if (isDayOff.WorkingTimeId == 7)
             {
                 return false;
             }
 
-            if (new List<int> { 1, 4, 5 }.Contains(isDayOff.WorkingHourId) &&
+            if (new List<int> { 1, 4, 5 }.Contains(isDayOff.WorkingTimeId) &&
                 (IsTimeInRange(TimeSpan.FromHours(8), TimeSpan.FromHours(12), request.ClassHourStart)
                  || IsTimeInRange(TimeSpan.FromHours(8), TimeSpan.FromHours(12), request.ClassHourEnd)))
             {
                 return false;
             }
 
-            if (new List<int> { 2, 4, 6 }.Contains(isDayOff.WorkingHourId) &&
+            if (new List<int> { 2, 4, 6 }.Contains(isDayOff.WorkingTimeId) &&
                 (IsTimeInRange(TimeSpan.FromHours(13), TimeSpan.FromHours(17), request.ClassHourStart)
                  || IsTimeInRange(TimeSpan.FromHours(13), TimeSpan.FromHours(17), request.ClassHourEnd)))
             {
                 return false;
             }
 
-            if (new List<int> { 3, 5, 6 }.Contains(isDayOff.WorkingHourId) &&
+            if (new List<int> { 3, 5, 6 }.Contains(isDayOff.WorkingTimeId) &&
                 (IsTimeInRange(TimeSpan.FromHours(18), TimeSpan.FromHours(22), request.ClassHourStart)
                  || IsTimeInRange(TimeSpan.FromHours(18), TimeSpan.FromHours(22), request.ClassHourEnd)))
             {
@@ -340,6 +341,35 @@ public class ClassScheduleController : ControllerBase
 
         if (request.StartDate.Date < DateTime.Now.Date)
             return "E0081";
+
+        switch (request.WorkingTimeId)
+        {
+            case 1:
+                if (!IsTimeInRange(TimeSpan.FromHours(8), TimeSpan.FromHours(12), request.ClassHourStart)
+                    || !IsTimeInRange(TimeSpan.FromHours(8), TimeSpan.FromHours(12), request.ClassHourEnd))
+                {
+                    return "E0095";
+                }
+
+                break;
+            case 2:
+                if (!IsTimeInRange(TimeSpan.FromHours(13), TimeSpan.FromHours(17), request.ClassHourStart)
+                    || !IsTimeInRange(TimeSpan.FromHours(13), TimeSpan.FromHours(17), request.ClassHourEnd))
+                {
+                    return "E0095";
+                }
+
+                break;
+            case 3:
+                if (!IsTimeInRange(TimeSpan.FromHours(18), TimeSpan.FromHours(22), request.ClassHourStart)
+                    || !IsTimeInRange(TimeSpan.FromHours(18), TimeSpan.FromHours(22), request.ClassHourEnd))
+                {
+                    return "E0095";
+                }
+
+                break;
+            default: return "E0095";
+        }
 
         if (request.PracticeSession != null && request.PracticeSession.Any() &&
             request.PracticeSession.Any(practice => practice > request.Duration || practice <= 0))
