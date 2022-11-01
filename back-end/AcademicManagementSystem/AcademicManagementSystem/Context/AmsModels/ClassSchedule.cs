@@ -46,17 +46,17 @@ public class ClassSchedule
     [Column("duration")]
     public int Duration { get; set; }
     
-    [Column("start_date")]
+    [Column("start_date", TypeName = "date")]
     public DateTime StartDate { get; set; }
     
-    [Column("end_date")]
+    [Column("end_date", TypeName = "date")]
     public DateTime EndDate { get; set; }
     
-    [Column("theory_exam_date")]
-    public DateTime TheoryExamDate { get; set; }
+    [Column("theory_exam_date", TypeName = "date")]
+    public DateTime? TheoryExamDate { get; set; }
     
-    [Column("practical_exam_date")]
-    public DateTime PracticalExamDate { get; set; }
+    [Column("practical_exam_date", TypeName = "date")]
+    public DateTime? PracticalExamDate { get; set; }
     
     [Column("class_hour_start", TypeName = "time")]
     public TimeSpan ClassHourStart { get; set; }
