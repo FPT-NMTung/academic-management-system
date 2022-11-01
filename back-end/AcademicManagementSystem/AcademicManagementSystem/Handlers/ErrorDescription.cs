@@ -245,6 +245,7 @@ public static class ErrorDescription
         
         // class schedule
         { "E0077", new ErrorModel() { Message = "Module Not For This Class", Type = "class-schedule-error-0001" } },
+        { "E0077_1", new ErrorModel() { Message = "Teacher Not For This Center", Type = "class-schedule-error-0001_1" } },
         { "E0078", new ErrorModel() { Message = "Invalid Data", Type = "class-schedule-error-0002" } },
         { "E0079", new ErrorModel() { Message = "This module for this class already in schedule", Type = "class-schedule-error-0003" } },
         { "E0080", new ErrorModel() { Message = "Duration must bigger than 0", Type = "class-schedule-error-0004" } },
@@ -262,7 +263,7 @@ public static class ErrorDescription
         { "E0091", new ErrorModel() { Message = "Lab Room Busy", Type = "class-schedule-error-0015" } },
         { "E0092", new ErrorModel() { Message = "Exam Room Busy", Type = "class-schedule-error-0016" } },
         { "E0093", new ErrorModel() { Message = "Teacher Busy", Type = "class-schedule-error-0017" } },
-
+        { "E0094", new ErrorModel() { Message = "Class not ready to add schedule", Type = "class-schedule-error-0018" } },
     };
 }
 

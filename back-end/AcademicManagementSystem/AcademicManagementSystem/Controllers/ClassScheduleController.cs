@@ -58,12 +58,31 @@ public class ClassScheduleController : ControllerBase
             return NotFound(CustomResponse.NotFound("Class not found"));
         }
 
+        var isDraftStudent =
+            _context.StudentsClasses.Any(sc => sc.ClassId == classContext.Id && sc.Student.IsDraft);
+
+        // check student is in student class or not
+        if (isDraftStudent)
+        {
+            var error = ErrorDescription.Error["E0094"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         var module = GetModulesBelongToThisClass(classId)
             .FirstOrDefault(m => m.Id == request.ModuleId && centerId == m.CenterId);
 
         if (module == null)
         {
             var error = ErrorDescription.Error["E0077"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var teacher =
+            _context.Teachers.FirstOrDefault(t => t.UserId == request.TeacherId && t.User.CenterId == centerId);
+
+        if (teacher == null)
+        {
+            var error = ErrorDescription.Error["E0077_1"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -117,17 +136,18 @@ public class ClassScheduleController : ControllerBase
 
         var learningDate = request.StartDate;
         var endDate = new DateTime();
-        
+
         // get list day off of teacher
-        var dayOff = _context.DaysOff.Where(t => t.TeacherId == null || t.TeacherId == request.TeacherId);
+        var dayOff = _context.DaysOff.Where(d =>
+            d.TeacherId == null || d.TeacherId == request.TeacherId && d.Date.Date >= request.StartDate.Date);
         var teacherDayOff = dayOff.ToList();
         var globalDayOff = dayOff.Where(d => d.TeacherId == null).ToList();
 
-            // auto add session base on durations
+        // auto add session base on durations
         var i = 0;
         while (i < request.Duration)
         {
-            if (IsValidLearningDate(request, learningDate, teacherDayOff))
+            if (IsValidLearningDate(request, learningDate, teacherDayOff, true))
             {
                 i++;
                 var session = new Session
@@ -155,14 +175,15 @@ public class ClassScheduleController : ControllerBase
 
             learningDate += TimeSpan.FromDays(1);
         }
+
         classScheduleToCreate.EndDate = endDate;
 
         // check if module has theory exam
-        if (new List<int>() {1, 3}.Contains(module.ExamType))
+        if (new List<int>() { 1, 3 }.Contains(module.ExamType))
         {
             while (true)
             {
-                if (IsValidLearningDate(request, learningDate, globalDayOff))
+                if (IsValidLearningDate(request, learningDate, globalDayOff, false))
                 {
                     var session = new Session
                     {
@@ -173,22 +194,22 @@ public class ClassScheduleController : ControllerBase
                         StartTime = request.ClassHourStart + TimeSpan.FromHours(1),
                         EndTime = request.ClassHourStart + TimeSpan.FromHours(2),
                     };
-                    
+                    classScheduleToCreate.TheoryExamDate = learningDate;
                     learningDate += TimeSpan.FromDays(1);
                     classScheduleToCreate.Sessions.Add(session);
                     break;
                 }
-                
+
                 learningDate += TimeSpan.FromDays(1);
             }
         }
-        
+
         // check if module has practice exam
-        if (new List<int>() {2, 3}.Contains(module.ExamType))
+        if (new List<int>() { 2, 3 }.Contains(module.ExamType))
         {
             while (true)
             {
-                if (IsValidLearningDate(request, learningDate, globalDayOff))
+                if (IsValidLearningDate(request, learningDate, globalDayOff, false))
                 {
                     var session = new Session
                     {
@@ -199,14 +220,18 @@ public class ClassScheduleController : ControllerBase
                         StartTime = request.ClassHourStart + TimeSpan.FromHours(1),
                         EndTime = request.ClassHourStart + TimeSpan.FromHours(2.5),
                     };
-                    
+                    classScheduleToCreate.PracticalExamDate = learningDate;
                     classScheduleToCreate.Sessions.Add(session);
                     break;
                 }
-                
+
                 learningDate += TimeSpan.FromDays(1);
             }
         }
+
+
+        // update class status
+        classContext.ClassStatusId = StatusScheduled;
 
         _context.ClassSchedules.Add(classScheduleToCreate);
 
@@ -239,15 +264,12 @@ public class ClassScheduleController : ControllerBase
         return request.StartDate.Date <= lastSession.LearningDate.Date ? "E0089" : null;
     }
 
-    private bool IsValidLearningDate(CreateClassScheduleRequest request, DateTime learningDate, List<DayOff> listDayOff)
+    private bool IsValidLearningDate(CreateClassScheduleRequest request, DateTime learningDate, List<DayOff> listDayOff,
+        bool isTeacherDayOff)
     {
         if (learningDate.DayOfWeek is DayOfWeek.Sunday)
             return false;
-        
-        var isDayOff = listDayOff.Find(item => item.Date == learningDate);
-        if (isDayOff != null)
-            return false;
-        
+
         switch (request.ClassDaysId)
         {
             // monday, wednesday, friday
@@ -261,6 +283,43 @@ public class ClassScheduleController : ControllerBase
                     return false;
                 break;
         }
+
+        var isDayOff = listDayOff.Find(item => item.Date.Date == learningDate.Date);
+
+        if (isTeacherDayOff && isDayOff != null)
+        {
+            if (isDayOff.WorkingHourId == 7)
+            {
+                return false;
+            }
+
+            if (new List<int> { 1, 4, 5 }.Contains(isDayOff.WorkingHourId) &&
+                (IsTimeInRange(TimeSpan.FromHours(8), TimeSpan.FromHours(12), request.ClassHourStart)
+                 || IsTimeInRange(TimeSpan.FromHours(8), TimeSpan.FromHours(12), request.ClassHourEnd)))
+            {
+                return false;
+            }
+
+            if (new List<int> { 2, 4, 6 }.Contains(isDayOff.WorkingHourId) &&
+                (IsTimeInRange(TimeSpan.FromHours(13), TimeSpan.FromHours(17), request.ClassHourStart)
+                 || IsTimeInRange(TimeSpan.FromHours(13), TimeSpan.FromHours(17), request.ClassHourEnd)))
+            {
+                return false;
+            }
+
+            if (new List<int> { 3, 5, 6 }.Contains(isDayOff.WorkingHourId) &&
+                (IsTimeInRange(TimeSpan.FromHours(18), TimeSpan.FromHours(22), request.ClassHourStart)
+                 || IsTimeInRange(TimeSpan.FromHours(18), TimeSpan.FromHours(22), request.ClassHourEnd)))
+            {
+                return false;
+            }
+        }
+
+        if (!isTeacherDayOff && isDayOff != null)
+        {
+            return false;
+        }
+
         return true;
     }
 
@@ -272,11 +331,6 @@ public class ClassScheduleController : ControllerBase
         var theoryRoom = _context.Rooms.Find(request.TheoryRoomId);
         var labRoom = _context.Rooms.Find(request.LabRoomId);
 
-        // var isDayOff =
-        //     _context.DaysOff.Any(dayOff => dayOff.Date.Date == request.StartDate.Date && dayOff.TeacherId == null);
-        // var isTeacherDayOff =
-        //     _context.DaysOff.Any(d => d.Date.Date == request.StartDate.Date && d.TeacherId == request.TeacherId);
-
         // Check if module is already scheduled for this class -> can't create new schedule
         if (isModuleScheduledForThisClass)
             return "E0079";
@@ -286,26 +340,6 @@ public class ClassScheduleController : ControllerBase
 
         if (request.StartDate.Date < DateTime.Now.Date)
             return "E0081";
-
-        // sunday or day off  
-        // if (isDayOff || request.StartDate.DayOfWeek == DayOfWeek.Sunday)
-        //     return "E0085";
-        //
-        // if (isTeacherDayOff)
-        //     return "E0086";
-        //
-        // switch (request.ClassDaysId)
-        // {
-        //     // check if request start date match to class days
-        //     case 1 when request.StartDate.DayOfWeek != DayOfWeek.Monday &&
-        //                 request.StartDate.DayOfWeek != DayOfWeek.Wednesday &&
-        //                 request.StartDate.DayOfWeek != DayOfWeek.Friday:
-        //
-        //     case 2 when request.StartDate.DayOfWeek != DayOfWeek.Tuesday &&
-        //                 request.StartDate.DayOfWeek != DayOfWeek.Thursday &&
-        //                 request.StartDate.DayOfWeek != DayOfWeek.Saturday:
-        //         return "E0087";
-        // }
 
         if (request.PracticeSession != null && request.PracticeSession.Any() &&
             request.PracticeSession.Any(practice => practice > request.Duration || practice <= 0))
