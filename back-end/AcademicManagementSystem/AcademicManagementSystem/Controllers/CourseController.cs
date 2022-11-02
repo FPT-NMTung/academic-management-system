@@ -184,7 +184,7 @@ public class CourseController : ControllerBase
             var error = ErrorDescription.Error["E1016"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         if (IsCourseNameWithDifferentCodeExists(request.Name, code))
         {
             var error = ErrorDescription.Error["E1058"];
@@ -258,7 +258,7 @@ public class CourseController : ControllerBase
         var courseResponse = GetCourseResponse(selectedCourse);
         return Ok(CustomResponse.Ok("Active status course changed successfully", courseResponse));
     }
-    
+
     // Can delete course
     [HttpGet]
     [Route("api/courses/{code}/can-delete")]
@@ -278,7 +278,7 @@ public class CourseController : ControllerBase
             CanDelete = canDelete
         }));
     }
-    
+
     // delete course
     [HttpDelete]
     [Route("api/courses/{code}")]
@@ -335,7 +335,7 @@ public class CourseController : ControllerBase
 
         return selectCourse.CoursesModulesSemesters.Count <= 0 && selectCourse.Students.Count <= 0;
     }
-    
+
     // is course code exists
     private bool IsCourseCodeExists(string code)
     {
