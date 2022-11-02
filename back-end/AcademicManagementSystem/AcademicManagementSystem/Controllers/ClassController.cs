@@ -246,6 +246,11 @@ public class ClassController : ControllerBase
         {
             return "E0072";
         }
+        
+        if(request.ClassHourEnd > TimeSpan.FromHours(22) || request.ClassHourStart < TimeSpan.FromHours(8))
+        {
+            return "E0072_1";
+        }
 
         if (request.StartDate.Date < DateTime.Now.Date)
         {
@@ -282,6 +287,11 @@ public class ClassController : ControllerBase
             || request.ClassHourEnd - request.ClassHourStart > TimeSpan.FromHours(4))
         {
             return "E0072";
+        }
+        
+        if(request.ClassHourEnd > TimeSpan.FromHours(22) || request.ClassHourStart < TimeSpan.FromHours(8))
+        {
+            return "E0072_1";
         }
 
         if (request.StartDate.Date < createdStartDate.Date)
@@ -393,8 +403,10 @@ public class ClassController : ControllerBase
     public ActionResult ImportStudentFromExcel(int id)
     {
         //is class exists
-        var existedClass = _context.Classes.Any(c => c.Id == id);
-        if (!existedClass)
+        var existedClassInCenter = _context.Classes
+            .Include(c => c.Center)
+            .Any(c => c.Id == id && c.CenterId == _user.CenterId);
+        if (!existedClassInCenter)
         {
             var error = ErrorDescription.Error["E1073"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -504,7 +516,8 @@ public class ClassController : ControllerBase
                         var newIdentityCardPublishedDate =
                             DateTime.Parse(identityCardPublishedDate ?? throw new InvalidOperationException());
                         var newStatusDate = DateTime.Parse(statusDate ?? throw new InvalidOperationException());
-                        var newApplicationDate = DateTime.Parse(applicationDate ?? throw new InvalidOperationException());
+                        var newApplicationDate =
+                            DateTime.Parse(applicationDate ?? throw new InvalidOperationException());
 
                         var genderId = gender switch
                         {
@@ -616,8 +629,10 @@ public class ClassController : ControllerBase
     public IActionResult AddStudentToClass(int id, [FromBody] AddStudentToClassRequest request)
     {
         //is class exists
-        var existedClass = _context.Classes.Any(c => c.Id == id);
-        if (!existedClass)
+        var existedClassInCenter = _context.Classes
+            .Include(c => c.Center)
+            .Any(c => c.Id == id && c.CenterId == _user.CenterId);
+        if (!existedClassInCenter)
         {
             var error = ErrorDescription.Error["E1073"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -1197,7 +1212,7 @@ public class ClassController : ControllerBase
                     Id = u.Role.Id, Value = u.Role.Value
                 }
             })
-            .Where(c => c.CenterId == _user.CenterId)
+            .Where(s => s.CenterId == _user.CenterId)
             .ToList();
         return students;
     }

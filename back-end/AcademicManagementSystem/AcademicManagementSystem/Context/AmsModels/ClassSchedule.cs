@@ -27,6 +27,9 @@ public class ClassSchedule
     [Column("class_days_id")]
     public int ClassDaysId { get; set; }
     
+    [Column("working_time_id",Order = 5)]
+    public int WorkingTimeId { get; set; }
+    
     [Column("class_status_id")]
     public int ClassStatusId { get; set; }
     
