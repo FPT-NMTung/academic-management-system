@@ -579,6 +579,7 @@ public class ClassController : ControllerBase
                                     new StudentClass()
                                     {
                                         ClassId = id,
+                                        IsActive = true,
                                         CreatedAt = DateTime.Now,
                                         UpdatedAt = DateTime.Now,
                                     }
@@ -964,6 +965,7 @@ public class ClassController : ControllerBase
                     new StudentClass()
                     {
                         ClassId = id,
+                        IsActive = true,
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now,
                     }
