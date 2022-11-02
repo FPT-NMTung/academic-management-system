@@ -4,6 +4,7 @@ using AcademicManagementSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    partial class AmsContextModelSnapshot : ModelSnapshot
+    [Migration("20221031105252_Add RoomId To Session")]
+    partial class AddRoomIdToSession
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -374,11 +376,6 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
-                    b.Property<int>("WorkingTimeId")
-                        .HasColumnType("int")
-                        .HasColumnName("working_time_id")
-                        .HasColumnOrder(5);
-
                     b.HasKey("Id");
 
                     b.HasIndex("ClassDaysId");
@@ -545,9 +542,9 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("title");
 
-                    b.Property<int>("WorkingTimeId")
+                    b.Property<int>("WorkingHourId")
                         .HasColumnType("int")
-                        .HasColumnName("working_time_id")
+                        .HasColumnName("working_hour_id")
                         .HasColumnOrder(2);
 
                     b.HasKey("Id");
@@ -1239,10 +1236,6 @@ namespace AcademicManagementSystem.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit")
-                        .HasColumnName("is_active");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2")
