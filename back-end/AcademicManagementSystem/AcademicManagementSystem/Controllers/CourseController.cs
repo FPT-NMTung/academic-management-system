@@ -63,7 +63,7 @@ public class CourseController : ControllerBase
     // create course
     [HttpPost]
     [Route("api/courses")]
-    [Authorize(Roles = "admin,sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult CreateCourse([FromBody] CreateCourseRequest request)
     {
         request.Name = request.Name.Trim();
@@ -158,7 +158,7 @@ public class CourseController : ControllerBase
     // update course
     [HttpPut]
     [Route("api/courses/{code}")]
-    [Authorize(Roles = "admin,sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult UpdateCourse(string code, [FromBody] UpdateCourseRequest request)
     {
         request.Name = request.Name.Trim();
@@ -230,10 +230,39 @@ public class CourseController : ControllerBase
         return Ok(CustomResponse.Ok("Course Updated Successfully", courseResponse));
     }
 
+    // change active status
+    [HttpPatch]
+    [Route("api/courses/{code}")]
+    [Authorize(Roles = "admin")]
+    public IActionResult ChangeActiveStatusCourse(string code)
+    {
+        var selectedCourse = _context.Courses
+            .Include(c => c.CourseFamily)
+            .FirstOrDefault(cf => cf.Code == code.Trim());
+
+        if (selectedCourse == null)
+            return NotFound(CustomResponse.NotFound("Course not found"));
+
+        selectedCourse.IsActive = !selectedCourse.IsActive;
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E1117"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var courseResponse = GetCourseResponse(selectedCourse);
+        return Ok(CustomResponse.Ok("Active status course changed successfully", courseResponse));
+    }
+    
     // delete course
     [HttpDelete]
     [Route("api/courses/{code}")]
-    [Authorize(Roles = "admin,sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult DeleteCourse(string code)
     {
         try
@@ -272,6 +301,26 @@ public class CourseController : ControllerBase
         return courseResponse;
     }
 
+    private bool CanDeleteCourse(string code)
+    {
+        var selectCourseFamily = _context.CourseFamilies
+            .Include(cf => cf.Courses)
+            .Include(cf => cf.Classes)
+            .FirstOrDefault(cf => cf.Code == code);
+
+        if (selectCourseFamily == null)
+        {
+            return false;
+        }
+
+        if (selectCourseFamily.Courses.Count > 0 || selectCourseFamily.Classes.Count > 0)
+        {
+            return false;
+        }
+
+        return true;
+    }
+    
     // is course code exists
     private bool IsCourseCodeExists(string code)
     {

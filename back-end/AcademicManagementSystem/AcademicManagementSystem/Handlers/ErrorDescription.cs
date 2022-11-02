@@ -94,6 +94,7 @@ public static class ErrorDescription
         { "E1020", new ErrorModel() { Message = "Semester count mus be between 1-10", Type = "course-error-0007" } },
         { "E1057", new ErrorModel() { Message = "Course name is existed", Type = "course-error-0008" } },
         { "E1058", new ErrorModel() { Message = "Course name with different code is existed", Type = "course-error-0009" } },
+        { "E1117", new ErrorModel() { Message = "Can not change status this Course", Type = "course-error-0010" } },
         
         // module
         { "E1021", new ErrorModel() { Message = "Fail to SaveChange when Add Module", Type = "module-error-0001" } },
