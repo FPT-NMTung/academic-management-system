@@ -437,7 +437,7 @@ public class ClassController : ControllerBase
                         var gender = row.Cell(8).Value.ToString();
                         var birthday = row.Cell(9).Value.ToString();
                         var mobilePhone = row.Cell(10).Value.ToString();
-                        var homePhone = row.Cell(11).Value.ToString();
+                        var homePhone = row.Cell(11).Value.ToString() == "" ? null : row.Cell(11).Value.ToString();
                         var contactPhone = row.Cell(12).Value.ToString();
                         var email = row.Cell(13).Value.ToString();
                         var emailOrganization = row.Cell(14).Value.ToString();
@@ -452,22 +452,22 @@ public class ClassController : ControllerBase
                         var parentalRelative = row.Cell(23).Value.ToString();
                         var parentalPhone = row.Cell(24).Value.ToString();
                         var applicationDate = row.Cell(25).Value.ToString();
-                        var applicationDocuments = row.Cell(26).Value.ToString();
+                        var applicationDocuments = row.Cell(26).Value.ToString() == "" ? null : row.Cell(26).Value.ToString();
                         var courseCode = row.Cell(27).Value.ToString();
-                        var highSchool = row.Cell(29).Value.ToString();
-                        var university = row.Cell(30).Value.ToString();
-                        var facebookUrl = row.Cell(31).Value.ToString();
-                        var portfolio = row.Cell(32).Value.ToString();
-                        var workingCompany = row.Cell(33).Value.ToString();
+                        var highSchool = row.Cell(29).Value.ToString() == "" ? null : row.Cell(29).Value.ToString();
+                        var university = row.Cell(30).Value.ToString() == "" ? null : row.Cell(30).Value.ToString();
+                        var facebookUrl = row.Cell(31).Value.ToString() == "" ? null : row.Cell(31).Value.ToString();
+                        var portfolio = row.Cell(32).Value.ToString() == "" ? null : row.Cell(32).Value.ToString();
+                        var workingCompany = row.Cell(33).Value.ToString() == "" ? null : row.Cell(33).Value.ToString();
                         var companySalary = row.Cell(34).Value.ToString() == ""
                             ? 0
                             : Convert.ToInt32(row.Cell(34).Value.ToString());
-                        var companyPosition = row.Cell(35).Value.ToString();
-                        var companyAddress = row.Cell(36).Value.ToString();
+                        var companyPosition = row.Cell(35).Value.ToString() == "" ? null : row.Cell(35).Value.ToString();
+                        var companyAddress = row.Cell(36).Value.ToString() == "" ? null : row.Cell(36).Value.ToString();
                         var feePlan = row.Cell(37).Value.ToString();
                         var promotion = row.Cell(38).Value.ToString();
 
-                        // check if user exist
+                        // check if user existed => bad request
                         var existedUser = _context.Users.FirstOrDefault(u =>
                             u.Email == email || u.EmailOrganization == emailOrganization ||
                             u.MobilePhone == mobilePhone ||
@@ -478,7 +478,7 @@ public class ClassController : ControllerBase
                             return BadRequest(CustomResponse.BadRequest(error.Message + studentNo, error.Type));
                         }
 
-                        // check if students exist
+                        // check if students exist => bad request
                         var existedStudent = _context.Students.FirstOrDefault(u =>
                             string.Equals(u.EnrollNumber.ToLower(), enrollNumber!.ToLower()));
                         if (existedStudent != null)
@@ -487,20 +487,27 @@ public class ClassController : ControllerBase
                             return BadRequest(CustomResponse.BadRequest(error.Message + studentNo, error.Type));
                         }
 
-                        var provinceId = _context.Provinces.FirstOrDefault(p =>
-                            string.Equals(p.Name.ToLower(), province!.ToLower()))?.Id == null
-                            ? 1
-                            : _context.Provinces.FirstOrDefault(p => p.Name == province)!.Id;
+                        var provinceId =
+                            _context.Provinces.FirstOrDefault(p =>
+                                string.Equals(p.Name.ToLower().Trim(), province!.ToLower().Trim())) == null
+                                ? 1
+                                : _context.Provinces.FirstOrDefault(p => p.Name == province)!.Id;
 
-                        var districtId = _context.Districts.FirstOrDefault(d =>
-                            string.Equals(d.Name.ToLower(), district!.ToLower()))?.Id == null
+                        var districtId = _context.Districts
+                            .Where(d => d.ProvinceId == provinceId)
+                            .FirstOrDefault(d =>
+                                string.Equals(d.Name.ToLower().Trim(), district!.ToLower().Trim())) == null
                             ? 1
-                            : _context.Districts.FirstOrDefault(d => d.Name == district)!.Id;
+                            : _context.Districts.Where(d => d.ProvinceId == provinceId)
+                                .FirstOrDefault(d => d.Name == district)!.Id;
 
-                        var wardId = _context.Wards.FirstOrDefault(w =>
-                            string.Equals(w.Name.ToLower(), ward!.ToLower()))?.Id == null
+                        var wardId = _context.Wards
+                            .Where(w => w.DistrictId == districtId)
+                            .FirstOrDefault(w =>
+                                string.Equals(w.Name.ToLower().Trim(), ward!.ToLower().Trim())) == null
                             ? 1
-                            : _context.Wards.FirstOrDefault(w => w.Name == ward)!.Id;
+                            : _context.Wards.Where(w => w.DistrictId == districtId).FirstOrDefault(w => w.Name == ward)!
+                                .Id;
 
                         var newBirthday = DateTime.Parse(birthday ?? throw new InvalidOperationException());
                         var newIdentityCardPublishedDate =
@@ -529,6 +536,338 @@ public class ClassController : ControllerBase
                             "Finished" => 7,
                             _ => 0
                         };
+
+                        // check input
+                        // is course code exists
+                        var course = _context.Courses.FirstOrDefault(c => c.Code == courseCode && c.IsActive);
+                        if (course == null)
+                        {
+                            var error = ErrorDescription.Error["E1098"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message + " at student no " + studentNo,
+                                error.Type));
+                        }
+
+                        // is enroll number exists
+                        var existedEnrollNumber =
+                            _context.Students.Any(s =>
+                                enrollNumber != null &&
+                                string.Equals(s.EnrollNumber.ToLower(), enrollNumber.ToLower()));
+                        if (existedEnrollNumber)
+                        {
+                            var error = ErrorDescription.Error["E1115"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message + " at student no " + studentNo,
+                                error.Type));
+                        }
+
+                        if (firstName != null)
+                        {
+                            firstName = Regex.Replace(firstName, StringConstant.RegexWhiteSpaces, " ");
+                            // function replace string ex: H ' Hen Nie => H'Hen Nie
+                            firstName = firstName.Replace(" ' ", "'").Trim();
+                            if (Regex.IsMatch(firstName, StringConstant.RegexSpecialCharsNotAllowForPersonName)
+                                || Regex.IsMatch(firstName, StringConstant.RegexDigits))
+                            {
+                                var error = ErrorDescription.Error["E1076"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+                        }
+
+                        if (lastName != null)
+                        {
+                            lastName = Regex.Replace(lastName, StringConstant.RegexWhiteSpaces, " ");
+                            lastName = lastName.Replace(" ' ", "'").Trim();
+                            if (Regex.IsMatch(lastName, StringConstant.RegexSpecialCharsNotAllowForPersonName) ||
+                                Regex.IsMatch(lastName, StringConstant.RegexDigits))
+                            {
+                                var error = ErrorDescription.Error["E1077"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+                        }
+
+                        if (parentalName != null)
+                        {
+                            parentalName = Regex.Replace(parentalName, StringConstant.RegexWhiteSpaces, " ");
+                            parentalName = parentalName.Replace(" ' ", "'").Trim();
+                            if (Regex.IsMatch(parentalName, StringConstant.RegexSpecialCharsNotAllowForPersonName) ||
+                                Regex.IsMatch(parentalName, StringConstant.RegexDigits))
+                            {
+                                var error = ErrorDescription.Error["E1099"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+                        }
+
+                        if (parentalRelative != null)
+                        {
+                            parentalRelative = Regex.Replace(parentalRelative, StringConstant.RegexWhiteSpaces, " ");
+                            if (Regex.IsMatch(parentalRelative, StringConstant.RegexSpecialCharacter) ||
+                                Regex.IsMatch(parentalRelative, StringConstant.RegexDigits))
+                            {
+                                var error = ErrorDescription.Error["E1100"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+                        }
+
+                        if (contactAddress != null)
+                        {
+                            contactAddress = Regex.Replace(contactAddress, StringConstant.RegexWhiteSpaces, " ");
+                            contactAddress = contactAddress.Replace(" ' ", "'").Trim();
+                            if (Regex.IsMatch(contactAddress, StringConstant.RegexSpecialCharacterForAddress))
+                            {
+                                var error = ErrorDescription.Error["E1101"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+                        }
+
+                        if (highSchool != null)
+                        {
+                            highSchool = Regex.Replace(highSchool, StringConstant.RegexWhiteSpaces, " ");
+                            highSchool = highSchool.Replace(" ' ", "'").Trim();
+                            if (Regex.IsMatch(highSchool, StringConstant.RegexSpecialCharacterForSchool))
+                            {
+                                var error = ErrorDescription.Error["E1103"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+                        }
+
+                        if (university != null)
+                        {
+                            university = Regex.Replace(university, StringConstant.RegexWhiteSpaces, " ");
+                            university = university.Replace(" ' ", "'").Trim();
+                            if (Regex.IsMatch(university, StringConstant.RegexSpecialCharacterForSchool))
+                            {
+                                var error = ErrorDescription.Error["E1104"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+                        }
+
+                        if (workingCompany != null)
+                        {
+                            workingCompany = Regex.Replace(workingCompany, StringConstant.RegexWhiteSpaces, " ");
+                            workingCompany = workingCompany.Replace(" ' ", "'").Trim();
+                            if (Regex.IsMatch(workingCompany,
+                                    StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+                            {
+                                var error = ErrorDescription.Error["E1105"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+                        }
+
+                        if (companyPosition != null)
+                        {
+                            companyPosition = Regex.Replace(companyPosition, StringConstant.RegexWhiteSpaces, " ");
+                            if (Regex.IsMatch(companyPosition,
+                                    StringConstant.RegexSpecialCharacterWithDashUnderscoreSpaces))
+                            {
+                                var error = ErrorDescription.Error["E1106"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+                        }
+
+                        if (companyAddress != null)
+                        {
+                            companyAddress = Regex.Replace(companyAddress, StringConstant.RegexWhiteSpaces, " ");
+                            if (Regex.IsMatch(companyAddress, StringConstant.RegexSpecialCharacterForAddress))
+                            {
+                                var error = ErrorDescription.Error["E1107"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+                        }
+
+                        if (mobilePhone != null)
+                        {
+                            if (IsMobilePhoneExists(mobilePhone))
+                            {
+                                var error = ErrorDescription.Error["E1078"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+
+                            if (!Regex.IsMatch(mobilePhone, StringConstant.RegexMobilePhone))
+                            {
+                                var error = ErrorDescription.Error["E1079"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+                        }
+
+                        if (contactPhone != null && !Regex.IsMatch(contactPhone, StringConstant.RegexMobilePhone))
+                        {
+                            var error = ErrorDescription.Error["E1079_1"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message + " at student no " + studentNo,
+                                error.Type));
+                        }
+
+                        if (homePhone != null && !Regex.IsMatch(homePhone, StringConstant.RegexMobilePhone))
+                        {
+                            var error = ErrorDescription.Error["E1079_2"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message + " at student no " + studentNo,
+                                error.Type));
+                        }
+
+                        if (parentalPhone != null && !Regex.IsMatch(parentalPhone, StringConstant.RegexMobilePhone))
+                        {
+                            var error = ErrorDescription.Error["E1079_3"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message + " at student no " + studentNo,
+                                error.Type));
+                        }
+
+                        if (email != null && emailOrganization != null)
+                        {
+                            if (IsEmailExists(email))
+                            {
+                                var error = ErrorDescription.Error["E1080"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+
+                            if (IsEmailExists(emailOrganization))
+                            {
+                                var error = ErrorDescription.Error["E1081"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+
+                            if (!Regex.IsMatch(email, StringConstant.RegexEmailCopilot))
+                            {
+                                var error = ErrorDescription.Error["E1096"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+
+                            if (IsEmailOrganizationExists(emailOrganization))
+                            {
+                                var error = ErrorDescription.Error["E1082"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+
+                            if (IsEmailOrganizationExists(email))
+                            {
+                                var error = ErrorDescription.Error["E1081_1"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+
+                            if (!Regex.IsMatch(emailOrganization, StringConstant.RegexEmailCopilot))
+                            {
+                                var error = ErrorDescription.Error["E1097"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+
+                            if (email == emailOrganization)
+                            {
+                                var error = ErrorDescription.Error["E1083"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+                        }
+
+                        if (identityCardNo != null)
+                        {
+                            if (IsCitizenIdentityCardNoExists(identityCardNo))
+                            {
+                                var error = ErrorDescription.Error["E1084"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+
+                            if (!Regex.IsMatch(identityCardNo, StringConstant.RegexCitizenIdCardNo))
+                            {
+                                var error = ErrorDescription.Error["E1085"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+                        }
+
+                        if (identityCardPublishedPlace != null)
+                        {
+                            identityCardPublishedPlace = Regex.Replace(identityCardPublishedPlace,
+                                StringConstant.RegexWhiteSpaces, " ");
+                            identityCardPublishedPlace =
+                                identityCardPublishedPlace.Replace(" ' ", "'").Trim();
+                            if (Regex.IsMatch(identityCardPublishedPlace,
+                                    StringConstant.RegexSpecialCharacterForAddress))
+                            {
+                                var error = ErrorDescription.Error["E1102"];
+                                return BadRequest(CustomResponse.BadRequest(
+                                    error.Message + " at student no " + studentNo,
+                                    error.Type));
+                            }
+                        }
+
+                        if (!IsAddressExists(provinceId, districtId, wardId))
+                        {
+                            var error = ErrorDescription.Error["E1091"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message + " at student no " + studentNo,
+                                error.Type));
+                        }
+
+                        if (!IsGenderExists(genderId))
+                        {
+                            var error = ErrorDescription.Error["E1092"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message + " at student no " + studentNo,
+                                error.Type));
+                        }
+
+                        if (learningStatus is < 1 or > 7)
+                        {
+                            var error = ErrorDescription.Error["E1094"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message + " at student no " + studentNo,
+                                error.Type));
+                        }
+
+                        if (Convert.ToInt32(feePlan) < 0)
+                        {
+                            var error = ErrorDescription.Error["E1108"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message + " at student no " + studentNo,
+                                error.Type));
+                        }
+
+                        if (Convert.ToInt32(promotion) < 0)
+                        {
+                            var error = ErrorDescription.Error["E1109"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message + " at student no " + studentNo,
+                                error.Type));
+                        }
+
+                        if (companySalary < 0)
+                        {
+                            var error = ErrorDescription.Error["E1110"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message + " at student no " + studentNo,
+                                error.Type));
+                        }
 
                         var user = new User()
                         {
@@ -629,7 +968,7 @@ public class ClassController : ControllerBase
             var error = ErrorDescription.Error["E1073"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         // get number of student in a class
         var numberOfStudentInClass = _context.StudentsClasses
             .Include(sc => sc.Class)
@@ -1283,7 +1622,7 @@ public class ClassController : ControllerBase
             .Include(p => p.Wards)
             .Any(p => p.Id == provinceId && p.Districts.Any(d => d.Id == districtId && d.Province.Id == provinceId) &&
                       p.Wards.Any(w =>
-                          w.Id == wardId && w.District.Id == districtId && w.District.Province.Id == provinceId));
+                          w.Id == wardId && w.District.Id == districtId && w.Province.Id == provinceId));
     }
 
     private bool IsGenderExists(int genderId)

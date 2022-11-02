@@ -231,7 +231,7 @@ public static class ErrorDescription
         { "E1099", new ErrorModel() { Message = "Parental name is not match with format", Type = "student-error-00036" } },
         { "E1100", new ErrorModel() { Message = "Parental relationship is not match with format", Type = "student-error-00025" } },
         { "E1101", new ErrorModel() { Message = "Contact address is not match with format", Type = "student-error-00026" } },
-        { "E1102", new ErrorModel() { Message = "CitizenIdentityCard published date is not match with format", Type = "student-error-00027" } },
+        { "E1102", new ErrorModel() { Message = "CitizenIdentityCard published place is not match with format", Type = "student-error-00027" } },
         { "E1103", new ErrorModel() { Message = "School is not match with format", Type = "student-error-00028" } },
         { "E1104", new ErrorModel() { Message = "University is not match with format", Type = "student-error-00029" } },
         { "E1105", new ErrorModel() { Message = "Working company is not match with format", Type = "student-error-00030" } },
