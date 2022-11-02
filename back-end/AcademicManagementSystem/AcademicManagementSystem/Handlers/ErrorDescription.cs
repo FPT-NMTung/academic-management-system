@@ -67,6 +67,7 @@ public static class ErrorDescription
         { "E0022_1", new ErrorModel() { Message = "EmailOrganization Already Belong To Another Email", Type = "sro-error-0022-1" } },
         { "E0022_2", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "sro-error-0022-2" } },
         { "E2057", new ErrorModel() { Message = "Change status sro failed", Type = "sro-error-2057" } },
+        { "E1119", new ErrorModel() { Message = "Delete sro fail", Type = "sro-error-1001" } },
 
         // address
         { "E1006", new ErrorModel() { Message = "Do not exist provinceId, DistrictId or WardId", Type = "address-error-0001" } },
@@ -83,6 +84,7 @@ public static class ErrorDescription
         { "E1056", new ErrorModel() { Message = "Course family name with different code is existed", Type = "course-family-error-0010" } },
         { "E2058", new ErrorModel() { Message = "Can not delete this Course family", Type = "course-family-error-0011" } },
         { "E2063", new ErrorModel() { Message = "Can not change status this Course family", Type = "course-family-error-0012" } },
+        { "E1121", new ErrorModel() { Message = "Delete course family fail", Type = "course-family-error-0013" } },
 
         // course
         { "E1014", new ErrorModel() { Message = "Course code existed", Type = "course-error-0001" } },
@@ -94,6 +96,8 @@ public static class ErrorDescription
         { "E1020", new ErrorModel() { Message = "Semester count mus be between 1-10", Type = "course-error-0007" } },
         { "E1057", new ErrorModel() { Message = "Course name is existed", Type = "course-error-0008" } },
         { "E1058", new ErrorModel() { Message = "Course name with different code is existed", Type = "course-error-0009" } },
+        { "E1117", new ErrorModel() { Message = "Can not change status this Course", Type = "course-error-0010" } },
+        { "E1120", new ErrorModel() { Message = "Delete course fail", Type = "course-error-0011" } },
         
         // module
         { "E1021", new ErrorModel() { Message = "Fail to SaveChange when Add Module", Type = "module-error-0001" } },
@@ -148,6 +152,7 @@ public static class ErrorDescription
         { "E0052_1", new ErrorModel() { Message = "EmailOrganization Already Belong To Another Email", Type = "teacher-error-0052-1" } },
         { "E0052_2", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "teacher-error-0052-2" } },
         { "E2056", new ErrorModel() { Message = "Change status teacher failed", Type = "teacher-error-2056" } },
+        { "E1118", new ErrorModel() { Message = "Delete teacher fail", Type = "teacher-error-1001" } },
 
         // skill
         { "E1062", new ErrorModel() { Message = "Skill Name is not match with format", Type = "skill-error-0001" } },
@@ -183,7 +188,8 @@ public static class ErrorDescription
         { "E0069", new ErrorModel() { Message = "Class name must match with format(allow characters: ( ) _ - ", Type = "class-error-0069" } },
         { "E0070", new ErrorModel() { Message = "Class already exist", Type = "class-error-0070" } },
         { "E0071", new ErrorModel() { Message = "Add class failed, data not valid", Type = "class-error-0071" } },
-        { "E0072", new ErrorModel() { Message = "Class hour start must less than hour end learning time must be 1h - 4h", Type = "class-error-0072" } },
+        { "E0072", new ErrorModel() { Message = "Class hour start must less than hour end, learning time must be 1h - 4h", Type = "class-error-0072" } },
+        { "E0072_1", new ErrorModel() { Message = "Class hour must in 8h-22h", Type = "class-error-0072-1" } },
         { "E0073", new ErrorModel() { Message = "StartDate(AdmissionDate) can't smaller than today", Type = "class-error-0073" } },
         { "E0074", new ErrorModel() { Message = "CompletionDate can't equal or smaller than StartDate(AdmissionDate) ", Type = "class-error-0074" } },
         { "E0075", new ErrorModel() { Message = "GraduationDate can't smaller than CompletionDate", Type = "class-error-0075" } },
@@ -194,12 +200,13 @@ public static class ErrorDescription
         { "E1070", new ErrorModel() { Message = "EnrollNumber is existed at Student No ", Type = "student-class-error-0002" } },
         { "E1071", new ErrorModel() { Message = "Email or EmailOrganization or PhoneNumber or IdentityCardNo is existed at Student No ", Type = "student-class-error-0003" } },
         { "E1072", new ErrorModel() { Message = "Fail to SaveChange when save Students to Class", Type = "student-class-error-0004" } },
-        { "E1073", new ErrorModel() { Message = "Class is not exists", Type = "student-class-error-0005" } },
+        { "E1073", new ErrorModel() { Message = "Class is not exists in center", Type = "student-class-error-0005" } },
         { "E1074", new ErrorModel() { Message = "Fail to SaveChange when cancel import Students to Class", Type = "student-class-error-0006" } },
         { "E1075", new ErrorModel() { Message = "Fail to import because this Class had students", Type = "student-class-error-0007" } },
         { "E1112", new ErrorModel() { Message = "Student EnrollNumber is existed", Type = "student-class-error-0009" } },
         { "E1113", new ErrorModel() { Message = "Fail to SaveChange when add Student", Type = "student-class-error-0010" } },
         { "E1115", new ErrorModel() { Message = "EnrollNumber is existed", Type = "student-class-error-0011" } },
+        { "E1116", new ErrorModel() { Message = "Cannot add student to class because the class already has 24 students", Type = "student-class-error-0011" } },
 
         // student
         { "E1076", new ErrorModel() { Message = "First name is not match with format", Type = "student-error-0001" } },
@@ -230,7 +237,7 @@ public static class ErrorDescription
         { "E1099", new ErrorModel() { Message = "Parental name is not match with format", Type = "student-error-00036" } },
         { "E1100", new ErrorModel() { Message = "Parental relationship is not match with format", Type = "student-error-00025" } },
         { "E1101", new ErrorModel() { Message = "Contact address is not match with format", Type = "student-error-00026" } },
-        { "E1102", new ErrorModel() { Message = "CitizenIdentityCard published date is not match with format", Type = "student-error-00027" } },
+        { "E1102", new ErrorModel() { Message = "CitizenIdentityCard published place is not match with format", Type = "student-error-00027" } },
         { "E1103", new ErrorModel() { Message = "School is not match with format", Type = "student-error-00028" } },
         { "E1104", new ErrorModel() { Message = "University is not match with format", Type = "student-error-00029" } },
         { "E1105", new ErrorModel() { Message = "Working company is not match with format", Type = "student-error-00030" } },
@@ -240,6 +247,30 @@ public static class ErrorDescription
         { "E1109", new ErrorModel() { Message = "Promotion must be positive", Type = "student-error-00034" } },
         { "E1110", new ErrorModel() { Message = "Company salary must be positive", Type = "student-error-00035" } },
         { "E1114", new ErrorModel() { Message = "Fail to SaveChange when update student", Type = "student-error-00037" } },
+        
+        // class schedule
+        { "E0077", new ErrorModel() { Message = "Module Not For This Class", Type = "class-schedule-error-0001" } },
+        { "E0077_1", new ErrorModel() { Message = "Teacher Not For This Center", Type = "class-schedule-error-0001_1" } },
+        { "E0078", new ErrorModel() { Message = "Invalid Data", Type = "class-schedule-error-0002" } },
+        { "E0079", new ErrorModel() { Message = "This module for this class already in schedule", Type = "class-schedule-error-0003" } },
+        { "E0080", new ErrorModel() { Message = "Duration must bigger than 0", Type = "class-schedule-error-0004" } },
+        { "E0081", new ErrorModel() { Message = "Start Date must bigger than today", Type = "class-schedule-error-0005" } },
+        { "E0082", new ErrorModel() { Message = "Class hour start must less than hour end, learning time must be 1h - 4h", Type = "class-schedule-error-0006" } },
+        { "E0082_1", new ErrorModel() { Message = "Class hour must in 8h-22h", Type = "class-schedule-error-0006_1" } },
+        { "E0083", new ErrorModel() { Message = "Theory room not correct", Type = "class-schedule-error-0007" } },
+        { "E0084", new ErrorModel() { Message = "Lab room not correct", Type = "class-schedule-error-0008" } },
+        { "E0085", new ErrorModel() { Message = "This day is day off", Type = "class-schedule-error-0009" } },
+        { "E0086", new ErrorModel() { Message = "This teacher busy for this day", Type = "class-schedule-error-0010" } },
+        { "E0087", new ErrorModel() { Message = "Start date not match with class learning days", Type = "class-schedule-error-0011" } },
+        { "E0088", new ErrorModel() { Message = "Don't have this practice session, it must 1 - total session(duration)", Type = "class-schedule-error-0012" } },
+        { "E0089", new ErrorModel() { Message = "Start date is not the next day of last session", Type = "class-schedule-error-0013" } },
+        { "E0090", new ErrorModel() { Message = "Theory Room Busy", Type = "class-schedule-error-0014" } },
+        { "E0091", new ErrorModel() { Message = "Lab Room Busy", Type = "class-schedule-error-0015" } },
+        { "E0092", new ErrorModel() { Message = "Exam Room Busy", Type = "class-schedule-error-0016" } },
+        { "E0093", new ErrorModel() { Message = "Teacher Busy", Type = "class-schedule-error-0017" } },
+        { "E0094", new ErrorModel() { Message = "Class not ready to add schedule", Type = "class-schedule-error-0018" } },
+        { "E0095", new ErrorModel() { Message = "learning time not match with working time id", Type = "class-schedule-error-0019" } },
+
     };
 }
 

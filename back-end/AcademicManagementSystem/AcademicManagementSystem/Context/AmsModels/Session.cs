@@ -26,9 +26,8 @@ public class Session
     [StringLength(255)]
     public string Title { get; set; }
     
-    [Column("room", Order = 5)]
-    [StringLength(255)]
-    public string Room { get; set; }
+    [Column("room_id", Order = 4)]
+    public int RoomId { get; set; }
     
     [Column("learning_date", TypeName = "date")]
     public DateTime LearningDate { get; set; }
@@ -44,5 +43,6 @@ public class Session
     public virtual SessionType SessionType { get; set; }
     public virtual ICollection<Attendance> Attendances { get; set; }
     public virtual ICollection<GpaRecord> GpaRecords { get; set; }
+    public virtual Room Room { get; set; }
 
 }

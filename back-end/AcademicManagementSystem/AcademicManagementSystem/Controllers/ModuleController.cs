@@ -76,6 +76,59 @@ public class ModuleController : ControllerBase
         return Ok(CustomResponse.Ok("Modules retrieved successfully", modules));
     }
 
+    // get all modules
+    [HttpGet]
+    [Route("api/classes/{classId:int}/modules")]
+    [Authorize(Roles = "admin,sro,teacher,student")]
+    public IActionResult GetModulesNotScheduledByClassId(int classId)
+    {
+        if (!_context.Classes.Any(c => c.Id == classId))
+        {
+            return NotFound(CustomResponse.NotFound("Class not found"));
+        }
+
+        var modules = _context.Modules
+            .Include(m => m.ClassSchedules)
+            .Include(m => m.CoursesModulesSemesters)
+            .ThenInclude(cms => cms.Course)
+            .ThenInclude(c => c.CourseFamily)
+            .ThenInclude(cf => cf.Classes)
+            .Where(m => m.ClassSchedules.All(c => c.ModuleId != m.Id) && m.CoursesModulesSemesters.Any(cms => cms.Course
+                .CourseFamily.Classes
+                .Any(c => c.Id == classId)))
+            .Select(m => new ModuleResponse()
+            {
+                Id = m.Id, CenterId = m.CenterId, SemesterNamePortal = m.SemesterNamePortal, ModuleName = m.ModuleName,
+                ModuleExamNamePortal = m.ModuleExamNamePortal, ModuleType = m.ModuleType,
+                MaxTheoryGrade = m.MaxTheoryGrade, MaxPracticalGrade = m.MaxPracticalGrade, Hours = m.Hours,
+                Days = m.Days, ExamType = m.ExamType, CreatedAt = m.CreatedAt, UpdatedAt = m.UpdatedAt,
+                Center = new CenterResponse()
+                {
+                    Id = m.Center.Id,
+                    Name = m.Center.Name, CreatedAt = m.Center.CreatedAt, UpdatedAt = m.Center.UpdatedAt,
+                    Province = new ProvinceResponse()
+                    {
+                        Id = m.Center.Province.Id,
+                        Name = m.Center.Province.Name,
+                        Code = m.Center.Province.Code
+                    },
+                    District = new DistrictResponse()
+                    {
+                        Id = m.Center.District.Id,
+                        Name = m.Center.District.Name,
+                        Prefix = m.Center.District.Prefix,
+                    },
+                    Ward = new WardResponse()
+                    {
+                        Id = m.Center.Ward.Id,
+                        Name = m.Center.Ward.Name,
+                        Prefix = m.Center.Ward.Prefix,
+                    }
+                }
+            }).ToList();
+        return Ok(CustomResponse.Ok("Modules of this class retrieved successfully", modules));
+    }
+
     // get module by id
     [HttpGet]
     [Route("api/modules/{id:int}")]
@@ -100,7 +153,7 @@ public class ModuleController : ControllerBase
     // create module with course code and semester id
     [HttpPost]
     [Route("api/modules")]
-    [Authorize(Roles = "admin,sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult CreateModule([FromBody] CreateModuleRequest request)
     {
         request.ModuleName = request.ModuleName.Trim();
@@ -112,7 +165,7 @@ public class ModuleController : ControllerBase
         if (CheckCourseCenterSemesterExisted(request, listCourseCodes, out var notFound)) return notFound;
 
         if (CheckStringNameRequestCreate(request, out var badRequest)) return badRequest;
-        
+
         if (CheckModuleTypeAndExamTypeRequestCreate(request, out var badRequest1)) return badRequest1;
 
         if (CheckDayAndHourRequest(request.Days, request.Hours, out var badRequest2)) return badRequest2;
@@ -249,11 +302,11 @@ public class ModuleController : ControllerBase
             badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
             return true;
         }
-        
+
         badRequestObjectResult = null!;
         return false;
     }
-    
+
     private bool CheckModuleTypeAndExamTypeRequestCreate(CreateModuleRequest request, out IActionResult badRequest)
     {
         // module type and exam type
@@ -420,7 +473,7 @@ public class ModuleController : ControllerBase
     // update module by id
     [HttpPut]
     [Route("api/modules/{id:int}")]
-    [Authorize(Roles = "admin,sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult UpdateModuleById(int id, [FromBody] UpdateModuleRequest request)
     {
         var module = _context.Modules.Include(m => m.Center)
@@ -456,7 +509,7 @@ public class ModuleController : ControllerBase
         }
 
         if (CheckModuleTypeAndExamTypeRequestUpdate(request, out var badRequest)) return badRequest;
-        
+
         if (CheckDayAndHourRequest(request.Days, request.Hours, out var badRequest1)) return badRequest1;
 
         // update
@@ -691,6 +744,77 @@ public class ModuleController : ControllerBase
         }
 
         return Ok(CustomResponse.Ok("Module searched successfully", moduleResponse));
+    }
+
+    // can delete module
+    [HttpGet]
+    [Route("api/modules/{id:int}/can-delete")]
+    [Authorize(Roles = "admin")]
+    public IActionResult CanDeleteModule(int id)
+    {
+        var module = _context.Modules.FirstOrDefault(m => m.Id == id);
+        if (module == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Module"));
+        }
+
+        var canDelete = CanDelete(id);
+
+        return Ok(CustomResponse.Ok("Can delete module", new CheckModuleCanDeleteResponse()
+        {
+            CanDelete = canDelete
+        }));
+    }
+
+    // delete module
+    [HttpDelete]
+    [Route("api/modules/{id:int}")]
+    [Authorize(Roles = "admin")]
+    public IActionResult DeleteModule(int id)
+    {
+        var module = _context.Modules
+            .Include(m => m.CoursesModulesSemesters)
+            .FirstOrDefault(m => m.Id == id);
+        if (module == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Module"));
+        }
+
+        // delete course module semester
+        _context.CoursesModulesSemesters.RemoveRange(module.CoursesModulesSemesters);
+
+        // delete grade item -> grade category module
+        DeleteDataGradeCategoryModuleAndItems(id);
+
+        // delete module
+        _context.Modules.Remove(module);
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+        }
+
+        return Ok(CustomResponse.Ok("Module deleted successfully", null!));
+    }
+
+    private bool CanDelete(int id)
+    {
+        var selectModule = _context.Modules
+            .Include(m => m.ClassSchedules)
+            .Include(m => m.GpaRecords)
+            .Include(m => m.CoursesModulesSemesters)
+            .Include(m => m.GradeCategoryModule)
+            .FirstOrDefault(m => m.Id == id);
+
+        if (selectModule == null)
+        {
+            return false;
+        }
+
+        return !selectModule.ClassSchedules.Any() && !selectModule.GpaRecords.Any();
     }
 
     // func get all courses module semester
