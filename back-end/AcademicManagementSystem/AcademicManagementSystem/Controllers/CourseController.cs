@@ -299,7 +299,8 @@ public class CourseController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+            var error = ErrorDescription.Error["E1120"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         return Ok(CustomResponse.Ok("Course Deleted Successfully", null!));

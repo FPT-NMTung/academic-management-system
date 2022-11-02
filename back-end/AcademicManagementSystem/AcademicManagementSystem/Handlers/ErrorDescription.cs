@@ -67,6 +67,7 @@ public static class ErrorDescription
         { "E0022_1", new ErrorModel() { Message = "EmailOrganization Already Belong To Another Email", Type = "sro-error-0022-1" } },
         { "E0022_2", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "sro-error-0022-2" } },
         { "E2057", new ErrorModel() { Message = "Change status sro failed", Type = "sro-error-2057" } },
+        { "E1119", new ErrorModel() { Message = "Delete sro fail", Type = "sro-error-1001" } },
 
         // address
         { "E1006", new ErrorModel() { Message = "Do not exist provinceId, DistrictId or WardId", Type = "address-error-0001" } },
@@ -83,6 +84,7 @@ public static class ErrorDescription
         { "E1056", new ErrorModel() { Message = "Course family name with different code is existed", Type = "course-family-error-0010" } },
         { "E2058", new ErrorModel() { Message = "Can not delete this Course family", Type = "course-family-error-0011" } },
         { "E2063", new ErrorModel() { Message = "Can not change status this Course family", Type = "course-family-error-0012" } },
+        { "E1121", new ErrorModel() { Message = "Delete course family fail", Type = "course-family-error-0013" } },
 
         // course
         { "E1014", new ErrorModel() { Message = "Course code existed", Type = "course-error-0001" } },
@@ -95,6 +97,7 @@ public static class ErrorDescription
         { "E1057", new ErrorModel() { Message = "Course name is existed", Type = "course-error-0008" } },
         { "E1058", new ErrorModel() { Message = "Course name with different code is existed", Type = "course-error-0009" } },
         { "E1117", new ErrorModel() { Message = "Can not change status this Course", Type = "course-error-0010" } },
+        { "E1120", new ErrorModel() { Message = "Delete course fail", Type = "course-error-0011" } },
         
         // module
         { "E1021", new ErrorModel() { Message = "Fail to SaveChange when Add Module", Type = "module-error-0001" } },
