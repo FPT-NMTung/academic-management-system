@@ -30,6 +30,7 @@ public class ClassController : ControllerBase
     private readonly User _user;
     private const int RoleIdStudent = 4;
     private const int NotScheduleYet = 5;
+    private const int MaximumStudentInClass = 24;
 
     public ClassController(AmsContext context, IUserService userService)
     {
@@ -928,7 +929,7 @@ public class ClassController : ControllerBase
                         _context.Users.Add(user);
                         _context.Students.Add(user.Student);
                         _context.StudentsClasses.Add(user.Student.StudentsClasses.First());
-                        if (studentNo == 24) break;
+                        if (studentNo == MaximumStudentInClass) break;
                     }
 
                     try
@@ -974,7 +975,7 @@ public class ClassController : ControllerBase
             .Include(sc => sc.Class)
             .Include(sc => sc.Student)
             .Count(sc => sc.ClassId == id && sc.IsActive);
-        if (numberOfStudentInClass >= 24)
+        if (numberOfStudentInClass >= MaximumStudentInClass)
         {
             var error = ErrorDescription.Error["E1116"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
