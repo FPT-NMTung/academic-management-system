@@ -149,6 +149,7 @@ public static class ErrorDescription
         { "E0052_1", new ErrorModel() { Message = "EmailOrganization Already Belong To Another Email", Type = "teacher-error-0052-1" } },
         { "E0052_2", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "teacher-error-0052-2" } },
         { "E2056", new ErrorModel() { Message = "Change status teacher failed", Type = "teacher-error-2056" } },
+        { "E1118", new ErrorModel() { Message = "Delete teacher fail", Type = "teacher-error-1001" } },
 
         // skill
         { "E1062", new ErrorModel() { Message = "Skill Name is not match with format", Type = "skill-error-0001" } },
