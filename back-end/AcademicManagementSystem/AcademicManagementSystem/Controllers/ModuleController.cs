@@ -112,7 +112,7 @@ public class ModuleController : ControllerBase
         if (CheckCourseCenterSemesterExisted(request, listCourseCodes, out var notFound)) return notFound;
 
         if (CheckStringNameRequestCreate(request, out var badRequest)) return badRequest;
-        
+
         if (CheckModuleTypeAndExamTypeRequestCreate(request, out var badRequest1)) return badRequest1;
 
         if (CheckDayAndHourRequest(request.Days, request.Hours, out var badRequest2)) return badRequest2;
@@ -249,11 +249,11 @@ public class ModuleController : ControllerBase
             badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
             return true;
         }
-        
+
         badRequestObjectResult = null!;
         return false;
     }
-    
+
     private bool CheckModuleTypeAndExamTypeRequestCreate(CreateModuleRequest request, out IActionResult badRequest)
     {
         // module type and exam type
@@ -456,7 +456,7 @@ public class ModuleController : ControllerBase
         }
 
         if (CheckModuleTypeAndExamTypeRequestUpdate(request, out var badRequest)) return badRequest;
-        
+
         if (CheckDayAndHourRequest(request.Days, request.Hours, out var badRequest1)) return badRequest1;
 
         // update
@@ -692,7 +692,7 @@ public class ModuleController : ControllerBase
 
         return Ok(CustomResponse.Ok("Module searched successfully", moduleResponse));
     }
-    
+
     // can delete module
     [HttpGet]
     [Route("api/modules/{id:int}/can-delete")]
@@ -712,7 +712,41 @@ public class ModuleController : ControllerBase
             CanDelete = canDelete
         }));
     }
-    
+
+    // delete module
+    [HttpDelete]
+    [Route("api/modules/{id:int}")]
+    [Authorize(Roles = "admin")]
+    public IActionResult DeleteModule(int id)
+    {
+        var module = _context.Modules
+            .Include(m => m.CoursesModulesSemesters)
+            .FirstOrDefault(m => m.Id == id);
+        if (module == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Module"));
+        }
+
+        // delete course module semester
+        _context.CoursesModulesSemesters.RemoveRange(module.CoursesModulesSemesters);
+
+        // delete grade item -> grade category module
+        DeleteDataGradeCategoryModuleAndItems(id);
+
+        // delete module
+        _context.Modules.Remove(module);
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+        }
+
+        return Ok(CustomResponse.Ok("Module deleted successfully", null!));
+    }
+
     private bool CanDelete(int id)
     {
         var selectModule = _context.Modules
