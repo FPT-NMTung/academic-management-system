@@ -238,7 +238,7 @@ public class CourseController : ControllerBase
     {
         var selectedCourse = _context.Courses
             .Include(c => c.CourseFamily)
-            .FirstOrDefault(cf => cf.Code == code.Trim());
+            .FirstOrDefault(c => c.Code == code.Trim());
 
         if (selectedCourse == null)
             return NotFound(CustomResponse.NotFound("Course not found"));
@@ -257,6 +257,26 @@ public class CourseController : ControllerBase
 
         var courseResponse = GetCourseResponse(selectedCourse);
         return Ok(CustomResponse.Ok("Active status course changed successfully", courseResponse));
+    }
+    
+    // Can delete course
+    [HttpGet]
+    [Route("api/courses/{code}/can-delete")]
+    [Authorize(Roles = "admin")]
+    public IActionResult CanDeleteCourse(string code)
+    {
+        var course = _context.Courses.FirstOrDefault(c => c.Code == code.ToUpper().Trim());
+        if (course == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Course"));
+        }
+
+        var canDelete = CanDelete(code);
+
+        return Ok(CustomResponse.Ok("Can delete course", new CheckCourseCanDeleteResponse()
+        {
+            CanDelete = canDelete
+        }));
     }
     
     // delete course
@@ -301,24 +321,19 @@ public class CourseController : ControllerBase
         return courseResponse;
     }
 
-    private bool CanDeleteCourse(string code)
+    private bool CanDelete(string code)
     {
-        var selectCourseFamily = _context.CourseFamilies
-            .Include(cf => cf.Courses)
-            .Include(cf => cf.Classes)
-            .FirstOrDefault(cf => cf.Code == code);
+        var selectCourse = _context.Courses
+            .Include(c => c.CoursesModulesSemesters)
+            .Include(c => c.Students)
+            .FirstOrDefault(c => c.Code == code);
 
-        if (selectCourseFamily == null)
+        if (selectCourse == null)
         {
             return false;
         }
 
-        if (selectCourseFamily.Courses.Count > 0 || selectCourseFamily.Classes.Count > 0)
-        {
-            return false;
-        }
-
-        return true;
+        return selectCourse.CoursesModulesSemesters.Count <= 0 && selectCourse.Students.Count <= 0;
     }
     
     // is course code exists

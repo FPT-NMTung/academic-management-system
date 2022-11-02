@@ -203,7 +203,7 @@ public class CourseFamilyController : ControllerBase
     [Authorize(Roles = "admin")]
     public IActionResult CanDeleteCourseFamily(string code)
     {
-        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.Trim());
+        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.ToUpper().Trim());
         if (courseFamily == null)
         {
             return NotFound(CustomResponse.NotFound("Course family not found"));
