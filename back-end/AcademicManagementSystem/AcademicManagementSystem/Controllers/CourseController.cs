@@ -244,6 +244,7 @@ public class CourseController : ControllerBase
             return NotFound(CustomResponse.NotFound("Course not found"));
 
         selectedCourse.IsActive = !selectedCourse.IsActive;
+        selectedCourse.UpdatedAt = DateTime.Now;
 
         try
         {

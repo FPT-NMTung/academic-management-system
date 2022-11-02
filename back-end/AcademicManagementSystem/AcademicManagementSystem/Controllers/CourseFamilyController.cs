@@ -229,6 +229,7 @@ public class CourseFamilyController : ControllerBase
             return NotFound(CustomResponse.NotFound("Course family not found"));
 
         selectedCourseFamily.IsActive = !selectedCourseFamily.IsActive;
+        selectedCourseFamily.UpdatedAt = DateTime.Now;
 
         try
         {

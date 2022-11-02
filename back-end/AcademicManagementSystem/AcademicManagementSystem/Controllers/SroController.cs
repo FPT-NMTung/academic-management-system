@@ -268,7 +268,7 @@ public class SroController : ControllerBase
     [HttpPatch]
     [Route("api/sros/{id:int}/change-active")]
     [Authorize(Roles = "admin")]
-    public IActionResult ChangeActivateTeacher(int id)
+    public IActionResult ChangeActivateSro(int id)
     {
         var sro = _context.Sros.Include(s => s.User).FirstOrDefault(s => s.UserId == id);
         if (sro == null)
