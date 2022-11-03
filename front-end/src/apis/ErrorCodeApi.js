@@ -171,6 +171,11 @@ export const ErrorCodeApi = {
   "student-class-error-0004": "Hệ thống đã xảy ra lỗi, vui lòng thử lại",
   "student-class-error-0005": "Lớp học không tồn tại",
   "student-class-error-0006": "Hệ thống đã xảy ra lỗi, vui lòng thử lại",
+  "student-class-error-0007": "Học viên đã tồn tại trong lớp học",
+  "student-class-error-0008": "Email cá nhân đã tồn tại",
+  "student-class-error-0009": "Mã số sinh viên đã tồn tại",
+  "student-class-error-0010": "Thêm học viên không thành công",
+  "student-class-error-0011": "Mã số sinh viên đã tồn tại",
 
 
 
@@ -211,5 +216,7 @@ export const ErrorCodeApi = {
   "student-error-00033": "Kế hoạch phí không đúng định dạng",
   "student-error-00034": "Học bổng không đúng định dạng",
   "student-error-00035": "Mức lương không đúng định dạng",
+  "student-error-00036": "Tên phụ huynh không đúng định dạng",
+  "student-error-00037": "Cập nhật thông tin học viên không thành công",
 
 };

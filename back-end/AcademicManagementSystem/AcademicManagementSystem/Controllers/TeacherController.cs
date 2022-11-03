@@ -484,7 +484,7 @@ public class TeacherController : ControllerBase
             teacher.User.UpdatedAt = DateTime.Now;
             _context.SaveChanges();
         }
-        catch (Exception e)
+        catch (Exception)
         {
             var error = ErrorDescription.Error["E2056"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -500,18 +500,19 @@ public class TeacherController : ControllerBase
             : _context.Users.Any(e => e.MobilePhone == mobilePhone);
     }
 
-    private bool IsEmailExists(string? email, bool isUpdate, int userId)
+    private bool IsEmailExists(string email, bool isUpdate, int userId)
     {
         return isUpdate
-            ? _context.Users.Any(e => e.Email == email && e.Id != userId)
-            : _context.Users.Any(e => e.Email == email);
+            ? _context.Users.Any(e => e.Email.Trim().ToLower().Equals(email.Trim().ToLower()) && e.Id != userId)
+            : _context.Users.Any(e => e.Email.Trim().ToLower().Equals(email.Trim().ToLower()));
     }
 
-    private bool IsEmailOrganizationExists(string? emailOrganization, bool isUpdate, int userId)
+    private bool IsEmailOrganizationExists(string emailOrganization, bool isUpdate, int userId)
     {
         return isUpdate
-            ? _context.Users.Any(e => e.EmailOrganization == emailOrganization && e.Id != userId)
-            : _context.Users.Any(e => e.EmailOrganization == emailOrganization);
+            ? _context.Users.Any(e =>
+                e.EmailOrganization.Trim().ToUpper().Equals(emailOrganization.Trim().ToUpper()) && e.Id != userId)
+            : _context.Users.Any(e => e.EmailOrganization.Trim().ToUpper().Equals(emailOrganization.Trim().ToUpper()));
     }
 
     private bool IsCitizenIdentityCardNoExists(string? citizenIdentityCardNo, bool isUpdate, int userId)

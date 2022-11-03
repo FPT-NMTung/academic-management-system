@@ -246,6 +246,11 @@ public class ClassController : ControllerBase
         {
             return "E0072";
         }
+        
+        if(request.ClassHourEnd > TimeSpan.FromHours(22) || request.ClassHourStart < TimeSpan.FromHours(8))
+        {
+            return "E0072_1";
+        }
 
         if (request.StartDate.Date < DateTime.Now.Date)
         {
@@ -282,6 +287,11 @@ public class ClassController : ControllerBase
             || request.ClassHourEnd - request.ClassHourStart > TimeSpan.FromHours(4))
         {
             return "E0072";
+        }
+        
+        if(request.ClassHourEnd > TimeSpan.FromHours(22) || request.ClassHourStart < TimeSpan.FromHours(8))
+        {
+            return "E0072_1";
         }
 
         if (request.StartDate.Date < createdStartDate.Date)
@@ -393,8 +403,10 @@ public class ClassController : ControllerBase
     public ActionResult ImportStudentFromExcel(int id)
     {
         //is class exists
-        var existedClass = _context.Classes.Any(c => c.Id == id);
-        if (!existedClass)
+        var existedClassInCenter = _context.Classes
+            .Include(c => c.Center)
+            .Any(c => c.Id == id && c.CenterId == _user.CenterId);
+        if (!existedClassInCenter)
         {
             var error = ErrorDescription.Error["E1073"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -408,8 +420,6 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        //format date time from excel
-        var startDate = new DateTime(1900, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var studentNo = 0;
         try
         {
@@ -502,11 +512,12 @@ public class ClassController : ControllerBase
                             ? 1
                             : _context.Wards.FirstOrDefault(w => w.Name == ward)!.Id;
 
-                        var newBirthday = startDate.AddDays(Convert.ToDouble(birthday)).ToLocalTime();
+                        var newBirthday = DateTime.Parse(birthday ?? throw new InvalidOperationException());
                         var newIdentityCardPublishedDate =
-                            startDate.AddDays(Convert.ToDouble(identityCardPublishedDate)).ToLocalTime();
-                        var newStatusDate = startDate.AddDays(Convert.ToDouble(statusDate)).ToLocalTime();
-                        var newApplicationDate = startDate.AddDays(Convert.ToDouble(applicationDate)).ToLocalTime();
+                            DateTime.Parse(identityCardPublishedDate ?? throw new InvalidOperationException());
+                        var newStatusDate = DateTime.Parse(statusDate ?? throw new InvalidOperationException());
+                        var newApplicationDate =
+                            DateTime.Parse(applicationDate ?? throw new InvalidOperationException());
 
                         var genderId = gender switch
                         {
@@ -618,29 +629,12 @@ public class ClassController : ControllerBase
     public IActionResult AddStudentToClass(int id, [FromBody] AddStudentToClassRequest request)
     {
         //is class exists
-        var existedClass = _context.Classes.Any(c => c.Id == id);
-        if (!existedClass)
+        var existedClassInCenter = _context.Classes
+            .Include(c => c.Center)
+            .Any(c => c.Id == id && c.CenterId == _user.CenterId);
+        if (!existedClassInCenter)
         {
             var error = ErrorDescription.Error["E1073"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        // check if user exist
-        var existedUser = _context.Users.FirstOrDefault(u =>
-            u.Email == request.Email || u.EmailOrganization == request.EmailOrganization ||
-            u.MobilePhone == request.MobilePhone || u.CitizenIdentityCardNo == request.CitizenIdentityCardNo);
-        if (existedUser != null)
-        {
-            var error = ErrorDescription.Error["E1111"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        // check if students exist
-        var existedStudent = _context.Students.FirstOrDefault(u =>
-            string.Equals(u.EnrollNumber.ToLower(), request.EnrollNumber.ToLower()));
-        if (existedStudent != null)
-        {
-            var error = ErrorDescription.Error["E1112"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -676,7 +670,8 @@ public class ClassController : ControllerBase
         }
 
         // is enroll number exists
-        var existedEnrollNumber = _context.Students.Any(s => s.EnrollNumber == request.EnrollNumber);
+        var existedEnrollNumber =
+            _context.Students.Any(s => string.Equals(s.EnrollNumber.ToLower(), request.EnrollNumber.ToLower()));
         if (existedEnrollNumber)
         {
             var error = ErrorDescription.Error["E1115"];
@@ -1217,7 +1212,7 @@ public class ClassController : ControllerBase
                     Id = u.Role.Id, Value = u.Role.Value
                 }
             })
-            .Where(c => c.CenterId == _user.CenterId)
+            .Where(s => s.CenterId == _user.CenterId)
             .ToList();
         return students;
     }
@@ -1242,22 +1237,22 @@ public class ClassController : ControllerBase
         }
     }
 
-    private bool IsMobilePhoneExists(string? mobilePhone)
+    private bool IsMobilePhoneExists(string mobilePhone)
     {
-        return _context.Users.Any(u => u.MobilePhone == mobilePhone);
+        return _context.Users.Any(u => u.MobilePhone.Trim() == mobilePhone.Trim());
     }
 
-    private bool IsEmailExists(string? email)
+    private bool IsEmailExists(string email)
     {
-        return _context.Users.Any(e => e.Email == email);
+        return _context.Users.Any(e => e.Email.ToLower().Trim() == email.ToLower().Trim());
     }
 
-    private bool IsEmailOrganizationExists(string? emailOrganization)
+    private bool IsEmailOrganizationExists(string emailOrganization)
     {
-        return _context.Users.Any(e => e.EmailOrganization == emailOrganization);
+        return _context.Users.Any(e => e.EmailOrganization.ToLower().Trim() == emailOrganization.ToLower().Trim());
     }
 
-    private bool IsCitizenIdentityCardNoExists(string? citizenIdentityCardNo)
+    private bool IsCitizenIdentityCardNoExists(string citizenIdentityCardNo)
     {
         return _context.Users.Any(e => e.CitizenIdentityCardNo == citizenIdentityCardNo);
     }

@@ -41,7 +41,15 @@ export const Validater = {
     if (str == null) {
       return false;
     }
-    const re = /[~`!#$%\^&*+=\-\[\]\\;,./{}|\\":<>\?]/;
+    const re = /[@~`!#$%\^&*+=\-\[\]\\;,./{}|\\":<>\?]/;
+    return re.test(String(str.trim()));
+  },
+  isContaintSpecialCharacterForAddress: (str) => {
+    console.log(str);
+    if (str == null) {
+      return false;
+    }
+    const re = /[@~`!#$%\^&*+=\-\[\]\\;./{}|\\":<>\?]/;
     return re.test(String(str.trim()));
   },
   isContaintSpecialCharacterForNameModule: (str) => {
@@ -57,7 +65,7 @@ export const Validater = {
     if (str == null) {
       return false;
     }
-    const re = /[~`!#$%\^&*+=\-\[\]\\';,./{}|\\":<>\?]/;
+    const re = /[@~`!#$%\^&*+=\-\[\]\\';,./{}|\\":<>\?]/;
     return re.test(String(str.trim()));
   },
   isNotHumanName: (str) => {
