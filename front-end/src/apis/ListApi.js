@@ -162,6 +162,16 @@ export const ModulesApis = {
     method: 'PUT',
     contextType: 'application/json',
   },
+  checkCanDeleteModule: {
+    url: 'api/modules/{0}/can-delete',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  deleteCourse: {
+    url: 'api/modules/{0}',
+    method: 'DELETE',
+    contextType: 'application/json',
+  },
 };
 
 export const CourseModuleSemesterApis = {
