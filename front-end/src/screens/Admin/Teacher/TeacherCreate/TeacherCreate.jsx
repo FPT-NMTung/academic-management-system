@@ -286,7 +286,7 @@ const checkCanDelete = () => {
   };
   const handleDeleteUser = () => {
     toast.promise(
-      FetchApi(ManageTeacherApis.checkCanDeleteTeacher, null, null, [
+      FetchApi(ManageTeacherApis.deleteTeacher, null, null, [
         String([`${id}`]),
       ]),
       {

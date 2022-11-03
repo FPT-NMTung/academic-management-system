@@ -613,7 +613,12 @@ const StudentDetail = () => {
                           {dataStudent.company_position}
                         </Descriptions.Item>
                         <Descriptions.Item label="Mức lương">
-                          {dataStudent.company_salary}
+                          {dataStudent.company_salary
+                          ? String (dataStudent.company_salary).replace(
+                            /\B(?=(\d{3})+(?!\d))/g,
+                            ','
+                          )
+                        : 0}{' '} VNĐ
                         </Descriptions.Item>
                       </Descriptions>
                     </Card.Body>

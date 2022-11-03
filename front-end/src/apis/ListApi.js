@@ -258,7 +258,17 @@ export const ManageSroApis = {
     url: 'api/sros/{0}/change-active',
     method: 'PATCH',
     contextType: 'application/json',
-  }
+  },
+  checkCanDeleteSro: {
+    url: 'api/sros/{0}/can-delete',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  deleteSro: {
+    url: 'api/sros/{0}',
+    method: 'DELETE',
+    contextType: 'application/json',
+  },
 };
 
 export const GenderApis = {
