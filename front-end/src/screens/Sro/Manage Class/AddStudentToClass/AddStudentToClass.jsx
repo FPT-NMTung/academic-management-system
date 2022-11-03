@@ -1106,14 +1106,15 @@ const AddStudentToClass = () => {
                     //   message: "Trường không được chứa khoảng trắng",
                     // },
                   ]}
+                  
                 >
-                  <Input
+                  <InputNumber
                     placeholder="5000000"
-                    // formatter={(value) =>
-                    //   `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                    // }
-                    // parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
-                    // style={{ width: "100%" }}
+                    formatter={(value) =>
+                      `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    }
+                    parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                    style={{ width: "100%" }}
                   />
                 </Form.Item>
 
