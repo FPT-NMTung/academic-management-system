@@ -22,6 +22,7 @@ public class SroController : ControllerBase
     private const int SroRoleId = 2;
     private const string RegexSpecialCharacters = StringConstant.RegexSpecialCharsNotAllowForPersonName;
     private const string Digits = StringConstant.RegexDigits;
+
     public SroController(AmsContext context)
     {
         _context = context;
@@ -264,11 +265,61 @@ public class SroController : ControllerBase
         var sroResponse = GetAllUserRoleSro().FirstOrDefault(s => s.UserId == sro.UserId);
         return Ok(CustomResponse.Ok("Update SRO successfully", sroResponse!));
     }
-    
+
+    // Can delete sro
+    [HttpGet]
+    [Route("api/sros/{id:int}/can-delete")]
+    [Authorize(Roles = "admin")]
+    public IActionResult CanDeleteSro(int id)
+    {
+        var user = _context.Users.FirstOrDefault(u => u.Id == id && u.RoleId == SroRoleId);
+        if (user == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Sro"));
+        }
+
+        var canDelete = CanDelete(id);
+
+        return Ok(CustomResponse.Ok("Can delete this teacher", new CheckSroCanDeleteResponse()
+        {
+            CanDelete = canDelete
+        }));
+    }
+
+    // delete sro
+    [HttpDelete]
+    [Route("api/sros/{id:int}")]
+    [Authorize(Roles = "admin")]
+    public IActionResult DeleteSro(int id)
+    {
+        var user = _context.Users
+            .Include(u => u.Sro)
+            .FirstOrDefault(u => u.Id == id && u.RoleId == SroRoleId);
+        if (user == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Sro"));
+        }
+
+        try
+        {
+            _context.Sros.Remove(user.Sro);
+            _context.Users.Remove(user);
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E1119"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        return Ok(CustomResponse.Ok("Sro deleted successfully", null!));
+    }
+
+    // change activate sro
     [HttpPatch]
     [Route("api/sros/{id:int}/change-active")]
     [Authorize(Roles = "admin")]
-    public IActionResult ChangeActivateTeacher(int id)
+    public IActionResult ChangeActivateSro(int id)
     {
         var sro = _context.Sros.Include(s => s.User).FirstOrDefault(s => s.UserId == id);
         if (sro == null)
@@ -398,6 +449,20 @@ public class SroController : ControllerBase
         return allSro;
     }
 
+    private bool CanDelete(int id)
+    {
+        var user = _context.Users
+            .Include(u => u.Sro)
+            .Include(u => u.Sro.Classes)
+            .FirstOrDefault(u => u.Id == id && u.RoleId == SroRoleId);
+
+        if (user == null)
+        {
+            return false;
+        }
+
+        return !user.Sro.Classes.Any();
+    }
 
     private bool CheckEmailAndEmailOrganizationForCreate(CreateSroRequest request, out IActionResult actionResult1)
     {

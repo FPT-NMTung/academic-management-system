@@ -12,6 +12,9 @@ public class StudentClass
     [Column("class_id")]
     public int ClassId { get; set; }
     
+    [Column("is_active")]
+    public bool IsActive { get; set; }
+    
     [Column("created_at")]
     public DateTime CreatedAt { get; set; }
     

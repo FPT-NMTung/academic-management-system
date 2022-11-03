@@ -19,7 +19,7 @@ public class CourseFamilyController : ControllerBase
         _context = context;
     }
 
-    // get all families
+    // get all course families
     [HttpGet]
     [Route("api/course-families")]
     [Authorize(Roles = "admin,sro")]
@@ -54,7 +54,7 @@ public class CourseFamilyController : ControllerBase
     // create course family
     [HttpPost]
     [Route("api/course-families")]
-    [Authorize(Roles = "admin,sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult CreateCourseFamily([FromBody] CreateCourseFamilyRequest request)
     {
         request.Code = request.Code.ToUpper().Trim();
@@ -137,7 +137,7 @@ public class CourseFamilyController : ControllerBase
     // update course family
     [HttpPut]
     [Route("api/course-families/{code}")]
-    [Authorize(Roles = "admin,sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult UpdateCourseFamily(string code, [FromBody] UpdateCourseFamilyRequest request)
     {
         request.Name = request.Name?.Trim();
@@ -203,7 +203,7 @@ public class CourseFamilyController : ControllerBase
     [Authorize(Roles = "admin")]
     public IActionResult CanDeleteCourseFamily(string code)
     {
-        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.Trim());
+        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.ToUpper().Trim());
         if (courseFamily == null)
         {
             return NotFound(CustomResponse.NotFound("Course family not found"));
@@ -229,6 +229,7 @@ public class CourseFamilyController : ControllerBase
             return NotFound(CustomResponse.NotFound("Course family not found"));
 
         selectedCourseFamily.IsActive = !selectedCourseFamily.IsActive;
+        selectedCourseFamily.UpdatedAt = DateTime.Now;
 
         try
         {
@@ -247,7 +248,7 @@ public class CourseFamilyController : ControllerBase
     // delete course family
     [HttpDelete]
     [Route("api/course-families/{code}")]
-    [Authorize(Roles = "admin,sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult DeleteCourseFamily(string code)
     {
         try
@@ -255,7 +256,7 @@ public class CourseFamilyController : ControllerBase
             var courseFamily = _context.CourseFamilies.FirstOrDefault(cf => cf.Code == code.Trim());
             if (courseFamily == null)
             {
-                return NotFound(CustomResponse.NotFound("Course family not found"));
+                return NotFound(CustomResponse.NotFound("Not Found Course Family"));
             }
 
             _context.CourseFamilies.Remove(courseFamily);
@@ -263,10 +264,11 @@ public class CourseFamilyController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+            var error = ErrorDescription.Error["E1121"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        return Ok(CustomResponse.Ok("Delete course family success", null!));
+        return Ok(CustomResponse.Ok("Course family deleted successful", null!));
     }
 
     private static CourseFamilyResponse GetCourseFamilyResponse(CourseFamily courseFamily)

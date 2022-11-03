@@ -153,7 +153,7 @@ public class ModuleController : ControllerBase
     // create module with course code and semester id
     [HttpPost]
     [Route("api/modules")]
-    [Authorize(Roles = "admin,sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult CreateModule([FromBody] CreateModuleRequest request)
     {
         request.ModuleName = request.ModuleName.Trim();
@@ -473,7 +473,7 @@ public class ModuleController : ControllerBase
     // update module by id
     [HttpPut]
     [Route("api/modules/{id:int}")]
-    [Authorize(Roles = "admin,sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult UpdateModuleById(int id, [FromBody] UpdateModuleRequest request)
     {
         var module = _context.Modules.Include(m => m.Center)
@@ -744,6 +744,77 @@ public class ModuleController : ControllerBase
         }
 
         return Ok(CustomResponse.Ok("Module searched successfully", moduleResponse));
+    }
+
+    // can delete module
+    [HttpGet]
+    [Route("api/modules/{id:int}/can-delete")]
+    [Authorize(Roles = "admin")]
+    public IActionResult CanDeleteModule(int id)
+    {
+        var module = _context.Modules.FirstOrDefault(m => m.Id == id);
+        if (module == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Module"));
+        }
+
+        var canDelete = CanDelete(id);
+
+        return Ok(CustomResponse.Ok("Can delete module", new CheckModuleCanDeleteResponse()
+        {
+            CanDelete = canDelete
+        }));
+    }
+
+    // delete module
+    [HttpDelete]
+    [Route("api/modules/{id:int}")]
+    [Authorize(Roles = "admin")]
+    public IActionResult DeleteModule(int id)
+    {
+        var module = _context.Modules
+            .Include(m => m.CoursesModulesSemesters)
+            .FirstOrDefault(m => m.Id == id);
+        if (module == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Module"));
+        }
+
+        // delete course module semester
+        _context.CoursesModulesSemesters.RemoveRange(module.CoursesModulesSemesters);
+
+        // delete grade item -> grade category module
+        DeleteDataGradeCategoryModuleAndItems(id);
+
+        // delete module
+        _context.Modules.Remove(module);
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+        }
+
+        return Ok(CustomResponse.Ok("Module deleted successfully", null!));
+    }
+
+    private bool CanDelete(int id)
+    {
+        var selectModule = _context.Modules
+            .Include(m => m.ClassSchedules)
+            .Include(m => m.GpaRecords)
+            .Include(m => m.CoursesModulesSemesters)
+            .Include(m => m.GradeCategoryModule)
+            .FirstOrDefault(m => m.Id == id);
+
+        if (selectModule == null)
+        {
+            return false;
+        }
+
+        return !selectModule.ClassSchedules.Any() && !selectModule.GpaRecords.Any();
     }
 
     // func get all courses module semester

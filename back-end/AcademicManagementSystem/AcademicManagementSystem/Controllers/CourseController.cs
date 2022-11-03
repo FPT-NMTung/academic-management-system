@@ -63,7 +63,7 @@ public class CourseController : ControllerBase
     // create course
     [HttpPost]
     [Route("api/courses")]
-    [Authorize(Roles = "admin,sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult CreateCourse([FromBody] CreateCourseRequest request)
     {
         request.Name = request.Name.Trim();
@@ -158,7 +158,7 @@ public class CourseController : ControllerBase
     // update course
     [HttpPut]
     [Route("api/courses/{code}")]
-    [Authorize(Roles = "admin,sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult UpdateCourse(string code, [FromBody] UpdateCourseRequest request)
     {
         request.Name = request.Name.Trim();
@@ -184,7 +184,7 @@ public class CourseController : ControllerBase
             var error = ErrorDescription.Error["E1016"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         if (IsCourseNameWithDifferentCodeExists(request.Name, code))
         {
             var error = ErrorDescription.Error["E1058"];
@@ -230,10 +230,60 @@ public class CourseController : ControllerBase
         return Ok(CustomResponse.Ok("Course Updated Successfully", courseResponse));
     }
 
+    // change active status
+    [HttpPatch]
+    [Route("api/courses/{code}")]
+    [Authorize(Roles = "admin")]
+    public IActionResult ChangeActiveStatusCourse(string code)
+    {
+        var selectedCourse = _context.Courses
+            .Include(c => c.CourseFamily)
+            .FirstOrDefault(c => c.Code == code.Trim());
+
+        if (selectedCourse == null)
+            return NotFound(CustomResponse.NotFound("Course not found"));
+
+        selectedCourse.IsActive = !selectedCourse.IsActive;
+        selectedCourse.UpdatedAt = DateTime.Now;
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E1117"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var courseResponse = GetCourseResponse(selectedCourse);
+        return Ok(CustomResponse.Ok("Active status course changed successfully", courseResponse));
+    }
+
+    // Can delete course
+    [HttpGet]
+    [Route("api/courses/{code}/can-delete")]
+    [Authorize(Roles = "admin")]
+    public IActionResult CanDeleteCourse(string code)
+    {
+        var course = _context.Courses.FirstOrDefault(c => c.Code == code.ToUpper().Trim());
+        if (course == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Course"));
+        }
+
+        var canDelete = CanDelete(code);
+
+        return Ok(CustomResponse.Ok("Can delete course", new CheckCourseCanDeleteResponse()
+        {
+            CanDelete = canDelete
+        }));
+    }
+
     // delete course
     [HttpDelete]
     [Route("api/courses/{code}")]
-    [Authorize(Roles = "admin,sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult DeleteCourse(string code)
     {
         try
@@ -249,7 +299,8 @@ public class CourseController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(CustomResponse.BadRequest(e.Message, e.GetType().ToString()));
+            var error = ErrorDescription.Error["E1120"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         return Ok(CustomResponse.Ok("Course Deleted Successfully", null!));
@@ -270,6 +321,21 @@ public class CourseController : ControllerBase
             }
         };
         return courseResponse;
+    }
+
+    private bool CanDelete(string code)
+    {
+        var selectCourse = _context.Courses
+            .Include(c => c.CoursesModulesSemesters)
+            .Include(c => c.Students)
+            .FirstOrDefault(c => c.Code == code);
+
+        if (selectCourse == null)
+        {
+            return false;
+        }
+
+        return selectCourse.CoursesModulesSemesters.Count <= 0 && selectCourse.Students.Count <= 0;
     }
 
     // is course code exists
