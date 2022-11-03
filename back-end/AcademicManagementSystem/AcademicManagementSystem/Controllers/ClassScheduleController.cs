@@ -166,14 +166,14 @@ public class ClassScheduleController : ControllerBase
                     session.Title = module.ModuleName + " - T" + i;
                     session.RoomId = request.TheoryRoomId;
                 }
-                
+
                 if (module.ModuleType == 2)
                 {
                     session.SessionTypeId = Practice;
                     session.Title = module.ModuleName + " - P" + i;
                     session.RoomId = request.LabRoomId;
                 }
-                
+
                 if (module.ModuleType == 3 && practiceSessions.Any(practice => practice == i))
                 {
                     session.SessionTypeId = Practice;
@@ -243,6 +243,12 @@ public class ClassScheduleController : ControllerBase
             }
         }
 
+        var isTeacherBusy = CheckTeacherBusy(classScheduleToCreate, request);
+        if (isTeacherBusy)
+        {
+            var error = ErrorDescription.Error["E2064"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         // update class status
         classContext.ClassStatusId = StatusScheduled;
@@ -263,6 +269,18 @@ public class ClassScheduleController : ControllerBase
             GetClassSchedulesResponse(classId).First(cs => cs.Id == classScheduleToCreate.Id);
 
         return Ok(CustomResponse.Ok("Create class schedule successfully", classScheduleResponse));
+    }
+
+    private bool CheckTeacherBusy(ClassSchedule classScheduleToCreate, CreateClassScheduleRequest request)
+    {
+        return _context.ClassSchedules
+            .Include(cs => cs.Sessions)
+            .Any(cs =>
+                cs.TeacherId == request.TeacherId &&
+                cs.WorkingTimeId == request.WorkingTimeId &&
+                !((classScheduleToCreate.StartDate < cs.StartDate && classScheduleToCreate.EndDate < cs.StartDate) ||
+                  (classScheduleToCreate.StartDate > cs.EndDate && classScheduleToCreate.EndDate > cs.EndDate))
+            );
     }
 
     private string? GetCodeIfStartDateNotTheNextOfLastSession(int classId, CreateClassScheduleRequest request)
