@@ -61,12 +61,11 @@ public class ClassScheduleController : ControllerBase
         var isDraftStudent =
             _context.StudentsClasses.Any(sc => sc.ClassId == classContext.Id && sc.Student.IsDraft);
 
-        // check student is in student class or not
-        if (isDraftStudent)
-        {
-            var error = ErrorDescription.Error["E0094"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
+        // if (isDraftStudent)
+        // {
+        //     var error = ErrorDescription.Error["E0094"];
+        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        // }
 
         var module = GetModulesBelongToThisClass(classId)
             .FirstOrDefault(m => m.Id == request.ModuleId && centerId == m.CenterId);
@@ -140,7 +139,7 @@ public class ClassScheduleController : ControllerBase
 
         // get list day off of teacher
         var dayOff = _context.DaysOff.Where(d =>
-            d.TeacherId == null || d.TeacherId == request.TeacherId && d.Date.Date >= request.StartDate.Date);
+            (d.TeacherId == null || d.TeacherId == request.TeacherId) && d.Date.Date >= request.StartDate.Date);
         var teacherDayOff = dayOff.ToList();
         var globalDayOff = dayOff.Where(d => d.TeacherId == null).ToList();
 
