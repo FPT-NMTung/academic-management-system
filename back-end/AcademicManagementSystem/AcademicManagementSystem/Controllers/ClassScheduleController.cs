@@ -160,7 +160,21 @@ public class ClassScheduleController : ControllerBase
                     EndTime = request.ClassHourEnd,
                 };
 
-                if (practiceSessions.Any(practice => practice == i))
+                if (module.ModuleType == 1)
+                {
+                    session.SessionTypeId = Theory;
+                    session.Title = module.ModuleName + " - T" + i;
+                    session.RoomId = request.TheoryRoomId;
+                }
+                
+                if (module.ModuleType == 2)
+                {
+                    session.SessionTypeId = Practice;
+                    session.Title = module.ModuleName + " - P" + i;
+                    session.RoomId = request.LabRoomId;
+                }
+                
+                if (module.ModuleType == 3 && practiceSessions.Any(practice => practice == i))
                 {
                     session.SessionTypeId = Practice;
                     session.Title = module.ModuleName + " - P" + i;
