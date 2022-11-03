@@ -22,6 +22,7 @@ public class SroController : ControllerBase
     private const int SroRoleId = 2;
     private const string RegexSpecialCharacters = StringConstant.RegexSpecialCharsNotAllowForPersonName;
     private const string Digits = StringConstant.RegexDigits;
+
     public SroController(AmsContext context)
     {
         _context = context;
@@ -264,7 +265,7 @@ public class SroController : ControllerBase
         var sroResponse = GetAllUserRoleSro().FirstOrDefault(s => s.UserId == sro.UserId);
         return Ok(CustomResponse.Ok("Update SRO successfully", sroResponse!));
     }
-    
+
     [HttpPatch]
     [Route("api/sros/{id:int}/change-active")]
     [Authorize(Roles = "admin")]
@@ -283,7 +284,7 @@ public class SroController : ControllerBase
             sro.User.UpdatedAt = DateTime.Now;
             _context.SaveChanges();
         }
-        catch (Exception e)
+        catch (Exception)
         {
             var error = ErrorDescription.Error["E2057"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -304,18 +305,19 @@ public class SroController : ControllerBase
             : _context.Users.Any(e => e.MobilePhone == mobilePhone);
     }
 
-    private bool IsEmailExists(string? email, bool isUpdate, int userId)
+    private bool IsEmailExists(string email, bool isUpdate, int userId)
     {
         return isUpdate
-            ? _context.Users.Any(e => e.Email == email && e.Id != userId)
-            : _context.Users.Any(e => e.Email == email);
+            ? _context.Users.Any(e => e.Email.Trim().ToLower().Equals(email.Trim().ToLower()) && e.Id != userId)
+            : _context.Users.Any(e => e.Email.Trim().ToLower().Equals(email.Trim().ToLower()));
     }
 
-    private bool IsEmailOrganizationExists(string? emailOrganization, bool isUpdate, int userId)
+    private bool IsEmailOrganizationExists(string emailOrganization, bool isUpdate, int userId)
     {
         return isUpdate
-            ? _context.Users.Any(e => e.EmailOrganization == emailOrganization && e.Id != userId)
-            : _context.Users.Any(e => e.EmailOrganization == emailOrganization);
+            ? _context.Users.Any(e =>
+                e.EmailOrganization.Trim().ToUpper().Equals(emailOrganization.Trim().ToUpper()) && e.Id != userId)
+            : _context.Users.Any(e => e.EmailOrganization.Trim().ToUpper().Equals(emailOrganization.Trim().ToUpper()));
     }
 
     private bool IsCitizenIdentityCardNoExists(string? citizenIdentityCardNo, bool isUpdate, int userId)
