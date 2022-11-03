@@ -57,6 +57,7 @@ const TeacherCreate = ({ modeUpdate }) => {
     useState(true);
   const [isUnlockDelete, setIsUnlockDelete] = useState(false);
   const [dataUser, setDataUser] = useState(undefined);
+  const [canDelete, setCanDelete] = useState(undefined);
 
   const [form] = Form.useForm();
   const navigate = useNavigate();
@@ -267,16 +268,48 @@ const TeacherCreate = ({ modeUpdate }) => {
       }
     );
   };
-
+const checkCanDelete = () => {
+  
+    FetchApi(ManageTeacherApis.checkCanDeleteTeacher, null, null, [
+      String([`${id}`]),
+    ])
+      .then((res) => {
+        if (res.data.can_delete === true) {
+          setCanDelete(true);
+        } else {
+          setCanDelete(false);
+        }
+      })
+      .catch((err) => {
+        toast.error('Lỗi kiểm tra khả năng xóa');
+      });
+  };
+  const handleDeleteUser = () => {
+    toast.promise(
+      FetchApi(ManageTeacherApis.checkCanDeleteTeacher, null, null, [
+        String([`${id}`]),
+      ]),
+      {
+        loading: 'Đang xóa',
+        success: (res) => {
+          navigate('/admin/account/teacher');
+          return 'Xóa thành công';
+        },
+        error: (err) => {
+          return 'Xóa thất bại';
+        },
+      }
+    );
+  };
   useEffect(() => {
     getListCenter();
     getListGender();
     getListProvince();
     getListWorkingTime();
     getListTeacherType();
-
     if (modeUpdate) {
       getInformationTeacher();
+      checkCanDelete();
     }
   }, []);
 
@@ -795,7 +828,16 @@ const TeacherCreate = ({ modeUpdate }) => {
                   />
                 </Form.Item>
               </div>
-              <div className={classes.buttonCreate}>
+              {/* <Form.Item > */}
+             
+              <div
+              style={{
+                display: 'flex',
+                gap: '10px',
+                justifyContent: 'center',
+              }}
+            >
+              
                 <Button
                   flat
                   auto
@@ -809,10 +851,36 @@ const TeacherCreate = ({ modeUpdate }) => {
                   {!modeUpdate && 'Tạo mới'}
                   {modeUpdate && 'Cập nhật'}
                 </Button>
-              </div>
+               
+
+             
+           
+                <Button
+                  flat
+                  auto
+                  css={{
+                    width: '150px',
+                  }}
+                  color={'error'}
+                  onPress={handleDeleteUser}
+                  disabled={!canDelete}
+                  hidden={!modeUpdate}
+                >
+                    {canDelete === undefined && <Loading size="xs" />}
+                {canDelete !== undefined && 'Xoá'}
+     
+                </Button>
+               
+
+         
+           </div>
+              {/* </Form.Item> */}
+              
             </Card.Body>
           </Card>
         </Grid>
+    
+
         {modeUpdate && (
           <Grid xs={3}>
             <Card
@@ -876,6 +944,7 @@ const TeacherCreate = ({ modeUpdate }) => {
             </Card>
           </Grid>
         )}
+
       </Grid.Container>
     </Form>
   );

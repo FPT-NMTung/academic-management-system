@@ -319,7 +319,18 @@ export const ManageTeacherApis = {
     url: 'api/teachers/{0}/skills',
     method: 'POST',
     contextType: 'application/json',
-  }
+  },
+  checkCanDeleteTeacher: {
+    url: 'api/teachers/{0}/can-delete',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  deleteTeacher: {
+    url: 'api/teachers/{0}',
+    method: 'DELETE',
+    contextType: 'application/json',
+  },
+
 };
 
 export const UserApis = {
