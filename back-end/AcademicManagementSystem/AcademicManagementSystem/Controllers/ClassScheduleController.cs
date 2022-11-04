@@ -243,15 +243,15 @@ public class ClassScheduleController : ControllerBase
             }
         }
 
-        var isTeacherBusy = CheckTeacherBusy(classScheduleToCreate, request);
+        var isTeacherBusy = CheckTeacherBusy(classScheduleToCreate);
         if (isTeacherBusy)
         {
             var error = ErrorDescription.Error["E2064"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var isRoomBusy = CheckRoomBusy(classScheduleToCreate, request, module);
-        if (true)
+        var isRoomBusy = CheckRoomBusy(classScheduleToCreate, module);
+        if (isRoomBusy)
         {
             var error = ErrorDescription.Error["E2065"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -278,19 +278,41 @@ public class ClassScheduleController : ControllerBase
         return Ok(CustomResponse.Ok("Create class schedule successfully", classScheduleResponse));
     }
 
-    private bool CheckTeacherBusy(ClassSchedule classScheduleToCreate, CreateClassScheduleRequest request)
+    private bool CheckTeacherBusy(ClassSchedule classScheduleToCreate)
     {
-        return _context.ClassSchedules
+        var listSchedule = _context.ClassSchedules
             .Include(cs => cs.Sessions)
-            .Any(cs =>
-                cs.TeacherId == request.TeacherId &&
-                cs.WorkingTimeId == request.WorkingTimeId &&
+            .Where(cs =>
+                cs.TeacherId == classScheduleToCreate.TeacherId &&
+                cs.WorkingTimeId == classScheduleToCreate.WorkingTimeId &&
                 !((classScheduleToCreate.StartDate < cs.StartDate && classScheduleToCreate.EndDate < cs.StartDate) ||
                   (classScheduleToCreate.StartDate > cs.EndDate && classScheduleToCreate.EndDate > cs.EndDate))
             );
+
+        foreach (var schedule in listSchedule)
+        {
+            var sessions = schedule.Sessions
+                .Where(s => s.SessionTypeId != TheoryExam && s.SessionTypeId != PracticeExam)
+                .OrderBy(s => s.LearningDate).ToList();
+
+            var firstSession = sessions.First();
+            var lastSession = sessions.Last();
+
+            if ((classScheduleToCreate.StartDate < firstSession.LearningDate &&
+                 classScheduleToCreate.EndDate < firstSession.LearningDate) ||
+                (classScheduleToCreate.StartDate > lastSession.LearningDate &&
+                 classScheduleToCreate.EndDate > lastSession.LearningDate))
+            {
+                continue;
+            }
+
+            return true;
+        }
+        
+        return false;
     }
 
-    private bool CheckRoomBusy(ClassSchedule classScheduleToCreate, CreateClassScheduleRequest request, Module module)
+    private bool CheckRoomBusy(ClassSchedule classScheduleToCreate, Module module)
     {
         if (module.ModuleType == 1)
         {
@@ -345,7 +367,7 @@ public class ClassScheduleController : ControllerBase
                     s.LearningDate <= lastTheoryRoomScheduled.LearningDate)
                 .ToList()
                 .Find(s =>
-                    classScheduleToCreate.Sessions.Any(s1 => 
+                    classScheduleToCreate.Sessions.Any(s1 =>
                         s1.LearningDate == s.LearningDate));
 
             var listLabRoom = _context.Sessions.Include(s => s.Room)
