@@ -337,21 +337,29 @@ public class ClassScheduleController : ControllerBase
             var firstLabRoomScheduled = listLabRoomScheduled.First();
             var lastLabRoomScheduled = listLabRoomScheduled.Last();
 
-            var isTheoryRoomBusy = _context.Sessions.Include(s => s.Room)
+            var listTheoryRoom = _context.Sessions.Include(s => s.Room)
                 .Where(s =>
                     s.RoomId == theoryRoomId &&
                     classScheduleToCreate.WorkingTimeId == s.ClassSchedule.WorkingTimeId &&
                     firstTheoryRoomScheduled.LearningDate <= s.LearningDate &&
-                    s.LearningDate <= lastTheoryRoomScheduled.LearningDate).ToList();
+                    s.LearningDate <= lastTheoryRoomScheduled.LearningDate)
+                .ToList()
+                .Find(s =>
+                    classScheduleToCreate.Sessions.Any(s1 => 
+                        s1.LearningDate == s.LearningDate));
 
-            var isLabRoomBusy = _context.Sessions.Include(s => s.Room)
+            var listLabRoom = _context.Sessions.Include(s => s.Room)
                 .Where(s =>
                     s.RoomId == labRoomId &&
                     classScheduleToCreate.WorkingTimeId == s.ClassSchedule.WorkingTimeId &&
                     firstLabRoomScheduled.LearningDate <= s.LearningDate &&
-                    s.LearningDate <= lastLabRoomScheduled.LearningDate).ToList();
+                    s.LearningDate <= lastLabRoomScheduled.LearningDate)
+                .ToList()
+                .Find(s =>
+                    classScheduleToCreate.Sessions.Any(s1 =>
+                        s1.LearningDate == s.LearningDate));
 
-            return isTheoryRoomBusy.Count > 0 || isLabRoomBusy.Count > 0;
+            return listTheoryRoom != null || listLabRoom != null;
         }
 
         return false;
