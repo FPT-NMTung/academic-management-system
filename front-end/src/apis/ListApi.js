@@ -124,6 +124,16 @@ export const CourseApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  checkCanDeleteCourse: {
+    url: 'api/courses/{0}/can-delete',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  deleteCourse: {
+    url: 'api/courses/{0}',
+    method: 'DELETE',
+    contextType: 'application/json',
+  },
 };
 
 export const ModulesApis = {
@@ -150,6 +160,16 @@ export const ModulesApis = {
   updateModule: {
     url: 'api/modules/{0}',
     method: 'PUT',
+    contextType: 'application/json',
+  },
+  checkCanDeleteModule: {
+    url: 'api/modules/{0}/can-delete',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  deleteCourse: {
+    url: 'api/modules/{0}',
+    method: 'DELETE',
     contextType: 'application/json',
   },
 };
@@ -238,7 +258,17 @@ export const ManageSroApis = {
     url: 'api/sros/{0}/change-active',
     method: 'PATCH',
     contextType: 'application/json',
-  }
+  },
+  checkCanDeleteSro: {
+    url: 'api/sros/{0}/can-delete',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  deleteSro: {
+    url: 'api/sros/{0}',
+    method: 'DELETE',
+    contextType: 'application/json',
+  },
 };
 
 export const GenderApis = {
@@ -299,7 +329,18 @@ export const ManageTeacherApis = {
     url: 'api/teachers/{0}/skills',
     method: 'POST',
     contextType: 'application/json',
-  }
+  },
+  checkCanDeleteTeacher: {
+    url: 'api/teachers/{0}/can-delete',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  deleteTeacher: {
+    url: 'api/teachers/{0}',
+    method: 'DELETE',
+    contextType: 'application/json',
+  },
+
 };
 
 export const UserApis = {
