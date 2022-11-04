@@ -268,6 +268,8 @@ public static class ErrorDescription
         { "E0097", new ErrorModel() { Message = "", Type = "class-schedule-error-0021" } },
         { "E0098", new ErrorModel() { Message = "", Type = "class-schedule-error-0022" } },
         { "E0099", new ErrorModel() { Message = "", Type = "class-schedule-error-0023" } },
+        { "E2064", new ErrorModel() { Message = "Teacher busy in this time", Type = "class-schedule-error-0024" } },
+        { "E2065", new ErrorModel() { Message = "Room already used in this time", Type = "class-schedule-error-0024" } },
 
         // Day off
         { "E0100", new ErrorModel() { Message = "This day off already in database", Type = "day-off-error-0001" } },

@@ -104,10 +104,7 @@ public class DayOffController : ControllerBase
                 (request.TeacherId == s.TeacherId || request.TeacherId == null ) &&
                 s.WorkingTimeId == request.WorkingTimeId);
 
-        if (schedule == null)
-        {
-            return;
-        }
+        if (schedule == null) return;
 
         var existSession = schedule.Sessions.FirstOrDefault(s =>
             s.LearningDate.Date.Date == request.Date.Date && s.ClassSchedule.WorkingTimeId == request.WorkingTimeId);
