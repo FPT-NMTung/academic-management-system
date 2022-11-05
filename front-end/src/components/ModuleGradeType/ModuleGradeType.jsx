@@ -1,10 +1,10 @@
-import { Form, InputNumber, Select, Table, message } from "antd";
-import { useEffect } from "react";
-import { useState } from "react";
-import { IoMdTrash } from "react-icons/io";
-import FetchApi from "../../apis/FetchApi";
-import { GradeType } from "../../apis/ListApi";
-import { Spacer, Button, Text } from "@nextui-org/react";
+import { Form, InputNumber, Select, Table, message } from 'antd';
+import { useEffect } from 'react';
+import { useState } from 'react';
+import { IoMdTrash } from 'react-icons/io';
+import FetchApi from '../../apis/FetchApi';
+import { GradeType } from '../../apis/ListApi';
+import { Spacer, Button, Text } from '@nextui-org/react';
 
 // import { Table } from '@nextui-org/react';
 
@@ -66,7 +66,7 @@ const ModuleGradeType = ({
   }, []);
 
   useEffect(() => {
-    form.resetFields(["grade_type", "weight", "quantity"]);
+    form.resetFields(['grade_type', 'weight', 'quantity']);
     setTypeGrade(undefined);
   }, [listGrade]);
 
@@ -85,18 +85,22 @@ const ModuleGradeType = ({
         }}
       >
         <Form.Item
-          name={"grade_type"}
+          name={'grade_type'}
           label="Loại điểm"
           rules={[
             {
               required: true,
-              message: "Vui lòng chọn loại điểm",
+              message: 'Vui lòng chọn loại điểm',
             },
           ]}
         >
           <Select
+            showSearch
             placeholder="Chọn loại điểm"
             onSelect={handleChangeSelectType}
+            filterOption={(input, option) =>
+              option.children.toLowerCase().includes(input.toLowerCase())
+            }
           >
             {listType
               .filter((item) => item.id !== 6 && item.id !== 7 && item.id !== 8)
@@ -108,12 +112,12 @@ const ModuleGradeType = ({
           </Select>
         </Form.Item>
         <Form.Item
-          name={"quantity"}
+          name={'quantity'}
           label="Số lượng"
           rules={[
             {
               required: true,
-              message: "Vui lòng nhập số lượng",
+              message: 'Vui lòng nhập số lượng',
             },
           ]}
         >
@@ -127,11 +131,11 @@ const ModuleGradeType = ({
         </Form.Item>
         <Form.Item
           label="Trọng số"
-          name={"weight"}
+          name={'weight'}
           rules={[
             {
               required: true,
-              message: "Vui lòng nhập trọng số",
+              message: 'Vui lòng nhập trọng số',
             },
           ]}
         >
@@ -144,10 +148,12 @@ const ModuleGradeType = ({
           ></InputNumber>
         </Form.Item>
         <Form.Item wrapperCol={{ span: 14, offset: 6 }}>
-          <div style={{
-            display: 'flex',
-            gap: '10px',
-          }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: '10px',
+            }}
+          >
             <Button flat auto type="primary" htmlType="submit">
               Thêm hoặc cập nhật
             </Button>
@@ -181,7 +187,7 @@ const ModuleGradeType = ({
           dataIndex="weight"
           key="weight"
           render={(value) => (
-            <div style={total !== 100 ? { color: "red" } : null}>
+            <div style={total !== 100 ? { color: 'red' } : null}>
               <b>{value}%</b>
             </div>
           )}
@@ -199,8 +205,8 @@ const ModuleGradeType = ({
             return (
               <IoMdTrash
                 size={20}
-                color={"red"}
-                style={{ cursor: "pointer" }}
+                color={'red'}
+                style={{ cursor: 'pointer' }}
                 onClick={() => {
                   handleDeleteRow(data);
                 }}
@@ -210,7 +216,7 @@ const ModuleGradeType = ({
         />
       </Table>
       <Spacer y={1} />
-      <Text p size={15} css={{ float: "right", paddingRight: 10 }}>
+      <Text p size={15} css={{ float: 'right', paddingRight: 10 }}>
         Tổng trọng số: <b>{total}%</b>
       </Text>
     </div>

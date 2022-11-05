@@ -1,4 +1,4 @@
-import { Card, Grid, Button, Text } from "@nextui-org/react";
+import { Card, Grid, Button, Text } from '@nextui-org/react';
 import {
   Form,
   Select,
@@ -11,19 +11,19 @@ import {
   message,
   DatePicker,
   TimePicker,
-} from "antd";
-import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import FetchApi from "../../../../apis/FetchApi";
-import { CourseFamilyApis, ManageClassApis } from "../../../../apis/ListApi";
-import classes from "../../../../components/ModuleCreate/ModuleCreate.module.css";
-import { Fragment } from "react";
-import { MdEdit } from "react-icons/md";
-import ColumnGroup from "antd/lib/table/ColumnGroup";
-import { ErrorCodeApi } from "../../../../apis/ErrorCodeApi";
-import { Validater } from "../../../../validater/Validater";
-import moment from "moment";
-import toast from "react-hot-toast";
+} from 'antd';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import FetchApi from '../../../../apis/FetchApi';
+import { CourseFamilyApis, ManageClassApis } from '../../../../apis/ListApi';
+import classes from '../../../../components/ModuleCreate/ModuleCreate.module.css';
+import { Fragment } from 'react';
+import { MdEdit } from 'react-icons/md';
+import ColumnGroup from 'antd/lib/table/ColumnGroup';
+import { ErrorCodeApi } from '../../../../apis/ErrorCodeApi';
+import { Validater } from '../../../../validater/Validater';
+import moment from 'moment';
+import toast from 'react-hot-toast';
 
 const ClassCreate = ({ modeUpdate }) => {
   const [isCreatingOrUpdating, setisCreatingOrUpdating] = useState(false);
@@ -62,11 +62,11 @@ const ClassCreate = ({ modeUpdate }) => {
       class_status_id: data.class_status_id,
       name: data.class_name.trim(),
       course_family_code: data.course_family_code,
-      start_date: data.start_date.add(7, "hours").toDate(),
-      completion_date: data.completion_date.add(7, "hours").toDate(),
-      graduation_date: data.graduation_date.add(7, "hours").toDate(),
-      class_hour_start: data.class_hour[0].format("HH:mm:ss"),
-      class_hour_end: data.class_hour[1].format("HH:mm:ss"),
+      start_date: data.start_date.add(7, 'hours').toDate(),
+      completion_date: data.completion_date.add(7, 'hours').toDate(),
+      graduation_date: data.graduation_date.add(7, 'hours').toDate(),
+      class_hour_start: data.class_hour[0].format('HH:mm:ss'),
+      class_hour_end: data.class_hour[1].format('HH:mm:ss'),
     };
     const api = modeUpdate
       ? ManageClassApis.updateClass
@@ -75,11 +75,11 @@ const ClassCreate = ({ modeUpdate }) => {
     toast.promise(
       FetchApi(api, body, null, params),
       {
-        loading: "...",
+        loading: '...',
         success: (res) => {
           setisCreatingOrUpdating(false);
           navigate(`/sro/manage-class`);
-          return "Thành công !";
+          return 'Thành công !';
         },
 
         error: (err) => {
@@ -88,7 +88,7 @@ const ClassCreate = ({ modeUpdate }) => {
           // if (err?.type_error) {
           //   return ErrorCodeApi[err.type_error];
           // }
-          return "Thất bại !";
+          return 'Thất bại !';
         },
       }
       // .then((res) => {
@@ -123,8 +123,8 @@ const ClassCreate = ({ modeUpdate }) => {
         form.setFieldsValue({
           class_name: data.name,
           class_hour: [
-            moment(data.class_hour_start, "HH:mm:ss"),
-            moment(data.class_hour_end, "HH:mm:ss"),
+            moment(data.class_hour_start, 'HH:mm:ss'),
+            moment(data.class_hour_end, 'HH:mm:ss'),
           ],
           start_date: moment(data.start_date),
           course_family_code: data.course_family_code,
@@ -175,9 +175,9 @@ const ClassCreate = ({ modeUpdate }) => {
           form={form}
         >
           <Grid.Container gap={1} justify="center">
-            <Grid xs={6} direction={"column"}>
+            <Grid xs={6} direction={'column'}>
               <Card
-                style={{ padding: "20px 10px 20px 10px", marginTop: "100px" }}
+                style={{ padding: '20px 10px 20px 10px', marginTop: '100px' }}
               >
                 <Card.Header>
                   <Text
@@ -185,12 +185,12 @@ const ClassCreate = ({ modeUpdate }) => {
                     size={16}
                     p
                     css={{
-                      width: "100%",
-                      textAlign: "center",
+                      width: '100%',
+                      textAlign: 'center',
                     }}
                   >
-                    {!modeUpdate && "Tạo Lớp Học"}
-                    {modeUpdate && "Cập Nhật Thông Tin Lớp Học"}
+                    {!modeUpdate && 'Tạo Lớp Học'}
+                    {modeUpdate && 'Cập Nhật Thông Tin Lớp Học'}
                   </Text>
                 </Card.Header>
                 <Card.Body>
@@ -212,16 +212,23 @@ const ClassCreate = ({ modeUpdate }) => {
                           required: true,
                           validator: (_, value) => {
                             if (value === null || value === undefined) {
-                              return Promise.reject('Trường này không được để trống');
+                              return Promise.reject(
+                                'Trường này không được để trống'
+                              );
                             }
                             if (
-                              Validater.isContaintSpecialCharacterForName(value.trim())
+                              Validater.isContaintSpecialCharacterForName(
+                                value.trim()
+                              )
                             ) {
                               return Promise.reject(
                                 'Trường này không được chứa ký tự đặc biệt'
                               );
                             }
-                            if (value.trim().length < 1 || value.trim().length > 255) {
+                            if (
+                              value.trim().length < 1 ||
+                              value.trim().length > 255
+                            ) {
                               return Promise.reject(
                                 new Error('Trường phải từ 1 đến 255 ký tự')
                               );
@@ -231,8 +238,8 @@ const ClassCreate = ({ modeUpdate }) => {
                         },
                       ]}
                       style={{
-                        display: "inline-block",
-                        width: "calc(50% - 8px)",
+                        display: 'inline-block',
+                        width: 'calc(50% - 8px)',
                       }}
                     >
                       <Input placeholder="Nhập tên lớp học" />
@@ -243,17 +250,17 @@ const ClassCreate = ({ modeUpdate }) => {
                       name="class_hour"
                       rules={[
                         {
-                          message: "Vui lòng chọn giờ học",
+                          message: 'Vui lòng chọn giờ học',
                           required: true,
                         },
                       ]}
                       style={{
-                        display: "inline-block",
-                        width: "calc(50% - 8px)",
-                        margin: "0 8px",
+                        display: 'inline-block',
+                        width: 'calc(50% - 8px)',
+                        margin: '0 8px',
                       }}
                     >
-                      <TimePicker.RangePicker format={"HH:mm"} />
+                      <TimePicker.RangePicker format={'HH:mm'} />
                     </Form.Item>
                   </Form.Item>
                   <Form.Item
@@ -271,19 +278,19 @@ const ClassCreate = ({ modeUpdate }) => {
                       name="start_date"
                       rules={[
                         {
-                          message: "Vui lòng chọn ngày nhập học",
+                          message: 'Vui lòng chọn ngày nhập học',
                           required: true,
                         },
                       ]}
                       style={{
-                        display: "inline-block",
-                        width: "calc(50% - 8px)",
+                        display: 'inline-block',
+                        width: 'calc(50% - 8px)',
                       }}
                     >
                       <DatePicker
-                        format={"DD/MM/YYYY"}
+                        format={'DD/MM/YYYY'}
                         style={{
-                          width: "calc(100%)",
+                          width: 'calc(100%)',
                         }}
                         placeholder="Ngày nhập học"
                       />
@@ -294,20 +301,26 @@ const ClassCreate = ({ modeUpdate }) => {
                       name="course_family_code"
                       rules={[
                         {
-                          message: "Vui lòng chọn chương trình học",
+                          message: 'Vui lòng chọn chương trình học',
                           required: true,
                         },
                       ]}
                       style={{
-                        display: "inline-block",
-                        width: "calc(50% - 8px)",
-                        margin: "0 8px",
+                        display: 'inline-block',
+                        width: 'calc(50% - 8px)',
+                        margin: '0 8px',
                       }}
                     >
                       <Select
-                        style={{ width: "100%" }}
+                        showSearch
+                        style={{ width: '100%' }}
                         dropdownStyle={{ zIndex: 9999 }}
                         placeholder="Chọn chương trình học"
+                        filterOption={(input, option) =>
+                          option.children
+                            .toLowerCase()
+                            .includes(input.toLowerCase())
+                        }
                       >
                         {listCourseFamily.map((e) => (
                           <Select.Option
@@ -335,19 +348,19 @@ const ClassCreate = ({ modeUpdate }) => {
                       name="completion_date"
                       rules={[
                         {
-                          message: "Vui lòng chọn ngày hoàn thành",
+                          message: 'Vui lòng chọn ngày hoàn thành',
                           required: true,
                         },
                       ]}
                       style={{
-                        display: "inline-block",
-                        width: "calc(50% - 8px)",
+                        display: 'inline-block',
+                        width: 'calc(50% - 8px)',
                       }}
                     >
                       <DatePicker
-                        format={"DD/MM/YYYY"}
+                        format={'DD/MM/YYYY'}
                         style={{
-                          width: "calc(100%)",
+                          width: 'calc(100%)',
                         }}
                         placeholder="Ngày hoàn thành dự kiến"
                       />
@@ -357,20 +370,20 @@ const ClassCreate = ({ modeUpdate }) => {
                       name="graduation_date"
                       rules={[
                         {
-                          message: "Vui lòng chọn ngày tốt nghiệp",
+                          message: 'Vui lòng chọn ngày tốt nghiệp',
                           required: true,
                         },
                       ]}
                       style={{
-                        display: "inline-block",
-                        width: "calc(50% - 8px)",
-                        margin: "0 8px",
+                        display: 'inline-block',
+                        width: 'calc(50% - 8px)',
+                        margin: '0 8px',
                       }}
                     >
                       <DatePicker
-                        format={"DD/MM/YYYY"}
+                        format={'DD/MM/YYYY'}
                         style={{
-                          width: "calc(100%)",
+                          width: 'calc(100%)',
                         }}
                         placeholder="Ngày tốt nghiệp dự kiến"
                       />
@@ -391,21 +404,26 @@ const ClassCreate = ({ modeUpdate }) => {
                       name="class_status_id"
                       rules={[
                         {
-                          message: "Vui lòng chọn trạng thái lớp",
+                          message: 'Vui lòng chọn trạng thái lớp',
                           required: modeUpdate,
                         },
                       ]}
                       style={{
-                        display: "inline-block",
-                        width: "calc(50% - 8px)",
+                        display: 'inline-block',
+                        width: 'calc(50% - 8px)',
                       }}
                     >
                       <Select
+                        showSearch
                         disabled={!modeUpdate}
                         placeholder="Trạng thái lớp học"
-                        style={{ width: "100%" }}
+                        style={{ width: '100%' }}
                         dropdownStyle={{ zIndex: 9999 }}
-                        // disabled={!modeUpdate}
+                        filterOption={(input, option) =>
+                          option.children
+                            .toLowerCase()
+                            .includes(input.toLowerCase())
+                        }
                       >
                         <Select.Option key="100" value={1}>
                           Đã lên lịch
@@ -429,20 +447,26 @@ const ClassCreate = ({ modeUpdate }) => {
                       name="class_days_id"
                       rules={[
                         {
-                          message: "Vui lòng chọn các ngày học trong tuần",
+                          message: 'Vui lòng chọn các ngày học trong tuần',
                           required: true,
                         },
                       ]}
                       style={{
-                        display: "inline-block",
-                        width: "calc(50% - 8px)",
-                        margin: "0 8px",
+                        display: 'inline-block',
+                        width: 'calc(50% - 8px)',
+                        margin: '0 8px',
                       }}
                     >
                       <Select
+                        showSearch
                         placeholder="Ngày học trong tuần"
-                        style={{ width: "100%" }}
+                        style={{ width: '100%' }}
                         dropdownStyle={{ zIndex: 9999 }}
+                        filterOption={(input, option) =>
+                          option.children
+                            .toLowerCase()
+                            .includes(input.toLowerCase())
+                        }
                       >
                         <Select.Option key="105" value={1}>
                           2-4-6
@@ -464,17 +488,17 @@ const ClassCreate = ({ modeUpdate }) => {
                   >
                     <Form.Item
                       style={{
-                        display: "inline-block",
-                        textAlign: "center",
-                        width: "100%",
+                        display: 'inline-block',
+                        textAlign: 'center',
+                        width: '100%',
                       }}
                     >
                       {!isCreatingOrUpdating && messageFailed !== undefined && (
                         <Text
                           size={14}
                           css={{
-                            background: "#fff",
-                            color: "red",
+                            background: '#fff',
+                            color: 'red',
                           }}
                         >
                           {messageFailed}
@@ -483,10 +507,10 @@ const ClassCreate = ({ modeUpdate }) => {
                     </Form.Item>
                     <Form.Item
                       style={{
-                        float: "right",
-                        display: "inline-block",
+                        float: 'right',
+                        display: 'inline-block',
                         // width: "calc(50% - 8px)",
-                        margin: "0 8px -25px 0",
+                        margin: '0 8px -25px 0',
                       }}
                     >
                       <Button
@@ -496,8 +520,8 @@ const ClassCreate = ({ modeUpdate }) => {
                         htmlType="submit"
                         loading={isCreatingOrUpdating}
                       >
-                        {!modeUpdate && "Tạo mới"}
-                        {modeUpdate && "Cập nhật "}
+                        {!modeUpdate && 'Tạo mới'}
+                        {modeUpdate && 'Cập nhật '}
                       </Button>
                     </Form.Item>
                   </Form.Item>
