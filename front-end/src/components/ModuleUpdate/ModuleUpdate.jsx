@@ -1,4 +1,4 @@
-import { Card, Grid, Spacer, Text, Button } from '@nextui-org/react';
+import { Card, Grid, Spacer, Text, Button, Loading } from '@nextui-org/react';
 import { Form, Select, Input, Spin, Divider, InputNumber, message } from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
@@ -191,11 +191,9 @@ const ModuleUpdate = () => {
       }
     );
   };
-const checkCanDelete = () => {
+  const checkCanDelete = () => {
     console.log(ModulesApis.checkCanDeleteModule);
-    FetchApi(ModulesApis.checkCanDeleteModule, null, null, [
-      String([`${id}`]),
-    ])
+    FetchApi(ModulesApis.checkCanDeleteModule, null, null, [String([`${id}`])])
       .then((res) => {
         if (res.data.can_delete === true) {
           setCanDelete(true);
@@ -209,9 +207,7 @@ const checkCanDelete = () => {
   };
   const handleDelete = () => {
     toast.promise(
-      FetchApi(ModulesApis.deleteCourse, null, null, [
-        String([`${id}`]),
-      ]),
+      FetchApi(ModulesApis.deleteCourse, null, null, [String([`${id}`])]),
       {
         loading: 'Đang xóa',
         success: (res) => {
@@ -327,8 +323,14 @@ const checkCanDelete = () => {
                     ]}
                   >
                     <Select
+                      showSearch
                       loading={listCenters.length === 0}
                       placeholder="Chọn cơ sở"
+                      filterOption={(input, option) =>
+                        option.children
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
                     >
                       {listCenters
                         .filter((e) => e.is_active)
@@ -410,7 +412,15 @@ const checkCanDelete = () => {
                       },
                     ]}
                   >
-                    <Select placeholder="Chọn hình thức học">
+                    <Select
+                      showSearch
+                      filterOption={(input, option) =>
+                        option.children
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
+                      placeholder="Chọn hình thức học"
+                    >
                       <Select.Option value={1}>Lý thuyết</Select.Option>
                       <Select.Option value={2}>Thực hành</Select.Option>
                       <Select.Option value={3}>
@@ -429,10 +439,16 @@ const checkCanDelete = () => {
                     ]}
                   >
                     <Select
+                      showSearch
                       placeholder="Chọn hình thức thi"
                       onChange={(value) => {
                         handleTypeExamChange(value);
                       }}
+                      filterOption={(input, option) =>
+                        option.children
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
                     >
                       <Select.Option value={1}>Lý thuyết</Select.Option>
                       <Select.Option value={2}>Thực hành</Select.Option>
@@ -578,42 +594,41 @@ const checkCanDelete = () => {
                     justifyContent: 'center',
                   }}
                 >
-                  <Form.Item >
-                  <div
-              style={{
-                display: 'flex',
-                gap: '10px',
-                // textAlign: 'center',
-                // marginRight: '10px',
-              }}
-            >
-          <Button
-              flat
-              auto
-              css={{
-                width: "120px",
-                
-              }}
-              type="primary"
-              htmlType="submit"
-              disabled={isUpdating}
-            >
-              Cập nhật
-            </Button>
-            <Button
-                flat
-                auto
-                css={{
-                  width: '80px',
-                }}
-                color={'error'}
-                disabled={!canDelete}
-                onPress={handleDelete}
-              >
-                {canDelete === undefined && <Loading size="xs" />}
-                {canDelete !== undefined && 'Xoá'}
-              </Button>{' '}
-              </div>
+                  <Form.Item>
+                    <div
+                      style={{
+                        display: 'flex',
+                        gap: '10px',
+                        // textAlign: 'center',
+                        // marginRight: '10px',
+                      }}
+                    >
+                      <Button
+                        flat
+                        auto
+                        css={{
+                          width: '120px',
+                        }}
+                        type="primary"
+                        htmlType="submit"
+                        disabled={isUpdating}
+                      >
+                        Cập nhật
+                      </Button>
+                      <Button
+                        flat
+                        auto
+                        css={{
+                          width: '80px',
+                        }}
+                        color={'error'}
+                        disabled={!canDelete}
+                        onPress={handleDelete}
+                      >
+                        {canDelete === undefined && <Loading size="xs" />}
+                        {canDelete !== undefined && 'Xoá'}
+                      </Button>
+                    </div>
                   </Form.Item>
                 </div>
               </Form>

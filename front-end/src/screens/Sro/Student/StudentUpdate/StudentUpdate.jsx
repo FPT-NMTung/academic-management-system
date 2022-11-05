@@ -7,8 +7,8 @@ import {
   Loading,
   Switch,
   Badge,
-} from "@nextui-org/react";
-import { UploadOutlined } from "@ant-design/icons";
+} from '@nextui-org/react';
+import { UploadOutlined } from '@ant-design/icons';
 import {
   Form,
   Input,
@@ -19,35 +19,34 @@ import {
   Divider,
   Image,
   Upload,
-} from "antd";
-import { useState } from "react";
-import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import classes from "./StudentUpdate.module.css";
-import toast from "react-hot-toast";
-import FetchApi from "../../../../apis/FetchApi";
-import { Validater } from "../../../../validater/Validater";
+} from 'antd';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import classes from './StudentUpdate.module.css';
+import toast from 'react-hot-toast';
+import FetchApi from '../../../../apis/FetchApi';
+import { Validater } from '../../../../validater/Validater';
 import {
   CenterApis,
   GenderApis,
   AddressApis,
   CourseApis,
   ManageStudentApis,
-} from "../../../../apis/ListApi";
-import ManImage from "../../../../images/3d-fluency-businessman-1.png";
-import WomanImage from "../../../../images/3d-fluency-businesswoman-1.png";
-import moment from "moment";
-import { ErrorCodeApi } from "../../../../apis/ErrorCodeApi";
-
+} from '../../../../apis/ListApi';
+import ManImage from '../../../../images/3d-fluency-businessman-1.png';
+import WomanImage from '../../../../images/3d-fluency-businesswoman-1.png';
+import moment from 'moment';
+import { ErrorCodeApi } from '../../../../apis/ErrorCodeApi';
 
 const translateStatusStudent = {
-  1: "Studying",
-  2: "Delay",
-  3: "Dropout",
-  4: "ClassQueue",
-  5: "Transfer",
-  6: "Upgrade",
-  7: "Finished",
+  1: 'Studying',
+  2: 'Delay',
+  3: 'Dropout',
+  4: 'ClassQueue',
+  5: 'Transfer',
+  6: 'Upgrade',
+  7: 'Finished',
 };
 // const translateStatusId = {
 //      "Studying": 1,
@@ -93,7 +92,7 @@ const StudentUpdate = () => {
   };
 
   const getListDistrict = () => {
-    const provinceId = form.getFieldValue("province_id");
+    const provinceId = form.getFieldValue('province_id');
 
     FetchApi(AddressApis.getListDistrict, null, null, [`${provinceId}`]).then(
       (res) => {
@@ -105,8 +104,8 @@ const StudentUpdate = () => {
   };
 
   const getListWard = () => {
-    const provinceId = form.getFieldValue("province_id");
-    const districtId = form.getFieldValue("district_id");
+    const provinceId = form.getFieldValue('province_id');
+    const districtId = form.getFieldValue('district_id');
 
     FetchApi(AddressApis.getListWard, null, null, [
       `${provinceId}`,
@@ -118,7 +117,7 @@ const StudentUpdate = () => {
     form.setFieldsValue({ ward_id: null });
   };
   const getListDistrictForUpdate = () => {
-    const provinceId = form.getFieldValue("province_id");
+    const provinceId = form.getFieldValue('province_id');
 
     FetchApi(AddressApis.getListDistrict, null, null, [`${provinceId}`]).then(
       (res) => {
@@ -128,8 +127,8 @@ const StudentUpdate = () => {
   };
 
   const getListWardForUpdate = () => {
-    const provinceId = form.getFieldValue("province_id");
-    const districtId = form.getFieldValue("district_id");
+    const provinceId = form.getFieldValue('province_id');
+    const districtId = form.getFieldValue('district_id');
 
     FetchApi(AddressApis.getListWard, null, null, [
       `${provinceId}`,
@@ -196,7 +195,7 @@ const StudentUpdate = () => {
 
   const handleSubmitForm = () => {
     const data = form.getFieldsValue();
-    const companysalary = form.getFieldValue("company_salary");
+    const companysalary = form.getFieldValue('company_salary');
 
     setIsCreatingOrUpdating(true);
     setMessageFailed(undefined);
@@ -211,18 +210,18 @@ const StudentUpdate = () => {
       district_id: data.district_id,
       ward_id: data.ward_id,
       gender_id: data.gender_id,
-      birthday: data.birthday.add(7, "hours").toDate(),
+      birthday: data.birthday.add(7, 'hours').toDate(),
       center_id: data.center_id,
       citizen_identity_card_no: data.citizen_identity_card_no?.trim(),
       citizen_identity_card_published_date:
-        data.citizen_identity_card_published_date.add(7, "hours").toDate(),
+        data.citizen_identity_card_published_date.add(7, 'hours').toDate(),
       citizen_identity_card_published_place:
         data.citizen_identity_card_published_place,
       status: data.status,
       contact_phone: data.mobile_phone,
       parental_phone: data.parental_phone,
       parental_name: data.parental_name,
-      application_date: data.application_date.add(7, "hours").toDate(),
+      application_date: data.application_date.add(7, 'hours').toDate(),
       fee_plan: data.fee_plan,
       promotion: data.promotion,
       contact_address: data.contact_address,
@@ -240,15 +239,15 @@ const StudentUpdate = () => {
     };
     console.log(body);
 
-    const api =  ManageStudentApis.updateStudent;
+    const api = ManageStudentApis.updateStudent;
     const params = [`${id}`];
 
     toast.promise(FetchApi(api, body, null, params), {
-      loading: "Đang xử lý",
+      loading: 'Đang xử lý',
       success: (res) => {
         setIsCreatingOrUpdating(false);
         navigate(`/sro/manage/student/${res.data.user_id}`);
-        return "Thành công";
+        return 'Thành công';
       },
       error: (err) => {
         setMessageFailed(ErrorCodeApi[err.type_error]);
@@ -256,13 +255,13 @@ const StudentUpdate = () => {
         if (err?.type_error) {
           return ErrorCodeApi[err.type_error];
         }
-        return "Thất bại";
+        return 'Thất bại';
       },
     });
   };
   const handleCancel = () => {
     navigate(`/sro/manage/student/${id}`);
-    };
+  };
   useEffect(() => {
     getListGender();
     getListProvince();
@@ -291,20 +290,19 @@ const StudentUpdate = () => {
       // }}
     >
       <Grid.Container justify="center" gap={2}>
-        <Grid sm={6.5} direction={"column"} css={{ rowGap: 20 }}>
+        <Grid sm={6.5} direction={'column'} css={{ rowGap: 20 }}>
           <Card variant="bordered">
-            <Card.Header css={{ margin: "12px 0 0 0" }}>
+            <Card.Header css={{ margin: '12px 0 0 0' }}>
               <Text
                 b
                 size={17}
                 p
                 css={{
-                  width: "100%",
-                  textAlign: "center",
+                  width: '100%',
+                  textAlign: 'center',
                 }}
               >
-Cập nhật thông tin học viên
-
+                Cập nhật thông tin học viên
               </Text>
             </Card.Header>
             <Card.Body>
@@ -319,12 +317,12 @@ Cập nhật thông tin học viên
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            "Trường này không được để trống"
+                            'Trường này không được để trống'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -332,7 +330,7 @@ Cập nhật thông tin học viên
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -340,7 +338,7 @@ Cập nhật thông tin học viên
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
@@ -355,12 +353,12 @@ Cập nhật thông tin học viên
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            "Trường này không được để trống"
+                            'Trường này không được để trống'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -368,7 +366,7 @@ Cập nhật thông tin học viên
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -376,7 +374,7 @@ Cập nhật thông tin học viên
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
@@ -388,11 +386,19 @@ Cập nhật thông tin học viên
                   rules={[
                     {
                       required: true,
-                      message: "Hãy nhập giới tính",
+                      message: 'Hãy nhập giới tính',
                     },
                   ]}
                 >
-                  <Select placeholder="Giới tính">
+                  <Select
+                    showSearch
+                    placeholder="Giới tính"
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                  >
                     {listGender.map((item, index) => (
                       <Select.Option key={index} value={item.id}>
                         {item.value}
@@ -406,11 +412,11 @@ Cập nhật thông tin học viên
                   rules={[
                     {
                       required: true,
-                      message: "Hãy nhập ngày sinh",
+                      message: 'Hãy nhập ngày sinh',
                     },
                   ]}
                 >
-                  <DatePicker format={"DD/MM/YYYY"} />
+                  <DatePicker format={'DD/MM/YYYY'} />
                 </Form.Item>
               </div>
 
@@ -423,8 +429,8 @@ Cập nhật thông tin học viên
                   p
                   size={15}
                   css={{
-                    width: "100%",
-                    textAlign: "center",
+                    width: '100%',
+                    textAlign: 'center',
                     //   margin: '0',
                     //   padding: '0',
                   }}
@@ -441,16 +447,22 @@ Cập nhật thông tin học viên
                   rules={[
                     {
                       required: true,
-                      message: "Hãy chọn tỉnh/thành phố",
+                      message: 'Hãy chọn tỉnh/thành phố',
                     },
                   ]}
                 >
                   <Select
+                    showSearch
                     placeholder="Tỉnh/Thành phố"
                     loading={listProvince.length === 0}
                     onChange={() => {
                       getListDistrict();
                     }}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     {listProvince.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
@@ -465,16 +477,22 @@ Cập nhật thông tin học viên
                   rules={[
                     {
                       required: true,
-                      message: "Hãy chọn quận/huyện",
+                      message: 'Hãy chọn quận/huyện',
                     },
                   ]}
                 >
                   <Select
+                    showSearch
                     placeholder="Quận/Huyện"
                     loading={listDistrict.length === 0}
                     onChange={() => {
                       getListWard();
                     }}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     {listDistrict.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
@@ -489,13 +507,19 @@ Cập nhật thông tin học viên
                   rules={[
                     {
                       required: true,
-                      message: "Hãy chọn phường/xã",
+                      message: 'Hãy chọn phường/xã',
                     },
                   ]}
                 >
                   <Select
+                    showSearch
                     placeholder="Phường/Xã"
                     loading={listWard.length === 0}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     {listWard.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
@@ -505,52 +529,52 @@ Cập nhật thông tin học viên
                   </Select>
                 </Form.Item>
                 <Form.Item
-                    label="Địa chỉ cụ thể"
-                    name="contact_address"
-                    style={{
-                      // margin: "auto",
-                      width: "100%",
-                      // textAlign: "left",
-                    }}
-                    rules={[
-                      {
-                        required: false,
-                        validator: (_, value) => {
-                          if (
-                            value === null ||
-                            value === undefined ||
-                            value.trim() === ""
-                          ) {
-                            return Promise.resolve();
-                          }
-                          if (
-                            Validater.isContaintSpecialCharacterForAddress(
-                              value.trim()
-                            )
-                          ) {
-                            return Promise.reject(
-                              "Trường này không được chứa ký tự đặc biệt"
-                            );
-                          }
-                          if (
-                            value.trim().length < 1 ||
-                            value.trim().length > 255
-                          ) {
-                            return Promise.reject(
-                              new Error("Trường phải từ 1 đến 255 ký tự")
-                            );
-                          }
+                  label="Địa chỉ cụ thể"
+                  name="contact_address"
+                  style={{
+                    // margin: "auto",
+                    width: '100%',
+                    // textAlign: "left",
+                  }}
+                  rules={[
+                    {
+                      required: false,
+                      validator: (_, value) => {
+                        if (
+                          value === null ||
+                          value === undefined ||
+                          value.trim() === ''
+                        ) {
                           return Promise.resolve();
-                        },
+                        }
+                        if (
+                          Validater.isContaintSpecialCharacterForAddress(
+                            value.trim()
+                          )
+                        ) {
+                          return Promise.reject(
+                            'Trường này không được chứa ký tự đặc biệt'
+                          );
+                        }
+                        if (
+                          value.trim().length < 1 ||
+                          value.trim().length > 255
+                        ) {
+                          return Promise.reject(
+                            new Error('Trường phải từ 1 đến 255 ký tự')
+                          );
+                        }
+                        return Promise.resolve();
                       },
-                      {
-                        whitespace: true,
-                        message: "Trường không được chứa khoảng trắng",
-                      },
-                    ]}
-                  >
-                    <Input placeholder="Địa chỉ liên hệ cụ thể" />
-                  </Form.Item>
+                    },
+                    {
+                      whitespace: true,
+                      message: 'Trường không được chứa khoảng trắng',
+                    },
+                  ]}
+                >
+                  <Input placeholder="Địa chỉ liên hệ cụ thể" />
+                </Form.Item>
                 <Form.Item
                   label="Email cá nhân"
                   name="email"
@@ -561,7 +585,7 @@ Cập nhật thông tin học viên
                         if (Validater.isEmail(value)) {
                           return Promise.resolve();
                         }
-                        return Promise.reject(new Error("Email không hợp lệ"));
+                        return Promise.reject(new Error('Email không hợp lệ'));
                       },
                     },
                   ]}
@@ -578,7 +602,7 @@ Cập nhật thông tin học viên
                         if (Validater.isEmail(value)) {
                           return Promise.resolve();
                         }
-                        return Promise.reject(new Error("Email không hợp lệ"));
+                        return Promise.reject(new Error('Email không hợp lệ'));
                       },
                     },
                   ]}
@@ -597,7 +621,7 @@ Cập nhật thông tin học viên
                           return Promise.resolve();
                         }
                         return Promise.reject(
-                          new Error("Số điện thoại không hợp lệ")
+                          new Error('Số điện thoại không hợp lệ')
                         );
                       },
                     },
@@ -616,8 +640,8 @@ Cập nhật thông tin học viên
                   p
                   size={15}
                   css={{
-                    width: "100%",
-                    textAlign: "center",
+                    width: '100%',
+                    textAlign: 'center',
                     //   margin: '0',
                     //   padding: '0',
                   }}
@@ -636,12 +660,12 @@ Cập nhật thông tin học viên
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            "Trường này không được để trống"
+                            'Trường này không được để trống'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -649,7 +673,7 @@ Cập nhật thông tin học viên
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -657,7 +681,7 @@ Cập nhật thông tin học viên
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
@@ -676,7 +700,7 @@ Cập nhật thông tin học viên
                           return Promise.resolve();
                         }
                         return Promise.reject(
-                          new Error("Số điện thoại không hợp lệ")
+                          new Error('Số điện thoại không hợp lệ')
                         );
                       },
                     },
@@ -693,12 +717,12 @@ Cập nhật thông tin học viên
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            "Trường này không được để trống"
+                            'Trường này không được để trống'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -706,7 +730,7 @@ Cập nhật thông tin học viên
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -714,13 +738,19 @@ Cập nhật thông tin học viên
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
                   <Select
+                    showSearch
                     placeholder="Là ... của học viên"
                     dropdownStyle={{ zIndex: 9999 }}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     <Select.Option key={9000} value="Bố">
                       Bố
@@ -756,8 +786,8 @@ Cập nhật thông tin học viên
                   p
                   size={15}
                   css={{
-                    width: "100%",
-                    textAlign: "center",
+                    width: '100%',
+                    textAlign: 'center',
                     //   margin: '0',
                     //   padding: '0',
                   }}
@@ -779,7 +809,7 @@ Cập nhật thông tin học viên
                           if (Validater.isNumber(salary)) {
                             return Promise.resolve();
                           }
-                          return Promise.reject(new Error("Phải là số"));
+                          return Promise.reject(new Error('Phải là số'));
                         }
 
                         // check regex phone number viet nam
@@ -801,7 +831,7 @@ Cập nhật thông tin học viên
                           if (Validater.isNumber(salary)) {
                             return Promise.resolve();
                           }
-                          return Promise.reject(new Error("Phải là số"));
+                          return Promise.reject(new Error('Phải là số'));
                         }
 
                         // check regex phone number viet nam
@@ -816,7 +846,7 @@ Cập nhật thông tin học viên
                   name="application_document"
                   style={{
                     // margin: "auto",
-                    width: "100%",
+                    width: '100%',
                     // textAlign: "left",
                   }}
                   // rules={[
@@ -833,19 +863,19 @@ Cập nhật thông tin học viên
                   name="application_date"
                   style={{
                     // margin: "auto",
-                    width: "100%",
+                    width: '100%',
                     // textAlign: "left",
                   }}
                   rules={[
                     {
                       required: true,
-                      message: "Hãy nhập ngày nộp hồ sơ",
+                      message: 'Hãy nhập ngày nộp hồ sơ',
                     },
                   ]}
                 >
                   <DatePicker
                     placeholder="Ngày nộp hồ sơ"
-                    format={"DD/MM/YYYY"}
+                    format={'DD/MM/YYYY'}
                   />
                 </Form.Item>
                 <div></div>
@@ -859,8 +889,8 @@ Cập nhật thông tin học viên
                   p
                   size={15}
                   css={{
-                    width: "100%",
-                    textAlign: "center",
+                    width: '100%',
+                    textAlign: 'center',
                     //   margin: '0',
                     //   padding: '0',
                   }}
@@ -875,7 +905,7 @@ Cập nhật thông tin học viên
                   name="high_school"
                   style={{
                     // margin: "auto",
-                    width: "100%",
+                    width: '100%',
                     // textAlign: "left",
                   }}
                   rules={[
@@ -885,13 +915,13 @@ Cập nhật thông tin học viên
                         if (
                           value === null ||
                           value === undefined ||
-                          value.trim() === ""
+                          value.trim() === ''
                         ) {
                           return Promise.resolve();
                         }
                         if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -899,7 +929,7 @@ Cập nhật thông tin học viên
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -907,7 +937,7 @@ Cập nhật thông tin học viên
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
@@ -918,7 +948,7 @@ Cập nhật thông tin học viên
                   name="university"
                   style={{
                     // margin: "auto",
-                    width: "100%",
+                    width: '100%',
                     // textAlign: "left",
                   }}
                   rules={[
@@ -928,13 +958,13 @@ Cập nhật thông tin học viên
                         if (
                           value === null ||
                           value === undefined ||
-                          value.trim() === ""
+                          value.trim() === ''
                         ) {
                           return Promise.resolve();
                         }
                         if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -942,7 +972,7 @@ Cập nhật thông tin học viên
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -950,7 +980,7 @@ Cập nhật thông tin học viên
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
@@ -961,7 +991,7 @@ Cập nhật thông tin học viên
                   name="working_company"
                   style={{
                     // margin: "auto",
-                    width: "100%",
+                    width: '100%',
                     // textAlign: "left",
                   }}
                   rules={[
@@ -971,13 +1001,13 @@ Cập nhật thông tin học viên
                         if (
                           value === null ||
                           value === undefined ||
-                          value.trim() === ""
+                          value.trim() === ''
                         ) {
                           return Promise.resolve();
                         }
                         if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -985,7 +1015,7 @@ Cập nhật thông tin học viên
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -993,7 +1023,7 @@ Cập nhật thông tin học viên
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
@@ -1004,7 +1034,7 @@ Cập nhật thông tin học viên
                   name="company_address"
                   style={{
                     // margin: "auto",
-                    width: "100%",
+                    width: '100%',
                     // textAlign: "left",
                   }}
                   rules={[
@@ -1014,13 +1044,15 @@ Cập nhật thông tin học viên
                         if (
                           value === null ||
                           value === undefined ||
-                          value.trim() === ""
+                          value.trim() === ''
                         ) {
                           return Promise.resolve();
                         }
-                        if (Validater.isContaintSpecialCharacter(value.trim())) {
+                        if (
+                          Validater.isContaintSpecialCharacter(value.trim())
+                        ) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -1028,7 +1060,7 @@ Cập nhật thông tin học viên
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -1036,7 +1068,7 @@ Cập nhật thông tin học viên
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
@@ -1047,7 +1079,7 @@ Cập nhật thông tin học viên
                   name="company_position"
                   style={{
                     // margin: "auto",
-                    width: "100%",
+                    width: '100%',
                     // textAlign: "left",
                   }}
                   rules={[
@@ -1057,13 +1089,13 @@ Cập nhật thông tin học viên
                         if (
                           value === null ||
                           value === undefined ||
-                          value.trim() === ""
+                          value.trim() === ''
                         ) {
                           return Promise.resolve();
                         }
                         if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -1071,7 +1103,7 @@ Cập nhật thông tin học viên
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -1079,7 +1111,7 @@ Cập nhật thông tin học viên
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
@@ -1095,7 +1127,7 @@ Cập nhật thông tin học viên
                         if (
                           value === null ||
                           value === undefined ||
-                          value === ""
+                          value === ''
                         ) {
                           return Promise.resolve();
                         }
@@ -1103,7 +1135,7 @@ Cập nhật thông tin học viên
                         if (Validater.isNumber(salary)) {
                           return Promise.resolve();
                         }
-                        return Promise.reject(new Error("Phải là số"));
+                        return Promise.reject(new Error('Phải là số'));
                       },
                     },
                     // {
@@ -1121,48 +1153,48 @@ Cập nhật thông tin học viên
             </Card.Body>
           </Card>
         </Grid>
-    
-          <Grid
-            sm={4.5}
-            direction={"column"}
-            css={{ rowGap: 20, position: "relative" }}
+
+        <Grid
+          sm={4.5}
+          direction={'column'}
+          css={{ rowGap: 20, position: 'relative' }}
+        >
+          <Card
+            variant="bordered"
+            css={{ backgroundColor: 'transparent', border: 'none' }}
           >
-            <Card
-              variant="bordered"
-              css={{ backgroundColor: "transparent", border: "none" }}
-            >
-              <Card.Header css={{ margin: "12px 0 0 0" }}>
-                <Text
-                  p
-                  b
-                  size={17}
-                  css={{
-                    width: "100%",
-                    textAlign: "center",
-                    margin: "0",
-                  }}
-                >
-                  Ảnh đại diện
-                </Text>
-              </Card.Header>
-              <Card.Body
+            <Card.Header css={{ margin: '12px 0 0 0' }}>
+              <Text
+                p
+                b
+                size={17}
                 css={{
-                  width: "100%",
-                  textAlign: "center",
+                  width: '100%',
+                  textAlign: 'center',
+                  margin: '0',
                 }}
               >
-                <div className={classes.contantLogo}>
-                  <div className={classes.logo}>
-                    <Image
-                      className={classes.avatarMini}
-                      width={250}
-                      src="https://cdna.artstation.com/p/assets/images/images/048/859/290/large/xu-weili-4d6e20d94309f4e40f1a252e5f8711e.jpg?1651098275"
-                    />
-                    {/* {dataStudent.avatar && (
+                Ảnh đại diện
+              </Text>
+            </Card.Header>
+            <Card.Body
+              css={{
+                width: '100%',
+                textAlign: 'center',
+              }}
+            >
+              <div className={classes.contantLogo}>
+                <div className={classes.logo}>
+                  <Image
+                    className={classes.avatarMini}
+                    width={250}
+                    src="https://cdna.artstation.com/p/assets/images/images/048/859/290/large/xu-weili-4d6e20d94309f4e40f1a252e5f8711e.jpg?1651098275"
+                  />
+                  {/* {dataStudent.avatar && (
                     <img className={classes.avatar} src={dataStudent.avatar} />
                   )} */}
 
-                    {/* {!dataStudent.avatar && (
+                  {/* {!dataStudent.avatar && (
                     <img
                       className={classes.avatarMini}
                       src={
@@ -1174,277 +1206,283 @@ Cập nhật thông tin học viên
                       }
                     />
                   )} */}
-                  </div>
                 </div>
-                <Upload>
-                  <Button
-                    css={{
-                      fontSize: "12px",
-                      height: "28px",
-                      margin: "16px 0 0 0",
-                    }}
-                    auto
-                    flat
-                    icon={<UploadOutlined />}
-                  >
-                    Upload
-                  </Button>
-                </Upload>
-
-                {/* </div> */}
-              </Card.Body>
-            </Card>
-            <Card variant="bordered">
-              <Card.Header css={{ margin: "0px 0 0 0" }}>
-                <Text
-                  b
-                  p
-                  size={15}
+              </div>
+              <Upload>
+                <Button
                   css={{
-                    width: "100%",
-                    textAlign: "center",
-                    //   margin: '0',
-                    //   padding: '0',
+                    fontSize: '12px',
+                    height: '28px',
+                    margin: '16px 0 0 0',
                   }}
+                  auto
+                  flat
+                  icon={<UploadOutlined />}
                 >
-                  Thông tin quan trọng
-                </Text>
-              </Card.Header>
-              <Card.Body
+                  Upload
+                </Button>
+              </Upload>
+
+              {/* </div> */}
+            </Card.Body>
+          </Card>
+          <Card variant="bordered">
+            <Card.Header css={{ margin: '0px 0 0 0' }}>
+              <Text
+                b
+                p
+                size={15}
                 css={{
-                  width: "100%",
-                  //   textAlign: "center",
+                  width: '100%',
+                  textAlign: 'center',
+                  //   margin: '0',
+                  //   padding: '0',
                 }}
               >
-                <Form.Item
-                  name="status"
-                  label="Thay đổi tình trạng"
-                  labelWrap={true}
-                  style={{
-                    // margin: "auto",
-                    width: "100%",
-                    textAlign: "left",
-                  }}
-                >
-                  <Select
-                    placeholder="Tình trạng học viên"
-                    dropdownStyle={{ zIndex: 9999 }}
-                  >
-                    <Select.Option key={100} value={1}>
-                      Studying
-                    </Select.Option>
-                    <Select.Option key={101} value={2}>
-                      Delay
-                    </Select.Option>
-                    <Select.Option key={102} value={3}>
-                      Dropout
-                    </Select.Option>
-                    <Select.Option key={103} value={4}>
-                      ClassQueue
-                    </Select.Option>
-                    <Select.Option key={104} value={5}>
-                      Transfer
-                    </Select.Option>
-                    <Select.Option key={105} value={6}>
-                      Upgrade
-                    </Select.Option>
-                    <Select.Option key={106} value={7}>
-                      Finished
-                    </Select.Option>
-                  </Select>
-                </Form.Item>
-                <Form.Item
-                  name="course_code"
-                  label="Mã khóa học"
-                  labelWrap={true}
-                  style={{
-                    // margin: "auto",
-                    width: "100%",
-                    textAlign: "left",
-                  }}
-                  rules={[
-                    {
-                      required: true,
-                      message: "Hãy chọn khóa học",
-                    },
-                  ]}
-                >
-                  <Select
-                    dropdownStyle={{ zIndex: 9999 }}
-                    onChange={getListCourse}
-                  >
-                    {listCourses.map((e, index) => (
-                      <Select.Option key={index} value={e.code}>
-                        {e.data} {e.code}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Card.Body>
-            </Card>
-            <Card variant="bordered">
-              <Card.Header css={{ margin: "0px 0 0 0" }}>
-                <Text
-                  b
-                  p
-                  size={15}
-                  css={{
-                    width: "100%",
-                    textAlign: "center",
-                    //   margin: '0',
-                    //   padding: '0',
-                  }}
-                >
-                  Thông tin CMND/CCCD
-                </Text>
-              </Card.Header>
-              <Card.Body
-                css={{
-                  width: "100%",
-                  //   textAlign: "center",
-                }}
-              >
-                <Form.Item
-                  label="Số CMND/CCCD"
-                  name="citizen_identity_card_no"
-                  rules={[
-                    {
-                      required: true,
-                      validator: (_, value) => {
-                        if (Validater.isCitizenId(value)) {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(
-                          new Error("Số CMND/CCCD không hợp lệ")
-                        );
-                      },
-                    },
-                  ]}
-                >
-                  <Input placeholder="CMND/CCCD" />
-                </Form.Item>
-                <Form.Item
-                  label="Ngày cấp"
-                  name="citizen_identity_card_published_date"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Hãy nhập ngày cấp",
-                    },
-                  ]}
-                >
-                  <DatePicker format={"DD/MM/YYYY"} />
-                </Form.Item>
-                <Form.Item
-                  label="Nơi cấp"
-                  name="citizen_identity_card_published_place"
-                  rules={[
-                    {
-                      required: true,
-                      validator: (_, value) => {
-                        if (value === null || value === undefined) {
-                          return Promise.reject(
-                            "Trường này không được để trống"
-                          );
-                        }
-                        if (
-                          Validater.isContaintSpecialCharacterForName(
-                            value.trim()
-                          )
-                        ) {
-                          return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
-                          );
-                        }
-                        if (
-                          value.trim().length < 1 ||
-                          value.trim().length > 255
-                        ) {
-                          return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
-                          );
-                        }
-                        return Promise.resolve();
-                      },
-                    },
-                    {
-                      whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
-                    },
-                  ]}
-                >
-                  <Input placeholder="Nơi cấp" />
-                </Form.Item>
-              </Card.Body>
-            </Card>
-            <Card variant="bordered">
-              <Card.Header css={{ margin: "0px 0 0 0" }}>
-                <Text
-                  b
-                  p
-                  size={15}
-                  css={{
-                    width: "100%",
-                    textAlign: "center",
-                    //   margin: '0',
-                    //   padding: '0',
-                  }}
-                >
-                  Thông tin bổ sung
-                </Text>
-              </Card.Header>
-              <Card.Body
-                css={{
-                  width: "100%",
-                  //   textAlign: "center",
-                }}
-              >
-                <Form.Item
-                  label="Facebook"
-                  name="facebook_url"
-                  style={{
-                    // margin: "auto",
-                    width: "100%",
-                    // textAlign: "left",
-                  }}
-                  // rules={[
-                  //   {
-                  //     // required: true,
-
-                  //     message: "Hãy nhập đường dẫn facebook",
-                  //   },
-                  // ]}
-                >
-                  <Input placeholder="Đường dẫn tới facebook" />
-                </Form.Item>
-
-                <Form.Item
-                  label="CV"
-                  name="portfolio_url"
-                  style={{
-                    // margin: "auto",
-                    width: "100%",
-                    // textAlign: "left",
-                  }}
-                  // rules={[
-                  //   {
-                  //     // required: true,
-                  //     message: "Hãy nhập đường dẫn tới cv",
-                  //   },
-                  // ]}
-                >
-                  <Input placeholder="Đường dẫn tới cv" />
-                </Form.Item>
-              </Card.Body>
-            </Card>
-            <Form.Item
-              style={{
-                display: "inline-block",
-                textAlign: "right",
-                width: "100%",
+                Thông tin quan trọng
+              </Text>
+            </Card.Header>
+            <Card.Body
+              css={{
+                width: '100%',
+                //   textAlign: "center",
               }}
             >
-              {/* {!isCreatingOrUpdating && messageFailed !== undefined && (
+              <Form.Item
+                name="status"
+                label="Thay đổi tình trạng"
+                labelWrap={true}
+                style={{
+                  // margin: "auto",
+                  width: '100%',
+                  textAlign: 'left',
+                }}
+              >
+                <Select
+                  showSearch
+                  placeholder="Tình trạng học viên"
+                  dropdownStyle={{ zIndex: 9999 }}
+                  filterOption={(input, option) =>
+                    option.children.toLowerCase().includes(input.toLowerCase())
+                  }
+                >
+                  <Select.Option key={100} value={1}>
+                    Studying
+                  </Select.Option>
+                  <Select.Option key={101} value={2}>
+                    Delay
+                  </Select.Option>
+                  <Select.Option key={102} value={3}>
+                    Dropout
+                  </Select.Option>
+                  <Select.Option key={103} value={4}>
+                    ClassQueue
+                  </Select.Option>
+                  <Select.Option key={104} value={5}>
+                    Transfer
+                  </Select.Option>
+                  <Select.Option key={105} value={6}>
+                    Upgrade
+                  </Select.Option>
+                  <Select.Option key={106} value={7}>
+                    Finished
+                  </Select.Option>
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name="course_code"
+                label="Mã khóa học"
+                labelWrap={true}
+                style={{
+                  // margin: "auto",
+                  width: '100%',
+                  textAlign: 'left',
+                }}
+                rules={[
+                  {
+                    required: true,
+                    message: 'Hãy chọn khóa học',
+                  },
+                ]}
+              >
+                <Select
+                  showSearch
+                  dropdownStyle={{ zIndex: 9999 }}
+                  onChange={getListCourse}
+                  filterOption={(input, option) =>
+                    option.children.toLowerCase().includes(input.toLowerCase())
+                  }
+                >
+                  {listCourses.map((e, index) => (
+                    <Select.Option key={index} value={e.code}>
+                      {e.data} {e.code}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Card.Body>
+          </Card>
+          <Card variant="bordered">
+            <Card.Header css={{ margin: '0px 0 0 0' }}>
+              <Text
+                b
+                p
+                size={15}
+                css={{
+                  width: '100%',
+                  textAlign: 'center',
+                  //   margin: '0',
+                  //   padding: '0',
+                }}
+              >
+                Thông tin CMND/CCCD
+              </Text>
+            </Card.Header>
+            <Card.Body
+              css={{
+                width: '100%',
+                //   textAlign: "center",
+              }}
+            >
+              <Form.Item
+                label="Số CMND/CCCD"
+                name="citizen_identity_card_no"
+                rules={[
+                  {
+                    required: true,
+                    validator: (_, value) => {
+                      if (Validater.isCitizenId(value)) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error('Số CMND/CCCD không hợp lệ')
+                      );
+                    },
+                  },
+                ]}
+              >
+                <Input placeholder="CMND/CCCD" />
+              </Form.Item>
+              <Form.Item
+                label="Ngày cấp"
+                name="citizen_identity_card_published_date"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Hãy nhập ngày cấp',
+                  },
+                ]}
+              >
+                <DatePicker format={'DD/MM/YYYY'} />
+              </Form.Item>
+              <Form.Item
+                label="Nơi cấp"
+                name="citizen_identity_card_published_place"
+                rules={[
+                  {
+                    required: true,
+                    validator: (_, value) => {
+                      if (value === null || value === undefined) {
+                        return Promise.reject('Trường này không được để trống');
+                      }
+                      if (
+                        Validater.isContaintSpecialCharacterForName(
+                          value.trim()
+                        )
+                      ) {
+                        return Promise.reject(
+                          'Trường này không được chứa ký tự đặc biệt'
+                        );
+                      }
+                      if (
+                        value.trim().length < 1 ||
+                        value.trim().length > 255
+                      ) {
+                        return Promise.reject(
+                          new Error('Trường phải từ 1 đến 255 ký tự')
+                        );
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                  {
+                    whitespace: true,
+                    message: 'Trường không được chứa khoảng trắng',
+                  },
+                ]}
+              >
+                <Input placeholder="Nơi cấp" />
+              </Form.Item>
+            </Card.Body>
+          </Card>
+          <Card variant="bordered">
+            <Card.Header css={{ margin: '0px 0 0 0' }}>
+              <Text
+                b
+                p
+                size={15}
+                css={{
+                  width: '100%',
+                  textAlign: 'center',
+                  //   margin: '0',
+                  //   padding: '0',
+                }}
+              >
+                Thông tin bổ sung
+              </Text>
+            </Card.Header>
+            <Card.Body
+              css={{
+                width: '100%',
+                //   textAlign: "center",
+              }}
+            >
+              <Form.Item
+                label="Facebook"
+                name="facebook_url"
+                style={{
+                  // margin: "auto",
+                  width: '100%',
+                  // textAlign: "left",
+                }}
+                // rules={[
+                //   {
+                //     // required: true,
+
+                //     message: "Hãy nhập đường dẫn facebook",
+                //   },
+                // ]}
+              >
+                <Input placeholder="Đường dẫn tới facebook" />
+              </Form.Item>
+
+              <Form.Item
+                label="CV"
+                name="portfolio_url"
+                style={{
+                  // margin: "auto",
+                  width: '100%',
+                  // textAlign: "left",
+                }}
+                // rules={[
+                //   {
+                //     // required: true,
+                //     message: "Hãy nhập đường dẫn tới cv",
+                //   },
+                // ]}
+              >
+                <Input placeholder="Đường dẫn tới cv" />
+              </Form.Item>
+            </Card.Body>
+          </Card>
+          <Form.Item
+            style={{
+              display: 'inline-block',
+              textAlign: 'right',
+              width: '100%',
+            }}
+          >
+            {/* {!isCreatingOrUpdating && messageFailed !== undefined && (
                 <Text
                   size={14}
                   css={{
@@ -1455,44 +1493,43 @@ Cập nhật thông tin học viên
                   {messageFailed}
                 </Text>
               )} */}
-            </Form.Item>
+          </Form.Item>
 
-            <div className={classes.buttonCreate}>
-              <Button
-                flat
-                auto
-                css={{
-                  width: "150px",
-                  position: "absolute",
-                  right: "10px",
-                  bottom: "44px",
-                }}
-                type="primary"
-                htmlType="submit"
-                // disabled={isCreatingOrUpdating}
-              >
-             Cập nhật
-              </Button>
-              <Button
-                flat
-                auto
-                color="error"
-                css={{
-                  width: "150px",
-                  position: "absolute",
-                  right: "180px",
-                  bottom: "44px",
-                }}
-                onPress={() => {
-                  handleCancel();
-                }}
-                // disabled={isCreatingOrUpdating}
-              >
-                Hủy
-              </Button>
-            </div>
-          </Grid>
-        
+          <div className={classes.buttonCreate}>
+            <Button
+              flat
+              auto
+              css={{
+                width: '150px',
+                position: 'absolute',
+                right: '10px',
+                bottom: '44px',
+              }}
+              type="primary"
+              htmlType="submit"
+              // disabled={isCreatingOrUpdating}
+            >
+              Cập nhật
+            </Button>
+            <Button
+              flat
+              auto
+              color="error"
+              css={{
+                width: '150px',
+                position: 'absolute',
+                right: '180px',
+                bottom: '44px',
+              }}
+              onPress={() => {
+                handleCancel();
+              }}
+              // disabled={isCreatingOrUpdating}
+            >
+              Hủy
+            </Button>
+          </div>
+        </Grid>
       </Grid.Container>
     </Form>
   );

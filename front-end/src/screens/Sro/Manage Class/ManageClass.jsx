@@ -6,15 +6,15 @@ import {
   Table,
   Badge,
   Loading,
-} from "@nextui-org/react";
-import { Form, Input, Select } from "antd";
-import FetchApi from "../../../apis/FetchApi";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { useEffect } from "react";
-import classes from "./ManageClass.module.css";
-import { RiEyeFill, RiPencilFill } from "react-icons/ri";
-import { ManageClassApis, CenterApis } from "../../../apis/ListApi";
+} from '@nextui-org/react';
+import { Form, Input, Select } from 'antd';
+import FetchApi from '../../../apis/FetchApi';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import classes from './ManageClass.module.css';
+import { RiEyeFill, RiPencilFill } from 'react-icons/ri';
+import { ManageClassApis, CenterApis } from '../../../apis/ListApi';
 
 const ManageClass = () => {
   const [dataSource, setDataSource] = useState([]);
@@ -26,14 +26,14 @@ const ManageClass = () => {
   const getData = () => {
     setIsGetData(true);
     const param = {
-      className: form.getFieldValue("class_name"),
-      courseFamilyCode: form.getFieldValue("course_family_code"),
-      sroName: form.getFieldValue("sro_name"),
+      className: form.getFieldValue('class_name'),
+      courseFamilyCode: form.getFieldValue('course_family_code'),
+      sroName: form.getFieldValue('sro_name'),
     };
 
-    const classStatusName = form.getFieldValue("class_status_name");
+    const classStatusName = form.getFieldValue('class_status_name');
     // const center_Id = form.getFieldValue("center_id");
-    const class_days = form.getFieldValue("class_days");
+    const class_days = form.getFieldValue('class_days');
 
     if (classStatusName !== null) {
       param.classStatusId = classStatusName;
@@ -57,12 +57,12 @@ const ManageClass = () => {
             center_name: e.center.name,
             class_name: e.name,
             course_family_code: e.course_family_code,
-            sro_name: e.sro_first_name + " " + e.sro_last_name,
+            sro_name: e.sro_first_name + ' ' + e.sro_last_name,
             class_status_id: e.class_status_id,
             class_days_id: e.class_days_id,
             created_at: e.created_at,
             updated_at: e.updated_at,
-            start_date: `${new Date(e.start_date).toLocaleDateString("vi-VN")}`,
+            start_date: `${new Date(e.start_date).toLocaleDateString('vi-VN')}`,
             completion_date: e.completion_date,
             graduation_date: e.graduation_date,
             class_hour_start: e.class_hour_start,
@@ -157,7 +157,7 @@ const ManageClass = () => {
         <Card variant="bordered">
           <Card.Body
             css={{
-              padding: "10px",
+              padding: '10px',
             }}
           >
             <Form
@@ -165,23 +165,27 @@ const ManageClass = () => {
               layout="inline"
               form={form}
               initialValues={{
-                sro_name: "",
-                class_name: "",
+                sro_name: '',
+                class_name: '',
                 class_status_name: null,
                 class_days: null,
-                course_family_code: "",
+                course_family_code: '',
                 // center_id: null,
               }}
               onFinish={handleSubmitForm}
             >
               <Form.Item
                 name="class_status_name"
-                style={{ width: "calc(16% - 16px)" }}
+                style={{ width: 'calc(16% - 16px)' }}
               >
                 <Select
+                  showSearch
                   placeholder="Trạng thái lớp "
-                  style={{ width: "100%" }}
+                  style={{ width: '100%' }}
                   dropdownStyle={{ zIndex: 9999 }}
+                  filterOption={(input, option) =>
+                    option.children.toLowerCase().includes(input.toLowerCase())
+                  }
                 >
                   <Select.Option key="100" value="1">
                     Đã lên lịch
@@ -202,41 +206,31 @@ const ManageClass = () => {
               </Form.Item>
               <Form.Item
                 name="class_name"
-                style={{ width: "calc(16% - 16px)" }}
+                style={{ width: 'calc(16% - 16px)' }}
               >
                 <Input placeholder="Tên lớp" />
               </Form.Item>
               <Form.Item
                 name="course_family_code"
-                style={{ width: "calc(18% - 16px)" }}
+                style={{ width: 'calc(18% - 16px)' }}
               >
                 <Input placeholder="Mã Chương Trình Học" />
               </Form.Item>
-              {/* <Form.Item name="center_id" style={{ width: "calc(12% - 16px)" }}>
-                <Select
-                  placeholder="Cơ Sở"
-                  style={{ width: "100%" }}
-                  // disabled={listCenters.length === 0}
-                  dropdownStyle={{ zIndex: 9999 }}
-                >
-                  {listCenters.map((e) => (
-                    <Select.Option key={e.key} value={e.id}>
-                      {e.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item> */}
-              <Form.Item name="sro_name" style={{ width: "calc(20% - 16px)" }}>
+              <Form.Item name="sro_name" style={{ width: 'calc(20% - 16px)' }}>
                 <Input placeholder="Người phụ trách" />
               </Form.Item>
               <Form.Item
                 name="class_days"
-                style={{ width: "calc(15% - 16px)" }}
+                style={{ width: 'calc(15% - 16px)' }}
               >
                 <Select
+                  showSearch
                   placeholder="Ngày học"
-                  style={{ width: "100%" }}
+                  style={{ width: '100%' }}
                   dropdownStyle={{ zIndex: 9999 }}
+                  filterOption={(input, option) =>
+                    option.children.toLowerCase().includes(input.toLowerCase())
+                  }
                 >
                   <Select.Option key="105" value="1">
                     2-4-6
@@ -247,24 +241,24 @@ const ManageClass = () => {
                 </Select>
               </Form.Item>
 
-              <Form.Item style={{ width: "calc(9% - 16px)" }}>
+              <Form.Item style={{ width: 'calc(9% - 16px)' }}>
                 <Button
                   flat
                   auto
                   type="primary"
                   htmlType="submit"
-                  css={{ width: "100%" }}
+                  css={{ width: '100%' }}
                 >
                   Tìm kiếm
                 </Button>
               </Form.Item>
-              <Form.Item style={{ width: "6%", marginRight: 0 }}>
+              <Form.Item style={{ width: '6%', marginRight: 0 }}>
                 <Button
                   flat
                   auto
-                  color={"error"}
+                  color={'error'}
                   css={{
-                    width: "100%",
+                    width: '100%',
                   }}
                   onPress={handleClearInput}
                 >
@@ -286,8 +280,8 @@ const ManageClass = () => {
                   size={14}
                   p
                   css={{
-                    width: "100%",
-                    textAlign: "center",
+                    width: '100%',
+                    textAlign: 'center',
                   }}
                 >
                   Danh sách lớp học
@@ -299,11 +293,11 @@ const ManageClass = () => {
                   flat
                   auto
                   css={{
-                    width: "100%",
+                    width: '100%',
                   }}
                   type="primary"
                   onPress={() => {
-                    navigate("/sro/manage-class/create");
+                    navigate('/sro/manage-class/create');
                   }}
                 >
                   + Tạo mới
@@ -317,7 +311,7 @@ const ManageClass = () => {
             </div>
           )}
           {!isGetData && (
-            <Table aria-label="" disabledKeys={["4"]}>
+            <Table aria-label="" disabledKeys={['4']}>
               <Table.Header>
                 <Table.Column width={60}>STT</Table.Column>
                 <Table.Column width={200}>Tên lớp học</Table.Column>
@@ -339,27 +333,27 @@ const ManageClass = () => {
                     <Table.Cell>{data.start_date}</Table.Cell>
                     <Table.Cell>{data.course_family_code}</Table.Cell>
                     <Table.Cell>{data.sro_name}</Table.Cell>
-                    <Table.Cell css={{ textAlign: "start" }}>
+                    <Table.Cell css={{ textAlign: 'start' }}>
                       {renderDays(data.class_days_id)}
                     </Table.Cell>
-                    <Table.Cell css={{ textAlign: "start" }}>
+                    <Table.Cell css={{ textAlign: 'start' }}>
                       {renderStatus(data.class_status_id)}
                     </Table.Cell>
-                    <Table.Cell css={{ textAlign: "center" }}>
+                    <Table.Cell css={{ textAlign: 'center' }}>
                       <RiPencilFill
                         size={20}
                         color="f42a70"
-                        style={{ cursor: "pointer" }}
+                        style={{ cursor: 'pointer' }}
                         onClick={() => {
                           navigate(`/sro/manage-class/${data.key}/update/`);
                         }}
                       />
                     </Table.Cell>
-                    <Table.Cell css={{ textAlign: "center" }}>
+                    <Table.Cell css={{ textAlign: 'center' }}>
                       <RiEyeFill
                         size={20}
                         color="5EA2EF"
-                        style={{ cursor: "pointer" }}
+                        style={{ cursor: 'pointer' }}
                         onClick={() => {
                           navigate(`/sro/manage-class/${data.key}`);
                         }}

@@ -56,12 +56,17 @@ const CenterCreate = ({ onCreateSuccess }) => {
     setIsCreating(true);
 
     toast.promise(
-      FetchApi(CenterApis.createCenter, {
-        name: e.name.trim(),
-        province_id: e.province,
-        district_id: e.district,
-        ward_id: e.ward,
-      }, null, null),
+      FetchApi(
+        CenterApis.createCenter,
+        {
+          name: e.name.trim(),
+          province_id: e.province,
+          district_id: e.district,
+          ward_id: e.ward,
+        },
+        null,
+        null
+      ),
       {
         loading: 'Đang tạo trung tâm',
         success: (res) => {
@@ -152,6 +157,14 @@ const CenterCreate = ({ onCreateSuccess }) => {
                 placeholder="Chọn tỉnh/thành phố"
                 optionFilterProp="children"
                 onChange={getListDistrict}
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().includes(input.toLowerCase())
+                }
+                filterSort={(optionA, optionB) =>
+                  optionA.children
+                    .toLowerCase()
+                    .localeCompare(optionB.children.toLowerCase())
+                }
               >
                 {listProvince.map((e) => (
                   <Select.Option key={e.id} value={e.id}>
@@ -177,6 +190,14 @@ const CenterCreate = ({ onCreateSuccess }) => {
                 placeholder="Chọn quận/huyện"
                 optionFilterProp="children"
                 onChange={getListWard}
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().includes(input.toLowerCase())
+                }
+                filterSort={(optionA, optionB) =>
+                  optionA.children
+                    .toLowerCase()
+                    .localeCompare(optionB.children.toLowerCase())
+                }
               >
                 {listDistrict.map((e) => (
                   <Select.Option key={e.id} value={e.id}>
@@ -200,6 +221,14 @@ const CenterCreate = ({ onCreateSuccess }) => {
                 disabled={listWard.length === 0}
                 placeholder="Chọn phường/xã"
                 optionFilterProp="children"
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().includes(input.toLowerCase())
+                }
+                filterSort={(optionA, optionB) =>
+                  optionA.children
+                    .toLowerCase()
+                    .localeCompare(optionB.children.toLowerCase())
+                }
               >
                 {listWard.map((e) => (
                   <Select.Option key={e.id} value={e.id}>

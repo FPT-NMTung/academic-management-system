@@ -86,18 +86,18 @@ const RoomScreen = () => {
       {
         loading: 'Đang thay đổi ...',
         success: () => {
-          const temp = listRooms.find((e) => e.id === data.id)
-          temp.is_active = !temp.is_active
-          setListRooms([...listRooms])
+          const temp = listRooms.find((e) => e.id === data.id);
+          temp.is_active = !temp.is_active;
+          setListRooms([...listRooms]);
 
           return 'Thay đổi trạng thái thành công';
         },
         error: () => {
           return 'Thay đổi trạng thái thất bại';
-        }
+        },
       }
-    )
-  }
+    );
+  };
 
   const renderTypeRoom = (id) => {
     return (
@@ -162,10 +162,16 @@ const RoomScreen = () => {
               <Grid.Container>
                 <Grid xs={4}>
                   <Select
+                    showSearch
                     style={{ width: 200 }}
                     placeholder="Chọn cơ sở"
                     disabled={listCenters.length === 0}
                     onChange={handleChangeCenter}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     {listCenters.map((e) => (
                       <Select.Option key={e.key} value={e.id}>
@@ -222,7 +228,12 @@ const RoomScreen = () => {
                         </Badge>
                       </Table.Cell>
                       <Table.Cell>
-                        <Switch size={'xs'} onChange={() => handleChangeStatus(e)} checked={e.is_active} color={'success'}/>
+                        <Switch
+                          size={'xs'}
+                          onChange={() => handleChangeStatus(e)}
+                          checked={e.is_active}
+                          color={'success'}
+                        />
                       </Table.Cell>
                       <Table.Cell>
                         <FaPen
