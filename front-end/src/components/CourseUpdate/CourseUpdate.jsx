@@ -1,4 +1,4 @@
-import { Card, Grid, Button, Text } from '@nextui-org/react';
+import { Card, Grid, Button, Text,Loading } from '@nextui-org/react';
 import { Form, Select, Input, Spin, message } from 'antd';
 import { Fragment } from 'react';
 import { useEffect, useState } from 'react';
@@ -17,6 +17,7 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
   const [listCourse, setlistCourse] = useState([]);
   const [listCourseFamily, setlistCourseFamily] = useState([]);
   const [messageFailed, setMessageFailed] = useState(undefined);
+  const [canDelete, setCanDelete] = useState(undefined);
   const getlistCourseFamily = () => {
     FetchApi(CourseFamilyApis.getAllCourseFamily).then((res) => {
       setlistCourseFamily(res.data);
@@ -31,10 +32,44 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
       setlistCourse(res.data);
     });
   };
+  const checkCanDelete = () => {
+    console.log(CourseApis.checkCanDeleteCourse);
+    FetchApi(CourseApis.checkCanDeleteCourse, null, null, [
+      String(data.codecourse),
+    ])
+      .then((res) => {
+        if (res.data.can_delete === true) {
+          setCanDelete(true);
+        } else {
+          setCanDelete(false);
+        }
+      })
+      .catch((err) => {
+        toast.error('Lỗi kiểm tra khả năng xóa');
+      });
+  };
+  const handleDelete = () => {
+    toast.promise(
+      FetchApi(CourseApis.deleteCourse, null, null, [
+        String(data.codecourse),
+      ]),
+      {
+        loading: 'Đang xóa',
+        success: (res) => {
+          onUpdateSuccess();
+          return 'Xóa thành công';
+        },
+        error: (err) => {
+          return 'Xóa thất bại';
+        },
+      }
+    );
+  };
 
   useEffect(() => {
     setIsLoading(false);
     getlistCourseFamily();
+    checkCanDelete();
   }, []);
 
   const handleSubmitForm = (e) => {
@@ -188,12 +223,19 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
             </Form.Item>
           </Fragment>
 
-          <Form.Item wrapperCol={{ offset: 7, span: 99 }}>
+          <Form.Item wrapperCol={{ offset: 7, span: 99 }} >
+          <div
+              style={{
+                display: 'flex',
+                gap: '10px',
+              }}
+            >
           <Button
               flat
               auto
               css={{
                 width: "120px",
+                
               }}
               type="primary"
               htmlType="submit"
@@ -201,21 +243,20 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
             >
               Cập nhật
             </Button>
-            {/* <Button
+            <Button
                 flat
                 auto
                 css={{
                   width: '80px',
                 }}
                 color={'error'}
-                disabled={
-                  canDelete === false || canDelete === undefined || isUpdating
-                }
-                onPress={handleDeleteCenter}
+                disabled={!canDelete}
+                onPress={handleDelete}
               >
                 {canDelete === undefined && <Loading size="xs" />}
                 {canDelete !== undefined && 'Xoá'}
-              </Button> */}
+              </Button>{' '}
+              </div>
           </Form.Item>
         </Form>
       )}
