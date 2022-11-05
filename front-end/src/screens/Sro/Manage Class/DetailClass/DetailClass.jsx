@@ -232,6 +232,9 @@ const DetailClass = () => {
       case 'save':
         handleSave();
         break;
+      case 'schedule':
+        navigate(`/sro/manage-class/${id}/schedule`);
+        break;
       default:
         break;
     }
@@ -416,9 +419,11 @@ const DetailClass = () => {
                   </Button>
                 </Grid>
                 <Grid xs={4} justify="center">
-                  {isDraft() && <Badge variant={'flat'} color="warning" size="md">
-                    Danh sách dạng bản nháp
-                  </Badge>}
+                  {isDraft() && (
+                    <Badge variant={'flat'} color="warning" size="md">
+                      Danh sách dạng bản nháp
+                    </Badge>
+                  )}
                 </Grid>
                 <Grid xs={4} justify="flex-end">
                   <Dropdown>
@@ -432,54 +437,66 @@ const DetailClass = () => {
                       css={{ $$dropdownMenuWidth: '340px' }}
                     >
                       <Dropdown.Section title="Cơ bản">
-                        {isDraft() && <Dropdown.Item
-                          key="add"
-                          description="Thêm học viên thủ công"
-                          icon={<MdPersonAdd />}
-                          color={'success'}
-                        >
-                          Thêm học viên
-                        </Dropdown.Item>}
-                        {listStudent?.length === 0 && <Dropdown.Item
-                          key="import"
-                          description="Tải lên danh sách học viên"
-                          icon={<FaCloudUploadAlt />}
-                          color={'success'}
-                        >
-                          Import
-                        </Dropdown.Item>}
-                        {isDraft() && <Dropdown.Item
-                          key="download"
-                          description="Tải xuống file mẫu"
-                          icon={<FaCloudDownloadAlt />}
-                          color={'primary'}
-                        >
-                          Download file mẫu
-                        </Dropdown.Item>}
-                        {listStudent?.length > 0 && isDraft() && <Dropdown.Item
-                          key="save"
-                          description="Lưu danh sách học viên"
-                          icon={<MdSave />}
-                          color={'warning'}
-                        >
-                          Lưu
-                        </Dropdown.Item>}
-                        {!isDraft() && <Dropdown.Item
-                          key="schedule"
-                          description="Xem tất cả lịch học của lớp"
-                          icon={<MdPersonAdd />}
-                          color={'success'}
-                        >
-                          Lịch học
-                        </Dropdown.Item>}
-                        {!isDraft() && <Dropdown.Item
-                          key="merge"
-                          description="Gộp lớp này với lớp khác"
-                          icon={<MdPersonAdd />}
-                          color={'secondary'}
-                        >
-                          Gộp lớp học
-                        </Dropdown.Item>}
+                        {isDraft() && (
+                          <Dropdown.Item
+                            key="add"
+                            description="Thêm học viên thủ công"
+                            icon={<MdPersonAdd />}
+                            color={'success'}
+                          >
+                            Thêm học viên
+                          </Dropdown.Item>
+                        )}
+                        {listStudent?.length === 0 && (
+                          <Dropdown.Item
+                            key="import"
+                            description="Tải lên danh sách học viên"
+                            icon={<FaCloudUploadAlt />}
+                            color={'success'}
+                          >
+                            Import
+                          </Dropdown.Item>
+                        )}
+                        {isDraft() && (
+                          <Dropdown.Item
+                            key="download"
+                            description="Tải xuống file mẫu"
+                            icon={<FaCloudDownloadAlt />}
+                            color={'primary'}
+                          >
+                            Download file mẫu
+                          </Dropdown.Item>
+                        )}
+                        {listStudent?.length > 0 && isDraft() && (
+                          <Dropdown.Item
+                            key="save"
+                            description="Lưu danh sách học viên"
+                            icon={<MdSave />}
+                            color={'warning'}
+                          >
+                            Lưu
+                          </Dropdown.Item>
+                        )}
+                        {!isDraft() && (
+                          <Dropdown.Item
+                            key="schedule"
+                            description="Xem tất cả lịch học của lớp"
+                            icon={<MdPersonAdd />}
+                            color={'success'}
+                          >
+                            Lịch học
+                          </Dropdown.Item>
+                        )}
+                        {!isDraft() && (
+                          <Dropdown.Item
+                            key="merge"
+                            description="Gộp lớp này với lớp khác"
+                            icon={<MdPersonAdd />}
+                            color={'secondary'}
+                          >
+                            Gộp lớp học
+                          </Dropdown.Item>
+                        )}
                       </Dropdown.Section>
                       {listStudent?.length > 0 && isDraft() && (
                         <Dropdown.Section title="Nguy hiểm">
