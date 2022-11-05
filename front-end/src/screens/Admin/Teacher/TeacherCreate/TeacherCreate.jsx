@@ -40,6 +40,7 @@ const translateWorkingTime = {
   4: 'Sáng, Chiều',
   5: 'Sáng, Tối',
   6: 'Chiều, Tối',
+  7: 'Cả ngày',
 };
 
 const TeacherCreate = ({ modeUpdate }) => {
