@@ -4,6 +4,7 @@ using AcademicManagementSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    partial class AmsContextModelSnapshot : ModelSnapshot
+    [Migration("20221031062544_Add WorkingHourId To Day Off")]
+    partial class AddWorkingHourIdToDayOff
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -333,11 +335,11 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnType("date")
                         .HasColumnName("end_date");
 
-                    b.Property<int>("ExamRoomId")
+                    b.Property<int?>("ExamRoomId")
                         .HasColumnType("int")
                         .HasColumnName("exam_room_id");
 
-                    b.Property<int>("LabRoomId")
+                    b.Property<int?>("LabRoomId")
                         .HasColumnType("int")
                         .HasColumnName("lab_room_id");
 
@@ -366,18 +368,13 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnType("date")
                         .HasColumnName("theory_exam_date");
 
-                    b.Property<int>("TheoryRoomId")
+                    b.Property<int?>("TheoryRoomId")
                         .HasColumnType("int")
                         .HasColumnName("theory_room_id");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
-
-                    b.Property<int>("WorkingTimeId")
-                        .HasColumnType("int")
-                        .HasColumnName("working_time_id")
-                        .HasColumnOrder(5);
 
                     b.HasKey("Id");
 
@@ -545,9 +542,9 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("title");
 
-                    b.Property<int>("WorkingTimeId")
+                    b.Property<int>("WorkingHourId")
                         .HasColumnType("int")
-                        .HasColumnName("working_time_id")
+                        .HasColumnName("working_hour_id")
                         .HasColumnOrder(2);
 
                     b.HasKey("Id");
@@ -1014,10 +1011,12 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnType("date")
                         .HasColumnName("learning_date");
 
-                    b.Property<int>("RoomId")
-                        .HasColumnType("int")
-                        .HasColumnName("room_id")
-                        .HasColumnOrder(4);
+                    b.Property<string>("Room")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("room")
+                        .HasColumnOrder(5);
 
                     b.Property<int>("SessionTypeId")
                         .HasColumnType("int")
@@ -1036,8 +1035,6 @@ namespace AcademicManagementSystem.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ClassScheduleId");
-
-                    b.HasIndex("RoomId");
 
                     b.HasIndex("SessionTypeId");
 
@@ -1239,10 +1236,6 @@ namespace AcademicManagementSystem.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit")
-                        .HasColumnName("is_active");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2")
@@ -1742,14 +1735,12 @@ namespace AcademicManagementSystem.Migrations
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Room", "ExamRoom")
                         .WithMany("ClassSchedulesExamRoom")
                         .HasForeignKey("ExamRoomId")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.ClientNoAction);
 
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Room", "LabRoom")
                         .WithMany("ClassSchedulesLabRoom")
                         .HasForeignKey("LabRoomId")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.ClientNoAction);
 
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Module", "Module")
                         .WithMany("ClassSchedules")
@@ -1766,8 +1757,7 @@ namespace AcademicManagementSystem.Migrations
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Room", "TheoryRoom")
                         .WithMany("ClassSchedulesTheoryRoom")
                         .HasForeignKey("TheoryRoomId")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.ClientNoAction);
 
                     b.Navigation("Class");
 
@@ -1964,12 +1954,6 @@ namespace AcademicManagementSystem.Migrations
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
-                    b.HasOne("AcademicManagementSystem.Context.AmsModels.Room", "Room")
-                        .WithMany("Sessions")
-                        .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
-
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.SessionType", "SessionType")
                         .WithMany("Sessions")
                         .HasForeignKey("SessionTypeId")
@@ -1977,8 +1961,6 @@ namespace AcademicManagementSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("ClassSchedule");
-
-                    b.Navigation("Room");
 
                     b.Navigation("SessionType");
                 });
@@ -2334,8 +2316,6 @@ namespace AcademicManagementSystem.Migrations
                     b.Navigation("ClassSchedulesLabRoom");
 
                     b.Navigation("ClassSchedulesTheoryRoom");
-
-                    b.Navigation("Sessions");
                 });
 
             modelBuilder.Entity("AcademicManagementSystem.Context.AmsModels.RoomType", b =>

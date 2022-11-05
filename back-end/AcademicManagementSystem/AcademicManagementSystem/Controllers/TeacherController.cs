@@ -466,6 +466,56 @@ public class TeacherController : ControllerBase
         return Ok(CustomResponse.Ok("Update Teacher successfully", teacherResponse));
     }
 
+    // Can delete teacher
+    [HttpGet]
+    [Route("api/teachers/{id:int}/can-delete")]
+    [Authorize(Roles = "admin")]
+    public IActionResult CanDeleteTeacher(int id)
+    {
+        var user = _context.Users.FirstOrDefault(u => u.Id == id && u.RoleId == RoleIdTeacher);
+        if (user == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Teacher"));
+        }
+
+        var canDelete = CanDelete(id);
+
+        return Ok(CustomResponse.Ok("Can delete this teacher", new CheckTeacherCanDeleteResponse()
+        {
+            CanDelete = canDelete
+        }));
+    }
+
+    // delete teacher
+    [HttpDelete]
+    [Route("api/teachers/{id:int}")]
+    [Authorize(Roles = "admin")]
+    public IActionResult DeleteTeacher(int id)
+    {
+        var user = _context.Users
+            .Include(u => u.Teacher)
+            .FirstOrDefault(u => u.Id == id && u.RoleId == RoleIdTeacher);
+        if (user == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Teacher"));
+        }
+
+        try
+        {
+            _context.Teachers.Remove(user.Teacher);
+            _context.Users.Remove(user);
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E1118"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        return Ok(CustomResponse.Ok("Teacher deleted successfully", null!));
+    }
+
+    // change active teacher
     [HttpPatch]
     [Route("api/teachers/{id:int}/change-active")]
     [Authorize(Roles = "admin")]
@@ -519,6 +569,25 @@ public class TeacherController : ControllerBase
         return isUpdate
             ? _context.Users.Any(e => e.CitizenIdentityCardNo == citizenIdentityCardNo && e.Id != userId)
             : _context.Users.Any(e => e.CitizenIdentityCardNo == citizenIdentityCardNo);
+    }
+
+    private bool CanDelete(int id)
+    {
+        var user = _context.Users
+            .Include(u => u.Teacher)
+            .Include(u => u.Teacher.Skills)
+            .Include(u => u.Teacher.ClassSchedules)
+            .Include(u => u.Teacher.DaysOff)
+            .Include(u => u.Teacher.GpaRecords)
+            .FirstOrDefault(u => u.Id == id && u.RoleId == RoleIdTeacher);
+
+        if (user == null)
+        {
+            return false;
+        }
+
+        return !user.Teacher.Skills.Any() && !user.Teacher.ClassSchedules.Any() &&
+               !user.Teacher.DaysOff.Any() && !user.Teacher.GpaRecords.Any();
     }
 
     private bool IsTaxCodeExists(string? taxCode, bool isUpdate, int userId)

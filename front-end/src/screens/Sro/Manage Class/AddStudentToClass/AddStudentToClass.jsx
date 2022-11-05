@@ -211,7 +211,7 @@ const AddStudentToClass = () => {
   };
   const handleCancel = () => {
     navigate(`/sro/manage-class/${id}`);
-    };
+  };
 
   useEffect(() => {
     getListGender();
@@ -501,12 +501,14 @@ const AddStudentToClass = () => {
                       required: true,
                       validator: (_, value) => {
                         if (
-                            value === null ||
-                            value === undefined ||
-                            value === ""
-                          ) {
-                            return Promise.reject("Trường này không được để trống");
-                          }
+                          value === null ||
+                          value === undefined ||
+                          value === ""
+                        ) {
+                          return Promise.reject(
+                            "Trường này không được để trống"
+                          );
+                        }
                         if (Validater.isEmail(value)) {
                           return Promise.resolve();
                         }
@@ -525,12 +527,14 @@ const AddStudentToClass = () => {
                       required: true,
                       validator: (_, value) => {
                         if (
-                            value === null ||
-                            value === undefined ||
-                            value === ""
-                          ) {
-                            return Promise.reject("Trường này không được để trống");
-                          }
+                          value === null ||
+                          value === undefined ||
+                          value === ""
+                        ) {
+                          return Promise.reject(
+                            "Trường này không được để trống"
+                          );
+                        }
                         if (Validater.isEmail(value)) {
                           return Promise.resolve();
                         }
@@ -549,12 +553,14 @@ const AddStudentToClass = () => {
                       required: true,
                       validator: (_, value) => {
                         if (
-                            value === null ||
-                            value === undefined ||
-                            value === ""
-                          ) {
-                            return Promise.reject("Trường này không được để trống");
-                          }
+                          value === null ||
+                          value === undefined ||
+                          value === ""
+                        ) {
+                          return Promise.reject(
+                            "Trường này không được để trống"
+                          );
+                        }
                         // check regex phone number viet nam
                         if (Validater.isPhone(value)) {
                           return Promise.resolve();
@@ -635,12 +641,14 @@ const AddStudentToClass = () => {
                       required: true,
                       validator: (_, value) => {
                         if (
-                            value === null ||
-                            value === undefined ||
-                            value === ""
-                          ) {
-                            return Promise.reject("Trường này không được để trống");
-                          }
+                          value === null ||
+                          value === undefined ||
+                          value === ""
+                        ) {
+                          return Promise.reject(
+                            "Trường này không được để trống"
+                          );
+                        }
                         // check regex phone number viet nam
                         if (Validater.isPhone(value)) {
                           return Promise.resolve();
@@ -1098,8 +1106,16 @@ const AddStudentToClass = () => {
                     //   message: "Trường không được chứa khoảng trắng",
                     // },
                   ]}
+                  
                 >
-                  <Input placeholder="5000000" />
+                  <InputNumber
+                    placeholder="5000000"
+                    formatter={(value) =>
+                      `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    }
+                    parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                    style={{ width: "100%" }}
+                  />
                 </Form.Item>
 
                 <div></div>
@@ -1345,13 +1361,13 @@ const AddStudentToClass = () => {
                   {
                     required: true,
                     validator: (_, value) => {
-                        if (
-                            value === null ||
-                            value === undefined ||
-                            value === ""
-                          ) {
-                            return Promise.reject("Trường này không được để trống");
-                          }
+                      if (
+                        value === null ||
+                        value === undefined ||
+                        value === ""
+                      ) {
+                        return Promise.reject("Trường này không được để trống");
+                      }
                       if (Validater.isCitizenId(value)) {
                         return Promise.resolve();
                       }

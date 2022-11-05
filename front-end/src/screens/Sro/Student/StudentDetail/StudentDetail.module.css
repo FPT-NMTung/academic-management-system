@@ -1,11 +1,9 @@
 .logo {
   width: 160px;
   height: 160px;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
   border-radius: 10em;
   background-color: rgb(238, 238, 238);
 }
@@ -63,5 +61,16 @@
 .statusStudent {
   padding: 0 0 5px 0;
   margin: 0;
+}
+.ant-tabs-nav-list {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.ant-tabs-tab {
+  width: 50%;
+  justify-content: center;
+  background: aqua;
 }
 
