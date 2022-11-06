@@ -218,6 +218,11 @@ export const RoomApis = {
     method: 'DELETE',
     contextType: 'application/json',
   },
+  getRoomsBySro : {
+    url: 'api/rooms/get-by-sro',
+    method: 'GET',
+    contextType: 'application/json',
+  }
 };
 
 export const RoomTypeApis = {
@@ -340,6 +345,11 @@ export const ManageTeacherApis = {
     method: 'DELETE',
     contextType: 'application/json',
   },
+  getListTeacherBySro: {
+    url: 'api/teachers/get-by-sro',
+    method: 'GET',
+    contextType: 'application/json',
+  }
 };
 
 export const UserApis = {

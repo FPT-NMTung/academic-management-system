@@ -173,24 +173,7 @@ const ManageSchedule = () => {
           height: 'fit-content',
         }}
       >
-        <Card variant={'bordered'}>
-          <Card.Header>
-            <Text
-              p
-              b
-              size={14}
-              css={{
-                width: '100%',
-                textAlign: 'center',
-              }}
-            >
-              Thông tin lịch học
-            </Text>
-          </Card.Header>
-          <Card.Body>
-            <Outlet />
-          </Card.Body>
-        </Card>
+        <Outlet />
       </Grid>
     </Grid.Container>
   );

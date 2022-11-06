@@ -11,6 +11,7 @@ using AcademicManagementSystem.Models.RoleController;
 using AcademicManagementSystem.Models.TeacherTypeController;
 using AcademicManagementSystem.Models.UserController.TeacherController;
 using AcademicManagementSystem.Models.WorkingTime;
+using AcademicManagementSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,10 +25,12 @@ public class TeacherController : ControllerBase
     private const int RoleIdTeacher = 3;
     private const string RegexSpecialCharacters = StringConstant.RegexSpecialCharsNotAllowForPersonName;
     private const string Digits = StringConstant.RegexDigits;
-
-    public TeacherController(AmsContext context)
+    private readonly IUserService _userService;
+    
+    public TeacherController(AmsContext context, IUserService userService)
     {
         _context = context;
+        _userService = userService;
     }
 
     [HttpGet]
@@ -541,6 +544,19 @@ public class TeacherController : ControllerBase
         }
 
         return Ok(CustomResponse.Ok("Change active successfully", null!));
+    }
+    
+    // get all teacher of center with SRO
+    [HttpGet]
+    [Route("api/teachers/get-by-sro")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetAllTeacherOfCenterWithSRO()
+    {
+        var userId = Int32.Parse(_userService.GetUserId());
+        var user = _context.Users.FirstOrDefault(u => u.Id == userId)!;
+        
+        var teachers = GetAllUserRoleTeacher().Where(t => t.CenterId == user.CenterId);
+        return Ok(CustomResponse.Ok("Get teachers by sro successfully", teachers));
     }
 
     private bool IsMobilePhoneExists(string? mobilePhone, bool isUpdate, int userId)
