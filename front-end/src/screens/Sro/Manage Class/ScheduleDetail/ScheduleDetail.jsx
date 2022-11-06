@@ -1,5 +1,7 @@
 import {
+  Badge,
   Button,
+  Card,
   Divider,
   Grid,
   Loading,
@@ -87,35 +89,98 @@ const ScheduleDetail = () => {
             <Descriptions.Item span={3} label="Môn học">
               <b>{dataSchedule.module_name}</b>
             </Descriptions.Item>
-            <Descriptions.Item label="Thời gian học trong tuần"></Descriptions.Item>
-            <Descriptions.Item span={2} label="Giáo viên"></Descriptions.Item>
-            <Descriptions.Item label="Ngày bắt đầu"></Descriptions.Item>
-            <Descriptions.Item
-              span={2}
-              label="Giờ học bắt đầu"
-            ></Descriptions.Item>
-            <Descriptions.Item label="Ngày kết thúc"></Descriptions.Item>
-            <Descriptions.Item
-              span={2}
-              label="Giờ học kết thúc"
-            ></Descriptions.Item>
-            <Descriptions.Item
-              span={3}
-              label="Số lượng buổi học"
-            ></Descriptions.Item>
-            <Descriptions.Item label="Ngày tạo"></Descriptions.Item>
-            <Descriptions.Item label="Ngày cập nhật"></Descriptions.Item>
+            <Descriptions.Item label="Thời gian học trong tuần">
+              <b>
+                {dataSchedule.class_days.id === 1
+                  ? 'Thứ 2, 4, 6'
+                  : 'Thứ 3, 5, 7'}
+              </b>
+            </Descriptions.Item>
+            <Descriptions.Item label="Giáo viên">
+              <b>{`${dataSchedule.teacher.first_name} ${dataSchedule.teacher.last_name}`}</b>
+            </Descriptions.Item>
+            <Descriptions.Item label="Email giáo viên">
+              <b>{`${dataSchedule.teacher.email_organization}`}</b>
+            </Descriptions.Item>
+            <Descriptions.Item label="Ngày bắt đầu">
+              <b>
+                {new Date(dataSchedule.start_date).toLocaleDateString('vi-VN')}
+              </b>
+            </Descriptions.Item>
+            <Descriptions.Item span={2} label="Giờ học bắt đầu">
+              <b>{dataSchedule.class_hour_start}</b>
+            </Descriptions.Item>
+            <Descriptions.Item label="Ngày kết thúc">
+              <b>
+                {new Date(dataSchedule.end_date).toLocaleDateString('vi-VN')}
+              </b>
+            </Descriptions.Item>
+            <Descriptions.Item span={2} label="Giờ học kết thúc">
+              <b>{dataSchedule.class_hour_end}</b>
+            </Descriptions.Item>
+            <Descriptions.Item span={3} label="Số lượng buổi học">
+              <b>{dataSchedule.duration}</b>
+            </Descriptions.Item>
+            <Descriptions.Item label="Ngày tạo lịch">
+              <b>
+                {new Date(dataSchedule.created_at).toLocaleDateString('vi-VN')}
+              </b>
+            </Descriptions.Item>
+            <Descriptions.Item label="Ngày cập nhật">
+              <b>
+                {new Date(dataSchedule.updated_at).toLocaleDateString('vi-VN')}
+              </b>
+            </Descriptions.Item>
+            <Descriptions.Item>
+              <div className={classes.buttonGroupEdit}>
+                <Button auto flat color="primary">
+                  Chỉnh sửa
+                </Button>
+                <Button auto flat color="error">
+                  Xoá
+                </Button>
+              </div>
+            </Descriptions.Item>
           </Descriptions>
+          <Spacer y={1} />
           <Divider />
+          <Spacer y={1} />
           <Grid.Container gap={2}>
-            <Grid
-              xs={2}
-              css={{
-                backgroundColor: '#f5f5f5',
-              }}
-            >
-              zsdasd
-            </Grid>
+            {dataSchedule.sessions.map((data, index) => {
+              return (
+                <Grid key={index} xs={2}>
+                  <Card variant="bordered" isPressable>
+                    <Card.Body
+                      css={{
+                        padding: '6px 12px',
+                        backgroundColor: (data.session_type === 3 || data.session_type === 4) ? '#7828C8' : '',
+                      }}
+                    >
+                      <div className={classes.infoSlotSession}>
+                        <Text p size={12}
+                          color={data.session_type === 3 || data.session_type === 4 ? '#fff' : '#000'}
+                        >
+                          <b>Slot {index + 1}</b>
+                        </Text>
+                        <Text p size={12}
+                          color={data.session_type === 3 || data.session_type === 4 ? '#fff' : '#000'}
+                        >
+                          {new Date(data.learning_date).toLocaleDateString(
+                            'vi-VN'
+                          )}
+                        </Text>
+                      </div>
+                      <Spacer y={0.6} />
+                      <Text p size={12}
+                        color={data.session_type === 3 || data.session_type === 4 ? '#fff' : '#000'}
+                      >
+                        Phòng <b>{data.room.name}</b>
+                      </Text>
+                    </Card.Body>
+                  </Card>
+                </Grid>
+              );
+            })}
           </Grid.Container>
         </div>
       )}

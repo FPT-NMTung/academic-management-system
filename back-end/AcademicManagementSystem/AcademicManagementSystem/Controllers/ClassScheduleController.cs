@@ -66,7 +66,9 @@ public class ClassScheduleController : ControllerBase
             .Include(cs => cs.ClassDays)
             .Include(cs => cs.Module)
             .Include(cs => cs.Sessions)
-            .ThenInclude(s => s.Room)
+            .ThenInclude(cs => cs.SessionType)
+            .Include(s => s.Sessions)
+            .ThenInclude(r => r.Room)
             .ThenInclude(r => r.RoomType)
             .FirstOrDefault(cs => cs.ClassId == classId && cs.ModuleId == moduleId);
         
@@ -134,6 +136,7 @@ public class ClassScheduleController : ControllerBase
                         Value = s.Room.RoomType.Value,
                     }
                 },
+                SessionType = s.SessionType.Id,
             }).ToList(),
             CreatedAt = classSchedule.CreatedAt,
             UpdatedAt = classSchedule.UpdatedAt,
