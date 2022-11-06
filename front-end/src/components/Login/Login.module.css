@@ -5,6 +5,8 @@
   justify-content: center;
   height         : 100vh;
   width          : 100vw;
+
+  overflow: hidden;
 }
 
 .contain {
@@ -75,12 +77,10 @@
 @keyframes back1 {
   0% {
     opacity: 1;
-    left   : 23%;
   }
 
   50% {
     opacity: 0.2;
-    left   : 33%;
   }
 
   100% {
@@ -107,12 +107,10 @@
 @keyframes back2 {
   0% {
     opacity: 1;
-    top    : 40%;
   }
 
   50% {
     opacity: 0.2;
-    top    : 30%;
   }
 
   100% {
@@ -139,14 +137,10 @@
 @keyframes back3 {
   0% {
     opacity: 1;
-    top    : 25%;
-    left   : 48%;
   }
 
   50% {
     opacity: 0.2;
-    top    : 20%;
-    left   : 39%;
   }
 
   100% {

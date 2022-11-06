@@ -58,7 +58,7 @@ const App = () => {
         <Route path="/sro/manage-class/:id/update" element={<ClassCreate modeUpdate={true} />} />
         <Route path="/sro/manage-class/:id/schedule" element={<ManageSchedule />} >
           <Route index element={<ScheduleEmpty />} />
-          <Route path="/sro/manage-class/:id/schedule/:scheduleId" element={<ScheduleDetail />} />
+          <Route path="/sro/manage-class/:id/schedule/module/:moduleId" element={<ScheduleDetail />} />
         </Route>
         <Route path="/sro/manage/student" element={<StudentScreen />} />
         <Route path="/sro/manage/student/:id" element={<StudentDetail />} />

@@ -41,7 +41,7 @@ export const CenterApis = {
     url: 'api/centers/{0}',
     method: 'DELETE',
     contextType: 'application/json',
-  }
+  },
 };
 
 export const AddressApis = {
@@ -340,7 +340,6 @@ export const ManageTeacherApis = {
     method: 'DELETE',
     contextType: 'application/json',
   },
-
 };
 
 export const UserApis = {
@@ -420,11 +419,25 @@ export const ManageClassApis = {
     contextType: 'application/json',
   },
   addStudentToClass: {
-    url: '/api/classes/{0}/students',
+    url: 'api/classes/{0}/students',
     method: 'POST',
     contextType: 'application/json',
   },
+  getAllModulesOfClass: {
+    url: 'api/classes/{0}/modules',
+    method: 'GET',
+    contextType: 'application/json',
+  },
 };
+
+export const ManageScheduleApis = {
+  getScheduleByClassIdAndModuleId: {
+    url: 'api/classes/{0}/schedules/modules/{1}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+};
+
 export const ManageStudentApis = {
   searchStudent: {
     url: 'api/students/search',

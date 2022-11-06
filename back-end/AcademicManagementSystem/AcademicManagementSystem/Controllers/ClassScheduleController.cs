@@ -4,7 +4,11 @@ using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.ClassDaysController;
 using AcademicManagementSystem.Models.ClassScheduleController.ClassScheduleModel;
 using AcademicManagementSystem.Models.ClassStatusController;
+using AcademicManagementSystem.Models.RoomController.RoomModel;
+using AcademicManagementSystem.Models.RoomController.RoomTypeModel;
+using AcademicManagementSystem.Models.Sessions;
 using AcademicManagementSystem.Models.TeacherSkillController;
+using AcademicManagementSystem.Models.UserController.TeacherController;
 using AcademicManagementSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -42,6 +46,100 @@ public class ClassScheduleController : ControllerBase
 
         var classSchedule = GetClassSchedulesResponse(classId).OrderBy(response => response.StartDate);
         return Ok(CustomResponse.Ok("Get class schedule successfully", classSchedule));
+    }
+
+    [HttpGet]
+    [Route("api/classes/{classId:int}/schedules/modules/{moduleId:int}")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetClassScheduleByClassIdAndScheduleId(int classId, int moduleId)
+    {
+        var classSelect = _context.Classes.Find(classId);
+        if (classSelect == null)
+        {
+            return NotFound(CustomResponse.NotFound("Class not found"));
+        }
+
+        var classSchedule = _context.ClassSchedules
+            .Include(cs => cs.Teacher)
+            .ThenInclude(t => t.User)
+            .Include(cs => cs.ClassStatus)
+            .Include(cs => cs.ClassDays)
+            .Include(cs => cs.Module)
+            .Include(cs => cs.Sessions)
+            .ThenInclude(s => s.Room)
+            .ThenInclude(r => r.RoomType)
+            .FirstOrDefault(cs => cs.ClassId == classId && cs.ModuleId == moduleId);
+        
+        if (classSchedule == null)
+        {
+            var check = _context.CoursesModulesSemesters
+                .Include(cms => cms.Course)
+                .Any(cms =>
+                    cms.Course.CourseFamilyCode == classSelect.CourseFamilyCode &&
+                    cms.ModuleId == moduleId);
+    
+            if (!check)
+            {
+                var error = ErrorDescription.Error["E2066"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+            
+            return NotFound(CustomResponse.NotFound("Class schedule not found"));
+        }
+
+        var res = new ClassScheduleResponse()
+        {
+            Id = classSchedule.Id,
+            ClassId = classSchedule.ClassId,
+            Duration = classSchedule.Duration,
+            StartDate = classSchedule.StartDate,
+            EndDate = classSchedule.EndDate,
+            Teacher = new BasicTeacherInformationResponse()
+            {
+                Id = classSchedule.Teacher.UserId,
+                LastName = classSchedule.Teacher.User.LastName,
+                FirstName = classSchedule.Teacher.User.FirstName,
+                EmailOrganization = classSchedule.Teacher.User.EmailOrganization,
+            },
+            ClassStatus = new ClassStatusResponse()
+            {
+                Id = classSchedule.ClassStatus.Id,
+                Value = classSchedule.ClassStatus.Value,
+            },
+            ModuleId = classSchedule.Module.Id,
+            ModuleName = classSchedule.Module.ModuleName,
+            ClassDays = new ClassDaysResponse()
+            {
+                Id = classSchedule.ClassDays.Id,
+                Value = classSchedule.ClassDays.Value,
+            },
+            ClassHourStart = classSchedule.ClassHourStart,
+            ClassHourEnd = classSchedule.ClassHourEnd,
+            Note = classSchedule.Note,
+            Sessions = classSchedule.Sessions.Select(s => new SessionResponse()
+            {
+                Id = s.Id,
+                Title = s.Title,
+                LearningDate = s.LearningDate,
+                StartTime = s.StartTime,
+                EndTime = s.EndTime,
+                Room = new RoomResponse()
+                {
+                    Id = s.Room.Id,
+                    Name = s.Room.Name,
+                    Capacity = s.Room.Capacity,
+                    Room = new RoomTypeResponse()
+                    {
+                        Id = s.Room.RoomType.Id,
+                        Value = s.Room.RoomType.Value,
+                    }
+                },
+            }).ToList(),
+            CreatedAt = classSchedule.CreatedAt,
+            UpdatedAt = classSchedule.UpdatedAt,
+        };
+
+        return Ok(CustomResponse.Ok("Get detail schedule successfully", res));
     }
 
     [HttpPost]
@@ -308,7 +406,7 @@ public class ClassScheduleController : ControllerBase
 
             return true;
         }
-        
+
         return false;
     }
 
