@@ -277,6 +277,9 @@ public static class ErrorDescription
         { "E2064", new ErrorModel() { Message = "Teacher busy in this time", Type = "class-schedule-error-0024" } },
         { "E2065", new ErrorModel() { Message = "Room already used in this time", Type = "class-schedule-error-0025" } },
         { "E2066", new ErrorModel() { Message = "This class not have this module", Type = "class-schedule-error-0026" } },
+        { "E2067", new ErrorModel() { Message = "class does not exist", Type = "class-schedule-error-0027" } },
+        { "E2068", new ErrorModel() { Message = "class schedule does not exist", Type = "class-schedule-error-0028" } },
+        { "E2069", new ErrorModel() { Message = "Error when delete class schedule", Type = "class-schedule-error-0028" } },
 
         // Day off
         { "E0100", new ErrorModel() { Message = "This day off already in database", Type = "day-off-error-0001" } },

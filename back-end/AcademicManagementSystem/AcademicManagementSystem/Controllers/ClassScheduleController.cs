@@ -280,7 +280,7 @@ public class ClassScheduleController : ControllerBase
                     session.Title = module.ModuleName + " - P" + i;
                     session.RoomId = (int)request.LabRoomId!;
                 }
-                else if (module.ModuleType == 3 && practiceSessions.Any(practice => practice != i))
+                else if (module.ModuleType == 3 && !practiceSessions.Any(practice => practice == i))
                 {
                     session.SessionTypeId = Theory;
                     session.Title = module.ModuleName + " - T" + i;
@@ -384,6 +384,42 @@ public class ClassScheduleController : ControllerBase
         return Ok(CustomResponse.Ok("Create class schedule successfully", classScheduleResponse));
     }
 
+    [HttpDelete]
+    [Route("api/classes/{classId:int}/schedules/{classScheduleId:int}")]
+    [Authorize(Roles = "sro")]
+    public IActionResult DeleteClassSchedule(int classId, int classScheduleId)
+    {
+        var classContext = _context.Classes.Find(classId);
+        if (classContext == null)
+        {
+            var error = ErrorDescription.Error["E2066"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var classSchedule = _context.ClassSchedules.Include(cs => cs.Sessions)
+            .FirstOrDefault(cs => cs.Id == classScheduleId);
+        if (classSchedule == null)
+        {
+            var error = ErrorDescription.Error["E2067"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        classSchedule.Sessions.ToList().ForEach(s => _context.Sessions.Remove(s));
+
+        try
+        {
+            _context.ClassSchedules.Remove(classSchedule);
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E2069"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        return Ok(CustomResponse.Ok("Delete class schedule successfully", null!));
+    }
+
     private bool CheckTeacherBusy(ClassSchedule classScheduleToCreate)
     {
         var listSchedule = _context.ClassSchedules
@@ -421,85 +457,95 @@ public class ClassScheduleController : ControllerBase
 
     private bool CheckRoomBusy(ClassSchedule classScheduleToCreate, Module module)
     {
-        if (module.ModuleType == 1)
-        {
-            var theoryRoomId = classScheduleToCreate.TheoryRoomId;
-            var temp = _context.Sessions
-                .Include(s => s.Room)
-                .Include(s => s.ClassSchedule)
-                .Where(s =>
-                    s.RoomId == theoryRoomId &&
-                    s.ClassSchedule.WorkingTimeId == classScheduleToCreate.WorkingTimeId &&
-                    classScheduleToCreate.WorkingTimeId == s.ClassSchedule.WorkingTimeId &&
-                    classScheduleToCreate.StartDate <= s.LearningDate &&
-                    s.LearningDate <= classScheduleToCreate.EndDate).ToList();
+        var check = classScheduleToCreate.Sessions.ToList()
+            .Find(s =>
+                _context.Sessions.Where(s1 =>
+                    s1.LearningDate.Date == s.LearningDate.Date &&
+                    s1.RoomId == s.RoomId &&
+                    s1.ClassSchedule.WorkingTimeId == classScheduleToCreate.WorkingTimeId
+                ).ToList().Count > 0);
 
-            return temp.Count > 0;
-        }
+        if (check != null) return true;
 
-        if (module.ModuleType == 2)
-        {
-            var labRoomId = classScheduleToCreate.LabRoomId;
-            var temp = _context.Sessions
-                .Include(s => s.Room)
-                .Include(s => s.ClassSchedule)
-                .Where(s =>
-                    s.RoomId == labRoomId &&
-                    s.ClassSchedule.WorkingTimeId == classScheduleToCreate.WorkingTimeId &&
-                    classScheduleToCreate.WorkingTimeId == s.ClassSchedule.WorkingTimeId &&
-                    classScheduleToCreate.StartDate <= s.LearningDate &&
-                    s.LearningDate <= classScheduleToCreate.EndDate).ToList();
-
-            return temp.Count > 0;
-        }
-
-        if (module.ModuleType == 3)
-        {
-            var theoryRoomId = classScheduleToCreate.TheoryRoomId;
-            var labRoomId = classScheduleToCreate.LabRoomId;
-
-            var listTheoryRoomScheduled = classScheduleToCreate.Sessions
-                .Where(s => s.RoomId == theoryRoomId)
-                .OrderBy(s => s.LearningDate).ToList();
-            var firstTheoryRoomScheduled = listTheoryRoomScheduled.First();
-            var lastTheoryRoomScheduled = listTheoryRoomScheduled.Last();
-
-            var listLabRoomScheduled = classScheduleToCreate.Sessions
-                .Where(s => s.RoomId == labRoomId)
-                .OrderBy(s => s.LearningDate).ToList();
-            var firstLabRoomScheduled = listLabRoomScheduled.First();
-            var lastLabRoomScheduled = listLabRoomScheduled.Last();
-
-            var listTheoryRoom = _context.Sessions
-                .Include(s => s.Room)
-                .Where(s =>
-                    s.RoomId == theoryRoomId &&
-                    s.ClassSchedule.WorkingTimeId == classScheduleToCreate.WorkingTimeId &&
-                    classScheduleToCreate.WorkingTimeId == s.ClassSchedule.WorkingTimeId &&
-                    firstTheoryRoomScheduled.LearningDate.Date <= s.LearningDate.Date &&
-                    s.LearningDate.Date <= lastTheoryRoomScheduled.LearningDate.Date)
-                .ToList();
-                
-                var temp = listTheoryRoom
-                .Find(s =>
-                    classScheduleToCreate.Sessions.Any(s1 =>
-                        s1.LearningDate.Date == s.LearningDate.Date));
-
-            var listLabRoom = _context.Sessions
-                .Include(s => s.Room)
-                .Where(s =>
-                    s.RoomId == labRoomId &&
-                    s.ClassSchedule.WorkingTimeId == classScheduleToCreate.WorkingTimeId &&
-                    classScheduleToCreate.WorkingTimeId == s.ClassSchedule.WorkingTimeId &&
-                    firstLabRoomScheduled.LearningDate.Date <= s.LearningDate.Date &&
-                    s.LearningDate.Date <= lastLabRoomScheduled.LearningDate.Date)
-                .ToList()
-                .Find(s =>
-                    classScheduleToCreate.Sessions.Any(s1 =>
-                        s1.LearningDate.Date == s.LearningDate.Date));
-
-            return temp != null || listLabRoom != null;
-        }
+        // if (module.ModuleType == 1)
+        // {
+        //     var theoryRoomId = classScheduleToCreate.TheoryRoomId;
+        //     var temp = _context.Sessions
+        //         .Include(s => s.Room)
+        //         .Include(s => s.ClassSchedule)
+        //         .Where(s =>
+        //             s.RoomId == theoryRoomId &&
+        //             s.ClassSchedule.WorkingTimeId == classScheduleToCreate.WorkingTimeId &&
+        //             classScheduleToCreate.WorkingTimeId == s.ClassSchedule.WorkingTimeId &&
+        //             classScheduleToCreate.StartDate <= s.LearningDate &&
+        //             s.LearningDate <= classScheduleToCreate.EndDate).ToList();
+        //
+        //     return temp.Count > 0;
+        // }
+        //
+        // if (module.ModuleType == 2)
+        // {
+        //     var labRoomId = classScheduleToCreate.LabRoomId;
+        //     var temp = _context.Sessions
+        //         .Include(s => s.Room)
+        //         .Include(s => s.ClassSchedule)
+        //         .Where(s =>
+        //             s.RoomId == labRoomId &&
+        //             s.ClassSchedule.WorkingTimeId == classScheduleToCreate.WorkingTimeId &&
+        //             classScheduleToCreate.WorkingTimeId == s.ClassSchedule.WorkingTimeId &&
+        //             classScheduleToCreate.StartDate <= s.LearningDate &&
+        //             s.LearningDate <= classScheduleToCreate.EndDate).ToList();
+        //
+        //     return temp.Count > 0;
+        // }
+        //
+        // if (module.ModuleType == 3)
+        // {
+        //     var theoryRoomId = classScheduleToCreate.TheoryRoomId;
+        //     var labRoomId = classScheduleToCreate.LabRoomId;
+        //
+        //     var listTheoryRoomScheduled = classScheduleToCreate.Sessions
+        //         .Where(s => s.RoomId == theoryRoomId)
+        //         .OrderBy(s => s.LearningDate).ToList();
+        //     var firstTheoryRoomScheduled = listTheoryRoomScheduled.First();
+        //     var lastTheoryRoomScheduled = listTheoryRoomScheduled.Last();
+        //
+        //     var listLabRoomScheduled = classScheduleToCreate.Sessions
+        //         .Where(s => s.RoomId == labRoomId)
+        //         .OrderBy(s => s.LearningDate).ToList();
+        //     var firstLabRoomScheduled = listLabRoomScheduled.First();
+        //     var lastLabRoomScheduled = listLabRoomScheduled.Last();
+        //
+        //     var listTheoryRoom = _context.Sessions
+        //         .Include(s => s.Room)
+        //         .Where(s =>
+        //             s.RoomId == theoryRoomId &&
+        //             s.ClassSchedule.WorkingTimeId == classScheduleToCreate.WorkingTimeId &&
+        //             classScheduleToCreate.WorkingTimeId == s.ClassSchedule.WorkingTimeId &&
+        //             firstTheoryRoomScheduled.LearningDate.Date <= s.LearningDate.Date &&
+        //             s.LearningDate.Date <= lastTheoryRoomScheduled.LearningDate.Date)
+        //         .ToList();
+        //         
+        //         var temp = listTheoryRoom
+        //         .Find(s =>
+        //             classScheduleToCreate.Sessions.Any(s1 =>
+        //                 s1.LearningDate.Date == s.LearningDate.Date));
+        //
+        //     var listLabRoom = _context.Sessions
+        //         .Include(s => s.Room)
+        //         .Where(s =>
+        //             s.RoomId == labRoomId &&
+        //             s.ClassSchedule.WorkingTimeId == classScheduleToCreate.WorkingTimeId &&
+        //             classScheduleToCreate.WorkingTimeId == s.ClassSchedule.WorkingTimeId &&
+        //             firstLabRoomScheduled.LearningDate.Date <= s.LearningDate.Date &&
+        //             s.LearningDate.Date <= lastLabRoomScheduled.LearningDate.Date)
+        //         .ToList()
+        //         .Find(s =>
+        //             classScheduleToCreate.Sessions.Any(s1 =>
+        //                 s1.LearningDate.Date == s.LearningDate.Date));
+        //
+        //     return temp != null || listLabRoom != null;
+        // }
 
         return false;
     }
