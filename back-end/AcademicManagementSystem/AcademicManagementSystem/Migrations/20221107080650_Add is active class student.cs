@@ -4,7 +4,7 @@
 
 namespace AcademicManagementSystem.Migrations
 {
-    public partial class AddisActivetoStudentClass : Migration
+    public partial class Addisactiveclassstudent : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

@@ -43,7 +43,7 @@ public class ClassSchedule
     
     [ForeignKey("ExamRoom")]
     [Column("exam_room_id")]
-    public int ExamRoomId { get; set; }
+    public int? ExamRoomId { get; set; }
     
     //days
     [Column("duration")]
@@ -85,6 +85,6 @@ public class ClassSchedule
     public virtual ClassStatus ClassStatus { get; set; }
     public virtual Room TheoryRoom { get; set; }
     public virtual Room LabRoom { get; set; }
-    public virtual Room ExamRoom { get; set; }
+    public virtual Room? ExamRoom { get; set; }
     public virtual ICollection<Session> Sessions { get; set; }
 }
