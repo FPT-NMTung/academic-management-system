@@ -1,5 +1,14 @@
-import { Card, Grid, Spacer, Text, Button } from '@nextui-org/react';
-import { Form, Select, Input, Spin, Divider, InputNumber, message } from 'antd';
+import { Card, Grid, Text, Button,Loading } from '@nextui-org/react';
+import {
+  Form,
+  Select,
+  Input,
+
+  Spin,
+  Divider,
+  InputNumber,
+  message,
+} from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
 import {
@@ -27,7 +36,7 @@ const ModuleUpdate = () => {
   const [listGrade, setListGrade] = useState([]);
   const [isFailed, setIsFailed] = useState(false);
   const [typeExam, setTypeExam] = useState(4);
-  const [typeExamSubmit, setTypeExamSubmit] = useState(4);
+  const [canDelete, setCanDelete] = useState(undefined);
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -54,9 +63,9 @@ const ModuleUpdate = () => {
         setIsUpdating(false);
         setTypeExamSubmit(data.exam_type);
         getListGrade();
-        return 'Cập nhật thành công';
-      },
-      error: (err) => {
+        navigate('/admin/manage-course/module');
+      })
+      .catch((err) => {
         setIsUpdating(false);
         setIsFailed(true);
         return 'Cập nhật thất bại';
@@ -190,11 +199,44 @@ const ModuleUpdate = () => {
       }
     );
   };
-
+const checkCanDelete = () => {
+    console.log(ModulesApis.checkCanDeleteModule);
+    FetchApi(ModulesApis.checkCanDeleteModule, null, null, [
+      String([`${id}`]),
+    ])
+      .then((res) => {
+        if (res.data.can_delete === true) {
+          setCanDelete(true);
+        } else {
+          setCanDelete(false);
+        }
+      })
+      .catch((err) => {
+        toast.error('Lỗi kiểm tra khả năng xóa');
+      });
+  };
+  const handleDelete = () => {
+    toast.promise(
+      FetchApi(ModulesApis.deleteCourse, null, null, [
+        String([`${id}`]),
+      ]),
+      {
+        loading: 'Đang xóa',
+        success: (res) => {
+          navigate('/admin/manage-course/module');
+          return 'Xóa thành công';
+        },
+        error: (err) => {
+          return 'Xóa thất bại';
+        },
+      }
+    );
+  };
   useEffect(() => {
     getModulebyid();
     getListCenter();
     getListGrade();
+    checkCanDelete();
   }, []);
 
   return (
@@ -544,16 +586,42 @@ const ModuleUpdate = () => {
                     justifyContent: 'center',
                   }}
                 >
-                  <Form.Item>
-                    <Button
-                      auto
-                      flat
-                      type="primary"
-                      htmlType="submit"
-                      disabled={isUpdating}
-                    >
-                      Cập nhật
-                    </Button>
+                  <Form.Item >
+                  <div
+              style={{
+                display: 'flex',
+                gap: '10px',
+                // textAlign: 'center',
+                // marginRight: '10px',
+              }}
+            >
+          <Button
+              flat
+              auto
+              css={{
+                width: "120px",
+                
+              }}
+              type="primary"
+              htmlType="submit"
+              disabled={isUpdating}
+            >
+              Cập nhật
+            </Button>
+            <Button
+                flat
+                auto
+                css={{
+                  width: '80px',
+                }}
+                color={'error'}
+                disabled={!canDelete}
+                onPress={handleDelete}
+              >
+                {canDelete === undefined && <Loading size="xs" />}
+                {canDelete !== undefined && 'Xoá'}
+              </Button>{' '}
+              </div>
                   </Form.Item>
                 </div>
               </Form>

@@ -1,10 +1,11 @@
-import { Form, InputNumber, Select, Table, message } from 'antd';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { IoMdTrash } from 'react-icons/io';
-import FetchApi from '../../apis/FetchApi';
-import { GradeType } from '../../apis/ListApi';
-import { Spacer, Text, Button } from '@nextui-org/react';
+import { Form, InputNumber, Select, Table, message } from "antd";
+import { useEffect } from "react";
+import { useState } from "react";
+import { IoMdTrash } from "react-icons/io";
+import FetchApi from "../../apis/FetchApi";
+import { GradeType } from "../../apis/ListApi";
+import { Spacer, Button, Text } from "@nextui-org/react";
+
 // import { Table } from '@nextui-org/react';
 
 const ModuleGradeType = ({
@@ -65,7 +66,7 @@ const ModuleGradeType = ({
   }, []);
 
   useEffect(() => {
-    form.resetFields(['grade_type', 'weight', 'quantity']);
+    form.resetFields(["grade_type", "weight", "quantity"]);
     setTypeGrade(undefined);
   }, [listGrade]);
 
@@ -84,12 +85,12 @@ const ModuleGradeType = ({
         }}
       >
         <Form.Item
-          name={'grade_type'}
+          name={"grade_type"}
           label="Loại điểm"
           rules={[
             {
               required: true,
-              message: 'Vui lòng chọn loại điểm',
+              message: "Vui lòng chọn loại điểm",
             },
           ]}
         >
@@ -107,12 +108,12 @@ const ModuleGradeType = ({
           </Select>
         </Form.Item>
         <Form.Item
-          name={'quantity'}
+          name={"quantity"}
           label="Số lượng"
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhập số lượng',
+              message: "Vui lòng nhập số lượng",
             },
           ]}
         >
@@ -126,11 +127,11 @@ const ModuleGradeType = ({
         </Form.Item>
         <Form.Item
           label="Trọng số"
-          name={'weight'}
+          name={"weight"}
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhập trọng số',
+              message: "Vui lòng nhập trọng số",
             },
           ]}
         >
@@ -143,30 +144,39 @@ const ModuleGradeType = ({
           ></InputNumber>
         </Form.Item>
         <Form.Item wrapperCol={{ span: 14, offset: 6 }}>
-          <div style={{
-            display: 'flex',
-            gap: '10px',
-          }}>
-            <Button flat auto type="primary" htmlType="submit">
-              Thêm hoặc cập nhật
-            </Button>
-            <Button
-              flat
-              auto
-              color={'success'}
-              disabled={total !== 100}
-              onPress={onSave}
+        <div
+              style={{
+                display: 'flex',
+                gap: '10px',
+              }}
             >
-              Lưu
-            </Button>
+          <Button
+            flat
+            auto
+            // css={{
+            //   width: "120px",
+            // }}
+            type="primary"
+            htmlType="submit"
+          >
+            Thêm hoặc cập nhật
+          </Button>
+          <Button
+           flat
+           auto
+            type="primary"
+            disabled={total !== 100}
+            style={{ marginLeft: 10 }}
+            onClick={onSave}
+          >
+            Lưu
+          </Button>
           </div>
         </Form.Item>
       </Form>
       <Table
-        dataSource={listGrade
-          .filter((item) => item.grade_id !== 6)
-          .sort((a, b) => a.grade_id - b.grade_id)}
-        size={'small'}
+        dataSource={listGrade.sort((a, b) => a.grade_id - b.grade_id)}
+        size={"small"}
         pagination={false}
       >
         <Table.Column
@@ -180,7 +190,7 @@ const ModuleGradeType = ({
           dataIndex="weight"
           key="weight"
           render={(value) => (
-            <div style={total !== 100 ? { color: 'red' } : null}>
+            <div style={total !== 100 ? { color: "red" } : null}>
               <b>{value}%</b>
             </div>
           )}
@@ -198,8 +208,8 @@ const ModuleGradeType = ({
             return (
               <IoMdTrash
                 size={20}
-                color={'red'}
-                style={{ cursor: 'pointer' }}
+                color={"red"}
+                style={{ cursor: "pointer" }}
                 onClick={() => {
                   handleDeleteRow(data);
                 }}
@@ -209,7 +219,7 @@ const ModuleGradeType = ({
         />
       </Table>
       <Spacer y={1} />
-      <Text p size={15} css={{ float: 'right', paddingRight: 10 }}>
+      <Text p size={15} css={{ float: "right", paddingRight: 10 }}>
         Tổng trọng số: <b>{total}%</b>
       </Text>
     </div>
