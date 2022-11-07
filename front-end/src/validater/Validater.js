@@ -73,7 +73,7 @@ export const Validater = {
     if (str == null) {
       return false;
     }
-    const re = /[~`!#$%\^&*+=\-\[\]\\;,./{}|\\":<>\?0-9]/;
+    const re = /[@~`!#$%\^&*+=\-\[\]\\;,./{}|\\":<>\?0-9]/;
     return re.test(String(str.trim()));
   },
 };

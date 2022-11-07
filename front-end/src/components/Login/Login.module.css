@@ -5,6 +5,8 @@
   justify-content: center;
   height         : 100vh;
   width          : 100vw;
+
+  overflow: hidden;
 }
 
 .contain {
@@ -53,5 +55,95 @@
 }
 
 .logo {
-  width : 120px;
+  width: 120px;
+}
+
+.back1 {
+  position: absolute;
+  z-index : 0;
+
+  top : 15%;
+  left: 23%;
+
+  background   : rgb(255, 160, 239);
+  background   : radial-gradient(circle, rgba(255, 184, 243, 0.499) 0%, rgba(255, 255, 255, 0) 69%);
+  height       : 500px;
+  width        : 500px;
+  border-radius: 1000px;
+
+  animation: back1 4s infinite;
+}
+
+@keyframes back1 {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.2;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.back2 {
+  position: absolute;
+  z-index : 0;
+
+  top : 40%;
+  left: 33%;
+
+  background   : rgb(176, 130, 255);
+  background   : radial-gradient(circle, rgba(176, 130, 255, 0.4990371148459384) 0%, rgba(255, 255, 255, 0) 69%);
+  height       : 500px;
+  width        : 500px;
+  border-radius: 1000px;
+
+  animation: back2 7s infinite;
+}
+
+@keyframes back2 {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.2;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.back3 {
+  position: absolute;
+  z-index : 0;
+
+  top : 25%;
+  left: 48%;
+
+  background   : rgb(130, 172, 255);
+  background   : radial-gradient(circle, rgba(130, 172, 255, 0.4990371148459384) 0%, rgba(255, 255, 255, 0) 69%);
+  height       : 500px;
+  width        : 500px;
+  border-radius: 1000px;
+
+  animation: back3 6s infinite;
+}
+
+@keyframes back3 {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.2;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }

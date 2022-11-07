@@ -40,6 +40,7 @@ const translateWorkingTime = {
   4: 'Sáng, Chiều',
   5: 'Sáng, Tối',
   6: 'Chiều, Tối',
+  7: 'Cả ngày',
 };
 
 const TeacherCreate = ({ modeUpdate }) => {
@@ -268,8 +269,7 @@ const TeacherCreate = ({ modeUpdate }) => {
       }
     );
   };
-const checkCanDelete = () => {
-  
+  const checkCanDelete = () => {
     FetchApi(ManageTeacherApis.checkCanDeleteTeacher, null, null, [
       String([`${id}`]),
     ])
@@ -350,7 +350,15 @@ const checkCanDelete = () => {
                     },
                   ]}
                 >
-                  <Select placeholder="Cơ sở">
+                  <Select
+                    showSearch
+                    placeholder="Cơ sở"
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                  >
                     {listCenter
                       .filter((e) => e.is_active)
                       .map((item, index) => (
@@ -374,16 +382,15 @@ const checkCanDelete = () => {
                             'Trường này không được để trống'
                           );
                         }
-                        if (
-                          Validater.isNotHumanName(
-                            value.trim()
-                          )
-                        ) {
+                        if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
                             'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
-                        if (value.trim().length < 1 || value.trim().length > 255) {
+                        if (
+                          value.trim().length < 1 ||
+                          value.trim().length > 255
+                        ) {
                           return Promise.reject(
                             new Error('Trường phải từ 1 đến 255 ký tự')
                           );
@@ -416,7 +423,10 @@ const checkCanDelete = () => {
                             'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
-                        if (value.trim().length < 1 || value.trim().length > 255) {
+                        if (
+                          value.trim().length < 1 ||
+                          value.trim().length > 255
+                        ) {
                           return Promise.reject(
                             new Error('Trường phải từ 1 đến 255 ký tự')
                           );
@@ -442,7 +452,15 @@ const checkCanDelete = () => {
                     },
                   ]}
                 >
-                  <Select placeholder="Giới tính">
+                  <Select
+                    showSearch
+                    placeholder="Giới tính"
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                  >
                     {listGender.map((item, index) => (
                       <Select.Option key={index} value={item.id}>
                         {item.value}
@@ -531,11 +549,17 @@ const checkCanDelete = () => {
                   ]}
                 >
                   <Select
+                    showSearch
                     placeholder="Tỉnh/Thành phố"
                     loading={listProvince.length === 0}
                     onChange={() => {
                       getListDistrict();
                     }}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     {listProvince.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
@@ -555,11 +579,17 @@ const checkCanDelete = () => {
                   ]}
                 >
                   <Select
+                    showSearch
                     placeholder="Quận/Huyện"
                     loading={listDistrict.length === 0}
                     onChange={() => {
                       getListWard();
                     }}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     {listDistrict.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
@@ -579,8 +609,14 @@ const checkCanDelete = () => {
                   ]}
                 >
                   <Select
+                    showSearch
                     placeholder="Phường/Xã"
                     loading={listWard.length === 0}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     {listWard.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
@@ -644,7 +680,10 @@ const checkCanDelete = () => {
                             'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
-                        if (value.trim().length < 1 || value.trim().length > 255) {
+                        if (
+                          value.trim().length < 1 ||
+                          value.trim().length > 255
+                        ) {
                           return Promise.reject(
                             new Error('Trường phải từ 1 đến 255 ký tự')
                           );
@@ -686,7 +725,10 @@ const checkCanDelete = () => {
                             'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
-                        if (value.trim().length < 1 || value.trim().length > 255) {
+                        if (
+                          value.trim().length < 1 ||
+                          value.trim().length > 255
+                        ) {
                           return Promise.reject(
                             new Error('Trường phải từ 1 đến 255 ký tự')
                           );
@@ -737,7 +779,10 @@ const checkCanDelete = () => {
                             'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
-                        if (value.trim().length < 1 || value.trim().length > 255) {
+                        if (
+                          value.trim().length < 1 ||
+                          value.trim().length > 255
+                        ) {
                           return Promise.reject(
                             new Error('Trường phải từ 1 đến 255 ký tự')
                           );
@@ -763,7 +808,15 @@ const checkCanDelete = () => {
                     },
                   ]}
                 >
-                  <Select placeholder="Loại hợp đồng">
+                  <Select
+                    showSearch
+                    placeholder="Loại hợp đồng"
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                  >
                     {listTeacherType.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
                         {e.value}
@@ -800,7 +853,15 @@ const checkCanDelete = () => {
                     },
                   ]}
                 >
-                  <Select placeholder="Thời gian dạy">
+                  <Select
+                    showSearch
+                    placeholder="Thời gian dạy"
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                  >
                     {listWorkingTime.map((item) => (
                       <Select.Option key={item.id} value={item.id}>
                         {item.value}
@@ -829,15 +890,14 @@ const checkCanDelete = () => {
                 </Form.Item>
               </div>
               {/* <Form.Item > */}
-             
+
               <div
-              style={{
-                display: 'flex',
-                gap: '10px',
-                justifyContent: 'center',
-              }}
-            >
-              
+                style={{
+                  display: 'flex',
+                  gap: '10px',
+                  justifyContent: 'center',
+                }}
+              >
                 <Button
                   flat
                   auto
@@ -851,10 +911,7 @@ const checkCanDelete = () => {
                   {!modeUpdate && 'Tạo mới'}
                   {modeUpdate && 'Cập nhật'}
                 </Button>
-               
 
-             
-           
                 <Button
                   flat
                   auto
@@ -866,20 +923,14 @@ const checkCanDelete = () => {
                   disabled={!canDelete}
                   hidden={!modeUpdate}
                 >
-                    {canDelete === undefined && <Loading size="xs" />}
-                {canDelete !== undefined && 'Xoá'}
-     
+                  {canDelete === undefined && <Loading size="xs" />}
+                  {canDelete !== undefined && 'Xoá'}
                 </Button>
-               
-
-         
-           </div>
+              </div>
               {/* </Form.Item> */}
-              
             </Card.Body>
           </Card>
         </Grid>
-    
 
         {modeUpdate && (
           <Grid xs={3}>
@@ -944,7 +995,6 @@ const checkCanDelete = () => {
             </Card>
           </Grid>
         )}
-
       </Grid.Container>
     </Form>
   );

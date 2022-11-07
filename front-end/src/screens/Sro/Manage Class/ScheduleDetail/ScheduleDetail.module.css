@@ -1,0 +1,22 @@
+.loading {
+  display        : flex;
+  flex-direction : column;
+  justify-content: center;
+  align-items    : center;
+  height         : 500px;
+}
+
+.infoSlotSession {
+  display        : flex;
+  justify-content: space-between;
+
+  color: white !important;
+}
+
+.buttonGroupEdit {
+  width          : 100%;
+  display        : flex;
+  justify-content: flex-end;
+
+  gap: 10px;
+}

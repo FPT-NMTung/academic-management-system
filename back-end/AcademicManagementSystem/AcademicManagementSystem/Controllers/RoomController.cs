@@ -4,6 +4,7 @@ using AcademicManagementSystem.Context.AmsModels;
 using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.RoomController.RoomModel;
 using AcademicManagementSystem.Models.RoomController.RoomTypeModel;
+using AcademicManagementSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,10 +15,12 @@ namespace AcademicManagementSystem.Controllers;
 public class RoomController : ControllerBase
 {
     private readonly AmsContext _context;
+    private readonly IUserService _userService;
 
-    public RoomController(AmsContext context)
+    public RoomController(AmsContext context, IUserService userService)
     {
         _context = context;
+        _userService = userService;
     }
 
     [HttpGet]
@@ -57,6 +60,39 @@ public class RoomController : ControllerBase
         });
 
         return Ok(CustomResponse.Ok("Get all rooms by centerId successfully", responses));
+    }
+    
+    [HttpGet]
+    [Route("api/rooms/get-by-sro")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetRoomsBySro()
+    {
+        var userId = Int32.Parse(_userService.GetUserId());
+        var user = _context.Users.FirstOrDefault(u => u.Id == userId)!;
+
+        var roomsResponses = _context.Rooms
+            .Include(r => r.Center)
+            .Include(r => r.RoomType)
+            .ToList();
+        
+        roomsResponses = roomsResponses.Where(r => r.CenterId == user.CenterId).ToList();
+
+        var responses = roomsResponses.Select(r => new RoomResponse()
+        {
+            Id = r.Id,
+            CenterId = r.CenterId,
+            CenterName = r.Center.Name,
+            Room = new RoomTypeResponse()
+            {
+                Id = r.RoomTypeId,
+                Value = r.RoomType.Value
+            },
+            Name = r.Name,
+            Capacity = r.Capacity,
+            IsActive = r.IsActive
+        });
+
+        return Ok(CustomResponse.Ok("Get all rooms by sro successfully", responses));
     }
 
     //create new room
