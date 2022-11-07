@@ -2,7 +2,7 @@
 
 public static class ErrorDescription
 {
-    public static readonly Dictionary<string, ErrorModel> Error = new Dictionary<string, ErrorModel>()
+    public static readonly Dictionary<string?, ErrorModel> Error = new Dictionary<string?, ErrorModel>()
     {
         // room
         { "E0001", new ErrorModel() { Message = "centerId for GET rooms not found", Type = "room-error-0001" } },
@@ -270,6 +270,21 @@ public static class ErrorDescription
         { "E0093", new ErrorModel() { Message = "Teacher Busy", Type = "class-schedule-error-0017" } },
         { "E0094", new ErrorModel() { Message = "Class not ready to add schedule", Type = "class-schedule-error-0018" } },
         { "E0095", new ErrorModel() { Message = "learning time not match with working time id", Type = "class-schedule-error-0019" } },
+        { "E0096", new ErrorModel() { Message = "", Type = "class-schedule-error-0020" } },
+        { "E0097", new ErrorModel() { Message = "", Type = "class-schedule-error-0021" } },
+        { "E0098", new ErrorModel() { Message = "", Type = "class-schedule-error-0022" } },
+        { "E0099", new ErrorModel() { Message = "", Type = "class-schedule-error-0023" } },
+        { "E2064", new ErrorModel() { Message = "Teacher busy in this time", Type = "class-schedule-error-0024" } },
+        { "E2065", new ErrorModel() { Message = "Room already used in this time", Type = "class-schedule-error-0025" } },
+        { "E2066", new ErrorModel() { Message = "This class not have this module", Type = "class-schedule-error-0026" } },
+        { "E2067", new ErrorModel() { Message = "class does not exist", Type = "class-schedule-error-0027" } },
+        { "E2068", new ErrorModel() { Message = "class schedule does not exist", Type = "class-schedule-error-0028" } },
+        { "E2069", new ErrorModel() { Message = "Error when delete class schedule", Type = "class-schedule-error-0028" } },
+
+        // Day off
+        { "E0100", new ErrorModel() { Message = "This day off already in database", Type = "day-off-error-0001" } },
+        { "E0101", new ErrorModel() { Message = "Date must >= today", Type = "day-off-error-0002" } },
+        { "E0102", new ErrorModel() { Message = "Invalid data", Type = "day-off-error-0003" } },
 
     };
 }

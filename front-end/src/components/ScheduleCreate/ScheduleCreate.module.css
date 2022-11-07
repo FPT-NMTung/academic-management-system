@@ -1,0 +1,23 @@
+.formCreate {
+  display              : grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap           : 30px;
+}
+
+.note {
+  grid-column: 2 / 3;
+  grid-row   : 4 / 6;
+}
+
+.sessions {
+  grid-column: 1 / 3;
+  grid-row   : 7 / 8;
+
+  display              : grid;
+  grid-template-columns: repeat(15, 1fr);
+
+  width : 70%;
+  margin: 30px auto;
+
+  row-gap: 10px;
+}

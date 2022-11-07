@@ -1,4 +1,4 @@
-import classes from "./Module.module.css";
+import classes from './Module.module.css';
 import {
   Card,
   Grid,
@@ -8,28 +8,28 @@ import {
   Modal,
   Badge,
   Table,
-} from "@nextui-org/react";
-import { Form, Select, Input, Divider } from "antd";
-import { useEffect, useState } from "react";
-import FetchApi from "../../../apis/FetchApi";
-import { ModulesApis, CourseModuleSemesterApis } from "../../../apis/ListApi";
-import ModuleUpdate from "../../../components/ModuleUpdate/ModuleUpdate";
-import ModuleCreate from "../../../components/ModuleCreate/ModuleCreate";
-import { Fragment } from "react";
-import ColumnGroup from "antd/lib/table/ColumnGroup";
-import { useNavigate } from "react-router-dom";
-import { FaPen } from "react-icons/fa";
+} from '@nextui-org/react';
+import { Form, Select, Input, Divider } from 'antd';
+import { useEffect, useState } from 'react';
+import FetchApi from '../../../apis/FetchApi';
+import { ModulesApis, CourseModuleSemesterApis } from '../../../apis/ListApi';
+import ModuleUpdate from '../../../components/ModuleUpdate/ModuleUpdate';
+import ModuleCreate from '../../../components/ModuleCreate/ModuleCreate';
+import { Fragment } from 'react';
+import ColumnGroup from 'antd/lib/table/ColumnGroup';
+import { useNavigate } from 'react-router-dom';
+import { FaPen } from 'react-icons/fa';
 
 const TYPE_EXAM = {
-  1: "Lý thuyết",
-  2: "Thực hành",
-  3: "Thực hành và Lý thuyết",
-  4: "Không thi",
+  1: 'Lý thuyết',
+  2: 'Thực hành',
+  3: 'Thực hành và Lý thuyết',
+  4: 'Không thi',
 };
 const TYPE_MODULE = {
-  1: "Lý thuyết",
-  2: "Thực hành",
-  3: "Lý thuyết và Thực hành",
+  1: 'Lý thuyết',
+  2: 'Thực hành',
+  3: 'Lý thuyết và Thực hành',
 };
 
 const Module = () => {
@@ -43,13 +43,13 @@ const Module = () => {
   const getData = () => {
     setIsLoading(true);
     const param = {
-      moduleName: form.getFieldValue("module_name"),
-      courseCode: form.getFieldValue("course_code"),
+      moduleName: form.getFieldValue('module_name'),
+      courseCode: form.getFieldValue('course_code'),
     };
 
-    const moduletype = form.getFieldValue("module_type");
-    const examtype = form.getFieldValue("exam_type");
-    const semesterid = form.getFieldValue("semester_id");
+    const moduletype = form.getFieldValue('module_type');
+    const examtype = form.getFieldValue('exam_type');
+    const semesterid = form.getFieldValue('semester_id');
 
     if (moduletype !== null) {
       param.moduleType = moduletype;
@@ -71,7 +71,7 @@ const Module = () => {
         .map((e, index) => {
           return {
             id: e.module.id,
-            key: e.course_code + "-" + e.module_id + "-" + e.semester_id,
+            key: e.course_code + '-' + e.module_id + '-' + e.semester_id,
             index: index + 1,
             center_id: e.module.center_id,
             modulename: e.module.module_name,
@@ -129,13 +129,13 @@ const Module = () => {
           Thực hành
         </Badge>
       );
-    } else  {
+    } else {
       return (
         <Badge variant="flat" color="success">
-           LT & TH
+          LT & TH
         </Badge>
       );
-      }
+    }
   };
   const renderExamType = (id) => {
     if (id === 1) {
@@ -153,17 +153,16 @@ const Module = () => {
     } else if (id === 3) {
       return (
         <Badge variant="flat" color="success">
-         LT & TH
+          LT & TH
         </Badge>
       );
-      }
-      else {
-        return (
+    } else {
+      return (
         <Badge variant="flat" color="default">
           Không thi
         </Badge>
       );
-      }
+    }
   };
 
   useEffect(() => {
@@ -177,15 +176,15 @@ const Module = () => {
           <Card variant="bordered">
             <Card.Body
               css={{
-                padding: "10px",
+                padding: '10px',
               }}
             >
               <Form
                 layout="inline"
                 form={form}
                 initialValues={{
-                  module_name: "",
-                  course_code: "",
+                  module_name: '',
+                  course_code: '',
                   module_type: null,
                   exam_type: null,
                   semester_id: null,
@@ -194,24 +193,30 @@ const Module = () => {
               >
                 <Form.Item
                   name="module_name"
-                  style={{ width: "calc(17% - 16px)" }}
+                  style={{ width: 'calc(17% - 16px)' }}
                 >
                   <Input placeholder="Môn học" />
                 </Form.Item>
                 <Form.Item
                   name="course_code"
-                  style={{ width: "calc(17% - 16px)" }}
+                  style={{ width: 'calc(17% - 16px)' }}
                 >
                   <Input placeholder="Mã khóa học" />
                 </Form.Item>
                 <Form.Item
                   name="module_type"
-                  style={{ width: "calc(17% - 16px)" }}
+                  style={{ width: 'calc(17% - 16px)' }}
                 >
                   <Select
-                    style={{ width: "100%" }}
+                    showSearch
+                    style={{ width: '100%' }}
                     dropdownStyle={{ zIndex: 9999 }}
                     placeholder="Hình thức học"
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     <Select.Option key="1" value="1">
                       Lý thuyết
@@ -226,12 +231,18 @@ const Module = () => {
                 </Form.Item>
                 <Form.Item
                   name="exam_type"
-                  style={{ width: "calc(17% - 16px)" }}
+                  style={{ width: 'calc(17% - 16px)' }}
                 >
                   <Select
-                    style={{ width: "100%" }}
+                    showSearch
+                    style={{ width: '100%' }}
                     dropdownStyle={{ zIndex: 9999 }}
                     placeholder="Hình thức thi"
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     <Select.Option key="4" value="1">
                       Lý thuyết
@@ -249,13 +260,19 @@ const Module = () => {
                 </Form.Item>
                 <Form.Item
                   name="semester_id"
-                  style={{ width: "calc(17% - 16px)" }}
+                  style={{ width: 'calc(17% - 16px)' }}
                 >
                   <Select
-                    style={{ width: "100%" }}
+                    showSearch
+                    style={{ width: '100%' }}
                     dropdownStyle={{ zIndex: 9999 }}
                     placeholder="Chọn học kỳ"
                     optionFilterProp="children"
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     <Select.Option key="1" value="1">
                       Học kỳ 1
@@ -272,24 +289,24 @@ const Module = () => {
                   </Select>
                 </Form.Item>
 
-                <Form.Item style={{ width: "calc(9% - 16px)" }}>
+                <Form.Item style={{ width: 'calc(9% - 16px)' }}>
                   <Button
                     flat
                     auto
                     type="primary"
                     htmlType="submit"
-                    style={{ width: "100%" }}
+                    style={{ width: '100%' }}
                   >
                     Tìm kiếm
                   </Button>
                 </Form.Item>
-                <Form.Item style={{ width: "6%", marginRight: 0 }}>
+                <Form.Item style={{ width: '6%', marginRight: 0 }}>
                   <Button
                     flat
                     auto
                     type="default"
                     style={{
-                      width: "100%",
+                      width: '100%',
                     }}
                     color="error"
                     onPress={handleClearInput}
@@ -305,7 +322,7 @@ const Module = () => {
           <Card
             variant="bordered"
             css={{
-              minHeight: "300px",
+              minHeight: '300px',
             }}
           >
             <Card.Header>
@@ -317,8 +334,8 @@ const Module = () => {
                     size={14}
                     p
                     css={{
-                      width: "100%",
-                      textAlign: "center",
+                      width: '100%',
+                      textAlign: 'center',
                     }}
                   >
                     Danh sách môn học
@@ -330,7 +347,7 @@ const Module = () => {
                     auto
                     type="primary"
                     style={{
-                      width: "100%",
+                      width: '100%',
                     }}
                     onClick={() => {
                       setisCreate(true);
@@ -364,24 +381,35 @@ const Module = () => {
                   {listModules.map((data, index) => (
                     <Table.Row key={data.user_id}>
                       <Table.Cell>{index + 1}</Table.Cell>
-                      <Table.Cell><b>{data.modulename}</b></Table.Cell>
+                      <Table.Cell>
+                        <b>{data.modulename}</b>
+                      </Table.Cell>
                       <Table.Cell>{data.coursecode}</Table.Cell>
-                      <Table.Cell css={{textAlign:"end"}}>{data.hours} Tiếng </Table.Cell>
-                      <Table.Cell css={{textAlign:"end"}}>{data.days} buổi</Table.Cell>
-                      <Table.Cell>{renderModuleType(data.module_type)}</Table.Cell>
+                      <Table.Cell css={{ textAlign: 'end' }}>
+                        {data.hours} Tiếng{' '}
+                      </Table.Cell>
+                      <Table.Cell css={{ textAlign: 'end' }}>
+                        {data.days} buổi
+                      </Table.Cell>
+                      <Table.Cell>
+                        {renderModuleType(data.module_type)}
+                      </Table.Cell>
                       <Table.Cell>{renderExamType(data.exam_type)}</Table.Cell>
-                      <Table.Cell css={{textAlign:"center"}}>{data.max_theory_grade}</Table.Cell>
-                      <Table.Cell css={{textAlign:"center"}}>{data.max_practical_grade}</Table.Cell>
+                      <Table.Cell css={{ textAlign: 'center' }}>
+                        {data.max_theory_grade}
+                      </Table.Cell>
+                      <Table.Cell css={{ textAlign: 'center' }}>
+                        {data.max_practical_grade}
+                      </Table.Cell>
                       {/* <Table.Cell>{data.semester_name_portal}</Table.Cell> */}
                       {/* <Table.Cell>{data.module_exam_name_portal}</Table.Cell> */}
                       <Table.Cell>Học kỳ {data.semester_id}</Table.Cell>
                       <Table.Cell>{data.centername}</Table.Cell>
-                      <Table.Cell css={{textAlign:"center"}}>
+                      <Table.Cell css={{ textAlign: 'center' }}>
                         <FaPen
                           size={14}
-                 
                           color="5EA2EF"
-                          style={{ cursor: "pointer" }}
+                          style={{ cursor: 'pointer' }}
                           onClick={() => {
                             navigate(
                               `/admin/manage-course/module/${data.id}/update`
