@@ -76,59 +76,6 @@ public class ModuleController : ControllerBase
         return Ok(CustomResponse.Ok("Modules retrieved successfully", modules));
     }
 
-    // get all modules
-    [HttpGet]
-    [Route("api/classes/{classId:int}/modules")]
-    [Authorize(Roles = "admin,sro,teacher,student")]
-    public IActionResult GetModulesNotScheduledByClassId(int classId)
-    {
-        if (!_context.Classes.Any(c => c.Id == classId))
-        {
-            return NotFound(CustomResponse.NotFound("Class not found"));
-        }
-
-        var modules = _context.Modules
-            .Include(m => m.ClassSchedules)
-            .Include(m => m.CoursesModulesSemesters)
-            .ThenInclude(cms => cms.Course)
-            .ThenInclude(c => c.CourseFamily)
-            .ThenInclude(cf => cf.Classes)
-            .Where(m => m.ClassSchedules.All(c => c.ModuleId != m.Id) && m.CoursesModulesSemesters.Any(cms => cms.Course
-                .CourseFamily.Classes
-                .Any(c => c.Id == classId)))
-            .Select(m => new ModuleResponse()
-            {
-                Id = m.Id, CenterId = m.CenterId, SemesterNamePortal = m.SemesterNamePortal, ModuleName = m.ModuleName,
-                ModuleExamNamePortal = m.ModuleExamNamePortal, ModuleType = m.ModuleType,
-                MaxTheoryGrade = m.MaxTheoryGrade, MaxPracticalGrade = m.MaxPracticalGrade, Hours = m.Hours,
-                Days = m.Days, ExamType = m.ExamType, CreatedAt = m.CreatedAt, UpdatedAt = m.UpdatedAt,
-                Center = new CenterResponse()
-                {
-                    Id = m.Center.Id,
-                    Name = m.Center.Name, CreatedAt = m.Center.CreatedAt, UpdatedAt = m.Center.UpdatedAt,
-                    Province = new ProvinceResponse()
-                    {
-                        Id = m.Center.Province.Id,
-                        Name = m.Center.Province.Name,
-                        Code = m.Center.Province.Code
-                    },
-                    District = new DistrictResponse()
-                    {
-                        Id = m.Center.District.Id,
-                        Name = m.Center.District.Name,
-                        Prefix = m.Center.District.Prefix,
-                    },
-                    Ward = new WardResponse()
-                    {
-                        Id = m.Center.Ward.Id,
-                        Name = m.Center.Ward.Name,
-                        Prefix = m.Center.Ward.Prefix,
-                    }
-                }
-            }).ToList();
-        return Ok(CustomResponse.Ok("Modules of this class retrieved successfully", modules));
-    }
-
     // get module by id
     [HttpGet]
     [Route("api/modules/{id:int}")]

@@ -4,6 +4,7 @@ using AcademicManagementSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicManagementSystem.Migrations
 {
     [DbContext(typeof(AmsContext))]
-    partial class AmsContextModelSnapshot : ModelSnapshot
+    [Migration("20221107081623_Allow null exam room")]
+    partial class Allownullexamroom
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -337,7 +339,7 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnType("int")
                         .HasColumnName("exam_room_id");
 
-                    b.Property<int?>("LabRoomId")
+                    b.Property<int>("LabRoomId")
                         .HasColumnType("int")
                         .HasColumnName("lab_room_id");
 
@@ -366,7 +368,7 @@ namespace AcademicManagementSystem.Migrations
                         .HasColumnType("date")
                         .HasColumnName("theory_exam_date");
 
-                    b.Property<int?>("TheoryRoomId")
+                    b.Property<int>("TheoryRoomId")
                         .HasColumnType("int")
                         .HasColumnName("theory_room_id");
 
@@ -1747,7 +1749,8 @@ namespace AcademicManagementSystem.Migrations
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Room", "LabRoom")
                         .WithMany("ClassSchedulesLabRoom")
                         .HasForeignKey("LabRoomId")
-                        .OnDelete(DeleteBehavior.ClientNoAction);
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
 
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Module", "Module")
                         .WithMany("ClassSchedules")
@@ -1764,7 +1767,8 @@ namespace AcademicManagementSystem.Migrations
                     b.HasOne("AcademicManagementSystem.Context.AmsModels.Room", "TheoryRoom")
                         .WithMany("ClassSchedulesTheoryRoom")
                         .HasForeignKey("TheoryRoomId")
-                        .OnDelete(DeleteBehavior.ClientNoAction);
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
 
                     b.Navigation("Class");
 
