@@ -17,13 +17,13 @@ public class CreateClassScheduleRequest
     public int WorkingTimeId { get; set; }
     
     [JsonPropertyName("theory_room_id")]
-    public int TheoryRoomId { get; set; }
+    public int? TheoryRoomId { get; set; }
     
     [JsonPropertyName("lab_room_id")]
-    public int LabRoomId { get; set; }
+    public int? LabRoomId { get; set; }
 
     [JsonPropertyName("exam_room_id")]
-    public int ExamRoomId { get; set; }
+    public int? ExamRoomId { get; set; }
     
     //days
     [JsonPropertyName("duration")]

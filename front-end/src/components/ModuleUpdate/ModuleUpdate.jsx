@@ -1,14 +1,5 @@
-import { Card, Grid, Text, Button,Loading } from '@nextui-org/react';
-import {
-  Form,
-  Select,
-  Input,
-
-  Spin,
-  Divider,
-  InputNumber,
-  message,
-} from 'antd';
+import { Card, Grid, Spacer, Text, Button, Loading } from '@nextui-org/react';
+import { Form, Select, Input, Spin, Divider, InputNumber, message } from 'antd';
 import { useEffect, useState } from 'react';
 import FetchApi from '../../apis/FetchApi';
 import {
@@ -37,6 +28,7 @@ const ModuleUpdate = () => {
   const [isFailed, setIsFailed] = useState(false);
   const [typeExam, setTypeExam] = useState(4);
   const [canDelete, setCanDelete] = useState(undefined);
+  const [typeExamSubmit, setTypeExamSubmit] = useState(4);
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -57,17 +49,20 @@ const ModuleUpdate = () => {
       days: data.days,
       exam_type: data.exam_type,
     };
-    FetchApi(ModulesApis.updateModule, body, null, [`${id}`])
-      .then((res) => {
-        message.success('Cập nhật thành công');
+    toast.promise(FetchApi(ModulesApis.updateModule, body, null, [`${id}`]), {
+      loading: 'Đang cập nhật...',
+      success: (res) => {
         setIsUpdating(false);
+        setTypeExamSubmit(data.exam_type);
         getListGrade();
-        navigate('/admin/manage-course/module');
-      })
-      .catch((err) => {
+        return 'Cập nhật thành công';
+      },
+      error: (err) => {
         setIsUpdating(false);
         setIsFailed(true);
-      });
+        return 'Cập nhật thất bại';
+      },
+    });
   };
 
   const getListCenter = () => {
@@ -100,6 +95,7 @@ const ModuleUpdate = () => {
           exam_type: data.exam_type,
         });
         setTypeExam(data.exam_type);
+        setTypeExamSubmit(data.exam_type);
         setisLoading(false);
       })
       .catch(() => {
@@ -168,8 +164,6 @@ const ModuleUpdate = () => {
   };
 
   const handleSave = () => {
-    console.log(123);
-
     const data = listGrade.map((item) => {
       return {
         grade_category_id: item.grade_id,
@@ -182,19 +176,24 @@ const ModuleUpdate = () => {
       grade_category_details: data,
     };
 
-    FetchApi(GradeModuleSemesterApis.updateGradeModule, body, null, [
-      String(id),
-    ])
-      .then(() => {
-        message.success('Cập nhật điểm thành công');
-      })
-      .catch(() => {});
+    toast.promise(
+      FetchApi(GradeModuleSemesterApis.updateGradeModule, body, null, [
+        String(id),
+      ]),
+      {
+        loading: 'Đang cập nhật...',
+        success: (res) => {
+          return 'Cập nhật thành công';
+        },
+        error: (err) => {
+          return 'Cập nhật thất bại';
+        },
+      }
+    );
   };
-const checkCanDelete = () => {
+  const checkCanDelete = () => {
     console.log(ModulesApis.checkCanDeleteModule);
-    FetchApi(ModulesApis.checkCanDeleteModule, null, null, [
-      String([`${id}`]),
-    ])
+    FetchApi(ModulesApis.checkCanDeleteModule, null, null, [String([`${id}`])])
       .then((res) => {
         if (res.data.can_delete === true) {
           setCanDelete(true);
@@ -208,9 +207,7 @@ const checkCanDelete = () => {
   };
   const handleDelete = () => {
     toast.promise(
-      FetchApi(ModulesApis.deleteCourse, null, null, [
-        String([`${id}`]),
-      ]),
+      FetchApi(ModulesApis.deleteCourse, null, null, [String([`${id}`])]),
       {
         loading: 'Đang xóa',
         success: (res) => {
@@ -234,6 +231,7 @@ const checkCanDelete = () => {
     <Grid.Container justify="center" gap={2}>
       <Grid xs={6}>
         <Card
+          variant="bordered"
           css={{
             height: 'fit-content',
           }}
@@ -295,7 +293,10 @@ const checkCanDelete = () => {
                               'Trường này không được chứa ký tự đặc biệt'
                             );
                           }
-                          if (value.trim().length < 1 || value.trim().length > 255) {
+                          if (
+                            value.trim().length < 1 ||
+                            value.trim().length > 255
+                          ) {
                             return Promise.reject(
                               new Error('Trường phải từ 1 đến 255 ký tự')
                             );
@@ -322,16 +323,24 @@ const checkCanDelete = () => {
                     ]}
                   >
                     <Select
+                      showSearch
                       loading={listCenters.length === 0}
                       placeholder="Chọn cơ sở"
+                      filterOption={(input, option) =>
+                        option.children
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
                     >
-                      {listCenters.filter(e => e.is_active).map((e, index) => {
-                        return (
-                          <Select.Option key={index} value={e.key}>
-                            {e.name}
-                          </Select.Option>
-                        );
-                      })}
+                      {listCenters
+                        .filter((e) => e.is_active)
+                        .map((e, index) => {
+                          return (
+                            <Select.Option key={index} value={e.key}>
+                              {e.name}
+                            </Select.Option>
+                          );
+                        })}
                     </Select>
                   </Form.Item>
                 </div>
@@ -403,7 +412,15 @@ const checkCanDelete = () => {
                       },
                     ]}
                   >
-                    <Select placeholder="Chọn hình thức học">
+                    <Select
+                      showSearch
+                      filterOption={(input, option) =>
+                        option.children
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
+                      placeholder="Chọn hình thức học"
+                    >
                       <Select.Option value={1}>Lý thuyết</Select.Option>
                       <Select.Option value={2}>Thực hành</Select.Option>
                       <Select.Option value={3}>
@@ -422,10 +439,16 @@ const checkCanDelete = () => {
                     ]}
                   >
                     <Select
+                      showSearch
                       placeholder="Chọn hình thức thi"
                       onChange={(value) => {
                         handleTypeExamChange(value);
                       }}
+                      filterOption={(input, option) =>
+                        option.children
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
                     >
                       <Select.Option value={1}>Lý thuyết</Select.Option>
                       <Select.Option value={2}>Thực hành</Select.Option>
@@ -505,7 +528,10 @@ const checkCanDelete = () => {
                               'Trường này không được chứa ký tự đặc biệt'
                             );
                           }
-                          if (value.trim().length < 1 || value.trim().length > 255) {
+                          if (
+                            value.trim().length < 1 ||
+                            value.trim().length > 255
+                          ) {
                             return Promise.reject(
                               new Error('Trường phải từ 1 đến 255 ký tự')
                             );
@@ -542,7 +568,10 @@ const checkCanDelete = () => {
                               'Trường này không được chứa ký tự đặc biệt'
                             );
                           }
-                          if (value.trim().length < 1 || value.trim().length > 255) {
+                          if (
+                            value.trim().length < 1 ||
+                            value.trim().length > 255
+                          ) {
                             return Promise.reject(
                               new Error('Trường phải từ 1 đến 255 ký tự')
                             );
@@ -565,62 +594,51 @@ const checkCanDelete = () => {
                     justifyContent: 'center',
                   }}
                 >
-                  <Form.Item >
-                  <div
-              style={{
-                display: 'flex',
-                gap: '10px',
-                // textAlign: 'center',
-                // marginRight: '10px',
-              }}
-            >
-          <Button
-              flat
-              auto
-              css={{
-                width: "120px",
-                
-              }}
-              type="primary"
-              htmlType="submit"
-              disabled={isUpdating}
-            >
-              Cập nhật
-            </Button>
-            <Button
-                flat
-                auto
-                css={{
-                  width: '80px',
-                }}
-                color={'error'}
-                disabled={!canDelete}
-                onPress={handleDelete}
-              >
-                {canDelete === undefined && <Loading size="xs" />}
-                {canDelete !== undefined && 'Xoá'}
-              </Button>{' '}
-              </div>
+                  <Form.Item>
+                    <div
+                      style={{
+                        display: 'flex',
+                        gap: '10px',
+                        // textAlign: 'center',
+                        // marginRight: '10px',
+                      }}
+                    >
+                      <Button
+                        flat
+                        auto
+                        css={{
+                          width: '120px',
+                        }}
+                        type="primary"
+                        htmlType="submit"
+                        disabled={isUpdating}
+                      >
+                        Cập nhật
+                      </Button>
+                      <Button
+                        flat
+                        auto
+                        css={{
+                          width: '80px',
+                        }}
+                        color={'error'}
+                        disabled={!canDelete}
+                        onPress={handleDelete}
+                      >
+                        {canDelete === undefined && <Loading size="xs" />}
+                        {canDelete !== undefined && 'Xoá'}
+                      </Button>
+                    </div>
                   </Form.Item>
                 </div>
               </Form>
-            )}
-            {!isUpdating && isFailed && (
-              <Text
-                size={14}
-                css={{
-                  color: 'red',
-                  textAlign: 'center',
-                }}
-              >
-                Cập nhật môn học thất bại, vui lòng thử lại
-              </Text>
             )}
           </Card.Body>
         </Card>
       </Grid>
       <Grid xs={4}>
         <Card
+          variant="bordered"
           css={{
             height: 'fit-content',
           }}
@@ -639,13 +657,31 @@ const checkCanDelete = () => {
             </Text>
           </Card.Header>
           <Card.Body>
-            <ModuleGradeType
-              typeExam={typeExam}
-              listGrade={listGrade}
-              onAddRow={handleAddRow}
-              onDeleteRow={handleDeleteRow}
-              onSave={handleSave}
-            />
+            {(typeExamSubmit === 2 || typeExamSubmit === 3) && (
+              <ModuleGradeType
+                typeExam={typeExam}
+                listGrade={listGrade}
+                onAddRow={handleAddRow}
+                onDeleteRow={handleDeleteRow}
+                onSave={handleSave}
+              />
+            )}
+            {!(typeExamSubmit === 2 || typeExamSubmit === 3) && (
+              <div
+                style={{
+                  textAlign: 'center',
+                  padding: '80px 0 100px',
+                }}
+              >
+                <Text p i size={12}>
+                  Không áp dụng điểm thành phần cho loại thi mà bạn đang chọn
+                </Text>
+                <Spacer y={0.5} />
+                <Text p i size={12}>
+                  Chỉ áp dụng cho loại có thi thực hành.
+                </Text>
+              </div>
+            )}
           </Card.Body>
         </Card>
       </Grid>

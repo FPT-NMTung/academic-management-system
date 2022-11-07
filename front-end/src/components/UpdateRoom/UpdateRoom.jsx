@@ -72,8 +72,8 @@ const UpdateRoom = ({ data, onUpdateSuccess }) => {
           return 'Xóa phòng thất bại';
         },
       }
-    )
-  }
+    );
+  };
 
   useEffect(() => {
     getListCenter();
@@ -165,10 +165,14 @@ const UpdateRoom = ({ data, onUpdateSuccess }) => {
           ]}
         >
           <Select
+            showSearch
             placeholder="Chọn loại phòng"
             style={{ width: '100%' }}
             dropdownStyle={{ zIndex: 9999 }}
             loading={isGetListTypeRoom}
+            filterOption={(input, option) =>
+              option.children.toLowerCase().includes(input.toLowerCase())
+            }
           >
             {listTypeRoom.map((e) => (
               <Select.Option key={e.key} value={e.id}>
@@ -213,7 +217,13 @@ const UpdateRoom = ({ data, onUpdateSuccess }) => {
               {isCreatingRoom && <Loading size="xs" />}
               {!isCreatingRoom && 'Cập nhật'}
             </Button>
-            <Button flat auto disabled={canDelete} onPress={handleDelete} color="error">
+            <Button
+              flat
+              auto
+              disabled={canDelete}
+              onPress={handleDelete}
+              color="error"
+            >
               Xoá
             </Button>
           </div>

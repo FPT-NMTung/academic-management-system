@@ -6,24 +6,24 @@ import {
   Button,
   Loading,
   Switch,
-} from "@nextui-org/react";
-import { Form, Input, Select, Divider, DatePicker, Descriptions } from "antd";
-import classes from "./SroCreate.module.css";
-import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+} from '@nextui-org/react';
+import { Form, Input, Select, Divider, DatePicker, Descriptions } from 'antd';
+import classes from './SroCreate.module.css';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import {
   CenterApis,
   GenderApis,
   AddressApis,
   ManageSroApis,
-} from "../../../../apis/ListApi";
-import FetchApi from "../../../../apis/FetchApi";
-import { Validater } from "../../../../validater/Validater";
-import moment from "moment";
-import { ErrorCodeApi } from "../../../../apis/ErrorCodeApi";
-import { Fragment } from "react";
-import { FaLock } from "react-icons/fa";
-import toast from "react-hot-toast";
+} from '../../../../apis/ListApi';
+import FetchApi from '../../../../apis/FetchApi';
+import { Validater } from '../../../../validater/Validater';
+import moment from 'moment';
+import { ErrorCodeApi } from '../../../../apis/ErrorCodeApi';
+import { Fragment } from 'react';
+import { FaLock } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 
 const SroCreate = ({ modeUpdate }) => {
   const [listCenter, setListCenter] = useState([]);
@@ -63,7 +63,7 @@ const SroCreate = ({ modeUpdate }) => {
   };
 
   const getListDistrict = () => {
-    const provinceId = form.getFieldValue("province_id");
+    const provinceId = form.getFieldValue('province_id');
 
     FetchApi(AddressApis.getListDistrict, null, null, [`${provinceId}`]).then(
       (res) => {
@@ -75,8 +75,8 @@ const SroCreate = ({ modeUpdate }) => {
   };
 
   const getListWard = () => {
-    const provinceId = form.getFieldValue("province_id");
-    const districtId = form.getFieldValue("district_id");
+    const provinceId = form.getFieldValue('province_id');
+    const districtId = form.getFieldValue('district_id');
 
     FetchApi(AddressApis.getListWard, null, null, [
       `${provinceId}`,
@@ -89,7 +89,7 @@ const SroCreate = ({ modeUpdate }) => {
   };
 
   const getListDistrictForUpdate = () => {
-    const provinceId = form.getFieldValue("province_id");
+    const provinceId = form.getFieldValue('province_id');
 
     FetchApi(AddressApis.getListDistrict, null, null, [`${provinceId}`]).then(
       (res) => {
@@ -99,8 +99,8 @@ const SroCreate = ({ modeUpdate }) => {
   };
 
   const getListWardForUpdate = () => {
-    const provinceId = form.getFieldValue("province_id");
-    const districtId = form.getFieldValue("district_id");
+    const provinceId = form.getFieldValue('province_id');
+    const districtId = form.getFieldValue('district_id');
 
     FetchApi(AddressApis.getListWard, null, null, [
       `${provinceId}`,
@@ -114,7 +114,7 @@ const SroCreate = ({ modeUpdate }) => {
     setIsCreatingOrUpdating(true);
     setMessageFailed(undefined);
     const data = form.getFieldsValue();
-    console.log(data.birthday.add(7, "hours"));
+    console.log(data.birthday.add(7, 'hours'));
     const body = {
       first_name: data.first_name.trim(),
       last_name: data.last_name.trim(),
@@ -125,11 +125,11 @@ const SroCreate = ({ modeUpdate }) => {
       district_id: data.district_id,
       ward_id: data.ward_id,
       gender_id: data.gender_id,
-      birthday: data.birthday.add(7, "hours").toDate(),
+      birthday: data.birthday.add(7, 'hours').toDate(),
       center_id: data.center_id,
       citizen_identity_card_no: data.citizen_identity_card_no.trim(),
       citizen_identity_card_published_date:
-        data.citizen_identity_card_published_date.add(7, "hours").toDate(),
+        data.citizen_identity_card_published_date.add(7, 'hours').toDate(),
       citizen_identity_card_published_place:
         data.citizen_identity_card_published_place.trim(),
     };
@@ -138,19 +138,19 @@ const SroCreate = ({ modeUpdate }) => {
     const params = modeUpdate ? [`${id}`] : null;
 
     toast.promise(FetchApi(api, body, null, params), {
-      loading: "Đang xử lý...",
+      loading: 'Đang xử lý...',
       success: (res) => {
         setIsCreatingOrUpdating(false);
         const user_id = res.data.user_id;
         navigate(`/admin/account/sro/${user_id}`, { replace: true });
-        return "Thành công";
+        return 'Thành công';
       },
       error: (err) => {
         setIsCreatingOrUpdating(false);
         if (err?.type_error) {
           return ErrorCodeApi[err.type_error];
         }
-        return "Có lỗi xảy ra";
+        return 'Có lỗi xảy ra';
       },
     });
   };
@@ -186,7 +186,7 @@ const SroCreate = ({ modeUpdate }) => {
         getListWardForUpdate();
       })
       .catch((err) => {
-        navigate("/admin/account/sro");
+        navigate('/admin/account/sro');
       });
   };
 
@@ -196,17 +196,17 @@ const SroCreate = ({ modeUpdate }) => {
       return;
     }
 
-    toast.error("Chức năng đang được phát triển");
+    toast.error('Chức năng đang được phát triển');
   };
 
   const handleChangeActive = () => {
     toast.promise(FetchApi(ManageSroApis.changeActive, null, null, [`${id}`]), {
-      loading: "Đang thay đổi trạng thái",
+      loading: 'Đang thay đổi trạng thái',
       success: () => {
-        return "Thay đổi trạng thái thành công";
+        return 'Thay đổi trạng thái thành công';
       },
       error: () => {
-        return "Thay đổi trạng thái thất bại";
+        return 'Thay đổi trạng thái thất bại';
       },
     });
   };
@@ -220,20 +220,20 @@ const SroCreate = ({ modeUpdate }) => {
         }
       })
       .catch((err) => {
-        toast.error("Lỗi kiểm tra khả năng xóa");
+        toast.error('Lỗi kiểm tra khả năng xóa');
       });
   };
   const handleDeleteUser = () => {
     toast.promise(
       FetchApi(ManageSroApis.deleteSro, null, null, [String([`${id}`])]),
       {
-        loading: "Đang xóa",
+        loading: 'Đang xóa',
         success: (res) => {
-          navigate("/admin/account/sro");
-          return "Xóa thành công";
+          navigate('/admin/account/sro');
+          return 'Xóa thành công';
         },
         error: (err) => {
-          return "Xóa thất bại";
+          return 'Xóa thất bại';
         },
       }
     );
@@ -258,7 +258,7 @@ const SroCreate = ({ modeUpdate }) => {
       disabled={isGetDateUser}
     >
       <Grid.Container justify="center" gap={2}>
-        <Grid xs={7} direction={"column"} css={{ rowGap: 20 }}>
+        <Grid xs={7} direction={'column'} css={{ rowGap: 20 }}>
           <Card variant="bordered">
             <Card.Header>
               <Text
@@ -266,12 +266,12 @@ const SroCreate = ({ modeUpdate }) => {
                 size={16}
                 p
                 css={{
-                  width: "100%",
-                  textAlign: "center",
+                  width: '100%',
+                  textAlign: 'center',
                 }}
               >
-                {!modeUpdate && "Tạo mới SRO"}
-                {modeUpdate && "Cập nhật SRO"}
+                {!modeUpdate && 'Tạo mới SRO'}
+                {modeUpdate && 'Cập nhật SRO'}
               </Text>
             </Card.Header>
             <Card.Body>
@@ -282,14 +282,20 @@ const SroCreate = ({ modeUpdate }) => {
                   rules={[
                     {
                       required: true,
-                      message: "Hãy chọn cơ sở",
+                      message: 'Hãy chọn cơ sở',
                     },
                   ]}
                 >
                   <Select
+                    showSearch
                     disabled={modeUpdate}
                     placeholder="Cơ sở"
                     loading={listCenter.length === 0}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     {listCenter
                       .filter((e) => e.is_active)
@@ -312,12 +318,12 @@ const SroCreate = ({ modeUpdate }) => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            "Trường này không được để trống"
+                            'Trường này không được để trống'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -325,7 +331,7 @@ const SroCreate = ({ modeUpdate }) => {
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -333,7 +339,7 @@ const SroCreate = ({ modeUpdate }) => {
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
@@ -348,12 +354,12 @@ const SroCreate = ({ modeUpdate }) => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            "Trường này không được để trống"
+                            'Trường này không được để trống'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -361,7 +367,7 @@ const SroCreate = ({ modeUpdate }) => {
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -369,7 +375,7 @@ const SroCreate = ({ modeUpdate }) => {
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
@@ -381,13 +387,19 @@ const SroCreate = ({ modeUpdate }) => {
                   rules={[
                     {
                       required: true,
-                      message: "Hãy nhập giới tính",
+                      message: 'Hãy nhập giới tính',
                     },
                   ]}
                 >
                   <Select
+                    showSearch
                     placeholder="Giới tính"
                     loading={listGender.length === 0}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     {listGender.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
@@ -402,11 +414,11 @@ const SroCreate = ({ modeUpdate }) => {
                   rules={[
                     {
                       required: true,
-                      message: "Hãy nhập ngày sinh",
+                      message: 'Hãy nhập ngày sinh',
                     },
                   ]}
                 >
-                  <DatePicker format={"DD/MM/YYYY"} />
+                  <DatePicker format={'DD/MM/YYYY'} />
                 </Form.Item>
                 <Form.Item
                   label="Số điện thoại"
@@ -420,7 +432,7 @@ const SroCreate = ({ modeUpdate }) => {
                           return Promise.resolve();
                         }
                         return Promise.reject(
-                          new Error("Số điện thoại không hợp lệ")
+                          new Error('Số điện thoại không hợp lệ')
                         );
                       },
                     },
@@ -439,7 +451,7 @@ const SroCreate = ({ modeUpdate }) => {
                         if (Validater.isEmail(value)) {
                           return Promise.resolve();
                         }
-                        return Promise.reject(new Error("Email không hợp lệ"));
+                        return Promise.reject(new Error('Email không hợp lệ'));
                       },
                     },
                   ]}
@@ -456,7 +468,7 @@ const SroCreate = ({ modeUpdate }) => {
                         if (Validater.isEmail(value)) {
                           return Promise.resolve();
                         }
-                        return Promise.reject(new Error("Email không hợp lệ"));
+                        return Promise.reject(new Error('Email không hợp lệ'));
                       },
                     },
                   ]}
@@ -472,16 +484,22 @@ const SroCreate = ({ modeUpdate }) => {
                   rules={[
                     {
                       required: true,
-                      message: "Hãy chọn tỉnh/thành phố",
+                      message: 'Hãy chọn tỉnh/thành phố',
                     },
                   ]}
                 >
                   <Select
+                    showSearch
                     placeholder="Tỉnh/Thành phố"
                     loading={listProvince.length === 0}
                     onChange={() => {
                       getListDistrict();
                     }}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     {listProvince.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
@@ -496,16 +514,22 @@ const SroCreate = ({ modeUpdate }) => {
                   rules={[
                     {
                       required: true,
-                      message: "Hãy chọn quận/huyện",
+                      message: 'Hãy chọn quận/huyện',
                     },
                   ]}
                 >
                   <Select
+                    showSearch
                     placeholder="Quận/Huyện"
                     loading={listDistrict.length === 0}
                     onChange={() => {
                       getListWard();
                     }}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     {listDistrict.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
@@ -520,13 +544,19 @@ const SroCreate = ({ modeUpdate }) => {
                   rules={[
                     {
                       required: true,
-                      message: "Hãy chọn phường/xã",
+                      message: 'Hãy chọn phường/xã',
                     },
                   ]}
                 >
                   <Select
+                    showSearch
                     placeholder="Phường/Xã"
                     loading={listWard.length === 0}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     {listWard.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
@@ -549,7 +579,7 @@ const SroCreate = ({ modeUpdate }) => {
                           return Promise.resolve();
                         }
                         return Promise.reject(
-                          new Error("Số CMND/CCCD không hợp lệ")
+                          new Error('Số CMND/CCCD không hợp lệ')
                         );
                       },
                     },
@@ -563,11 +593,11 @@ const SroCreate = ({ modeUpdate }) => {
                   rules={[
                     {
                       required: true,
-                      message: "Hãy nhập ngày cấp",
+                      message: 'Hãy nhập ngày cấp',
                     },
                   ]}
                 >
-                  <DatePicker format={"DD/MM/YYYY"} />
+                  <DatePicker format={'DD/MM/YYYY'} />
                 </Form.Item>
                 <Form.Item
                   label="Nơi cấp"
@@ -578,7 +608,7 @@ const SroCreate = ({ modeUpdate }) => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            "Trường này không được để trống"
+                            'Trường này không được để trống'
                           );
                         }
                         if (
@@ -587,7 +617,7 @@ const SroCreate = ({ modeUpdate }) => {
                           )
                         ) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -595,7 +625,7 @@ const SroCreate = ({ modeUpdate }) => {
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -603,7 +633,7 @@ const SroCreate = ({ modeUpdate }) => {
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
@@ -628,38 +658,38 @@ const SroCreate = ({ modeUpdate }) => {
               </div> */}
               <div
                 style={{
-                  display: "flex",
-                  gap: "10px",
-                  justifyContent: "center",
+                  display: 'flex',
+                  gap: '10px',
+                  justifyContent: 'center',
                 }}
               >
                 <Button
                   flat
                   auto
                   css={{
-                    width: "150px",
+                    width: '150px',
                   }}
                   type="primary"
                   htmlType="submit"
                   disabled={isCreatingOrUpdating}
                 >
-                  {!modeUpdate && "Tạo mới"}
-                  {modeUpdate && "Cập nhật"}
+                  {!modeUpdate && 'Tạo mới'}
+                  {modeUpdate && 'Cập nhật'}
                 </Button>
 
                 <Button
                   flat
                   auto
                   css={{
-                    width: "150px",
+                    width: '150px',
                   }}
-                  color={"error"}
+                  color={'error'}
                   onPress={handleDeleteUser}
                   disabled={!canDelete}
                   hidden={!modeUpdate}
                 >
                   {canDelete === undefined && <Loading size="xs" />}
-                  {canDelete !== undefined && "Xoá"}
+                  {canDelete !== undefined && 'Xoá'}
                 </Button>
               </div>
             </Card.Body>
@@ -670,7 +700,7 @@ const SroCreate = ({ modeUpdate }) => {
             <Card
               variant="bordered"
               css={{
-                height: "min-content",
+                height: 'min-content',
               }}
             >
               <Card.Header>
@@ -678,10 +708,10 @@ const SroCreate = ({ modeUpdate }) => {
                   p
                   b
                   size={14}
-                  color={"error"}
+                  color={'error'}
                   css={{
-                    width: "100%",
-                    textAlign: "center",
+                    width: '100%',
+                    textAlign: 'center',
                   }}
                 >
                   Khu vực nguy hiểm
@@ -692,34 +722,34 @@ const SroCreate = ({ modeUpdate }) => {
                   <Descriptions.Item label="Trạng thái kích hoạt">
                     <div
                       style={{
-                        display: "flex",
-                        alignItems: "center",
+                        display: 'flex',
+                        alignItems: 'center',
                       }}
                     >
                       <Switch
                         onChange={handleChangeActive}
                         disabled={dataUser === undefined}
                         checked={dataUser?.is_active}
-                        color={"success"}
-                        size={"xs"}
+                        color={'success'}
+                        size={'xs'}
                       />
                     </div>
                   </Descriptions.Item>
                   <Descriptions.Item label="Xoá tài khoản">
                     <div
                       style={{
-                        display: "flex",
-                        alignItems: "center",
+                        display: 'flex',
+                        alignItems: 'center',
                       }}
                     >
                       <Button
-                        color={"error"}
+                        color={'error'}
                         flat={!isUnlockDelete}
                         auto
                         icon={isUnlockDelete ? null : <FaLock />}
                         onPress={handleDelete}
                       >
-                        {isUnlockDelete ? "Xoá tài khoản" : "Mở khoá"}
+                        {isUnlockDelete ? 'Xoá tài khoản' : 'Mở khoá'}
                       </Button>
                     </div>
                   </Descriptions.Item>

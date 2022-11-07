@@ -164,30 +164,7 @@ FetchApi(ManageStudentApis.searchStudent,null,param,null).then((res) => {
                 style={{ width: "calc(16% - 16px)" }}
               >
                 <Input placeholder="Mã khóa học" />
-                {/* <Select
-                  // placeholder="Mã khóa học "
-                  style={{ width: "100%" }}
-                  dropdownStyle={{ zIndex: 9999 }}
-                >
-             
-                </Select> */}
               </Form.Item>
-
-              {/* <Form.Item name="center_id" style={{ width: "calc(12% - 16px)" }}>
-                <Select
-                  placeholder="Cơ Sở"
-                  style={{ width: "100%" }}
-                  // disabled={listCenters.length === 0}
-                  dropdownStyle={{ zIndex: 9999 }}
-                >
-                  {listCenters.map((e) => (
-                    <Select.Option key={e.key} value={e.id}>
-                      {e.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item> */}
-
               <Form.Item style={{ width: "calc(9% - 16px)" }}>
                 <Button
                   flat
