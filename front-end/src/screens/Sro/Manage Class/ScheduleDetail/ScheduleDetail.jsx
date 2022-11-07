@@ -68,6 +68,11 @@ const ScheduleDetail = () => {
       });
   };
 
+  const handleSuccess = () => {
+    setCreateMode(false);
+    getData();
+  }
+
   useEffect(() => {
     getData();
     setCreateMode(false);
@@ -259,7 +264,7 @@ const ScheduleDetail = () => {
           </Fragment>
         )}
         {createMode && dataModule !== undefined && (
-          <ScheduleCreate dataModule={dataModule}/>
+          <ScheduleCreate dataModule={dataModule} onSuccess={handleSuccess}/>
         )}
       </Card.Body>
     </Card>
