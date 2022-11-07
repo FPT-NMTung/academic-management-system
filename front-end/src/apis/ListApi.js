@@ -446,6 +446,11 @@ export const ManageScheduleApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  createSchedule: {
+    url: 'api/classes/{0}/schedules',
+    method: 'POST',
+    contextType: 'application/json',
+  },
 };
 
 export const ManageStudentApis = {

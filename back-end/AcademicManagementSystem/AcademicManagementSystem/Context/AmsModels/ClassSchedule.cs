@@ -43,7 +43,7 @@ public class ClassSchedule
     
     [ForeignKey("ExamRoom")]
     [Column("exam_room_id")]
-    public int ExamRoomId { get; set; }
+    public int? ExamRoomId { get; set; }
     
     //days
     [Column("duration")]

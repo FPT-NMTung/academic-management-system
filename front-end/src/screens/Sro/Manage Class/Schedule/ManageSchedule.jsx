@@ -68,6 +68,10 @@ const ManageSchedule = () => {
       });
   };
 
+  const handleUpdateListCourse = () => {
+    getListModule();
+  }
+
   useEffect(() => {
     getInformationClass();
     getListModule();
@@ -173,7 +177,7 @@ const ManageSchedule = () => {
           height: 'fit-content',
         }}
       >
-        <Outlet />
+        <Outlet context={[handleUpdateListCourse]}/>
       </Grid>
     </Grid.Container>
   );

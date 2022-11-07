@@ -19,7 +19,7 @@ public class TestRoomController
             .Options;
 
         _context = new AmsContext(optionsInMemoryDb);
-        _controller = new RoomController(_context);
+        _controller = new RoomController(_context, null);
         Init();
     }
 
