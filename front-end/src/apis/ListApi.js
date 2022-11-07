@@ -451,6 +451,11 @@ export const ManageScheduleApis = {
     method: 'POST',
     contextType: 'application/json',
   },
+  deleteSchedule: {
+    url: 'api/classes/{0}/schedules/{1}',
+    method: 'DELETE',
+    contextType: 'application/json',
+  }
 };
 
 export const ManageStudentApis = {

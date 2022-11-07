@@ -20,7 +20,8 @@ import {
 import { useState } from 'react';
 import { Fragment } from 'react';
 import { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import FetchApi from '../../../../apis/FetchApi';
 import { ManageScheduleApis, ModulesApis } from '../../../../apis/ListApi';
 import ScheduleCreate from '../../../../components/ScheduleCreate/ScheduleCreate';
@@ -33,6 +34,7 @@ const ScheduleDetail = () => {
   const [createMode, setCreateMode] = useState(false);
 
   const { id, moduleId } = useParams();
+  const [handleUpdateListCourse] = useOutletContext();
   const navigate = useNavigate();
 
   const getData = () => {
@@ -71,7 +73,28 @@ const ScheduleDetail = () => {
   const handleSuccess = () => {
     setCreateMode(false);
     getData();
-  }
+  };
+
+  const handleDeleteSchedule = () => {
+    toast
+      .promise(
+        FetchApi(ManageScheduleApis.deleteSchedule, null, null, [
+          String(id),
+          String(dataSchedule?.id),
+        ]),
+        {
+          loading: 'Đang xóa lịch học...',
+          success: () => {
+            getData();
+            handleUpdateListCourse();
+            return 'Xóa lịch học thành công!';
+          },
+          error: (err) => {
+            return 'Xóa lịch học thất bại!';
+          },
+        }
+      )
+  };
 
   useEffect(() => {
     getData();
@@ -188,8 +211,13 @@ const ScheduleDetail = () => {
                         <Button auto flat color="primary">
                           Chỉnh sửa
                         </Button>
-                        <Button auto flat color="error">
-                          Xoá
+                        <Button
+                          auto
+                          flat
+                          color="error"
+                          onPress={handleDeleteSchedule}
+                        >
+                          Xoá (TEST)
                         </Button>
                       </div>
                     </Descriptions.Item>
@@ -264,7 +292,7 @@ const ScheduleDetail = () => {
           </Fragment>
         )}
         {createMode && dataModule !== undefined && (
-          <ScheduleCreate dataModule={dataModule} onSuccess={handleSuccess}/>
+          <ScheduleCreate dataModule={dataModule} onSuccess={handleSuccess} />
         )}
       </Card.Body>
     </Card>
