@@ -41,7 +41,7 @@ export const CenterApis = {
     url: 'api/centers/{0}',
     method: 'DELETE',
     contextType: 'application/json',
-  }
+  },
 };
 
 export const AddressApis = {
@@ -124,6 +124,16 @@ export const CourseApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  checkCanDeleteCourse: {
+    url: 'api/courses/{0}/can-delete',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  deleteCourse: {
+    url: 'api/courses/{0}',
+    method: 'DELETE',
+    contextType: 'application/json',
+  },
 };
 
 export const ModulesApis = {
@@ -150,6 +160,16 @@ export const ModulesApis = {
   updateModule: {
     url: 'api/modules/{0}',
     method: 'PUT',
+    contextType: 'application/json',
+  },
+  checkCanDeleteModule: {
+    url: 'api/modules/{0}/can-delete',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  deleteCourse: {
+    url: 'api/modules/{0}',
+    method: 'DELETE',
     contextType: 'application/json',
   },
 };
@@ -198,6 +218,11 @@ export const RoomApis = {
     method: 'DELETE',
     contextType: 'application/json',
   },
+  getRoomsBySro : {
+    url: 'api/rooms/get-by-sro',
+    method: 'GET',
+    contextType: 'application/json',
+  }
 };
 
 export const RoomTypeApis = {
@@ -238,7 +263,17 @@ export const ManageSroApis = {
     url: 'api/sros/{0}/change-active',
     method: 'PATCH',
     contextType: 'application/json',
-  }
+  },
+  checkCanDeleteSro: {
+    url: 'api/sros/{0}/can-delete',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  deleteSro: {
+    url: 'api/sros/{0}',
+    method: 'DELETE',
+    contextType: 'application/json',
+  },
 };
 
 export const GenderApis = {
@@ -298,6 +333,21 @@ export const ManageTeacherApis = {
   saveSkillOfTeacher: {
     url: 'api/teachers/{0}/skills',
     method: 'POST',
+    contextType: 'application/json',
+  },
+  checkCanDeleteTeacher: {
+    url: 'api/teachers/{0}/can-delete',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  deleteTeacher: {
+    url: 'api/teachers/{0}',
+    method: 'DELETE',
+    contextType: 'application/json',
+  },
+  getListTeacherBySro: {
+    url: 'api/teachers/get-by-sro',
+    method: 'GET',
     contextType: 'application/json',
   }
 };
@@ -369,21 +419,45 @@ export const ManageClassApis = {
     contextType: 'application/json',
   },
   clearStudent: {
-    url: 'api/classes/{0}/students-from-excel',
+    url: 'api/classes/{0}/students-draft',
     method: 'DELETE',
     contextType: 'application/json',
   },
   saveStudent: {
-    url: 'api/classes/{0}/students-from-excel',
+    url: 'api/classes/{0}/students',
     method: 'PATCH',
     contextType: 'application/json',
   },
   addStudentToClass: {
-    url: '/api/classes/{0}/students',
+    url: 'api/classes/{0}/students',
     method: 'POST',
     contextType: 'application/json',
   },
+  getAllModulesOfClass: {
+    url: 'api/classes/{0}/modules',
+    method: 'GET',
+    contextType: 'application/json',
+  },
 };
+
+export const ManageScheduleApis = {
+  getScheduleByClassIdAndModuleId: {
+    url: 'api/classes/{0}/schedules/modules/{1}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  createSchedule: {
+    url: 'api/classes/{0}/schedules',
+    method: 'POST',
+    contextType: 'application/json',
+  },
+  deleteSchedule: {
+    url: 'api/classes/{0}/schedules/{1}',
+    method: 'DELETE',
+    contextType: 'application/json',
+  }
+};
+
 export const ManageStudentApis = {
   searchStudent: {
     url: 'api/students/search',

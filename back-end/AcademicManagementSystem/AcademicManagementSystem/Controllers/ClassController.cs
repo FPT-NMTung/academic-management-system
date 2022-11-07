@@ -13,10 +13,12 @@ using AcademicManagementSystem.Models.ClassStatusController;
 using AcademicManagementSystem.Models.CourseController;
 using AcademicManagementSystem.Models.CourseFamilyController;
 using AcademicManagementSystem.Models.GenderController;
+using AcademicManagementSystem.Models.ModuleController;
 using AcademicManagementSystem.Models.RoleController;
 using AcademicManagementSystem.Models.UserController.StudentController;
 using AcademicManagementSystem.Services;
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -247,8 +249,8 @@ public class ClassController : ControllerBase
         {
             return "E0072";
         }
-        
-        if(request.ClassHourEnd > TimeSpan.FromHours(22) || request.ClassHourStart < TimeSpan.FromHours(8))
+
+        if (request.ClassHourEnd > TimeSpan.FromHours(22) || request.ClassHourStart < TimeSpan.FromHours(8))
         {
             return "E0072_1";
         }
@@ -289,8 +291,8 @@ public class ClassController : ControllerBase
         {
             return "E0072";
         }
-        
-        if(request.ClassHourEnd > TimeSpan.FromHours(22) || request.ClassHourStart < TimeSpan.FromHours(8))
+
+        if (request.ClassHourEnd > TimeSpan.FromHours(22) || request.ClassHourStart < TimeSpan.FromHours(8))
         {
             return "E0072_1";
         }
@@ -463,7 +465,8 @@ public class ClassController : ControllerBase
                         var parentalRelative = row.Cell(23).Value.ToString();
                         var parentalPhone = row.Cell(24).Value.ToString();
                         var applicationDate = row.Cell(25).Value.ToString();
-                        var applicationDocuments = row.Cell(26).Value.ToString() == "" ? null : row.Cell(26).Value.ToString();
+                        var applicationDocuments =
+                            row.Cell(26).Value.ToString() == "" ? null : row.Cell(26).Value.ToString();
                         var courseCode = row.Cell(27).Value.ToString();
                         var highSchool = row.Cell(29).Value.ToString() == "" ? null : row.Cell(29).Value.ToString();
                         var university = row.Cell(30).Value.ToString() == "" ? null : row.Cell(30).Value.ToString();
@@ -473,7 +476,8 @@ public class ClassController : ControllerBase
                         var companySalary = row.Cell(34).Value.ToString() == ""
                             ? 0
                             : Convert.ToInt32(row.Cell(34).Value.ToString());
-                        var companyPosition = row.Cell(35).Value.ToString() == "" ? null : row.Cell(35).Value.ToString();
+                        var companyPosition =
+                            row.Cell(35).Value.ToString() == "" ? null : row.Cell(35).Value.ToString();
                         var companyAddress = row.Cell(36).Value.ToString() == "" ? null : row.Cell(36).Value.ToString();
                         var feePlan = row.Cell(37).Value.ToString();
                         var promotion = row.Cell(38).Value.ToString();
@@ -1448,6 +1452,48 @@ public class ClassController : ControllerBase
 
         var students = GetAllStudentsByClassId(id);
         return Ok(CustomResponse.Ok("Get students in class successfully", students));
+    }
+
+    // get status list module of class
+    [HttpGet]
+    [Route("api/classes/{id:int}/modules")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetStatusListModuleOfClass(int id)
+    {
+        // is class exist
+        var existedClass = _context.Classes.Find(id);
+        if (existedClass == null)
+        {
+            var error = ErrorDescription.Error["E1073"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var listModule = _context.Modules
+            .Include(m => m.ClassSchedules)
+            .Include(m => m.CoursesModulesSemesters)
+            .ThenInclude(cms => cms.Course)
+            .Where(m => m.CoursesModulesSemesters.First().Course.CourseFamilyCode == existedClass.CourseFamilyCode);
+
+        var list = new List<ModuleStatusResponse>();
+
+        listModule.ToList().ForEach(m =>
+        {
+            var hasSchedule = m.ClassSchedules.Where(cs => cs.ClassId == id && cs.ModuleId == m.Id).ToList().Count > 0;
+            var moduleStatus = new ModuleStatusResponse()
+            {
+                Module = new ModuleResponse()
+                {
+                    Id = m.Id,
+                    ModuleName = m.ModuleName,
+                    ModuleType = m.ModuleType,
+                },
+                ScheduleId = hasSchedule ? m.ClassSchedules.First().Id : 0,
+                Status = hasSchedule
+            };
+            list.Add(moduleStatus);
+        });
+
+        return Ok(CustomResponse.Ok("Get status list module of class successfully", list));
     }
 
     // delete all students in class

@@ -36,6 +36,7 @@ const SroCreate = ({ modeUpdate }) => {
   const [messageFailed, setMessageFailed] = useState(undefined);
   const [dataUser, setDataUser] = useState(undefined);
   const [isUnlockDelete, setIsUnlockDelete] = useState(false);
+  const [canDelete, setCanDelete] = useState(undefined);
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -209,6 +210,34 @@ const SroCreate = ({ modeUpdate }) => {
       },
     });
   };
+  const checkCanDelete = () => {
+    FetchApi(ManageSroApis.checkCanDeleteSro, null, null, [String([`${id}`])])
+      .then((res) => {
+        if (res.data.can_delete === true) {
+          setCanDelete(true);
+        } else {
+          setCanDelete(false);
+        }
+      })
+      .catch((err) => {
+        toast.error('Lỗi kiểm tra khả năng xóa');
+      });
+  };
+  const handleDeleteUser = () => {
+    toast.promise(
+      FetchApi(ManageSroApis.deleteSro, null, null, [String([`${id}`])]),
+      {
+        loading: 'Đang xóa',
+        success: (res) => {
+          navigate('/admin/account/sro');
+          return 'Xóa thành công';
+        },
+        error: (err) => {
+          return 'Xóa thất bại';
+        },
+      }
+    );
+  };
 
   useEffect(() => {
     getListCenter();
@@ -216,6 +245,7 @@ const SroCreate = ({ modeUpdate }) => {
     getListProvince();
     if (modeUpdate) {
       getInformationSro();
+      checkCanDelete();
     }
   }, []);
 
@@ -257,15 +287,23 @@ const SroCreate = ({ modeUpdate }) => {
                   ]}
                 >
                   <Select
+                    showSearch
                     disabled={modeUpdate}
                     placeholder="Cơ sở"
                     loading={listCenter.length === 0}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
-                    {listCenter.filter(e => e.is_active).map((e) => (
-                      <Select.Option key={e.id} value={e.id}>
-                        {e.name}
-                      </Select.Option>
-                    ))}
+                    {listCenter
+                      .filter((e) => e.is_active)
+                      .map((e) => (
+                        <Select.Option key={e.id} value={e.id}>
+                          {e.name}
+                        </Select.Option>
+                      ))}
                   </Select>
                 </Form.Item>
               </div>
@@ -283,16 +321,15 @@ const SroCreate = ({ modeUpdate }) => {
                             'Trường này không được để trống'
                           );
                         }
-                        if (
-                          Validater.isNotHumanName(
-                            value.trim()
-                          )
-                        ) {
+                        if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
                             'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
-                        if (value.trim().length < 1 || value.trim().length > 255) {
+                        if (
+                          value.trim().length < 1 ||
+                          value.trim().length > 255
+                        ) {
                           return Promise.reject(
                             new Error('Trường phải từ 1 đến 255 ký tự')
                           );
@@ -320,16 +357,15 @@ const SroCreate = ({ modeUpdate }) => {
                             'Trường này không được để trống'
                           );
                         }
-                        if (
-                          Validater.isNotHumanName(
-                            value.trim()
-                          )
-                        ) {
+                        if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
                             'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
-                        if (value.trim().length < 1 || value.trim().length > 255) {
+                        if (
+                          value.trim().length < 1 ||
+                          value.trim().length > 255
+                        ) {
                           return Promise.reject(
                             new Error('Trường phải từ 1 đến 255 ký tự')
                           );
@@ -356,8 +392,14 @@ const SroCreate = ({ modeUpdate }) => {
                   ]}
                 >
                   <Select
+                    showSearch
                     placeholder="Giới tính"
                     loading={listGender.length === 0}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     {listGender.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
@@ -447,11 +489,17 @@ const SroCreate = ({ modeUpdate }) => {
                   ]}
                 >
                   <Select
+                    showSearch
                     placeholder="Tỉnh/Thành phố"
                     loading={listProvince.length === 0}
                     onChange={() => {
                       getListDistrict();
                     }}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     {listProvince.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
@@ -471,11 +519,17 @@ const SroCreate = ({ modeUpdate }) => {
                   ]}
                 >
                   <Select
+                    showSearch
                     placeholder="Quận/Huyện"
                     loading={listDistrict.length === 0}
                     onChange={() => {
                       getListWard();
                     }}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     {listDistrict.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
@@ -495,8 +549,14 @@ const SroCreate = ({ modeUpdate }) => {
                   ]}
                 >
                   <Select
+                    showSearch
                     placeholder="Phường/Xã"
                     loading={listWard.length === 0}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     {listWard.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
@@ -560,7 +620,10 @@ const SroCreate = ({ modeUpdate }) => {
                             'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
-                        if (value.trim().length < 1 || value.trim().length > 255) {
+                        if (
+                          value.trim().length < 1 ||
+                          value.trim().length > 255
+                        ) {
                           return Promise.reject(
                             new Error('Trường phải từ 1 đến 255 ký tự')
                           );
@@ -578,7 +641,7 @@ const SroCreate = ({ modeUpdate }) => {
                 </Form.Item>
               </div>
               <Spacer y={1.5} />
-              <div className={classes.buttonCreate}>
+              {/* <div className={classes.buttonCreate}>
                 <Button
                   flat
                   auto
@@ -591,6 +654,42 @@ const SroCreate = ({ modeUpdate }) => {
                 >
                   {!modeUpdate && 'Tạo mới'}
                   {modeUpdate && 'Cập nhật'}
+                </Button>
+              </div> */}
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '10px',
+                  justifyContent: 'center',
+                }}
+              >
+                <Button
+                  flat
+                  auto
+                  css={{
+                    width: '150px',
+                  }}
+                  type="primary"
+                  htmlType="submit"
+                  disabled={isCreatingOrUpdating}
+                >
+                  {!modeUpdate && 'Tạo mới'}
+                  {modeUpdate && 'Cập nhật'}
+                </Button>
+
+                <Button
+                  flat
+                  auto
+                  css={{
+                    width: '150px',
+                  }}
+                  color={'error'}
+                  onPress={handleDeleteUser}
+                  disabled={!canDelete}
+                  hidden={!modeUpdate}
+                >
+                  {canDelete === undefined && <Loading size="xs" />}
+                  {canDelete !== undefined && 'Xoá'}
                 </Button>
               </div>
             </Card.Body>

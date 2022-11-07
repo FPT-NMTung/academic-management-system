@@ -1,13 +1,20 @@
-import { Form, InputNumber, Select, Button, Table, message } from 'antd';
+import { Form, InputNumber, Select, Table, message } from 'antd';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { IoMdTrash } from 'react-icons/io';
 import FetchApi from '../../apis/FetchApi';
 import { GradeType } from '../../apis/ListApi';
-import { Spacer, Text } from '@nextui-org/react';
+import { Spacer, Button, Text } from '@nextui-org/react';
+
 // import { Table } from '@nextui-org/react';
 
-const ModuleGradeType = ({ typeExam, listGrade, onAddRow, onDeleteRow, onSave }) => {
+const ModuleGradeType = ({
+  typeExam,
+  listGrade,
+  onAddRow,
+  onDeleteRow,
+  onSave,
+}) => {
   const [listType, setListType] = useState([]);
   const [typeGrade, setTypeGrade] = useState(undefined);
 
@@ -88,23 +95,15 @@ const ModuleGradeType = ({ typeExam, listGrade, onAddRow, onDeleteRow, onSave })
           ]}
         >
           <Select
+            showSearch
             placeholder="Chọn loại điểm"
             onSelect={handleChangeSelectType}
+            filterOption={(input, option) =>
+              option.children.toLowerCase().includes(input.toLowerCase())
+            }
           >
             {listType
-              .filter((item) => item.id !== 7 && item.id !== 8)
-              .filter((item) => {
-                if (typeExam === 1) {
-                  return item.id !== 5;
-                }
-                if (typeExam === 2) {
-                  return item.id !== 6;
-                }
-                if (typeExam === 4) {
-                  return item.id !== 5 && item.id !== 6;
-                }
-                return true;
-              })
+              .filter((item) => item.id !== 6 && item.id !== 7 && item.id !== 8)
               .map((e) => (
                 <Select.Option key={e.id} value={e.id}>
                   {e.name}
@@ -149,21 +148,31 @@ const ModuleGradeType = ({ typeExam, listGrade, onAddRow, onDeleteRow, onSave })
           ></InputNumber>
         </Form.Item>
         <Form.Item wrapperCol={{ span: 14, offset: 6 }}>
-          <Button type="primary" htmlType="submit">
-            Thêm hoặc cập nhật
-          </Button>
-          <Button
-            type="primary"
-            disabled={total !== 100}
-            style={{ marginLeft: 10 }}
-            onClick={onSave}
+          <div
+            style={{
+              display: 'flex',
+              gap: '10px',
+            }}
           >
-            Lưu
-          </Button>
+            <Button flat auto type="primary" htmlType="submit">
+              Thêm hoặc cập nhật
+            </Button>
+            <Button
+              flat
+              auto
+              color={'success'}
+              disabled={total !== 100}
+              onPress={onSave}
+            >
+              Lưu
+            </Button>
+          </div>
         </Form.Item>
       </Form>
       <Table
-        dataSource={listGrade.sort((a, b) => a.grade_id - b.grade_id)}
+        dataSource={listGrade
+          .filter((item) => item.grade_id !== 6)
+          .sort((a, b) => a.grade_id - b.grade_id)}
         size={'small'}
         pagination={false}
       >

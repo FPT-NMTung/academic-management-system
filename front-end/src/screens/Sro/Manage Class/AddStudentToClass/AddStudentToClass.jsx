@@ -7,8 +7,8 @@ import {
   Loading,
   Switch,
   Badge,
-} from "@nextui-org/react";
-import { UploadOutlined } from "@ant-design/icons";
+} from '@nextui-org/react';
+import { UploadOutlined } from '@ant-design/icons';
 import {
   Form,
   Input,
@@ -20,33 +20,33 @@ import {
   Image,
   Upload,
   message,
-} from "antd";
-import { useState } from "react";
-import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import classes from "../../Student/StudentUpdate/StudentUpdate.module.css";
-import toast from "react-hot-toast";
-import FetchApi from "../../../../apis/FetchApi";
-import { Validater } from "../../../../validater/Validater";
+} from 'antd';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import classes from '../../Student/StudentUpdate/StudentUpdate.module.css';
+import toast from 'react-hot-toast';
+import FetchApi from '../../../../apis/FetchApi';
+import { Validater } from '../../../../validater/Validater';
 import {
   CenterApis,
   GenderApis,
   AddressApis,
   CourseApis,
   ManageClassApis,
-} from "../../../../apis/ListApi";
-import ManImage from "../../../../images/3d-fluency-businessman-1.png";
-import WomanImage from "../../../../images/3d-fluency-businesswoman-1.png";
-import moment from "moment";
-import { ErrorCodeApi } from "../../../../apis/ErrorCodeApi";
+} from '../../../../apis/ListApi';
+import ManImage from '../../../../images/3d-fluency-businessman-1.png';
+import WomanImage from '../../../../images/3d-fluency-businesswoman-1.png';
+import moment from 'moment';
+import { ErrorCodeApi } from '../../../../apis/ErrorCodeApi';
 const translateStatusStudent = {
-  1: "Studying",
-  2: "Delay",
-  3: "Dropout",
-  4: "ClassQueue",
-  5: "Transfer",
-  6: "Upgrade",
-  7: "Finished",
+  1: 'Studying',
+  2: 'Delay',
+  3: 'Dropout',
+  4: 'ClassQueue',
+  5: 'Transfer',
+  6: 'Upgrade',
+  7: 'Finished',
 };
 // const translateStatusId = {
 //      "Studying": 1,
@@ -92,7 +92,7 @@ const AddStudentToClass = () => {
   };
 
   const getListDistrict = () => {
-    const provinceId = form.getFieldValue("province_id");
+    const provinceId = form.getFieldValue('province_id');
 
     FetchApi(AddressApis.getListDistrict, null, null, [`${provinceId}`]).then(
       (res) => {
@@ -104,8 +104,8 @@ const AddStudentToClass = () => {
   };
 
   const getListWard = () => {
-    const provinceId = form.getFieldValue("province_id");
-    const districtId = form.getFieldValue("district_id");
+    const provinceId = form.getFieldValue('province_id');
+    const districtId = form.getFieldValue('district_id');
 
     FetchApi(AddressApis.getListWard, null, null, [
       `${provinceId}`,
@@ -117,7 +117,7 @@ const AddStudentToClass = () => {
     form.setFieldsValue({ ward_id: null });
   };
   const getListDistrictForUpdate = () => {
-    const provinceId = form.getFieldValue("province_id");
+    const provinceId = form.getFieldValue('province_id');
 
     FetchApi(AddressApis.getListDistrict, null, null, [`${provinceId}`]).then(
       (res) => {
@@ -127,8 +127,8 @@ const AddStudentToClass = () => {
   };
 
   const getListWardForUpdate = () => {
-    const provinceId = form.getFieldValue("province_id");
-    const districtId = form.getFieldValue("district_id");
+    const provinceId = form.getFieldValue('province_id');
+    const districtId = form.getFieldValue('district_id');
 
     FetchApi(AddressApis.getListWard, null, null, [
       `${provinceId}`,
@@ -154,17 +154,17 @@ const AddStudentToClass = () => {
       district_id: data.district_id,
       ward_id: data.ward_id,
       gender_id: data.gender_id,
-      birthday: data.birthday.add(7, "hours").toDate(),
+      birthday: data.birthday.add(7, 'hours').toDate(),
       citizen_identity_card_no: data.citizen_identity_card_no?.trim(),
       citizen_identity_card_published_date:
-        data.citizen_identity_card_published_date.add(7, "hours").toDate(),
+        data.citizen_identity_card_published_date.add(7, 'hours').toDate(),
       citizen_identity_card_published_place:
         data.citizen_identity_card_published_place,
       status: data.status,
       contact_phone: data.mobile_phone,
       parental_phone: data.parental_phone,
       parental_name: data.parental_name,
-      application_date: data.application_date.add(7, "hours").toDate(),
+      application_date: data.application_date.add(7, 'hours').toDate(),
       fee_plan: data.fee_plan,
       promotion: data.promotion,
       contact_address: data.contact_address,
@@ -191,27 +191,27 @@ const AddStudentToClass = () => {
     console.log(params);
 
     toast.promise(FetchApi(api, body, null, params), {
-      loading: "Đang xử lý",
+      loading: 'Đang xử lý',
       success: (res) => {
         setIsCreatingOrUpdating(false);
         navigate(`/sro/manage-class/${id}`);
-        return "Thành công";
+        return 'Thành công';
       },
       error: (err) => {
-        console.log("Ádasdasd");
+        console.log('Ádasdasd');
         setMessageFailed(ErrorCodeApi[err.type_error]);
         setIsCreatingOrUpdating(false);
         if (err?.type_error) {
           return ErrorCodeApi[err.type_error];
         }
 
-        return "Thất bại";
+        return 'Thất bại';
       },
     });
   };
   const handleCancel = () => {
     navigate(`/sro/manage-class/${id}`);
-    };
+  };
 
   useEffect(() => {
     getListGender();
@@ -232,16 +232,16 @@ const AddStudentToClass = () => {
       }}
     >
       <Grid.Container justify="center" gap={2}>
-        <Grid sm={6.5} direction={"column"} css={{ rowGap: 20 }}>
+        <Grid sm={6.5} direction={'column'} css={{ rowGap: 20 }}>
           <Card variant="bordered">
-            <Card.Header css={{ margin: "12px 0 0 0" }}>
+            <Card.Header css={{ margin: '12px 0 0 0' }}>
               <Text
                 b
                 size={17}
                 p
                 css={{
-                  width: "100%",
-                  textAlign: "center",
+                  width: '100%',
+                  textAlign: 'center',
                 }}
               >
                 Tạo học viên mới
@@ -259,12 +259,12 @@ const AddStudentToClass = () => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            "Trường này không được để trống"
+                            'Trường này không được để trống'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -272,7 +272,7 @@ const AddStudentToClass = () => {
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -280,7 +280,7 @@ const AddStudentToClass = () => {
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
@@ -295,12 +295,12 @@ const AddStudentToClass = () => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            "Trường này không được để trống"
+                            'Trường này không được để trống'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -308,7 +308,7 @@ const AddStudentToClass = () => {
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -316,7 +316,7 @@ const AddStudentToClass = () => {
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
@@ -328,11 +328,19 @@ const AddStudentToClass = () => {
                   rules={[
                     {
                       required: true,
-                      message: "Hãy nhập giới tính",
+                      message: 'Hãy nhập giới tính',
                     },
                   ]}
                 >
-                  <Select placeholder="Giới tính">
+                  <Select
+                    showSearch
+                    placeholder="Giới tính"
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                  >
                     {listGender.map((item, index) => (
                       <Select.Option key={index} value={item.id}>
                         {item.value}
@@ -346,11 +354,11 @@ const AddStudentToClass = () => {
                   rules={[
                     {
                       required: true,
-                      message: "Hãy nhập ngày sinh",
+                      message: 'Hãy nhập ngày sinh',
                     },
                   ]}
                 >
-                  <DatePicker format={"DD/MM/YYYY"} />
+                  <DatePicker format={'DD/MM/YYYY'} />
                 </Form.Item>
               </div>
 
@@ -363,8 +371,8 @@ const AddStudentToClass = () => {
                   p
                   size={15}
                   css={{
-                    width: "100%",
-                    textAlign: "center",
+                    width: '100%',
+                    textAlign: 'center',
                     //   margin: '0',
                     //   padding: '0',
                   }}
@@ -381,16 +389,22 @@ const AddStudentToClass = () => {
                   rules={[
                     {
                       required: true,
-                      message: "Hãy chọn tỉnh/thành phố",
+                      message: 'Hãy chọn tỉnh/thành phố',
                     },
                   ]}
                 >
                   <Select
+                    showSearch
                     placeholder="Tỉnh/Thành phố"
                     loading={listProvince.length === 0}
                     onChange={() => {
                       getListDistrict();
                     }}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     {listProvince.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
@@ -405,17 +419,23 @@ const AddStudentToClass = () => {
                   rules={[
                     {
                       required: true,
-                      message: "Hãy chọn quận/huyện",
+                      message: 'Hãy chọn quận/huyện',
                     },
                   ]}
                 >
                   <Select
+                    showSearch
                     placeholder="Quận/Huyện"
                     disabled={listDistrict.length === 0}
                     loading={listDistrict.length === 0}
                     onChange={() => {
                       getListWard();
                     }}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     {listDistrict.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
@@ -430,14 +450,20 @@ const AddStudentToClass = () => {
                   rules={[
                     {
                       required: true,
-                      message: "Hãy chọn phường/xã",
+                      message: 'Hãy chọn phường/xã',
                     },
                   ]}
                 >
                   <Select
+                    showSearch
                     placeholder="Phường/Xã"
                     disabled={listWard.length === 0}
                     loading={listWard.length === 0}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     {listWard.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
@@ -451,7 +477,7 @@ const AddStudentToClass = () => {
                   name="contact_address"
                   style={{
                     // margin: "auto",
-                    width: "100%",
+                    width: '100%',
                     // textAlign: "left",
                   }}
                   rules={[
@@ -461,7 +487,7 @@ const AddStudentToClass = () => {
                         if (
                           value === null ||
                           value === undefined ||
-                          value.trim() === ""
+                          value.trim() === ''
                         ) {
                           return Promise.resolve();
                         }
@@ -471,7 +497,7 @@ const AddStudentToClass = () => {
                           )
                         ) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -479,7 +505,7 @@ const AddStudentToClass = () => {
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -487,7 +513,7 @@ const AddStudentToClass = () => {
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
@@ -501,16 +527,18 @@ const AddStudentToClass = () => {
                       required: true,
                       validator: (_, value) => {
                         if (
-                            value === null ||
-                            value === undefined ||
-                            value === ""
-                          ) {
-                            return Promise.reject("Trường này không được để trống");
-                          }
+                          value === null ||
+                          value === undefined ||
+                          value === ''
+                        ) {
+                          return Promise.reject(
+                            'Trường này không được để trống'
+                          );
+                        }
                         if (Validater.isEmail(value)) {
                           return Promise.resolve();
                         }
-                        return Promise.reject(new Error("Email không hợp lệ"));
+                        return Promise.reject(new Error('Email không hợp lệ'));
                       },
                     },
                   ]}
@@ -525,16 +553,18 @@ const AddStudentToClass = () => {
                       required: true,
                       validator: (_, value) => {
                         if (
-                            value === null ||
-                            value === undefined ||
-                            value === ""
-                          ) {
-                            return Promise.reject("Trường này không được để trống");
-                          }
+                          value === null ||
+                          value === undefined ||
+                          value === ''
+                        ) {
+                          return Promise.reject(
+                            'Trường này không được để trống'
+                          );
+                        }
                         if (Validater.isEmail(value)) {
                           return Promise.resolve();
                         }
-                        return Promise.reject(new Error("Email không hợp lệ"));
+                        return Promise.reject(new Error('Email không hợp lệ'));
                       },
                     },
                   ]}
@@ -549,18 +579,20 @@ const AddStudentToClass = () => {
                       required: true,
                       validator: (_, value) => {
                         if (
-                            value === null ||
-                            value === undefined ||
-                            value === ""
-                          ) {
-                            return Promise.reject("Trường này không được để trống");
-                          }
+                          value === null ||
+                          value === undefined ||
+                          value === ''
+                        ) {
+                          return Promise.reject(
+                            'Trường này không được để trống'
+                          );
+                        }
                         // check regex phone number viet nam
                         if (Validater.isPhone(value)) {
                           return Promise.resolve();
                         }
                         return Promise.reject(
-                          new Error("Số điện thoại không hợp lệ")
+                          new Error('Số điện thoại không hợp lệ')
                         );
                       },
                     },
@@ -579,8 +611,8 @@ const AddStudentToClass = () => {
                   p
                   size={15}
                   css={{
-                    width: "100%",
-                    textAlign: "center",
+                    width: '100%',
+                    textAlign: 'center',
                     //   margin: '0',
                     //   padding: '0',
                   }}
@@ -599,12 +631,12 @@ const AddStudentToClass = () => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            "Trường này không được để trống"
+                            'Trường này không được để trống'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -612,7 +644,7 @@ const AddStudentToClass = () => {
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -620,7 +652,7 @@ const AddStudentToClass = () => {
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
@@ -635,18 +667,20 @@ const AddStudentToClass = () => {
                       required: true,
                       validator: (_, value) => {
                         if (
-                            value === null ||
-                            value === undefined ||
-                            value === ""
-                          ) {
-                            return Promise.reject("Trường này không được để trống");
-                          }
+                          value === null ||
+                          value === undefined ||
+                          value === ''
+                        ) {
+                          return Promise.reject(
+                            'Trường này không được để trống'
+                          );
+                        }
                         // check regex phone number viet nam
                         if (Validater.isPhone(value)) {
                           return Promise.resolve();
                         }
                         return Promise.reject(
-                          new Error("Số điện thoại không hợp lệ")
+                          new Error('Số điện thoại không hợp lệ')
                         );
                       },
                     },
@@ -663,12 +697,12 @@ const AddStudentToClass = () => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            "Trường này không được để trống"
+                            'Trường này không được để trống'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -676,7 +710,7 @@ const AddStudentToClass = () => {
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -684,13 +718,19 @@ const AddStudentToClass = () => {
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
                   <Select
+                    showSearch
                     placeholder="Là ... của học viên"
                     dropdownStyle={{ zIndex: 9999 }}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                   >
                     <Select.Option key={9000} value="Bố">
                       Bố
@@ -726,8 +766,8 @@ const AddStudentToClass = () => {
                   p
                   size={15}
                   css={{
-                    width: "100%",
-                    textAlign: "center",
+                    width: '100%',
+                    textAlign: 'center',
                     //   margin: '0',
                     //   padding: '0',
                   }}
@@ -747,17 +787,17 @@ const AddStudentToClass = () => {
                         if (
                           value === null ||
                           value === undefined ||
-                          value === ""
+                          value === ''
                         ) {
                           return Promise.reject(
-                            "Trường này không được để trống"
+                            'Trường này không được để trống'
                           );
                         }
                         const salary = value.toString();
                         if (Validater.isNumber(salary)) {
                           return Promise.resolve();
                         }
-                        return Promise.reject(new Error("Phải là số"));
+                        return Promise.reject(new Error('Phải là số'));
 
                         // check regex phone number viet nam
                       },
@@ -776,10 +816,10 @@ const AddStudentToClass = () => {
                         if (
                           value === null ||
                           value === undefined ||
-                          value === ""
+                          value === ''
                         ) {
                           return Promise.reject(
-                            "Trường này không được để trống"
+                            'Trường này không được để trống'
                           );
                         }
 
@@ -787,7 +827,7 @@ const AddStudentToClass = () => {
                         if (Validater.isNumber(salary)) {
                           return Promise.resolve();
                         }
-                        return Promise.reject(new Error("Phải là số"));
+                        return Promise.reject(new Error('Phải là số'));
 
                         // check regex phone number viet nam
                       },
@@ -801,7 +841,7 @@ const AddStudentToClass = () => {
                   name="application_document"
                   style={{
                     // margin: "auto",
-                    width: "100%",
+                    width: '100%',
                     // textAlign: "left",
                   }}
                   // rules={[
@@ -818,19 +858,19 @@ const AddStudentToClass = () => {
                   name="application_date"
                   style={{
                     // margin: "auto",
-                    width: "100%",
+                    width: '100%',
                     // textAlign: "left",
                   }}
                   rules={[
                     {
                       required: true,
-                      message: "Hãy nhập ngày nộp hồ sơ",
+                      message: 'Hãy nhập ngày nộp hồ sơ',
                     },
                   ]}
                 >
                   <DatePicker
                     placeholder="Ngày nộp hồ sơ"
-                    format={"DD/MM/YYYY"}
+                    format={'DD/MM/YYYY'}
                   />
                 </Form.Item>
                 <div></div>
@@ -844,8 +884,8 @@ const AddStudentToClass = () => {
                   p
                   size={15}
                   css={{
-                    width: "100%",
-                    textAlign: "center",
+                    width: '100%',
+                    textAlign: 'center',
                     //   margin: '0',
                     //   padding: '0',
                   }}
@@ -860,7 +900,7 @@ const AddStudentToClass = () => {
                   name="high_school"
                   style={{
                     // margin: "auto",
-                    width: "100%",
+                    width: '100%',
                     // textAlign: "left",
                   }}
                   rules={[
@@ -870,13 +910,13 @@ const AddStudentToClass = () => {
                         if (
                           value === null ||
                           value === undefined ||
-                          value.trim() === ""
+                          value.trim() === ''
                         ) {
                           return Promise.resolve();
                         }
                         if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -884,7 +924,7 @@ const AddStudentToClass = () => {
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -892,7 +932,7 @@ const AddStudentToClass = () => {
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
@@ -903,7 +943,7 @@ const AddStudentToClass = () => {
                   name="university"
                   style={{
                     // margin: "auto",
-                    width: "100%",
+                    width: '100%',
                     // textAlign: "left",
                   }}
                   rules={[
@@ -913,13 +953,13 @@ const AddStudentToClass = () => {
                         if (
                           value === null ||
                           value === undefined ||
-                          value.trim() === ""
+                          value.trim() === ''
                         ) {
                           return Promise.resolve();
                         }
                         if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -927,7 +967,7 @@ const AddStudentToClass = () => {
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -935,7 +975,7 @@ const AddStudentToClass = () => {
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
@@ -946,7 +986,7 @@ const AddStudentToClass = () => {
                   name="working_company"
                   style={{
                     // margin: "auto",
-                    width: "100%",
+                    width: '100%',
                     // textAlign: "left",
                   }}
                   rules={[
@@ -956,13 +996,13 @@ const AddStudentToClass = () => {
                         if (
                           value === null ||
                           value === undefined ||
-                          value.trim() === ""
+                          value.trim() === ''
                         ) {
                           return Promise.resolve();
                         }
                         if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -970,7 +1010,7 @@ const AddStudentToClass = () => {
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -978,7 +1018,7 @@ const AddStudentToClass = () => {
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
@@ -989,7 +1029,7 @@ const AddStudentToClass = () => {
                   name="company_address"
                   style={{
                     // margin: "auto",
-                    width: "100%",
+                    width: '100%',
                     // textAlign: "left",
                   }}
                   rules={[
@@ -999,7 +1039,7 @@ const AddStudentToClass = () => {
                         if (
                           value === null ||
                           value === undefined ||
-                          value.trim() === ""
+                          value.trim() === ''
                         ) {
                           return Promise.resolve();
                         }
@@ -1007,7 +1047,7 @@ const AddStudentToClass = () => {
                           Validater.isContaintSpecialCharacter(value.trim())
                         ) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -1015,7 +1055,7 @@ const AddStudentToClass = () => {
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -1023,7 +1063,7 @@ const AddStudentToClass = () => {
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
@@ -1034,7 +1074,7 @@ const AddStudentToClass = () => {
                   name="company_position"
                   style={{
                     // margin: "auto",
-                    width: "100%",
+                    width: '100%',
                     // textAlign: "left",
                   }}
                   rules={[
@@ -1044,13 +1084,13 @@ const AddStudentToClass = () => {
                         if (
                           value === null ||
                           value === undefined ||
-                          value.trim() === ""
+                          value.trim() === ''
                         ) {
                           return Promise.resolve();
                         }
                         if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
-                            "Trường này không được chứa ký tự đặc biệt"
+                            'Trường này không được chứa ký tự đặc biệt'
                           );
                         }
                         if (
@@ -1058,7 +1098,7 @@ const AddStudentToClass = () => {
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error("Trường phải từ 1 đến 255 ký tự")
+                            new Error('Trường phải từ 1 đến 255 ký tự')
                           );
                         }
                         return Promise.resolve();
@@ -1066,7 +1106,7 @@ const AddStudentToClass = () => {
                     },
                     {
                       whitespace: true,
-                      message: "Trường không được chứa khoảng trắng",
+                      message: 'Trường không được chứa khoảng trắng',
                     },
                   ]}
                 >
@@ -1082,7 +1122,7 @@ const AddStudentToClass = () => {
                         if (
                           value === null ||
                           value === undefined ||
-                          value === ""
+                          value === ''
                         ) {
                           return Promise.resolve();
                         }
@@ -1090,7 +1130,7 @@ const AddStudentToClass = () => {
                         if (Validater.isNumber(salary)) {
                           return Promise.resolve();
                         }
-                        return Promise.reject(new Error("Phải là số"));
+                        return Promise.reject(new Error('Phải là số'));
                       },
                     },
                     // {
@@ -1099,7 +1139,14 @@ const AddStudentToClass = () => {
                     // },
                   ]}
                 >
-                  <Input placeholder="5000000" />
+                  <InputNumber
+                    placeholder="5000000"
+                    formatter={(value) =>
+                      `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                    }
+                    parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
+                    style={{ width: '100%' }}
+                  />
                 </Form.Item>
 
                 <div></div>
@@ -1111,22 +1158,22 @@ const AddStudentToClass = () => {
 
         <Grid
           sm={4.5}
-          direction={"column"}
-          css={{ rowGap: 20, position: "relative" }}
+          direction={'column'}
+          css={{ rowGap: 20, position: 'relative' }}
         >
           <Card
             variant="bordered"
-            css={{ backgroundColor: "transparent", border: "none" }}
+            css={{ backgroundColor: 'transparent', border: 'none' }}
           >
-            <Card.Header css={{ margin: "12px 0 0 0" }}>
+            <Card.Header css={{ margin: '12px 0 0 0' }}>
               <Text
                 p
                 b
                 size={17}
                 css={{
-                  width: "100%",
-                  textAlign: "center",
-                  margin: "0",
+                  width: '100%',
+                  textAlign: 'center',
+                  margin: '0',
                 }}
               >
                 Ảnh đại diện
@@ -1134,8 +1181,8 @@ const AddStudentToClass = () => {
             </Card.Header>
             <Card.Body
               css={{
-                width: "100%",
-                textAlign: "center",
+                width: '100%',
+                textAlign: 'center',
               }}
             >
               <div className={classes.contantLogo}>
@@ -1166,9 +1213,9 @@ const AddStudentToClass = () => {
               <Upload>
                 <Button
                   css={{
-                    fontSize: "12px",
-                    height: "28px",
-                    margin: "16px 0 0 0",
+                    fontSize: '12px',
+                    height: '28px',
+                    margin: '16px 0 0 0',
                   }}
                   auto
                   flat
@@ -1182,14 +1229,14 @@ const AddStudentToClass = () => {
             </Card.Body>
           </Card>
           <Card variant="bordered">
-            <Card.Header css={{ margin: "0px 0 0 0" }}>
+            <Card.Header css={{ margin: '0px 0 0 0' }}>
               <Text
                 b
                 p
                 size={15}
                 css={{
-                  width: "100%",
-                  textAlign: "center",
+                  width: '100%',
+                  textAlign: 'center',
                   //   margin: '0',
                   //   padding: '0',
                 }}
@@ -1199,7 +1246,7 @@ const AddStudentToClass = () => {
             </Card.Header>
             <Card.Body
               css={{
-                width: "100%",
+                width: '100%',
                 //   textAlign: "center",
               }}
             >
@@ -1209,8 +1256,8 @@ const AddStudentToClass = () => {
                 labelWrap={true}
                 style={{
                   // margin: "auto",
-                  width: "100%",
-                  textAlign: "left",
+                  width: '100%',
+                  textAlign: 'left',
                 }}
                 rules={[
                   {
@@ -1219,14 +1266,14 @@ const AddStudentToClass = () => {
                       if (
                         value === null ||
                         value === undefined ||
-                        value === ""
+                        value === ''
                       ) {
-                        return Promise.reject("Trường này không được để trống");
+                        return Promise.reject('Trường này không được để trống');
                       }
 
                       if (Validater.isContaintSpecialCharacter(value.trim())) {
                         return Promise.reject(
-                          "Trường này không được chứa ký tự đặc biệt"
+                          'Trường này không được chứa ký tự đặc biệt'
                         );
                       }
                       if (
@@ -1234,7 +1281,7 @@ const AddStudentToClass = () => {
                         value.trim().length > 100
                       ) {
                         return Promise.reject(
-                          new Error("Trường phải từ 1 đến 100 ký tự")
+                          new Error('Trường phải từ 1 đến 100 ký tự')
                         );
                       } else {
                         return Promise.resolve();
@@ -1243,7 +1290,7 @@ const AddStudentToClass = () => {
                   },
                   {
                     whitespace: true,
-                    message: "Trường không được chứa khoảng trắng",
+                    message: 'Trường không được chứa khoảng trắng',
                   },
                 ]}
               >
@@ -1255,13 +1302,17 @@ const AddStudentToClass = () => {
                 labelWrap={true}
                 style={{
                   // margin: "auto",
-                  width: "100%",
-                  textAlign: "left",
+                  width: '100%',
+                  textAlign: 'left',
                 }}
               >
                 <Select
+                  showSearch
                   placeholder="Tình trạng học viên"
                   dropdownStyle={{ zIndex: 9999 }}
+                  filterOption={(input, option) =>
+                    option.children.toLowerCase().includes(input.toLowerCase())
+                  }
                 >
                   <Select.Option key={100} value={1}>
                     Studying
@@ -1292,20 +1343,24 @@ const AddStudentToClass = () => {
                 labelWrap={true}
                 style={{
                   // margin: "auto",
-                  width: "100%",
-                  textAlign: "left",
+                  width: '100%',
+                  textAlign: 'left',
                 }}
                 rules={[
                   {
                     required: true,
-                    message: "Hãy chọn khóa học",
+                    message: 'Hãy chọn khóa học',
                   },
                 ]}
               >
                 <Select
+                  showSearch
                   dropdownStyle={{ zIndex: 9999 }}
                   placeholder="Chọn khóa học"
                   onChange={getListCourse}
+                  filterOption={(input, option) =>
+                    option.children.toLowerCase().includes(input.toLowerCase())
+                  }
                 >
                   {listCourses.map((e, index) => (
                     <Select.Option key={index} value={e.code}>
@@ -1317,14 +1372,14 @@ const AddStudentToClass = () => {
             </Card.Body>
           </Card>
           <Card variant="bordered">
-            <Card.Header css={{ margin: "0px 0 0 0" }}>
+            <Card.Header css={{ margin: '0px 0 0 0' }}>
               <Text
                 b
                 p
                 size={15}
                 css={{
-                  width: "100%",
-                  textAlign: "center",
+                  width: '100%',
+                  textAlign: 'center',
                   //   margin: '0',
                   //   padding: '0',
                 }}
@@ -1334,7 +1389,7 @@ const AddStudentToClass = () => {
             </Card.Header>
             <Card.Body
               css={{
-                width: "100%",
+                width: '100%',
                 //   textAlign: "center",
               }}
             >
@@ -1345,18 +1400,18 @@ const AddStudentToClass = () => {
                   {
                     required: true,
                     validator: (_, value) => {
-                        if (
-                            value === null ||
-                            value === undefined ||
-                            value === ""
-                          ) {
-                            return Promise.reject("Trường này không được để trống");
-                          }
+                      if (
+                        value === null ||
+                        value === undefined ||
+                        value === ''
+                      ) {
+                        return Promise.reject('Trường này không được để trống');
+                      }
                       if (Validater.isCitizenId(value)) {
                         return Promise.resolve();
                       }
                       return Promise.reject(
-                        new Error("Số CMND/CCCD không hợp lệ")
+                        new Error('Số CMND/CCCD không hợp lệ')
                       );
                     },
                   },
@@ -1370,11 +1425,11 @@ const AddStudentToClass = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Hãy nhập ngày cấp",
+                    message: 'Hãy nhập ngày cấp',
                   },
                 ]}
               >
-                <DatePicker format={"DD/MM/YYYY"} />
+                <DatePicker format={'DD/MM/YYYY'} />
               </Form.Item>
               <Form.Item
                 label="Nơi cấp"
@@ -1384,7 +1439,7 @@ const AddStudentToClass = () => {
                     required: true,
                     validator: (_, value) => {
                       if (value === null || value === undefined) {
-                        return Promise.reject("Trường này không được để trống");
+                        return Promise.reject('Trường này không được để trống');
                       }
                       if (
                         Validater.isContaintSpecialCharacterForName(
@@ -1392,7 +1447,7 @@ const AddStudentToClass = () => {
                         )
                       ) {
                         return Promise.reject(
-                          "Trường này không được chứa ký tự đặc biệt"
+                          'Trường này không được chứa ký tự đặc biệt'
                         );
                       }
                       if (
@@ -1400,7 +1455,7 @@ const AddStudentToClass = () => {
                         value.trim().length > 255
                       ) {
                         return Promise.reject(
-                          new Error("Trường phải từ 1 đến 255 ký tự")
+                          new Error('Trường phải từ 1 đến 255 ký tự')
                         );
                       }
                       return Promise.resolve();
@@ -1408,7 +1463,7 @@ const AddStudentToClass = () => {
                   },
                   {
                     whitespace: true,
-                    message: "Trường không được chứa khoảng trắng",
+                    message: 'Trường không được chứa khoảng trắng',
                   },
                 ]}
               >
@@ -1417,14 +1472,14 @@ const AddStudentToClass = () => {
             </Card.Body>
           </Card>
           <Card variant="bordered">
-            <Card.Header css={{ margin: "0px 0 0 0" }}>
+            <Card.Header css={{ margin: '0px 0 0 0' }}>
               <Text
                 b
                 p
                 size={15}
                 css={{
-                  width: "100%",
-                  textAlign: "center",
+                  width: '100%',
+                  textAlign: 'center',
                   //   margin: '0',
                   //   padding: '0',
                 }}
@@ -1434,7 +1489,7 @@ const AddStudentToClass = () => {
             </Card.Header>
             <Card.Body
               css={{
-                width: "100%",
+                width: '100%',
                 //   textAlign: "center",
               }}
             >
@@ -1443,7 +1498,7 @@ const AddStudentToClass = () => {
                 name="facebook_url"
                 style={{
                   // margin: "auto",
-                  width: "100%",
+                  width: '100%',
                   // textAlign: "left",
                 }}
                 // rules={[
@@ -1462,7 +1517,7 @@ const AddStudentToClass = () => {
                 name="portfolio_url"
                 style={{
                   // margin: "auto",
-                  width: "100%",
+                  width: '100%',
                   // textAlign: "left",
                 }}
                 // rules={[
@@ -1478,9 +1533,9 @@ const AddStudentToClass = () => {
           </Card>
           <Form.Item
             style={{
-              display: "inline-block",
-              textAlign: "right",
-              width: "100%",
+              display: 'inline-block',
+              textAlign: 'right',
+              width: '100%',
             }}
           >
             {/* {!isCreatingOrUpdating && messageFailed !== undefined && (
@@ -1501,10 +1556,10 @@ const AddStudentToClass = () => {
               flat
               auto
               css={{
-                width: "150px",
-                position: "absolute",
-                right: "10px",
-                bottom: "10px",
+                width: '150px',
+                position: 'absolute',
+                right: '10px',
+                bottom: '10px',
               }}
               type="primary"
               htmlType="submit"
@@ -1517,10 +1572,10 @@ const AddStudentToClass = () => {
               auto
               color="error"
               css={{
-                width: "150px",
-                position: "absolute",
-                right: "180px",
-                bottom: "10px",
+                width: '150px',
+                position: 'absolute',
+                right: '180px',
+                bottom: '10px',
               }}
               onPress={() => {
                 handleCancel();
