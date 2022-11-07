@@ -204,10 +204,14 @@ const ModuleCreate = ({ onCreateSuccess }) => {
             ]}
           >
             <Select
+              showSearch
               placeholder="Chọn cơ sở"
               style={{ width: "100%" }}
               dropdownStyle={{ zIndex: 9999 }}
               loading={isLoading}
+              filterOption={(input, option) =>
+                option.children.toLowerCase().includes(input.toLowerCase())
+              }
             >
               {listCenters
                 .filter((e) => e.is_active)
@@ -244,6 +248,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               }}
             >
               <Select
+                showSearch
                 placeholder="Chọn mã khóa học"
                 style={{ width: "100%" }}
                 dropdownStyle={{ zIndex: 9999 }}
@@ -251,6 +256,9 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                 mode="multiple"
                 maxTagCount={"responsive"}
                 onChange={GetListSemesterid}
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().includes(input.toLowerCase())
+                }
               >
                 {listCourses.map((e, index) => (
                   <Select.Option key={index} value={e.coursename}>
@@ -274,10 +282,14 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               }}
             >
               <Select
+                showSearch
                 style={{ width: "100%" }}
                 dropdownStyle={{ zIndex: 9999 }}
                 placeholder="Chọn học kỳ"
                 optionFilterProp="children"
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().includes(input.toLowerCase())
+                }
               >
                 <Select.Option key="1" value="1">
                   Học kỳ 1
@@ -359,9 +371,13 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               }}
             >
               <Select
+                showSearch
                 style={{ width: "100%" }}
                 dropdownStyle={{ zIndex: 9999 }}
                 placeholder="Hình thức học"
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().includes(input.toLowerCase())
+                }
               >
                 <Select.Option key="1" value="1">
                   Lý thuyết
@@ -383,10 +399,14 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               }}
             >
               <Select
+                showSearch
                 onChange={handleChangeExamType}
                 style={{ width: "100%" }}
                 dropdownStyle={{ zIndex: 9999 }}
                 placeholder="Hình thức thi"
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().includes(input.toLowerCase())
+                }
               >
                 <Select.Option key="4" value={1}>
                   Lý thuyết
@@ -400,10 +420,6 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                 <Select.Option key="7" value={4}>
                   Không thi
                 </Select.Option>
-                {/* <Select.Option key="4" value="Lý thuyết">Lý thuyết</Select.Option>
-                                <Select.Option key="5" value="Thực hành">Thực hành</Select.Option>
-                                <Select.Option key="6" value="Lý thuyết và thực hành">Lý thuyết và Thực hành</Select.Option>
-                                <Select.Option key="7" value="Không thi">Không thi</Select.Option> */}
               </Select>
             </Form.Item>
           </Form.Item>

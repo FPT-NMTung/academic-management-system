@@ -62,23 +62,20 @@ const CreateRoom = ({ onCreateRoomSuccess }) => {
 
     setIsCreatingRoom(true);
     setErrorValue(undefined);
-    
-    toast.promise(
-      FetchApi(RoomApis.createRoom, body, null, null),
-      {
-        loading: 'Đang tạo phòng',
-        success: (res) => {
-          onCreateRoomSuccess();
-          setIsCreatingRoom(false);
-          return 'Tạo phòng thành công';
-        },
-        error: (err) => {
-          setIsCreatingRoom(false);
-          setIsFailedCreateRoom(true);
-          return ErrorCodeApi[err.type_error];
-        },
-      }
-    )
+
+    toast.promise(FetchApi(RoomApis.createRoom, body, null, null), {
+      loading: 'Đang tạo phòng',
+      success: (res) => {
+        onCreateRoomSuccess();
+        setIsCreatingRoom(false);
+        return 'Tạo phòng thành công';
+      },
+      error: (err) => {
+        setIsCreatingRoom(false);
+        setIsFailedCreateRoom(true);
+        return ErrorCodeApi[err.type_error];
+      },
+    });
   };
 
   return (
@@ -105,16 +102,22 @@ const CreateRoom = ({ onCreateRoomSuccess }) => {
         ]}
       >
         <Select
+          showSearch
           placeholder="Chọn cơ sở"
           style={{ width: '100%' }}
           dropdownStyle={{ zIndex: 9999 }}
           loading={isGetListCenter}
+          filterOption={(input, option) =>
+            option.children.toLowerCase().includes(input.toLowerCase())
+          }
         >
-          {listCenters.filter(e => e.is_active).map((e) => (
-            <Select.Option key={e.key} value={e.id}>
-              {e.name}
-            </Select.Option>
-          ))}
+          {listCenters
+            .filter((e) => e.is_active)
+            .map((e) => (
+              <Select.Option key={e.key} value={e.id}>
+                {e.name}
+              </Select.Option>
+            ))}
         </Select>
       </Form.Item>
       <Form.Item
@@ -160,10 +163,14 @@ const CreateRoom = ({ onCreateRoomSuccess }) => {
         ]}
       >
         <Select
+          showSearch
           placeholder="Chọn loại phòng"
           style={{ width: '100%' }}
           dropdownStyle={{ zIndex: 9999 }}
           loading={isGetListTypeRoom}
+          filterOption={(input, option) =>
+            option.children.toLowerCase().includes(input.toLowerCase())
+          }
         >
           {listTypeRoom.map((e) => (
             <Select.Option key={e.key} value={e.id}>

@@ -2,6 +2,7 @@
 using AcademicManagementSystem.Models.ClassDaysController;
 using AcademicManagementSystem.Models.ClassStatusController;
 using AcademicManagementSystem.Models.RoomController.RoomModel;
+using AcademicManagementSystem.Models.Sessions;
 using AcademicManagementSystem.Models.TeacherSkillController;
 
 namespace AcademicManagementSystem.Models.ClassScheduleController.ClassScheduleModel;
@@ -75,9 +76,13 @@ public class ClassScheduleResponse
     [JsonPropertyName("note")]
     public string? Note { get; set; }
     
+    [JsonPropertyName("sessions")]
+    public List<SessionResponse> Sessions { get; set; }
+
     [JsonPropertyName("created_at")]
     public DateTime CreatedAt { get; set; }
     
     [JsonPropertyName("updated_at")]
     public DateTime UpdatedAt { get; set; }
 }
+

@@ -1,7 +1,8 @@
 import {
   Badge,
   Button,
-  Card, Dropdown,
+  Card,
+  Dropdown,
   Grid,
   Loading,
   Modal,
@@ -59,7 +60,7 @@ const DetailClass = () => {
   const [listStudent, setListStudent] = useState(undefined);
 
   const navigate = useNavigate();
-  const {id} = useParams();
+  const { id } = useParams();
 
   const renderStatus = (id) => {
     if (id === 1) {
@@ -133,7 +134,7 @@ const DetailClass = () => {
           return 'Tải xuống thành công';
         },
         error: 'Tải xuống thất bại',
-      },
+      }
     );
   };
 
@@ -157,7 +158,7 @@ const DetailClass = () => {
         error: (err) => {
           return ErrorCodeApi[err.type_error];
         },
-      },
+      }
     );
   };
 
@@ -173,7 +174,7 @@ const DetailClass = () => {
         error: (err) => {
           return ErrorCodeApi[err.type_error];
         },
-      },
+      }
     );
   };
 
@@ -184,7 +185,7 @@ const DetailClass = () => {
 
   const isDraft = () => {
     if (listStudent === undefined) {
-      return false;
+      return true;
     }
 
     if (listStudent.length === 0) {
@@ -210,7 +211,7 @@ const DetailClass = () => {
         error: (err) => {
           return ErrorCodeApi[err.type_error];
         },
-      },
+      }
     );
   };
 
@@ -230,6 +231,9 @@ const DetailClass = () => {
         break;
       case 'save':
         handleSave();
+        break;
+      case 'schedule':
+        navigate(`/sro/manage-class/${id}/schedule`);
         break;
       default:
         break;
@@ -259,8 +263,8 @@ const DetailClass = () => {
             <div className={classes.upload}>
               {
                 <Fragment>
-                  <FcFile size={50}/>
-                  <Spacer y={1}/>
+                  <FcFile size={50} />
+                  <Spacer y={1} />
                   <Text p size={14}>
                     Kéo thả file vào đây hoặc <Text b>chọn file</Text>
                   </Text>
@@ -290,16 +294,16 @@ const DetailClass = () => {
                 p
                 b
                 size={16}
-                css={{width: '100%', textAlign: 'center'}}
+                css={{ width: '100%', textAlign: 'center' }}
                 color="error"
               >
                 Thông tin cơ bản
               </Text>
             </Card.Header>
             <Card.Body>
-              {!dataClass && <Skeleton/>}
+              {!dataClass && <Skeleton />}
               {dataClass && (
-                <Descriptions layout="horizontal" column={{lg: 1}}>
+                <Descriptions layout="horizontal" column={{ lg: 1 }}>
                   <Descriptions.Item label="Tên lớp">
                     <b>{dataClass?.name}</b>
                   </Descriptions.Item>
@@ -311,7 +315,7 @@ const DetailClass = () => {
                   <Descriptions.Item label="Ngày tạo">
                     <b>
                       {new Date(dataClass?.created_at).toLocaleDateString(
-                        'vi-VN',
+                        'vi-VN'
                       )}
                     </b>
                   </Descriptions.Item>
@@ -333,16 +337,16 @@ const DetailClass = () => {
                 p
                 b
                 size={16}
-                css={{width: '100%', textAlign: 'center'}}
+                css={{ width: '100%', textAlign: 'center' }}
                 color="error"
               >
                 Thời gian và kế hoạch
               </Text>
             </Card.Header>
             <Card.Body>
-              {!dataClass && <Skeleton/>}
+              {!dataClass && <Skeleton />}
               {dataClass && (
-                <Descriptions layout="horizontal" column={{lg: 1}}>
+                <Descriptions layout="horizontal" column={{ lg: 1 }}>
                   <Descriptions.Item label="Mã chương trình học">
                     <b>{dataClass?.course_family?.code}</b>
                   </Descriptions.Item>
@@ -352,7 +356,7 @@ const DetailClass = () => {
                   <Descriptions.Item label="Ngày bắt đầu (dự tính)">
                     <b>
                       {new Date(dataClass?.start_date).toLocaleDateString(
-                        'vi-VN',
+                        'vi-VN'
                       )}
                     </b>
                   </Descriptions.Item>
@@ -377,14 +381,14 @@ const DetailClass = () => {
                   <Descriptions.Item label="Ngày hoàn thành (dự tính)">
                     <b>
                       {new Date(dataClass?.completion_date).toLocaleDateString(
-                        'vi-VN',
+                        'vi-VN'
                       )}
                     </b>
                   </Descriptions.Item>
                   <Descriptions.Item label="Ngày tốt nghiệp (dự tính)">
                     <b>
                       {new Date(dataClass?.graduation_date).toLocaleDateString(
-                        'vi-VN',
+                        'vi-VN'
                       )}
                     </b>
                   </Descriptions.Item>
@@ -400,12 +404,12 @@ const DetailClass = () => {
                 padding: 10,
               }}
             >
-              <div className={classes.header}>
-                <div className={classes.groupButton}>
+              <Grid.Container>
+                <Grid xs={4} justify="flex-start">
                   <Button
                     flat
                     auto
-                    icon={<IoArrowBackCircle size={20}/>}
+                    icon={<IoArrowBackCircle size={20} />}
                     color={'error'}
                     onPress={() => {
                       navigate('/sro/manage-class');
@@ -413,68 +417,109 @@ const DetailClass = () => {
                   >
                     Trở về
                   </Button>
-                </div>
-                <div className={classes.groupButton}>
+                </Grid>
+                <Grid xs={4} justify="center">
+                  {isDraft() && (
+                    <Badge variant={'flat'} color="warning" size="md">
+                      Danh sách dạng bản nháp
+                    </Badge>
+                  )}
+                </Grid>
+                <Grid xs={4} justify="flex-end">
                   <Dropdown>
                     <Dropdown.Button flat color="secondary">
                       Chức năng
                     </Dropdown.Button>
-                    <Dropdown.Menu onAction={handleSelectOption} color="secondary" aria-label="Actions"
-                                   css={{$$dropdownMenuWidth: '340px'}}>
+                    <Dropdown.Menu
+                      onAction={handleSelectOption}
+                      color="secondary"
+                      aria-label="Actions"
+                      css={{ $$dropdownMenuWidth: '340px' }}
+                    >
                       <Dropdown.Section title="Cơ bản">
-                        <Dropdown.Item
-                          key="add"
-                          description="Thêm học viên thủ công"
-                          icon={<MdPersonAdd/>}
-                          color={'success'}
-                        >
-                          Thêm học viên
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                          key="import"
-                          description="Tải lên danh sách học viên"
-                          icon={<FaCloudUploadAlt/>}
-                          color={'success'}
-                        >
-                          Import
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                          key="download"
-                          description="Tải xuống file mẫu"
-                          icon={<FaCloudDownloadAlt/>}
-                          color={'primary'}
-                        >
-                          Download file mẫu
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                          key="save"
-                          description="Lưu danh sách học viên"
-                          icon={<MdSave/>}
-                          color={'warning'}
-                        >
-                          Lưu
-                        </Dropdown.Item>
+                        {isDraft() && (
+                          <Dropdown.Item
+                            key="add"
+                            description="Thêm học viên thủ công"
+                            icon={<MdPersonAdd />}
+                            color={'success'}
+                          >
+                            Thêm học viên
+                          </Dropdown.Item>
+                        )}
+                        {listStudent?.length === 0 && (
+                          <Dropdown.Item
+                            key="import"
+                            description="Tải lên danh sách học viên"
+                            icon={<FaCloudUploadAlt />}
+                            color={'success'}
+                          >
+                            Import
+                          </Dropdown.Item>
+                        )}
+                        {isDraft() && (
+                          <Dropdown.Item
+                            key="download"
+                            description="Tải xuống file mẫu"
+                            icon={<FaCloudDownloadAlt />}
+                            color={'primary'}
+                          >
+                            Download file mẫu
+                          </Dropdown.Item>
+                        )}
+                        {listStudent?.length > 0 && isDraft() && (
+                          <Dropdown.Item
+                            key="save"
+                            description="Lưu danh sách học viên"
+                            icon={<MdSave />}
+                            color={'warning'}
+                          >
+                            Lưu
+                          </Dropdown.Item>
+                        )}
+                        {!isDraft() && (
+                          <Dropdown.Item
+                            key="schedule"
+                            description="Xem tất cả lịch học của lớp"
+                            icon={<MdPersonAdd />}
+                            color={'success'}
+                          >
+                            Lịch học
+                          </Dropdown.Item>
+                        )}
+                        {!isDraft() && (
+                          <Dropdown.Item
+                            key="merge"
+                            description="Gộp lớp này với lớp khác"
+                            icon={<MdPersonAdd />}
+                            color={'secondary'}
+                          >
+                            Gộp lớp học
+                          </Dropdown.Item>
+                        )}
                       </Dropdown.Section>
-                      <Dropdown.Section title="Nguy hiểm">
-                        <Dropdown.Item
-                          key="delete"
-                          color={'error'}
-                          description="Xóa danh sách học viên"
-                          icon={<MdDelete/>}
-                        >
-                          Xoá
-                        </Dropdown.Item>
-                      </Dropdown.Section>
+                      {listStudent?.length > 0 && isDraft() && (
+                        <Dropdown.Section title="Nguy hiểm">
+                          <Dropdown.Item
+                            key="clear"
+                            color={'error'}
+                            description="Xóa danh sách học viên"
+                            icon={<MdDelete />}
+                          >
+                            Xoá
+                          </Dropdown.Item>
+                        </Dropdown.Section>
+                      )}
                     </Dropdown.Menu>
                   </Dropdown>
-                </div>
-              </div>
+                </Grid>
+              </Grid.Container>
             </Card.Body>
           </Card>
-          <Spacer y={1}/>
+          <Spacer y={1} />
           <Card variant="bordered">
             <Card.Header>
-              <Text p b size={14} css={{width: '100%', textAlign: 'center'}}>
+              <Text p b size={14} css={{ width: '100%', textAlign: 'center' }}>
                 Danh sách học viên
               </Text>
             </Card.Header>
@@ -487,7 +532,7 @@ const DetailClass = () => {
                   alignItems: 'center',
                 }}
               >
-                <Loading/>
+                <Loading />
               </div>
             )}
             {listStudent !== undefined && listStudent.length === 0 && (
@@ -503,7 +548,7 @@ const DetailClass = () => {
                   i
                   p
                   size={14}
-                  css={{width: '100%', textAlign: 'center'}}
+                  css={{ width: '100%', textAlign: 'center' }}
                 >
                   Không có dữ liệu học viên trong lớp học này
                 </Text>
@@ -537,11 +582,9 @@ const DetailClass = () => {
                         <RiEyeFill
                           size={20}
                           color="5EA2EF"
-                          style={{cursor: 'pointer'}}
+                          style={{ cursor: 'pointer' }}
                           onClick={() => {
-                            navigate(
-                              `/sro/manage/student/${item.user_id}`
-                            );
+                            navigate(`/sro/manage/student/${item.user_id}`);
                           }}
                         />
                       </Table.Cell>
