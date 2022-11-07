@@ -71,7 +71,7 @@ public class ClassScheduleController : ControllerBase
             .ThenInclude(r => r.Room)
             .ThenInclude(r => r.RoomType)
             .FirstOrDefault(cs => cs.ClassId == classId && cs.ModuleId == moduleId);
-        
+
         if (classSchedule == null)
         {
             var check = _context.CoursesModulesSemesters
@@ -79,13 +79,13 @@ public class ClassScheduleController : ControllerBase
                 .Any(cms =>
                     cms.Course.CourseFamilyCode == classSelect.CourseFamilyCode &&
                     cms.ModuleId == moduleId);
-    
+
             if (!check)
             {
                 var error = ErrorDescription.Error["E2066"];
                 return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
             }
-            
+
             return NotFound(CustomResponse.NotFound("Class schedule not found"));
         }
 
@@ -162,11 +162,11 @@ public class ClassScheduleController : ControllerBase
         var isDraftStudent =
             _context.StudentsClasses.Any(sc => sc.ClassId == classContext.Id && sc.Student.IsDraft);
 
-        // if (isDraftStudent)
-        // {
-        //     var error = ErrorDescription.Error["E0094"];
-        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        // }
+        if (isDraftStudent)
+        {
+            var error = ErrorDescription.Error["E0094"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         var module = GetModulesBelongToThisClass(classId)
             .FirstOrDefault(m => m.Id == request.ModuleId && centerId == m.CenterId);
@@ -254,7 +254,6 @@ public class ClassScheduleController : ControllerBase
                 var session = new Session
                 {
                     SessionTypeId = Theory,
-                    RoomId = request.TheoryRoomId,
                     Title = module.ModuleName + " - T" + i,
                     LearningDate = learningDate,
                     StartTime = request.ClassHourStart,
@@ -265,21 +264,27 @@ public class ClassScheduleController : ControllerBase
                 {
                     session.SessionTypeId = Theory;
                     session.Title = module.ModuleName + " - T" + i;
-                    session.RoomId = request.TheoryRoomId;
+                    session.RoomId = (int)request.TheoryRoomId!;
                 }
 
                 if (module.ModuleType == 2)
                 {
                     session.SessionTypeId = Practice;
                     session.Title = module.ModuleName + " - P" + i;
-                    session.RoomId = request.LabRoomId;
+                    session.RoomId = (int)request.LabRoomId!;
                 }
 
                 if (module.ModuleType == 3 && practiceSessions.Any(practice => practice == i))
                 {
                     session.SessionTypeId = Practice;
                     session.Title = module.ModuleName + " - P" + i;
-                    session.RoomId = request.LabRoomId;
+                    session.RoomId = (int)request.LabRoomId!;
+                }
+                else if (module.ModuleType == 3 && practiceSessions.Any(practice => practice != i))
+                {
+                    session.SessionTypeId = Theory;
+                    session.Title = module.ModuleName + " - T" + i;
+                    session.RoomId = (int)request.TheoryRoomId!;
                 }
 
                 classScheduleToCreate.Sessions.Add(session);
@@ -303,7 +308,7 @@ public class ClassScheduleController : ControllerBase
                     var session = new Session
                     {
                         SessionTypeId = TheoryExam,
-                        RoomId = request.TheoryRoomId,
+                        RoomId = (int)request.ExamRoomId!,
                         Title = module.ModuleName + " - TheoryExam",
                         LearningDate = learningDate,
                         StartTime = request.ClassHourStart + TimeSpan.FromHours(1),
@@ -329,7 +334,7 @@ public class ClassScheduleController : ControllerBase
                     var session = new Session
                     {
                         SessionTypeId = PracticeExam,
-                        RoomId = request.LabRoomId,
+                        RoomId = (int)request.ExamRoomId!,
                         Title = module.ModuleName + " - PracticeExam",
                         LearningDate = learningDate,
                         StartTime = request.ClassHourStart + TimeSpan.FromHours(1),
@@ -363,15 +368,15 @@ public class ClassScheduleController : ControllerBase
 
         _context.ClassSchedules.Add(classScheduleToCreate);
 
-        try
-        {
-            _context.SaveChanges();
-        }
-        catch (DbUpdateException)
-        {
-            var error = ErrorDescription.Error["E0078"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
+        // try
+        // {
+        _context.SaveChanges();
+        // }
+        // catch (DbUpdateException)
+        // {
+        //     var error = ErrorDescription.Error["E0078"];
+        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        // }
 
         var classScheduleResponse =
             GetClassSchedulesResponse(classId).First(cs => cs.Id == classScheduleToCreate.Id);
@@ -386,6 +391,7 @@ public class ClassScheduleController : ControllerBase
             .Where(cs =>
                 cs.TeacherId == classScheduleToCreate.TeacherId &&
                 cs.WorkingTimeId == classScheduleToCreate.WorkingTimeId &&
+                cs.ClassDaysId == classScheduleToCreate.ClassDaysId &&
                 !((classScheduleToCreate.StartDate < cs.StartDate && classScheduleToCreate.EndDate < cs.StartDate) ||
                   (classScheduleToCreate.StartDate > cs.EndDate && classScheduleToCreate.EndDate > cs.EndDate))
             );
@@ -418,10 +424,12 @@ public class ClassScheduleController : ControllerBase
         if (module.ModuleType == 1)
         {
             var theoryRoomId = classScheduleToCreate.TheoryRoomId;
-            var temp = _context.Sessions.Include(s => s.Room)
+            var temp = _context.Sessions
+                .Include(s => s.Room)
                 .Include(s => s.ClassSchedule)
                 .Where(s =>
                     s.RoomId == theoryRoomId &&
+                    s.ClassSchedule.WorkingTimeId == classScheduleToCreate.WorkingTimeId &&
                     classScheduleToCreate.WorkingTimeId == s.ClassSchedule.WorkingTimeId &&
                     classScheduleToCreate.StartDate <= s.LearningDate &&
                     s.LearningDate <= classScheduleToCreate.EndDate).ToList();
@@ -432,10 +440,12 @@ public class ClassScheduleController : ControllerBase
         if (module.ModuleType == 2)
         {
             var labRoomId = classScheduleToCreate.LabRoomId;
-            var temp = _context.Sessions.Include(s => s.Room)
+            var temp = _context.Sessions
+                .Include(s => s.Room)
                 .Include(s => s.ClassSchedule)
                 .Where(s =>
                     s.RoomId == labRoomId &&
+                    s.ClassSchedule.WorkingTimeId == classScheduleToCreate.WorkingTimeId &&
                     classScheduleToCreate.WorkingTimeId == s.ClassSchedule.WorkingTimeId &&
                     classScheduleToCreate.StartDate <= s.LearningDate &&
                     s.LearningDate <= classScheduleToCreate.EndDate).ToList();
@@ -460,29 +470,35 @@ public class ClassScheduleController : ControllerBase
             var firstLabRoomScheduled = listLabRoomScheduled.First();
             var lastLabRoomScheduled = listLabRoomScheduled.Last();
 
-            var listTheoryRoom = _context.Sessions.Include(s => s.Room)
+            var listTheoryRoom = _context.Sessions
+                .Include(s => s.Room)
                 .Where(s =>
                     s.RoomId == theoryRoomId &&
+                    s.ClassSchedule.WorkingTimeId == classScheduleToCreate.WorkingTimeId &&
                     classScheduleToCreate.WorkingTimeId == s.ClassSchedule.WorkingTimeId &&
-                    firstTheoryRoomScheduled.LearningDate <= s.LearningDate &&
-                    s.LearningDate <= lastTheoryRoomScheduled.LearningDate)
-                .ToList()
+                    firstTheoryRoomScheduled.LearningDate.Date <= s.LearningDate.Date &&
+                    s.LearningDate.Date <= lastTheoryRoomScheduled.LearningDate.Date)
+                .ToList();
+                
+                var temp = listTheoryRoom
                 .Find(s =>
                     classScheduleToCreate.Sessions.Any(s1 =>
-                        s1.LearningDate == s.LearningDate));
+                        s1.LearningDate.Date == s.LearningDate.Date));
 
-            var listLabRoom = _context.Sessions.Include(s => s.Room)
+            var listLabRoom = _context.Sessions
+                .Include(s => s.Room)
                 .Where(s =>
                     s.RoomId == labRoomId &&
+                    s.ClassSchedule.WorkingTimeId == classScheduleToCreate.WorkingTimeId &&
                     classScheduleToCreate.WorkingTimeId == s.ClassSchedule.WorkingTimeId &&
-                    firstLabRoomScheduled.LearningDate <= s.LearningDate &&
-                    s.LearningDate <= lastLabRoomScheduled.LearningDate)
+                    firstLabRoomScheduled.LearningDate.Date <= s.LearningDate.Date &&
+                    s.LearningDate.Date <= lastLabRoomScheduled.LearningDate.Date)
                 .ToList()
                 .Find(s =>
                     classScheduleToCreate.Sessions.Any(s1 =>
-                        s1.LearningDate == s.LearningDate));
+                        s1.LearningDate.Date == s.LearningDate.Date));
 
-            return listTheoryRoom != null || listLabRoom != null;
+            return temp != null || listLabRoom != null;
         }
 
         return false;
@@ -649,42 +665,42 @@ public class ClassScheduleController : ControllerBase
         if (classSchedule == null) return null;
 
         // check teacher busy in schedule
-        var isTeacherBusy = classSchedule.Sessions.Any(s
-            => s.ClassSchedule.TeacherId == request.TeacherId &&
-               s.LearningDate.Date == request.StartDate.Date &&
-               (IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourStart) ||
-                IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourEnd)));
-
-        if (isTeacherBusy)
-            return "E0093";
-
-        var isTheoryRoomBusy = classSchedule.Sessions.Any(s
-            => s.RoomId == request.TheoryRoomId &&
-               s.LearningDate.Date == request.StartDate.Date &&
-               (IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourStart) ||
-                IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourEnd)));
-
-        if (isTheoryRoomBusy)
-            return "E0090";
-
-        var isLabRoomBusy = classSchedule.Sessions.Any(s
-            => s.RoomId == request.LabRoomId &&
-               s.LearningDate.Date == request.StartDate.Date &&
-               (IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourStart) ||
-                IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourEnd)));
-
-        if (isLabRoomBusy)
-            return "E0091";
-
-        var isExamRoomBusy = classSchedule.Sessions.Any(s
-            => s.SessionTypeId is PracticeExam or TheoryExam &&
-               s.RoomId == request.ExamRoomId &&
-               s.LearningDate.Date == request.StartDate.Date &&
-               (IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourStart) ||
-                IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourEnd)));
-
-        if (isExamRoomBusy)
-            return "E0092";
+        // var isTeacherBusy = classSchedule.Sessions.Any(s
+        //     => s.ClassSchedule.TeacherId == request.TeacherId &&
+        //        s.LearningDate.Date == request.StartDate.Date &&
+        //        (IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourStart) ||
+        //         IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourEnd)));
+        //
+        // if (isTeacherBusy)
+        //     return "E0093";
+        //
+        // var isTheoryRoomBusy = classSchedule.Sessions.Any(s
+        //     => s.RoomId == request.TheoryRoomId &&
+        //        s.LearningDate.Date == request.StartDate.Date &&
+        //        (IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourStart) ||
+        //         IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourEnd)));
+        //
+        // if (isTheoryRoomBusy)
+        //     return "E0090";
+        //
+        // var isLabRoomBusy = classSchedule.Sessions.Any(s
+        //     => s.RoomId == request.LabRoomId &&
+        //        s.LearningDate.Date == request.StartDate.Date &&
+        //        (IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourStart) ||
+        //         IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourEnd)));
+        //
+        // if (isLabRoomBusy)
+        //     return "E0091";
+        //
+        // var isExamRoomBusy = classSchedule.Sessions.Any(s
+        //     => s.SessionTypeId is PracticeExam or TheoryExam &&
+        //        s.RoomId == request.ExamRoomId &&
+        //        s.LearningDate.Date == request.StartDate.Date &&
+        //        (IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourStart) ||
+        //         IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourEnd)));
+        //
+        // if (isExamRoomBusy)
+        //     return "E0092";
 
         return null;
     }

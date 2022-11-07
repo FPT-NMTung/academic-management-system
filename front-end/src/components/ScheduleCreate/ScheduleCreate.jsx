@@ -120,7 +120,7 @@ const ScheduleCreate = ({ dataModule, onSuccess }) => {
       working_time_id: e.working_time_id,
       theory_room_id: e.theory_room_id,
       lab_room_id: e.lab_room_id,
-      exam_room_id: null,
+      exam_room_id: e.exam_room_id,
       duration: e.duration,
       practice_session: [...listSessionPractice],
       start_date: moment(e.start_date).add(7, 'hours').toDate(),
@@ -279,6 +279,21 @@ const ScheduleCreate = ({ dataModule, onSuccess }) => {
           <Form.Item className={classes.note} name={'note'} label="Ghi chú">
             <Input.TextArea rows={4} placeholder="Nhập ghi chú" />
           </Form.Item>
+          {dataModuleDetail?.exam_type !== 4 && (
+            <Form.Item
+              rules={[{ required: true, message: 'Vui lòng chọn phòng thi' }]}
+              name={'exam_room_id'}
+              label="Phòng thi"
+            >
+              <Select placeholder="Chọn phòng thi">
+                {listRoom
+                  .filter((item) => item.is_active)
+                  .map((item) => (
+                    <Select.Option value={item.id}>{item.name}</Select.Option>
+                  ))}
+              </Select>
+            </Form.Item>
+          )}
           {dataModuleDetail?.module_type === 3 && (
             <div className={classes.sessions}>
               {renderSession().map((value) => (

@@ -35,11 +35,11 @@ public class ClassSchedule
     
     [ForeignKey("TheoryRoom")]
     [Column("theory_room_id")]
-    public int TheoryRoomId { get; set; }
+    public int? TheoryRoomId { get; set; }
     
     [ForeignKey("LabRoom")]
     [Column("lab_room_id")]
-    public int LabRoomId { get; set; }
+    public int? LabRoomId { get; set; }
     
     [ForeignKey("ExamRoom")]
     [Column("exam_room_id")]
@@ -83,8 +83,8 @@ public class ClassSchedule
     public virtual Teacher Teacher { get; set; }
     public virtual ClassDays ClassDays { get; set; }
     public virtual ClassStatus ClassStatus { get; set; }
-    public virtual Room TheoryRoom { get; set; }
-    public virtual Room LabRoom { get; set; }
+    public virtual Room? TheoryRoom { get; set; }
+    public virtual Room? LabRoom { get; set; }
     public virtual Room? ExamRoom { get; set; }
     public virtual ICollection<Session> Sessions { get; set; }
 }
