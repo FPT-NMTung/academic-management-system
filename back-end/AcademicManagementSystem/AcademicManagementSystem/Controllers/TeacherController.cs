@@ -253,6 +253,12 @@ public class TeacherController : ControllerBase
             var error = ErrorDescription.Error["E0054"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
+        
+        if (request.Salary < 0)
+        {
+            var error = ErrorDescription.Error["E0052_4"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         var user = new User()
         {
@@ -435,6 +441,12 @@ public class TeacherController : ControllerBase
         if (!Regex.IsMatch(request.TaxCode, StringConstant.RegexTenDigits))
         {
             var error = ErrorDescription.Error["E0054"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
+        if (request.Salary < 0)
+        {
+            var error = ErrorDescription.Error["E0052_4"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
