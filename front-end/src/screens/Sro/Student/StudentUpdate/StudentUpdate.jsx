@@ -496,7 +496,7 @@ const StudentUpdate = () => {
                   >
                     {listDistrict.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
-                        {e.prefix} {e.name}
+                        {`${e.prefix} ${e.name}`}
                       </Select.Option>
                     ))}
                   </Select>
@@ -523,7 +523,7 @@ const StudentUpdate = () => {
                   >
                     {listWard.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
-                        {e.prefix} {e.name}
+                        {`${e.prefix} ${e.name}`}
                       </Select.Option>
                     ))}
                   </Select>
@@ -1315,7 +1315,7 @@ const StudentUpdate = () => {
                 >
                   {listCourses.map((e, index) => (
                     <Select.Option key={index} value={e.code}>
-                      {e.data} {e.code}
+                      {e.code}
                     </Select.Option>
                   ))}
                 </Select>
