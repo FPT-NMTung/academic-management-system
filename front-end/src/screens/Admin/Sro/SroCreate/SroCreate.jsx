@@ -533,7 +533,7 @@ const SroCreate = ({ modeUpdate }) => {
                   >
                     {listDistrict.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
-                        {e.prefix} {e.name}
+                        {`${e.prefix} ${e.name}`}
                       </Select.Option>
                     ))}
                   </Select>
@@ -560,7 +560,7 @@ const SroCreate = ({ modeUpdate }) => {
                   >
                     {listWard.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
-                        {e.prefix} {e.name}
+                        {`${e.prefix} ${e.name}`}
                       </Select.Option>
                     ))}
                   </Select>

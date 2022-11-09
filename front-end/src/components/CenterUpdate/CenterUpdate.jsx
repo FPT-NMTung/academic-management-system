@@ -194,7 +194,7 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
                 onChange={getListDistrict}
                 dropdownStyle={{ zIndex: 9999 }}
                 filterOption={(input, option) =>
-                  option.children?.toLowerCase().includes(input.toLowerCase())
+                  option.children.toLowerCase().includes(input.toLowerCase())
                 }
               >
                 {listProvince.map((e) => (
@@ -222,12 +222,12 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
                 onChange={getListWard}
                 dropdownStyle={{ zIndex: 9999 }}
                 filterOption={(input, option) =>
-                  option.children?.toLowerCase().includes(input.toLowerCase())
+                  option.children.toLowerCase().includes(input.toLowerCase())
                 }
               >
                 {listDistrict.map((e) => (
                   <Select.Option key={e.id} value={e.id}>
-                    {e.prefix} {e.name}
+                    {`${e.prefix} ${e.name}`}
                   </Select.Option>
                 ))}
               </Select>
@@ -254,7 +254,7 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
               >
                 {listWard.map((e) => (
                   <Select.Option key={e.id} value={e.id}>
-                    {e.prefix} {e.name}
+                    {`${e.prefix} ${e.name}`}
                   </Select.Option>
                 ))}
               </Select>
