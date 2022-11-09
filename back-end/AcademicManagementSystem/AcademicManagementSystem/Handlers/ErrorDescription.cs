@@ -279,7 +279,8 @@ public static class ErrorDescription
         { "E2066", new ErrorModel() { Message = "This class not have this module", Type = "class-schedule-error-0026" } },
         { "E2067", new ErrorModel() { Message = "class does not exist", Type = "class-schedule-error-0027" } },
         { "E2068", new ErrorModel() { Message = "class schedule does not exist", Type = "class-schedule-error-0028" } },
-        { "E2069", new ErrorModel() { Message = "Error when delete class schedule", Type = "class-schedule-error-0028" } },
+        { "E2069", new ErrorModel() { Message = "Error when delete class schedule", Type = "class-schedule-error-0029" } },
+        { "E2070", new ErrorModel() { Message = "Only one module can be studied in a period of time", Type = "class-schedule-error-0030" } },
 
         // Day off
         { "E0100", new ErrorModel() { Message = "This day off already in database", Type = "day-off-error-0001" } },
