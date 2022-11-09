@@ -123,6 +123,12 @@ public class SroController : ControllerBase
     public IActionResult CreateSro([FromBody] CreateSroRequest request)
     {
         if (CheckSroNameForCreate(request, out var badRequest)) return badRequest;
+        
+        if(request.Birthday.Date >= DateTime.Now.Date)
+        {
+            var error = ErrorDescription.Error["E0022_3"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         if (CheckMobilePhoneForCreate(request, out var badRequestObjectResult)) return badRequestObjectResult;
 
@@ -218,6 +224,12 @@ public class SroController : ControllerBase
         }
 
         if (CheckSroNameForUpdate(request, out var badRequest)) return badRequest;
+        
+        if(request.Birthday.Date >= DateTime.Now.Date)
+        {
+            var error = ErrorDescription.Error["E0022_3"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         if (CheckMobilePhoneForUpdate(id, request, out var updateSro)) return updateSro;
 

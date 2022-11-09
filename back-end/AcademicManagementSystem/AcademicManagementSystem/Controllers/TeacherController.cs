@@ -26,7 +26,7 @@ public class TeacherController : ControllerBase
     private const string RegexSpecialCharacters = StringConstant.RegexSpecialCharsNotAllowForPersonName;
     private const string Digits = StringConstant.RegexDigits;
     private readonly IUserService _userService;
-    
+
     public TeacherController(AmsContext context, IUserService userService)
     {
         _context = context;
@@ -167,6 +167,12 @@ public class TeacherController : ControllerBase
             Regex.IsMatch(request.LastName, Digits))
         {
             var error = ErrorDescription.Error["E0047"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.Birthday.Date >= DateTime.Now.Date)
+        {
+            var error = ErrorDescription.Error["E0052_3"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -351,6 +357,12 @@ public class TeacherController : ControllerBase
         if (IsMobilePhoneExists(request.MobilePhone, true, id))
         {
             var error = ErrorDescription.Error["E0050"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.Birthday.Date >= DateTime.Now.Date)
+        {
+            var error = ErrorDescription.Error["E0052_3"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -545,16 +557,16 @@ public class TeacherController : ControllerBase
 
         return Ok(CustomResponse.Ok("Change active successfully", null!));
     }
-    
+
     // get all teacher of center with SRO
     [HttpGet]
     [Route("api/teachers/get-by-sro")]
     [Authorize(Roles = "sro")]
-    public IActionResult GetAllTeacherOfCenterWithSRO()
+    public IActionResult GetAllTeacherOfCenterWithSro()
     {
         var userId = Int32.Parse(_userService.GetUserId());
         var user = _context.Users.FirstOrDefault(u => u.Id == userId)!;
-        
+
         var teachers = GetAllUserRoleTeacher().Where(t => t.CenterId == user.CenterId);
         return Ok(CustomResponse.Ok("Get teachers by sro successfully", teachers));
     }
