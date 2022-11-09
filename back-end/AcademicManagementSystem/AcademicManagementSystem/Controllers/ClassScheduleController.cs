@@ -8,7 +8,6 @@ using AcademicManagementSystem.Models.RoomController.RoomModel;
 using AcademicManagementSystem.Models.RoomController.RoomTypeModel;
 using AcademicManagementSystem.Models.Sessions;
 using AcademicManagementSystem.Models.TeacherSkillController;
-using AcademicManagementSystem.Models.UserController.TeacherController;
 using AcademicManagementSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +25,7 @@ public class ClassScheduleController : ControllerBase
     private const int Practice = 2;
     private const int TheoryExam = 3;
     private const int PracticeExam = 4;
+    private const int StatusNotScheduled = 5;
 
     public ClassScheduleController(AmsContext context, IUserService userService)
     {
@@ -51,7 +51,7 @@ public class ClassScheduleController : ControllerBase
     [HttpGet]
     [Route("api/classes/{classId:int}/schedules/modules/{moduleId:int}")]
     [Authorize(Roles = "sro")]
-    public IActionResult GetClassScheduleByClassIdAndScheduleId(int classId, int moduleId)
+    public IActionResult GetClassScheduleByClassIdAndModuleId(int classId, int moduleId)
     {
         var classSelect = _context.Classes.Find(classId);
         if (classSelect == null)
@@ -186,19 +186,19 @@ public class ClassScheduleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var errorCode = GetErrorCodeOccurWhenCreate(classId, request);
+        var errorCode = GetCodeIfErrorOccurWhenCreate(classId, request, centerId, module);
         if (errorCode != null)
         {
             var error = ErrorDescription.Error[errorCode];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var errorCode2 = GetCodeIfStartDateNotTheNextOfLastSession(classId, request);
-        if (errorCode2 != null)
-        {
-            var error = ErrorDescription.Error[errorCode2];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
+        // var errorCode2 = GetCodeIfStartDateNotTheNextOfLastSession(classId, request);
+        // if (errorCode2 != null)
+        // {
+        //     var error = ErrorDescription.Error[errorCode2];
+        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        // }
 
         var errorCode3 = GetErrorCodeWhenConflictResource(classId, request);
         if (errorCode3 != null)
@@ -219,7 +219,6 @@ public class ClassScheduleController : ControllerBase
             LabRoomId = request.LabRoomId,
             ExamRoomId = request.ExamRoomId,
             Duration = request.Duration,
-            StartDate = request.StartDate,
             ClassHourStart = request.ClassHourStart,
             ClassHourEnd = request.ClassHourEnd,
             Note = request.Note,
@@ -248,7 +247,7 @@ public class ClassScheduleController : ControllerBase
         var i = 0;
         while (i < request.Duration)
         {
-            if (IsValidLearningDate(request, learningDate, teacherDayOff, true))
+            if (IsValidLearningDateForCreate(request, learningDate, teacherDayOff, true))
             {
                 i++;
                 var session = new Session
@@ -280,7 +279,7 @@ public class ClassScheduleController : ControllerBase
                     session.Title = module.ModuleName + " - P" + i;
                     session.RoomId = (int)request.LabRoomId!;
                 }
-                else if (module.ModuleType == 3 && !practiceSessions.Any(practice => practice == i))
+                else if (module.ModuleType == 3 && practiceSessions.All(practice => practice != i))
                 {
                     session.SessionTypeId = Theory;
                     session.Title = module.ModuleName + " - T" + i;
@@ -296,6 +295,9 @@ public class ClassScheduleController : ControllerBase
             learningDate += TimeSpan.FromDays(1);
         }
 
+        classScheduleToCreate.StartDate =
+            classScheduleToCreate.Sessions.OrderBy(cs => cs.LearningDate).First().LearningDate;
+
         classScheduleToCreate.EndDate = endDate;
 
         // check if module has theory exam
@@ -303,7 +305,7 @@ public class ClassScheduleController : ControllerBase
         {
             while (true)
             {
-                if (IsValidLearningDate(request, learningDate, globalDayOff, false))
+                if (IsValidLearningDateForCreate(request, learningDate, globalDayOff, false))
                 {
                     var session = new Session
                     {
@@ -329,7 +331,7 @@ public class ClassScheduleController : ControllerBase
         {
             while (true)
             {
-                if (IsValidLearningDate(request, learningDate, globalDayOff, false))
+                if (IsValidLearningDateForCreate(request, learningDate, globalDayOff, false))
                 {
                     var session = new Session
                     {
@@ -349,14 +351,14 @@ public class ClassScheduleController : ControllerBase
             }
         }
 
-        var isTeacherBusy = CheckTeacherBusy(classScheduleToCreate);
+        var isTeacherBusy = CheckTeacherBusy(classScheduleToCreate, false);
         if (isTeacherBusy)
         {
             var error = ErrorDescription.Error["E2064"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var isRoomBusy = CheckRoomBusy(classScheduleToCreate, module);
+        var isRoomBusy = CheckRoomBusy(classScheduleToCreate, module, false);
         if (isRoomBusy)
         {
             var error = ErrorDescription.Error["E2065"];
@@ -368,20 +370,228 @@ public class ClassScheduleController : ControllerBase
 
         _context.ClassSchedules.Add(classScheduleToCreate);
 
-        // try
-        // {
-        _context.SaveChanges();
-        // }
-        // catch (DbUpdateException)
-        // {
-        //     var error = ErrorDescription.Error["E0078"];
-        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        // }
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (DbUpdateException)
+        {
+            var error = ErrorDescription.Error["E0078"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         var classScheduleResponse =
             GetClassSchedulesResponse(classId).First(cs => cs.Id == classScheduleToCreate.Id);
 
         return Ok(CustomResponse.Ok("Create class schedule successfully", classScheduleResponse));
+    }
+
+    [HttpPut]
+    [Route("api/classes-schedules/{scheduleId:int}")]
+    [Authorize(Roles = "sro")]
+    public IActionResult UpdateClassScheduleById(int scheduleId, [FromBody] UpdateClassScheduleRequest request)
+    {
+        var centerId = _context.Sros.Include(sro => sro.User)
+            .FirstOrDefault(sro => sro.UserId == int.Parse(_userService.GetUserId()))?.User.CenterId;
+
+        var classScheduleContext = _context.ClassSchedules
+            .Include(cs => cs.Module)
+            .ThenInclude(m => m.Center)
+            .Include(cs => cs.Sessions)
+            .FirstOrDefault(cs => cs.Id == scheduleId && cs.Module.Center.Id == centerId);
+        if (classScheduleContext == null)
+        {
+            var error = ErrorDescription.Error["E0096"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check this schedule is for this center
+        if (centerId != classScheduleContext.Module.Center.Id)
+        {
+            var error = ErrorDescription.Error["E0097"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check is learning or not
+        if (classScheduleContext.StartDate.Date <= DateTime.Now.Date)
+        {
+            var error = ErrorDescription.Error["E0098"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var module = _context.Modules.First(m => m.Id == classScheduleContext.ModuleId);
+
+        var errorCode = GetCodeIfErrorOccurWhenUpdate(request, centerId, module);
+        if (errorCode != null)
+        {
+            var error = ErrorDescription.Error[errorCode];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // remove sessions 
+        var sessions = classScheduleContext.Sessions.ToList();
+        _context.Sessions.RemoveRange(sessions);
+
+        var practiceSessions = new List<int>();
+        // remove duplicate
+        if (request.PracticeSession != null)
+        {
+            practiceSessions = request.PracticeSession.Distinct().ToList();
+        }
+
+        var learningDate = request.StartDate;
+        var endDate = new DateTime();
+
+        // get list day off of teacher
+        var dayOff = _context.DaysOff.Where(d =>
+            (d.TeacherId == null || d.TeacherId == request.TeacherId) && d.Date.Date >= request.StartDate.Date);
+        var teacherDayOff = dayOff.ToList();
+        var globalDayOff = dayOff.Where(d => d.TeacherId == null).ToList();
+
+        // auto add session base on durations
+        var i = 0;
+        while (i < request.Duration)
+        {
+            if (IsValidLearningDateForUpdate(request, learningDate, teacherDayOff, true))
+            {
+                i++;
+                var session = new Session
+                {
+                    SessionTypeId = Theory,
+                    Title = module.ModuleName + " - T" + i,
+                    LearningDate = learningDate,
+                    StartTime = request.ClassHourStart,
+                    EndTime = request.ClassHourEnd,
+                };
+
+                if (module.ModuleType == 1)
+                {
+                    session.SessionTypeId = Theory;
+                    session.Title = module.ModuleName + " - T" + i;
+                    session.RoomId = (int)request.TheoryRoomId!;
+                }
+
+                if (module.ModuleType == 2)
+                {
+                    session.SessionTypeId = Practice;
+                    session.Title = module.ModuleName + " - P" + i;
+                    session.RoomId = (int)request.LabRoomId!;
+                }
+
+                if (module.ModuleType == 3 && practiceSessions.Any(practice => practice == i))
+                {
+                    session.SessionTypeId = Practice;
+                    session.Title = module.ModuleName + " - P" + i;
+                    session.RoomId = (int)request.LabRoomId!;
+                }
+                else if (module.ModuleType == 3 && practiceSessions.All(practice => practice != i))
+                {
+                    session.SessionTypeId = Theory;
+                    session.Title = module.ModuleName + " - T" + i;
+                    session.RoomId = (int)request.TheoryRoomId!;
+                }
+
+                classScheduleContext.Sessions.Add(session);
+            }
+
+            if (i == request.Duration)
+                endDate = learningDate;
+
+            learningDate += TimeSpan.FromDays(1);
+        }
+
+        // check if module has theory exam
+        if (new List<int>() { 1, 3 }.Contains(module.ExamType))
+        {
+            while (true)
+            {
+                if (IsValidLearningDateForUpdate(request, learningDate, globalDayOff, false))
+                {
+                    var session = new Session
+                    {
+                        SessionTypeId = TheoryExam,
+                        RoomId = (int)request.ExamRoomId!,
+                        Title = module.ModuleName + " - TheoryExam",
+                        LearningDate = learningDate,
+                        StartTime = request.ClassHourStart + TimeSpan.FromHours(1),
+                        EndTime = request.ClassHourStart + TimeSpan.FromHours(2),
+                    };
+                    classScheduleContext.TheoryExamDate = learningDate;
+                    learningDate += TimeSpan.FromDays(1);
+                    classScheduleContext.Sessions.Add(session);
+                    break;
+                }
+
+                learningDate += TimeSpan.FromDays(1);
+            }
+        }
+
+        // check if module has practice exam
+        if (new List<int>() { 2, 3 }.Contains(module.ExamType))
+        {
+            while (true)
+            {
+                if (IsValidLearningDateForUpdate(request, learningDate, globalDayOff, false))
+                {
+                    var session = new Session
+                    {
+                        SessionTypeId = PracticeExam,
+                        RoomId = (int)request.ExamRoomId!,
+                        Title = module.ModuleName + " - PracticeExam",
+                        LearningDate = learningDate,
+                        StartTime = request.ClassHourStart + TimeSpan.FromHours(1),
+                        EndTime = request.ClassHourStart + TimeSpan.FromHours(2.5),
+                    };
+                    classScheduleContext.PracticalExamDate = learningDate;
+                    classScheduleContext.Sessions.Add(session);
+                    break;
+                }
+
+                learningDate += TimeSpan.FromDays(1);
+            }
+        }
+        
+        // re assign value for class schedule
+        classScheduleContext.TeacherId = request.TeacherId;
+        classScheduleContext.ClassDaysId = request.ClassDaysId;
+        classScheduleContext.WorkingTimeId = request.WorkingTimeId;
+        classScheduleContext.TheoryRoomId = request.TheoryRoomId;
+        classScheduleContext.LabRoomId = request.LabRoomId;
+        classScheduleContext.ExamRoomId = request.ExamRoomId;
+        classScheduleContext.StartDate =
+            classScheduleContext.Sessions.OrderBy(cs => cs.LearningDate).First().LearningDate;
+        classScheduleContext.EndDate = endDate;
+        classScheduleContext.Note = request.Note;
+        classScheduleContext.UpdatedAt = DateTime.Now;
+
+        var isTeacherBusy = CheckTeacherBusy(classScheduleContext, true);
+        if (isTeacherBusy)
+        {
+            var error = ErrorDescription.Error["E2064"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var isRoomBusy = CheckRoomBusy(classScheduleContext, module, true);
+        if (isRoomBusy)
+        {
+            var error = ErrorDescription.Error["E2065"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (DbUpdateException)
+        {
+            var error = ErrorDescription.Error["E0078"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var response = GetClassSchedulesResponse(classScheduleContext.ClassId)
+            .First(cs => cs.Id == classScheduleContext.Id);
+
+        return Ok(CustomResponse.Ok("Update class schedule successfully", response));
     }
 
     [HttpDelete]
@@ -409,6 +619,12 @@ public class ClassScheduleController : ControllerBase
         try
         {
             _context.ClassSchedules.Remove(classSchedule);
+
+            if (_context.ClassSchedules.ToList().Count <= 1)
+            {
+                classContext.ClassStatusId = StatusNotScheduled;
+            }
+
             _context.SaveChanges();
         }
         catch (Exception e)
@@ -420,7 +636,7 @@ public class ClassScheduleController : ControllerBase
         return Ok(CustomResponse.Ok("Delete class schedule successfully", null!));
     }
 
-    private bool CheckTeacherBusy(ClassSchedule classScheduleToCreate)
+    private bool CheckTeacherBusy(ClassSchedule classScheduleToCreate, bool isUpdate)
     {
         var listSchedule = _context.ClassSchedules
             .Include(cs => cs.Sessions)
@@ -431,6 +647,12 @@ public class ClassScheduleController : ControllerBase
                 !((classScheduleToCreate.StartDate < cs.StartDate && classScheduleToCreate.EndDate < cs.StartDate) ||
                   (classScheduleToCreate.StartDate > cs.EndDate && classScheduleToCreate.EndDate > cs.EndDate))
             );
+
+        // if update, not check for current schedule
+        if (isUpdate)
+        {
+            listSchedule = listSchedule.Where(cs => cs.Id != classScheduleToCreate.Id);
+        }
 
         foreach (var schedule in listSchedule)
         {
@@ -455,7 +677,7 @@ public class ClassScheduleController : ControllerBase
         return false;
     }
 
-    private bool CheckRoomBusy(ClassSchedule classScheduleToCreate, Module module)
+    private bool CheckRoomBusy(ClassSchedule classScheduleToCreate, Module module, bool isUpdate)
     {
         var check = classScheduleToCreate.Sessions.ToList()
             .Find(s =>
@@ -464,6 +686,19 @@ public class ClassScheduleController : ControllerBase
                     s1.RoomId == s.RoomId &&
                     s1.ClassSchedule.WorkingTimeId == classScheduleToCreate.WorkingTimeId
                 ).ToList().Count > 0);
+
+        // if update, not check for current schedule
+        if (isUpdate)
+        {
+            check = classScheduleToCreate.Sessions.ToList()
+                .Find(s =>
+                    _context.Sessions.Where(s1 =>
+                        s1.ClassScheduleId != classScheduleToCreate.Id &&
+                        s1.LearningDate.Date == s.LearningDate.Date &&
+                        s1.RoomId == s.RoomId &&
+                        s1.ClassSchedule.WorkingTimeId == classScheduleToCreate.WorkingTimeId
+                    ).ToList().Count > 0);
+        }
 
         if (check != null) return true;
 
@@ -563,7 +798,8 @@ public class ClassScheduleController : ControllerBase
         return request.StartDate.Date <= lastSession.LearningDate.Date ? "E0089" : null;
     }
 
-    private bool IsValidLearningDate(CreateClassScheduleRequest request, DateTime learningDate, List<DayOff> listDayOff,
+    private bool IsValidLearningDateForCreate(CreateClassScheduleRequest request, DateTime learningDate,
+        List<DayOff> listDayOff,
         bool isTeacherDayOff)
     {
         if (learningDate.DayOfWeek is DayOfWeek.Sunday)
@@ -622,22 +858,84 @@ public class ClassScheduleController : ControllerBase
         return true;
     }
 
-    private string? GetErrorCodeOccurWhenCreate(int classId, CreateClassScheduleRequest request)
+    private bool IsValidLearningDateForUpdate(UpdateClassScheduleRequest request, DateTime learningDate,
+        List<DayOff> listDayOff,
+        bool isTeacherDayOff)
+    {
+        if (learningDate.DayOfWeek is DayOfWeek.Sunday)
+            return false;
+
+        switch (request.ClassDaysId)
+        {
+            // monday, wednesday, friday
+            case 1:
+                if (learningDate.DayOfWeek is DayOfWeek.Tuesday or DayOfWeek.Thursday or DayOfWeek.Saturday)
+                    return false;
+                break;
+            // tuesday, thursday, saturday
+            case 2:
+                if (learningDate.DayOfWeek is DayOfWeek.Monday or DayOfWeek.Wednesday or DayOfWeek.Friday)
+                    return false;
+                break;
+        }
+
+        var isDayOff = listDayOff.Find(item => item.Date.Date == learningDate.Date);
+
+        if (isTeacherDayOff && isDayOff != null)
+        {
+            if (isDayOff.WorkingTimeId == 7)
+            {
+                return false;
+            }
+
+            if (new List<int> { 1, 4, 5 }.Contains(isDayOff.WorkingTimeId) &&
+                (IsTimeInRange(TimeSpan.FromHours(8), TimeSpan.FromHours(12), request.ClassHourStart)
+                 || IsTimeInRange(TimeSpan.FromHours(8), TimeSpan.FromHours(12), request.ClassHourEnd)))
+            {
+                return false;
+            }
+
+            if (new List<int> { 2, 4, 6 }.Contains(isDayOff.WorkingTimeId) &&
+                (IsTimeInRange(TimeSpan.FromHours(13), TimeSpan.FromHours(17), request.ClassHourStart)
+                 || IsTimeInRange(TimeSpan.FromHours(13), TimeSpan.FromHours(17), request.ClassHourEnd)))
+            {
+                return false;
+            }
+
+            if (new List<int> { 3, 5, 6 }.Contains(isDayOff.WorkingTimeId) &&
+                (IsTimeInRange(TimeSpan.FromHours(18), TimeSpan.FromHours(22), request.ClassHourStart)
+                 || IsTimeInRange(TimeSpan.FromHours(18), TimeSpan.FromHours(22), request.ClassHourEnd)))
+            {
+                return false;
+            }
+        }
+
+        if (!isTeacherDayOff && isDayOff != null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private string? GetCodeIfErrorOccurWhenCreate(int classId, CreateClassScheduleRequest request, int? centerId,
+        Module module)
     {
         var isModuleScheduledForThisClass =
             _context.ClassSchedules.Any(cs => cs.ClassId == classId && cs.ModuleId == request.ModuleId);
 
-        var theoryRoom = _context.Rooms.Find(request.TheoryRoomId);
-        var labRoom = _context.Rooms.Find(request.LabRoomId);
+        var theoryRoom = _context.Rooms.FirstOrDefault(r => request.TheoryRoomId == r.Id && r.CenterId == centerId);
+        var labRoom = _context.Rooms.FirstOrDefault(r => request.LabRoomId == r.Id && r.CenterId == centerId);
+        var examRoom = _context.Rooms.FirstOrDefault(r => request.ExamRoomId == r.Id && r.CenterId == centerId);
 
         // Check if module is already scheduled for this class -> can't create new schedule
         if (isModuleScheduledForThisClass)
             return "E0079";
 
-        if (request.Duration <= 0)
+        if (request.Duration is <= 0 or > 50)
             return "E0080";
 
-        if (request.StartDate.Date < DateTime.Now.Date)
+        if (request.StartDate.Date <= DateTime.Now.Date)
             return "E0081";
 
         switch (request.WorkingTimeId)
@@ -684,6 +982,21 @@ public class ClassScheduleController : ControllerBase
         if (request.ClassHourEnd > TimeSpan.FromHours(22) || request.ClassHourStart < TimeSpan.FromHours(8))
         {
             return "E0082_1";
+        }
+
+        if (theoryRoom == null && new List<int> { 1, 3 }.Contains(module.ModuleType))
+        {
+            return "E0084_1";
+        }
+
+        if (labRoom == null && new List<int> { 2, 3 }.Contains(module.ModuleType))
+        {
+            return "E0084_1";
+        }
+
+        if (examRoom == null && module.ExamType != 4)
+        {
+            return "E0084_1";
         }
 
         // not theory room
@@ -747,6 +1060,94 @@ public class ClassScheduleController : ControllerBase
         //
         // if (isExamRoomBusy)
         //     return "E0092";
+
+        return null;
+    }
+
+    private string? GetCodeIfErrorOccurWhenUpdate(UpdateClassScheduleRequest request, int? centerId, Module module)
+    {
+        var theoryRoom = _context.Rooms.FirstOrDefault(r => request.TheoryRoomId == r.Id && r.CenterId == centerId);
+        var labRoom = _context.Rooms.FirstOrDefault(r => request.LabRoomId == r.Id && r.CenterId == centerId);
+        var examRoom = _context.Rooms.FirstOrDefault(r => request.ExamRoomId == r.Id && r.CenterId == centerId);
+
+        if (request.Duration is <= 0 or > 50)
+            return "E0080";
+
+        if (request.StartDate.Date <= DateTime.Now.Date)
+            return "E0081";
+
+        switch (request.WorkingTimeId)
+        {
+            case 1:
+                if (!IsTimeInRange(TimeSpan.FromHours(8), TimeSpan.FromHours(12), request.ClassHourStart)
+                    || !IsTimeInRange(TimeSpan.FromHours(8), TimeSpan.FromHours(12), request.ClassHourEnd))
+                {
+                    return "E0095";
+                }
+
+                break;
+            case 2:
+                if (!IsTimeInRange(TimeSpan.FromHours(13), TimeSpan.FromHours(17), request.ClassHourStart)
+                    || !IsTimeInRange(TimeSpan.FromHours(13), TimeSpan.FromHours(17), request.ClassHourEnd))
+                {
+                    return "E0095";
+                }
+
+                break;
+            case 3:
+                if (!IsTimeInRange(TimeSpan.FromHours(18), TimeSpan.FromHours(22), request.ClassHourStart)
+                    || !IsTimeInRange(TimeSpan.FromHours(18), TimeSpan.FromHours(22), request.ClassHourEnd))
+                {
+                    return "E0095";
+                }
+
+                break;
+            default: return "E0095";
+        }
+
+        if (request.PracticeSession != null && request.PracticeSession.Any() &&
+            request.PracticeSession.Any(practice => practice > request.Duration || practice <= 0))
+        {
+            return "E0088";
+        }
+
+        if (request.ClassHourEnd - request.ClassHourStart < TimeSpan.FromHours(1)
+            || request.ClassHourEnd - request.ClassHourStart > TimeSpan.FromHours(4))
+        {
+            return "E0082";
+        }
+
+        if (request.ClassHourEnd > TimeSpan.FromHours(22) || request.ClassHourStart < TimeSpan.FromHours(8))
+        {
+            return "E0082_1";
+        }
+
+        if (theoryRoom == null && new List<int> { 1, 3 }.Contains(module.ModuleType))
+        {
+            return "E0084_1";
+        }
+
+        if (labRoom == null && new List<int> { 2, 3 }.Contains(module.ModuleType))
+        {
+            return "E0084_1";
+        }
+
+        if (examRoom == null && module.ExamType != 4)
+        {
+            return "E0084_1";
+        }
+
+        // not theory room
+        if (theoryRoom != null && theoryRoom.RoomTypeId != 1)
+        {
+            return "E0083";
+        }
+
+        //not lab room
+        if (labRoom != null && labRoom.RoomTypeId != 2)
+        {
+            return "E0084";
+        }
 
         return null;
     }
