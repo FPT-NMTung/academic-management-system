@@ -180,7 +180,7 @@ const ScheduleCreate = ({ dataModule, onSuccess }) => {
             <Select placeholder="Chọn giáo viên">
               {listTeacher.map((item) => (
                 <Select.Option value={item.user_id}>
-                  {item.first_name} {item.last_name}
+                  {`${item.first_name} ${item.last_name}`}
                 </Select.Option>
               ))}
             </Select>

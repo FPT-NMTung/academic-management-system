@@ -190,7 +190,7 @@ const CenterCreate = ({ onCreateSuccess }) => {
               >
                 {listDistrict.map((e) => (
                   <Select.Option key={e.id} value={e.id}>
-                    {e.prefix} {e.name}
+                    {`${e.prefix} ${e.name}`}
                   </Select.Option>
                 ))}
               </Select>
@@ -216,7 +216,7 @@ const CenterCreate = ({ onCreateSuccess }) => {
               >
                 {listWard.map((e) => (
                   <Select.Option key={e.id} value={e.id}>
-                    {e.prefix} {e.name}
+                    {`${e.prefix} ${e.name}`}
                   </Select.Option>
                 ))}
               </Select>
