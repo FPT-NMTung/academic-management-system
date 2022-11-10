@@ -292,7 +292,7 @@ public class SroController : ControllerBase
 
         var canDelete = CanDelete(id);
 
-        return Ok(CustomResponse.Ok("Can delete this teacher", new CheckSroCanDeleteResponse()
+        return Ok(CustomResponse.Ok("Can delete this sro", new CheckSroCanDeleteResponse()
         {
             CanDelete = canDelete
         }));
@@ -467,12 +467,14 @@ public class SroController : ControllerBase
         var user = _context.Users
             .Include(u => u.Sro)
             .Include(u => u.Sro.Classes)
-            .FirstOrDefault(u => u.Id == id && u.RoleId == SroRoleId);
+            .Include(u => u.ActiveRefreshTokens)
+            .FirstOrDefault(u => u.Id == id && u.RoleId == SroRoleId && u.ActiveRefreshTokens.Count == 0);
 
         if (user == null)
         {
             return false;
         }
+        
 
         return !user.Sro.Classes.Any();
     }

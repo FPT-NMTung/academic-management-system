@@ -620,7 +620,8 @@ public class TeacherController : ControllerBase
             .Include(u => u.Teacher.ClassSchedules)
             .Include(u => u.Teacher.DaysOff)
             .Include(u => u.Teacher.GpaRecords)
-            .FirstOrDefault(u => u.Id == id && u.RoleId == RoleIdTeacher);
+            .Include(u => u.ActiveRefreshTokens)
+            .FirstOrDefault(u => u.Id == id && u.RoleId == RoleIdTeacher && u.ActiveRefreshTokens.Count == 0);
 
         if (user == null)
         {
