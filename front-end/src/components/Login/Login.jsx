@@ -82,6 +82,9 @@ const Login = () => {
 
   return (
     <div className={classes.main}>
+      <div className={classes.back1}/>
+      <div className={classes.back2}/>
+      <div className={classes.back3}/>
       <img className={classes.logo} src={Logo} alt="logo" />
       <Spacer y={1} />
       <Card

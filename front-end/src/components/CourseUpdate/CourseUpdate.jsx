@@ -181,10 +181,13 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
                 optionFilterProp="children"
                 onChange={getlistCourseFamily}
                 dropdownStyle={{ zIndex: 9999 }}
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().includes(input.toLowerCase())
+                }
               >
                 {listCourseFamily.map((e, index) => (
                   <Select.Option key={index} value={e.code}>
-                    {e.data} {e.code}
+                    {e.code}
                   </Select.Option>
                 ))}
               </Select>

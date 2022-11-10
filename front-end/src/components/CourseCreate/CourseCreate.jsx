@@ -138,11 +138,13 @@ const CourseCreate = ({ onCreateSuccess }) => {
                 disabled={listCourseFamily.length === 0}
                 placeholder="Chọn mã chương trình"
                 optionFilterProp="children"
-                // onChange={getListDistrict}
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().includes(input.toLowerCase())
+                }
               >
                 {listCourseFamily.map((e, index) => (
                   <Select.Option key={index} value={e.code}>
-                    {e.data} {e.code}
+                    {`${e.code}`}
                   </Select.Option>
                 ))}
               </Select>

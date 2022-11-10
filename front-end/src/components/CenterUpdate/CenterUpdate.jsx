@@ -100,7 +100,7 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
         success: (res) => {
           onUpdateSuccess();
           return 'Cập nhật thành công';
-        }, 
+        },
         error: (err) => {
           return 'Cập nhật thất bại';
         },
@@ -121,7 +121,7 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
           return 'Xóa thất bại';
         },
       }
-    )
+    );
   };
 
   return (
@@ -193,6 +193,9 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
                 optionFilterProp="children"
                 onChange={getListDistrict}
                 dropdownStyle={{ zIndex: 9999 }}
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().includes(input.toLowerCase())
+                }
               >
                 {listProvince.map((e) => (
                   <Select.Option key={e.id} value={e.id}>
@@ -212,17 +215,19 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
               ]}
             >
               <Select
-                allowClear
                 showSearch
                 disabled={listDistrict.length === 0}
                 placeholder="Chọn quận/huyện"
                 optionFilterProp="children"
                 onChange={getListWard}
                 dropdownStyle={{ zIndex: 9999 }}
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().includes(input.toLowerCase())
+                }
               >
                 {listDistrict.map((e) => (
                   <Select.Option key={e.id} value={e.id}>
-                    {e.prefix} {e.name}
+                    {`${e.prefix} ${e.name}`}
                   </Select.Option>
                 ))}
               </Select>
@@ -243,10 +248,13 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
                 placeholder="Chọn phường/xã"
                 optionFilterProp="children"
                 dropdownStyle={{ zIndex: 9999 }}
+                filterOption={(input, option) =>
+                  option?.children?.toLowerCase().includes(input.toLowerCase())
+                }
               >
                 {listWard.map((e) => (
                   <Select.Option key={e.id} value={e.id}>
-                    {e.prefix} {e.name}
+                    {`${e.prefix} ${e.name}`}
                   </Select.Option>
                 ))}
               </Select>
