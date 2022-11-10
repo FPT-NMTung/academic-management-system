@@ -262,7 +262,7 @@ public static class ErrorDescription
         { "E0082_1", new ErrorModel() { Message = "Class hour must in 8h-22h", Type = "class-schedule-error-0006_1" } },
         { "E0083", new ErrorModel() { Message = "Theory room not correct", Type = "class-schedule-error-0007" } },
         { "E0084", new ErrorModel() { Message = "Lab room not correct", Type = "class-schedule-error-0008" } },
-        { "E0084_1", new ErrorModel() { Message = "Center don't has this room", Type = "class-schedule-error-0007-1" } },
+        { "E0084_1", new ErrorModel() { Message = "Module type not match with room", Type = "class-schedule-error-0007-1" } },
         { "E0085", new ErrorModel() { Message = "This day is day off", Type = "class-schedule-error-0009" } },
         { "E0086", new ErrorModel() { Message = "This teacher busy for this day", Type = "class-schedule-error-0010" } },
         { "E0087", new ErrorModel() { Message = "Start date not match with class learning days", Type = "class-schedule-error-0011" } },

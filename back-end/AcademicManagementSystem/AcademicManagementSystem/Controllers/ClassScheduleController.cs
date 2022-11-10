@@ -193,20 +193,6 @@ public class ClassScheduleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // var errorCode2 = GetCodeIfStartDateNotTheNextOfLastSession(classId, request);
-        // if (errorCode2 != null)
-        // {
-        //     var error = ErrorDescription.Error[errorCode2];
-        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        // }
-
-        var errorCode3 = GetErrorCodeWhenConflictResource(classId, request);
-        if (errorCode3 != null)
-        {
-            var error = ErrorDescription.Error[errorCode3];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
         var classScheduleToCreate = new ClassSchedule
         {
             ClassId = classId,
@@ -351,7 +337,7 @@ public class ClassScheduleController : ControllerBase
             }
         }
 
-        var isRangeTimeInvalid = IsRangeTimeInvalid(classScheduleToCreate);
+        var isRangeTimeInvalid = IsRangeTimeInvalid(classScheduleToCreate, false);
         if (isRangeTimeInvalid)
         {
             var error = ErrorDescription.Error["E2070"];
@@ -365,7 +351,7 @@ public class ClassScheduleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var isRoomBusy = CheckRoomBusy(classScheduleToCreate, module, false);
+        var isRoomBusy = CheckRoomBusy(classScheduleToCreate, false);
         if (isRoomBusy)
         {
             var error = ErrorDescription.Error["E2065"];
@@ -436,8 +422,14 @@ public class ClassScheduleController : ControllerBase
         }
 
         // remove sessions 
-        var sessions = classScheduleContext.Sessions.ToList();
-        _context.Sessions.RemoveRange(sessions);
+        var oldSessions = classScheduleContext.Sessions.ToList();
+
+        foreach (var session in oldSessions)
+        {
+            classScheduleContext.Sessions.Remove(session);
+        }
+
+        _context.Sessions.RemoveRange(oldSessions);
 
         var practiceSessions = new List<int>();
         // remove duplicate
@@ -461,6 +453,10 @@ public class ClassScheduleController : ControllerBase
         {
             if (IsValidLearningDateForUpdate(request, learningDate, teacherDayOff, true))
             {
+                // if (i == 0)
+                // {
+                //     classScheduleContext.StartDate = learningDate;   
+                // }
                 i++;
                 var session = new Session
                 {
@@ -557,7 +553,7 @@ public class ClassScheduleController : ControllerBase
                 learningDate += TimeSpan.FromDays(1);
             }
         }
-        
+
         // re assign value for class schedule
         classScheduleContext.TeacherId = request.TeacherId;
         classScheduleContext.ClassDaysId = request.ClassDaysId;
@@ -578,12 +574,21 @@ public class ClassScheduleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var isRoomBusy = CheckRoomBusy(classScheduleContext, module, true);
+        var isRoomBusy = CheckRoomBusy(classScheduleContext, true);
         if (isRoomBusy)
         {
             var error = ErrorDescription.Error["E2065"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
+
+        var isRangeTimeInvalid = IsRangeTimeInvalid(classScheduleContext, true);
+        if (isRangeTimeInvalid)
+        {
+            var error = ErrorDescription.Error["E2070"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        ChangeLearningDateForNextScheduleOfThisClass(classScheduleContext);
 
         try
         {
@@ -599,6 +604,27 @@ public class ClassScheduleController : ControllerBase
             .First(cs => cs.Id == classScheduleContext.Id);
 
         return Ok(CustomResponse.Ok("Update class schedule successfully", response));
+    }
+
+    /*
+     * TODO
+     */
+    private void ChangeLearningDateForNextScheduleOfThisClass(ClassSchedule classScheduleContext)
+    {
+        var lastDateOfUpdatedSchedule = classScheduleContext.Sessions.OrderBy(s => s.LearningDate).Last().LearningDate;
+
+        var allNextScheduleOfThisClass = _context.ClassSchedules
+            .Where(cs => cs.ClassId == classScheduleContext.ClassId && cs.StartDate <= lastDateOfUpdatedSchedule)
+            .ToList();
+
+        foreach (var schedule in allNextScheduleOfThisClass)
+        {
+            var sessions = schedule.Sessions.ToList();
+            foreach (var session in sessions)
+            {
+                // session.LearningDate
+            }
+        }
     }
 
     [HttpDelete]
@@ -634,7 +660,7 @@ public class ClassScheduleController : ControllerBase
 
             _context.SaveChanges();
         }
-        catch (Exception e)
+        catch (Exception)
         {
             var error = ErrorDescription.Error["E2069"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -684,7 +710,7 @@ public class ClassScheduleController : ControllerBase
         return false;
     }
 
-    private bool CheckRoomBusy(ClassSchedule classScheduleToCreate, Module module, bool isUpdate)
+    private bool CheckRoomBusy(ClassSchedule classScheduleToCreate, bool isUpdate)
     {
         var check = classScheduleToCreate.Sessions.ToList()
             .Find(s =>
@@ -712,9 +738,9 @@ public class ClassScheduleController : ControllerBase
         return false;
     }
 
-    private bool IsRangeTimeInvalid(ClassSchedule classScheduleToCreate)
+    private bool IsRangeTimeInvalid(ClassSchedule classScheduleToCreate, bool isUpdate)
     {
-        var sessions = classScheduleToCreate.Sessions.ToList();
+        var sessions = classScheduleToCreate.Sessions.OrderBy(s => s.LearningDate).ToList();
         var firstSession = sessions.First();
         var lastSession = sessions.Last();
 
@@ -722,6 +748,12 @@ public class ClassScheduleController : ControllerBase
             .Include(cs => cs.Sessions)
             .Where(cs => cs.ClassId == classScheduleToCreate.ClassId)
             .ToList();
+
+        if (isUpdate)
+        {
+            listSchedule = listSchedule.Where(cs => cs.Id != classScheduleToCreate.Id).ToList();
+        }
+
         foreach (var schedule in listSchedule)
         {
             var listSession = schedule.Sessions.ToList();
@@ -739,8 +771,7 @@ public class ClassScheduleController : ControllerBase
     }
 
     private bool IsValidLearningDateForCreate(CreateClassScheduleRequest request, DateTime learningDate,
-        List<DayOff> listDayOff,
-        bool isTeacherDayOff)
+        List<DayOff> listDayOff, bool isTeacherDayOff)
     {
         if (learningDate.DayOfWeek is DayOfWeek.Sunday)
             return false;
@@ -799,8 +830,7 @@ public class ClassScheduleController : ControllerBase
     }
 
     private bool IsValidLearningDateForUpdate(UpdateClassScheduleRequest request, DateTime learningDate,
-        List<DayOff> listDayOff,
-        bool isTeacherDayOff)
+        List<DayOff> listDayOff, bool isTeacherDayOff)
     {
         if (learningDate.DayOfWeek is DayOfWeek.Sunday)
             return false;
@@ -950,56 +980,6 @@ public class ClassScheduleController : ControllerBase
         {
             return "E0084";
         }
-
-        return null;
-    }
-
-    // check all resource in class schedule is busy in session date
-    private string? GetErrorCodeWhenConflictResource(int classId, CreateClassScheduleRequest request)
-    {
-        var classSchedule = _context.ClassSchedules
-            .Include(cs => cs.Sessions)
-            .FirstOrDefault(cs => cs.ClassId != classId);
-
-        if (classSchedule == null) return null;
-
-        // check teacher busy in schedule
-        // var isTeacherBusy = classSchedule.Sessions.Any(s
-        //     => s.ClassSchedule.TeacherId == request.TeacherId &&
-        //        s.LearningDate.Date == request.StartDate.Date &&
-        //        (IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourStart) ||
-        //         IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourEnd)));
-        //
-        // if (isTeacherBusy)
-        //     return "E0093";
-        //
-        // var isTheoryRoomBusy = classSchedule.Sessions.Any(s
-        //     => s.RoomId == request.TheoryRoomId &&
-        //        s.LearningDate.Date == request.StartDate.Date &&
-        //        (IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourStart) ||
-        //         IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourEnd)));
-        //
-        // if (isTheoryRoomBusy)
-        //     return "E0090";
-        //
-        // var isLabRoomBusy = classSchedule.Sessions.Any(s
-        //     => s.RoomId == request.LabRoomId &&
-        //        s.LearningDate.Date == request.StartDate.Date &&
-        //        (IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourStart) ||
-        //         IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourEnd)));
-        //
-        // if (isLabRoomBusy)
-        //     return "E0091";
-        //
-        // var isExamRoomBusy = classSchedule.Sessions.Any(s
-        //     => s.SessionTypeId is PracticeExam or TheoryExam &&
-        //        s.RoomId == request.ExamRoomId &&
-        //        s.LearningDate.Date == request.StartDate.Date &&
-        //        (IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourStart) ||
-        //         IsTimeInRange(s.StartTime, s.EndTime, request.ClassHourEnd)));
-        //
-        // if (isExamRoomBusy)
-        //     return "E0092";
 
         return null;
     }
