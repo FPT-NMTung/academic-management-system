@@ -9,7 +9,4 @@ public class ChangeClassStudentRequest
     
     [JsonPropertyName("new_class_id")]
     public int NewClassId { get; set; }
-    
-    [JsonPropertyName("is_active")]
-    public bool IsActive { get; set; }
 }

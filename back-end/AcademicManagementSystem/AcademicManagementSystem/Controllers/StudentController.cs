@@ -505,7 +505,36 @@ public class StudentController : ControllerBase
         return Ok(CustomResponse.Ok("Get student current class successfully", currentClass));
     }
 
-    // change class of student
+    // get list class that student can move to
+    [HttpGet]
+    [Route("api/students/{id:int}/classes/available-to-change")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult GetStudentAvailableClasses(int id)
+    {
+        var student = GetStudentsInThisCenterByContext().FirstOrDefault(s => s.UserId == id);
+        if (student == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Student with id: " + id + " in this center"));
+        }
+
+        var currentClass = GetAllClassesInThisCenterByContext()
+            .FirstOrDefault(c => student.CurrentClass != null && c.Id == student.CurrentClass.ClassId);
+
+        if (currentClass == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Class of Student with id: " + id + " in this center"));
+        }
+
+        var availableClasses = GetAllClassesInThisCenterByContext()
+            .Where(c =>
+                c.Id != currentClass.Id &&
+                c.CourseFamily!.Code == currentClass.CourseFamily!.Code)
+            .ToList();
+
+        return Ok(CustomResponse.Ok("Get available classes for student successfully", availableClasses));
+    }
+
+    // move student to other class
     [HttpPut]
     [Route("api/students/{id:int}/change-class")]
     [Authorize(Roles = "admin, sro")]
@@ -519,28 +548,70 @@ public class StudentController : ControllerBase
             return NotFound(CustomResponse.NotFound("Not Found Student"));
         }
 
-        if (IsClassExists(request.CurrentClassId))
+        if (!IsClassExists(request.CurrentClassId))
         {
             var error = ErrorDescription.Error["E1122"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (IsClassExists(request.NewClassId))
+        if (!IsClassExists(request.NewClassId))
         {
             var error = ErrorDescription.Error["E1123"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        // check if student is not exist in current class
+        if (student.StudentsClasses.All(sc => sc.ClassId != request.CurrentClassId || !sc.IsActive))
+        {
+            var error = ErrorDescription.Error["E1124"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
-        // _context.Users.Update(user);
-        // _context.Students.Update(user.Student);
+        // check if student is already in new class
+        if (student.StudentsClasses.Any(sc => sc.ClassId == request.NewClassId && sc.StudentId == id && sc.IsActive))
+        {
+            var error = ErrorDescription.Error["E1125"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // if new class is not in student class table, add it and change is_active current class to false
+        if (student.StudentsClasses.All(sc => sc.ClassId != request.NewClassId))
+        {
+            student.StudentsClasses.Add(new StudentClass()
+            {
+                ClassId = request.NewClassId,
+                IsActive = true,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            });
+            student.StudentsClasses
+                .FirstOrDefault(sc => sc.ClassId == request.CurrentClassId)!.IsActive = false;
+            student.StudentsClasses
+                .FirstOrDefault(sc => sc.ClassId == request.CurrentClassId)!.UpdatedAt = DateTime.Now;
+        }
+        else
+        {
+            // if new class is in student class table, update it to active and change is_active current class to false
+            var newClass = student.StudentsClasses.FirstOrDefault(sc => sc.ClassId == request.NewClassId);
+            if (newClass != null)
+            {
+                newClass.IsActive = true;
+                newClass.UpdatedAt = DateTime.Now;
+            }
+
+            student.StudentsClasses
+                .FirstOrDefault(sc => sc.ClassId == request.CurrentClassId)!.IsActive = false;
+            student.StudentsClasses
+                .FirstOrDefault(sc => sc.ClassId == request.CurrentClassId)!.UpdatedAt = DateTime.Now;
+        }
+
         try
         {
             _context.SaveChanges();
         }
         catch (Exception e)
         {
-            var error = ErrorDescription.Error["E1114"];
+            var error = ErrorDescription.Error["E1126"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -733,7 +804,9 @@ public class StudentController : ControllerBase
 
     private bool IsClassExists(int classId)
     {
-        return _context.Classes.Any(c => c.Id == classId);
+        return _context.Classes
+            .Include(c => c.Center)
+            .Any(c => c.Id == classId && c.Center.Id == _user.CenterId);
     }
 
     private bool IsMobilePhoneExists(string mobilePhone, bool isUpdate, int userId)
