@@ -7,7 +7,7 @@ import {
   Loading,
   Switch,
   Badge,
-} from '@nextui-org/react';
+} from "@nextui-org/react";
 import {
   Form,
   Input,
@@ -15,36 +15,35 @@ import {
   DatePicker,
   InputNumber,
   Descriptions,
-} from 'antd';
-import classes from './TeacherCreate.module.css';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+} from "antd";
+import classes from "./TeacherCreate.module.css";
+import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import {
   CenterApis,
   GenderApis,
   AddressApis,
   ManageTeacherApis,
-} from '../../../../apis/ListApi';
-import FetchApi from '../../../../apis/FetchApi';
-import { Validater } from '../../../../validater/Validater';
-import moment from 'moment';
-import { ErrorCodeApi } from '../../../../apis/ErrorCodeApi';
-import { Fragment } from 'react';
-import { FaLock } from 'react-icons/fa';
-import toast from 'react-hot-toast';
+} from "../../../../apis/ListApi";
+import FetchApi from "../../../../apis/FetchApi";
+import { Validater } from "../../../../validater/Validater";
+import moment from "moment";
+import { ErrorCodeApi } from "../../../../apis/ErrorCodeApi";
+import { Fragment } from "react";
+import { FaLock } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 const translateWorkingTime = {
-  1: 'Sáng',
-  2: 'Chiều',
-  3: 'Tối',
-  4: 'Sáng, Chiều',
-  5: 'Sáng, Tối',
-  6: 'Chiều, Tối',
-  7: 'Cả ngày',
+  1: "Sáng",
+  2: "Chiều",
+  3: "Tối",
+  4: "Sáng, Chiều",
+  5: "Sáng, Tối",
+  6: "Chiều, Tối",
 };
 
 const TeacherCreate = ({ modeUpdate }) => {
-  console.log('modeUpdate', modeUpdate);
+  console.log("modeUpdate", modeUpdate);
   const [listCenter, setListCenter] = useState([]);
   const [listGender, setListGender] = useState([]);
   const [listProvince, setListProvince] = useState([]);
@@ -85,7 +84,7 @@ const TeacherCreate = ({ modeUpdate }) => {
   };
 
   const getListDistrict = () => {
-    const provinceId = form.getFieldValue('province_id');
+    const provinceId = form.getFieldValue("province_id");
 
     FetchApi(AddressApis.getListDistrict, null, null, [`${provinceId}`]).then(
       (res) => {
@@ -97,8 +96,8 @@ const TeacherCreate = ({ modeUpdate }) => {
   };
 
   const getListWard = () => {
-    const provinceId = form.getFieldValue('province_id');
-    const districtId = form.getFieldValue('district_id');
+    const provinceId = form.getFieldValue("province_id");
+    const districtId = form.getFieldValue("district_id");
 
     FetchApi(AddressApis.getListWard, null, null, [
       `${provinceId}`,
@@ -130,7 +129,7 @@ const TeacherCreate = ({ modeUpdate }) => {
   };
 
   const getListDistrictForUpdate = () => {
-    const provinceId = form.getFieldValue('province_id');
+    const provinceId = form.getFieldValue("province_id");
 
     FetchApi(AddressApis.getListDistrict, null, null, [`${provinceId}`]).then(
       (res) => {
@@ -140,8 +139,8 @@ const TeacherCreate = ({ modeUpdate }) => {
   };
 
   const getListWardForUpdate = () => {
-    const provinceId = form.getFieldValue('province_id');
-    const districtId = form.getFieldValue('district_id');
+    const provinceId = form.getFieldValue("province_id");
+    const districtId = form.getFieldValue("district_id");
 
     FetchApi(AddressApis.getListWard, null, null, [
       `${provinceId}`,
@@ -208,18 +207,18 @@ const TeacherCreate = ({ modeUpdate }) => {
       district_id: data.district_id,
       ward_id: data.ward_id,
       gender_id: data.gender_id,
-      birthday: data.birthday.add(7, 'hours').toDate(),
+      birthday: data.birthday.add(7, "hours").toDate(),
       center_id: data.center_id,
       citizen_identity_card_no: data.citizen_identity_card_no?.trim(),
       citizen_identity_card_published_date:
-        data.citizen_identity_card_published_date.add(7, 'hours').toDate(),
+        data.citizen_identity_card_published_date.add(7, "hours").toDate(),
       citizen_identity_card_published_place:
         data.citizen_identity_card_published_place?.trim(),
       teacher_type_id: data.teacher_type_id,
       working_time_id: data.working_time_id,
       nickname: data.nickname?.trim(),
       company_address: data.company_address?.trim(),
-      start_working_date: data.start_working_date.add(7, 'hours').toDate(),
+      start_working_date: data.start_working_date.add(7, "hours").toDate(),
       salary: data.salary,
       tax_code: data.tax_code?.trim(),
     };
@@ -230,18 +229,18 @@ const TeacherCreate = ({ modeUpdate }) => {
     const params = modeUpdate ? [`${id}`] : null;
 
     toast.promise(FetchApi(api, body, null, params), {
-      loading: 'Đang xử lý',
+      loading: "Đang xử lý",
       success: (res) => {
         setIsCreatingOrUpdating(false);
         navigate(`/admin/account/teacher/${res.data.user_id}`);
-        return 'Thành công';
+        return "Thành công";
       },
       error: (err) => {
         setIsCreatingOrUpdating(false);
         if (err?.type_error) {
           return ErrorCodeApi[err.type_error];
         }
-        return 'Có lỗi xảy ra';
+        return "Có lỗi xảy ra";
       },
     });
   };
@@ -251,20 +250,33 @@ const TeacherCreate = ({ modeUpdate }) => {
       setIsUnlockDelete(true);
       return;
     }
-
-    toast.error('Chức năng đang được phát triển');
+    toast.promise(
+      FetchApi(ManageTeacherApis.deleteTeacher, null, null, [
+        String([`${id}`]),
+      ]),
+      {
+        loading: "Đang xóa",
+        success: (res) => {
+          navigate("/admin/account/teacher");
+          return "Xóa thành công";
+        },
+        error: (err) => {
+          return "Xóa thất bại";
+        },
+      }
+    );
   };
 
   const handleChangeActive = () => {
     toast.promise(
       FetchApi(ManageTeacherApis.changeActive, null, null, [`${id}`]),
       {
-        loading: 'Đang thay đổi trạng thái',
+        loading: "Đang thay đổi trạng thái",
         success: () => {
-          return 'Thay đổi trạng thái thành công';
+          return "Thay đổi trạng thái thành công";
         },
         error: () => {
-          return 'Thay đổi trạng thái thất bại';
+          return "Thay đổi trạng thái thất bại";
         },
       }
     );
@@ -281,26 +293,10 @@ const TeacherCreate = ({ modeUpdate }) => {
         }
       })
       .catch((err) => {
-        toast.error('Lỗi kiểm tra khả năng xóa');
+        toast.error("Lỗi kiểm tra khả năng xóa");
       });
   };
-  const handleDeleteUser = () => {
-    toast.promise(
-      FetchApi(ManageTeacherApis.deleteTeacher, null, null, [
-        String([`${id}`]),
-      ]),
-      {
-        loading: 'Đang xóa',
-        success: (res) => {
-          navigate('/admin/account/teacher');
-          return 'Xóa thành công';
-        },
-        error: (err) => {
-          return 'Xóa thất bại';
-        },
-      }
-    );
-  };
+
   useEffect(() => {
     getListCenter();
     getListGender();
@@ -322,7 +318,7 @@ const TeacherCreate = ({ modeUpdate }) => {
       disabled={modeUpdate && isGettingInformationTeacher}
     >
       <Grid.Container justify="center" gap={2}>
-        <Grid xs={7} direction={'column'} css={{ rowGap: 20 }}>
+        <Grid xs={7} direction={"column"} css={{ rowGap: 20 }}>
           <Card variant="bordered">
             <Card.Header>
               <Text
@@ -330,12 +326,12 @@ const TeacherCreate = ({ modeUpdate }) => {
                 size={16}
                 p
                 css={{
-                  width: '100%',
-                  textAlign: 'center',
+                  width: "100%",
+                  textAlign: "center",
                 }}
               >
-                {!modeUpdate && 'Tạo giáo viên mới'}
-                {modeUpdate && 'Cập nhật thông tin giáo viên'}
+                {!modeUpdate && "Tạo giáo viên mới"}
+                {modeUpdate && "Cập nhật thông tin giáo viên"}
               </Text>
             </Card.Header>
             <Card.Body>
@@ -346,7 +342,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                   rules={[
                     {
                       required: true,
-                      message: 'Hãy chọn cơ sở',
+                      message: "Hãy chọn cơ sở",
                     },
                   ]}
                 >
@@ -379,12 +375,12 @@ const TeacherCreate = ({ modeUpdate }) => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            'Trường này không được để trống'
+                            "Trường này không được để trống"
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
-                            'Trường này không được chứa ký tự đặc biệt'
+                            "Trường này không được chứa ký tự đặc biệt"
                           );
                         }
                         if (
@@ -392,7 +388,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error('Trường phải từ 1 đến 255 ký tự')
+                            new Error("Trường phải từ 1 đến 255 ký tự")
                           );
                         }
                         return Promise.resolve();
@@ -400,7 +396,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                     },
                     {
                       whitespace: true,
-                      message: 'Trường không được chứa khoảng trắng',
+                      message: "Trường không được chứa khoảng trắng",
                     },
                   ]}
                 >
@@ -415,12 +411,12 @@ const TeacherCreate = ({ modeUpdate }) => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            'Trường này không được để trống'
+                            "Trường này không được để trống"
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
                           return Promise.reject(
-                            'Trường này không được chứa ký tự đặc biệt'
+                            "Trường này không được chứa ký tự đặc biệt"
                           );
                         }
                         if (
@@ -428,7 +424,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error('Trường phải từ 1 đến 255 ký tự')
+                            new Error("Trường phải từ 1 đến 255 ký tự")
                           );
                         }
                         return Promise.resolve();
@@ -436,7 +432,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                     },
                     {
                       whitespace: true,
-                      message: 'Trường không được chứa khoảng trắng',
+                      message: "Trường không được chứa khoảng trắng",
                     },
                   ]}
                 >
@@ -448,7 +444,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                   rules={[
                     {
                       required: true,
-                      message: 'Hãy nhập giới tính',
+                      message: "Hãy nhập giới tính",
                     },
                   ]}
                 >
@@ -474,11 +470,11 @@ const TeacherCreate = ({ modeUpdate }) => {
                   rules={[
                     {
                       required: true,
-                      message: 'Hãy nhập ngày sinh',
+                      message: "Hãy nhập ngày sinh",
                     },
                   ]}
                 >
-                  <DatePicker format={'DD/MM/YYYY'} />
+                  <DatePicker format={"DD/MM/YYYY"} />
                 </Form.Item>
                 <Form.Item
                   label="Số điện thoại"
@@ -492,7 +488,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                           return Promise.resolve();
                         }
                         return Promise.reject(
-                          new Error('Số điện thoại không hợp lệ')
+                          new Error("Số điện thoại không hợp lệ")
                         );
                       },
                     },
@@ -511,7 +507,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                         if (Validater.isEmail(value)) {
                           return Promise.resolve();
                         }
-                        return Promise.reject(new Error('Email không hợp lệ'));
+                        return Promise.reject(new Error("Email không hợp lệ"));
                       },
                     },
                   ]}
@@ -528,7 +524,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                         if (Validater.isEmail(value)) {
                           return Promise.resolve();
                         }
-                        return Promise.reject(new Error('Email không hợp lệ'));
+                        return Promise.reject(new Error("Email không hợp lệ"));
                       },
                     },
                   ]}
@@ -544,7 +540,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                   rules={[
                     {
                       required: true,
-                      message: 'Hãy chọn tỉnh/thành phố',
+                      message: "Hãy chọn tỉnh/thành phố",
                     },
                   ]}
                 >
@@ -574,7 +570,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                   rules={[
                     {
                       required: true,
-                      message: 'Hãy chọn quận/huyện',
+                      message: "Hãy chọn quận/huyện",
                     },
                   ]}
                 >
@@ -604,7 +600,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                   rules={[
                     {
                       required: true,
-                      message: 'Hãy chọn phường/xã',
+                      message: "Hãy chọn phường/xã",
                     },
                   ]}
                 >
@@ -639,7 +635,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                           return Promise.resolve();
                         }
                         return Promise.reject(
-                          new Error('Số CMND/CCCD không hợp lệ')
+                          new Error("Số CMND/CCCD không hợp lệ")
                         );
                       },
                     },
@@ -653,11 +649,11 @@ const TeacherCreate = ({ modeUpdate }) => {
                   rules={[
                     {
                       required: true,
-                      message: 'Hãy nhập ngày cấp',
+                      message: "Hãy nhập ngày cấp",
                     },
                   ]}
                 >
-                  <DatePicker format={'DD/MM/YYYY'} />
+                  <DatePicker format={"DD/MM/YYYY"} />
                 </Form.Item>
                 <Form.Item
                   label="Nơi cấp"
@@ -668,7 +664,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            'Trường này không được để trống'
+                            "Trường này không được để trống"
                           );
                         }
                         if (
@@ -677,7 +673,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                           )
                         ) {
                           return Promise.reject(
-                            'Trường này không được chứa ký tự đặc biệt'
+                            "Trường này không được chứa ký tự đặc biệt"
                           );
                         }
                         if (
@@ -685,7 +681,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error('Trường phải từ 1 đến 255 ký tự')
+                            new Error("Trường phải từ 1 đến 255 ký tự")
                           );
                         }
                         return Promise.resolve();
@@ -693,7 +689,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                     },
                     {
                       whitespace: true,
-                      message: 'Trường không được chứa khoảng trắng',
+                      message: "Trường không được chứa khoảng trắng",
                     },
                   ]}
                 >
@@ -712,7 +708,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                         if (
                           value === null ||
                           value === undefined ||
-                          value.trim() === ''
+                          value.trim() === ""
                         ) {
                           return Promise.resolve();
                         }
@@ -722,7 +718,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                           )
                         ) {
                           return Promise.reject(
-                            'Trường này không được chứa ký tự đặc biệt'
+                            "Trường này không được chứa ký tự đặc biệt"
                           );
                         }
                         if (
@@ -730,7 +726,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error('Trường phải từ 1 đến 255 ký tự')
+                            new Error("Trường phải từ 1 đến 255 ký tự")
                           );
                         }
                         return Promise.resolve();
@@ -738,7 +734,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                     },
                     {
                       whitespace: true,
-                      message: 'Trường không được chứa khoảng trắng',
+                      message: "Trường không được chứa khoảng trắng",
                     },
                   ]}
                 >
@@ -750,11 +746,11 @@ const TeacherCreate = ({ modeUpdate }) => {
                   rules={[
                     {
                       required: true,
-                      message: 'Hãy nhập ngày bắt đầu',
+                      message: "Hãy nhập ngày bắt đầu",
                     },
                   ]}
                 >
-                  <DatePicker format={'DD/MM/YYYY'} />
+                  <DatePicker format={"DD/MM/YYYY"} />
                 </Form.Item>
                 <Form.Item
                   label="Nơi công tác"
@@ -766,7 +762,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                         if (
                           value === null ||
                           value === undefined ||
-                          value.trim() === ''
+                          value.trim() === ""
                         ) {
                           return Promise.resolve();
                         }
@@ -776,7 +772,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                           )
                         ) {
                           return Promise.reject(
-                            'Trường này không được chứa ký tự đặc biệt'
+                            "Trường này không được chứa ký tự đặc biệt"
                           );
                         }
                         if (
@@ -784,7 +780,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                           value.trim().length > 255
                         ) {
                           return Promise.reject(
-                            new Error('Trường phải từ 1 đến 255 ký tự')
+                            new Error("Trường phải từ 1 đến 255 ký tự")
                           );
                         }
                         return Promise.resolve();
@@ -792,7 +788,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                     },
                     {
                       whitespace: true,
-                      message: 'Trường không được chứa khoảng trắng',
+                      message: "Trường không được chứa khoảng trắng",
                     },
                   ]}
                 >
@@ -804,7 +800,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                   rules={[
                     {
                       required: true,
-                      message: 'Hãy chọn loại hợp đồng',
+                      message: "Hãy chọn loại hợp đồng",
                     },
                   ]}
                 >
@@ -835,7 +831,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                           return Promise.resolve();
                         }
                         return Promise.reject(
-                          new Error('Mã số thuế không hợp lệ')
+                          new Error("Mã số thuế không hợp lệ")
                         );
                       },
                     },
@@ -849,7 +845,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                   rules={[
                     {
                       required: true,
-                      message: 'Hãy chọn thời gian dạy',
+                      message: "Hãy chọn thời gian dạy",
                     },
                   ]}
                 >
@@ -875,17 +871,17 @@ const TeacherCreate = ({ modeUpdate }) => {
                   rules={[
                     {
                       required: true,
-                      message: 'Hãy nhập mức lương',
+                      message: "Hãy nhập mức lương",
                     },
                   ]}
                 >
                   <InputNumber
                     placeholder="Mức lương"
                     formatter={(value) =>
-                      `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                      `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                     }
-                    parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
-                    style={{ width: '100%' }}
+                    parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                    style={{ width: "100%" }}
                   />
                 </Form.Item>
               </div>
@@ -893,39 +889,25 @@ const TeacherCreate = ({ modeUpdate }) => {
 
               <div
                 style={{
-                  display: 'flex',
-                  gap: '10px',
-                  justifyContent: 'center',
+                  display: "flex",
+                  gap: "10px",
+                  justifyContent: "center",
                 }}
               >
                 <Button
                   flat
                   auto
                   css={{
-                    width: '150px',
+                    width: "150px",
                   }}
                   type="primary"
                   htmlType="submit"
                   disabled={isCreatingOrUpdating}
                 >
-                  {!modeUpdate && 'Tạo mới'}
-                  {modeUpdate && 'Cập nhật'}
+                  {!modeUpdate && "Tạo mới"}
+                  {modeUpdate && "Cập nhật"}
                 </Button>
 
-                <Button
-                  flat
-                  auto
-                  css={{
-                    width: '150px',
-                  }}
-                  color={'error'}
-                  onPress={handleDeleteUser}
-                  disabled={!canDelete}
-                  hidden={!modeUpdate}
-                >
-                  {canDelete === undefined && <Loading size="xs" />}
-                  {canDelete !== undefined && 'Xoá'}
-                </Button>
               </div>
               {/* </Form.Item> */}
             </Card.Body>
@@ -937,7 +919,7 @@ const TeacherCreate = ({ modeUpdate }) => {
             <Card
               variant="bordered"
               css={{
-                height: 'min-content',
+                height: "min-content",
               }}
             >
               <Card.Header>
@@ -945,10 +927,10 @@ const TeacherCreate = ({ modeUpdate }) => {
                   p
                   b
                   size={14}
-                  color={'error'}
+                  color={"error"}
                   css={{
-                    width: '100%',
-                    textAlign: 'center',
+                    width: "100%",
+                    textAlign: "center",
                   }}
                 >
                   Khu vực nguy hiểm
@@ -959,34 +941,35 @@ const TeacherCreate = ({ modeUpdate }) => {
                   <Descriptions.Item label="Trạng thái kích hoạt">
                     <div
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
+                        display: "flex",
+                        alignItems: "center",
                       }}
                     >
                       <Switch
                         onChange={handleChangeActive}
                         disabled={dataUser === undefined}
                         checked={dataUser?.is_active}
-                        color={'success'}
-                        size={'xs'}
+                        color={"success"}
+                        size={"xs"}
                       />
                     </div>
                   </Descriptions.Item>
                   <Descriptions.Item label="Xoá tài khoản">
                     <div
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
+                        display: "flex",
+                        alignItems: "center",
                       }}
                     >
                       <Button
-                        color={'error'}
+                        color={"error"}
                         flat={!isUnlockDelete}
                         auto
+                        disabled={!canDelete}
                         icon={isUnlockDelete ? null : <FaLock />}
                         onPress={handleDelete}
                       >
-                        {isUnlockDelete ? 'Xoá tài khoản' : 'Mở khoá'}
+                        {isUnlockDelete ? "Xoá tài khoản" : "Mở khoá"}
                       </Button>
                     </div>
                   </Descriptions.Item>

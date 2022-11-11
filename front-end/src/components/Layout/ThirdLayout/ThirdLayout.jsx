@@ -11,6 +11,7 @@ import { Fragment } from 'react';
 import { FaPowerOff, FaDoorOpen } from 'react-icons/fa';
 import { MdManageAccounts } from 'react-icons/md';
 import { ImBooks, ImBook, ImLibrary } from 'react-icons/im';
+import {IoPeopleSharp} from 'react-icons/io5';
 import {
   MdMeetingRoom,
   MdSupervisedUserCircle,
@@ -81,7 +82,7 @@ const menu = {
     {
       key: '9',
       label: 'Quản lý học viên',
-      icon: <IoHome size={16}/>,
+      icon: <IoPeopleSharp size={16}/>,
       url: '/sro/manage/student',
     },
   ],

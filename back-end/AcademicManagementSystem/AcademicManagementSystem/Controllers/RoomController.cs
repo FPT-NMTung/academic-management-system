@@ -294,14 +294,12 @@ public class RoomController : ControllerBase
         {
             return _context.Rooms.Any(r =>
                 r.CenterId == room.CenterId &&
-                r.RoomTypeId == room.RoomTypeId &&
                 r.Name == room.Name &&
                 r.Id != idUpdate);
         }
 
         return _context.Rooms.Any(r =>
             r.CenterId == room.CenterId &&
-            r.RoomTypeId == room.RoomTypeId &&
             r.Name == room.Name);
     }
 
