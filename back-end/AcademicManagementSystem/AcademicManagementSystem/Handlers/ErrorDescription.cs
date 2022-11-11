@@ -276,7 +276,7 @@ public static class ErrorDescription
         { "E0095", new ErrorModel() { Message = "Learning time not match with working time id", Type = "class-schedule-error-0019" } },
         { "E0096", new ErrorModel() { Message = "Class schedule does not exist", Type = "class-schedule-error-0020" } },
         { "E0097", new ErrorModel() { Message = "This schedule not for this center", Type = "class-schedule-error-0021" } },
-        { "E0098", new ErrorModel() { Message = "Can't update, this class is learning", Type = "class-schedule-error-0022" } },
+        { "E0098", new ErrorModel() { Message = "Can't update, this module is learning in class", Type = "class-schedule-error-0022" } },
         { "E0099", new ErrorModel() { Message = "", Type = "class-schedule-error-0023" } },
         { "E2064", new ErrorModel() { Message = "Teacher busy in this time", Type = "class-schedule-error-0024" } },
         { "E2065", new ErrorModel() { Message = "Room already used in this time", Type = "class-schedule-error-0025" } },

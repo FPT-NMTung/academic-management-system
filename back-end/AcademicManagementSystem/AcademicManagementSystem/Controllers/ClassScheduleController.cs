@@ -233,8 +233,12 @@ public class ClassScheduleController : ControllerBase
         var i = 0;
         while (i < request.Duration)
         {
-            if (IsValidLearningDateForCreate(request, learningDate, teacherDayOff, true))
+            if (IsValidLearningDate(request, learningDate, teacherDayOff, true))
             {
+                if (i == 0)
+                {
+                    classScheduleToCreate.StartDate = learningDate;
+                }
                 i++;
                 var session = new Session
                 {
@@ -281,9 +285,6 @@ public class ClassScheduleController : ControllerBase
             learningDate += TimeSpan.FromDays(1);
         }
 
-        classScheduleToCreate.StartDate =
-            classScheduleToCreate.Sessions.OrderBy(cs => cs.LearningDate).First().LearningDate;
-
         classScheduleToCreate.EndDate = endDate;
 
         // check if module has theory exam
@@ -291,7 +292,7 @@ public class ClassScheduleController : ControllerBase
         {
             while (true)
             {
-                if (IsValidLearningDateForCreate(request, learningDate, globalDayOff, false))
+                if (IsValidLearningDate(request, learningDate, globalDayOff, false))
                 {
                     var session = new Session
                     {
@@ -317,7 +318,7 @@ public class ClassScheduleController : ControllerBase
         {
             while (true)
             {
-                if (IsValidLearningDateForCreate(request, learningDate, globalDayOff, false))
+                if (IsValidLearningDate(request, learningDate, globalDayOff, false))
                 {
                     var session = new Session
                     {
@@ -408,7 +409,7 @@ public class ClassScheduleController : ControllerBase
         // check is learning or not
         if (classScheduleContext.StartDate.Date <= DateTime.Now.Date)
         {
-            var error = ErrorDescription.Error["E0098"];
+            var error = ErrorDescription.Error["E0081"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -451,12 +452,8 @@ public class ClassScheduleController : ControllerBase
         var i = 0;
         while (i < request.Duration)
         {
-            if (IsValidLearningDateForUpdate(request, learningDate, teacherDayOff, true))
+            if (IsValidLearningDate(request, learningDate, teacherDayOff, true))
             {
-                // if (i == 0)
-                // {
-                //     classScheduleContext.StartDate = learningDate;   
-                // }
                 i++;
                 var session = new Session
                 {
@@ -508,7 +505,7 @@ public class ClassScheduleController : ControllerBase
         {
             while (true)
             {
-                if (IsValidLearningDateForUpdate(request, learningDate, globalDayOff, false))
+                if (IsValidLearningDate(request, learningDate, globalDayOff, false))
                 {
                     var session = new Session
                     {
@@ -534,7 +531,7 @@ public class ClassScheduleController : ControllerBase
         {
             while (true)
             {
-                if (IsValidLearningDateForUpdate(request, learningDate, globalDayOff, false))
+                if (IsValidLearningDate(request, learningDate, globalDayOff, false))
                 {
                     var session = new Session
                     {
@@ -553,6 +550,8 @@ public class ClassScheduleController : ControllerBase
                 learningDate += TimeSpan.FromDays(1);
             }
         }
+
+        var oldStartDate = classScheduleContext.StartDate;
 
         // re assign value for class schedule
         classScheduleContext.TeacherId = request.TeacherId;
@@ -581,14 +580,19 @@ public class ClassScheduleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var isRangeTimeInvalid = IsRangeTimeInvalid(classScheduleContext, true);
-        if (isRangeTimeInvalid)
+        // var isRangeTimeInvalid = IsRangeTimeInvalid(classScheduleContext, true);
+        // if (isRangeTimeInvalid)
+        // {
+        //     var error = ErrorDescription.Error["E2070"];
+        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        // }
+
+        var check = ChangeLearningDateForNextScheduleOfThisClass(classScheduleContext, oldStartDate);
+        if (!check)
         {
-            var error = ErrorDescription.Error["E2070"];
+            var error = ErrorDescription.Error["E0098"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-
-        ChangeLearningDateForNextScheduleOfThisClass(classScheduleContext);
 
         try
         {
@@ -609,22 +613,98 @@ public class ClassScheduleController : ControllerBase
     /*
      * TODO
      */
-    private void ChangeLearningDateForNextScheduleOfThisClass(ClassSchedule classScheduleContext)
+    private bool ChangeLearningDateForNextScheduleOfThisClass(ClassSchedule classScheduleUpdated, DateTime oldStartDate)
     {
-        var lastDateOfUpdatedSchedule = classScheduleContext.Sessions.OrderBy(s => s.LearningDate).Last().LearningDate;
-
-        var allNextScheduleOfThisClass = _context.ClassSchedules
-            .Where(cs => cs.ClassId == classScheduleContext.ClassId && cs.StartDate <= lastDateOfUpdatedSchedule)
+        // get all next schedule of requested schedule order by start date ascending for this class
+        var nextSchedules = _context.ClassSchedules
+            .Include(cs => cs.Sessions)
+            .Where(cs => cs.ClassId == classScheduleUpdated.ClassId && classScheduleUpdated.Id != cs.Id)
+            .OrderBy(cs => cs.StartDate)
             .ToList();
 
-        foreach (var schedule in allNextScheduleOfThisClass)
+        var sessionsUpdated = classScheduleUpdated.Sessions.OrderBy(cs => cs.LearningDate).ToList();
+
+        var dayOff = _context.DaysOff.Where(d =>
+            (d.TeacherId == null || d.TeacherId == classScheduleUpdated.TeacherId) &&
+            d.Date.Date >= classScheduleUpdated.StartDate.Date);
+        var teacherDayOff = dayOff.ToList();
+        var globalDayOff = dayOff.Where(d => d.TeacherId == null).ToList();
+
+        foreach (var schedule in nextSchedules)
         {
-            var sessions = schedule.Sessions.ToList();
-            foreach (var session in sessions)
+            var sessions = schedule.Sessions.OrderBy(s => s.LearningDate).ToList();
+            var firstSession = sessions.First(); // startDate
+            var lastSession = sessions.Last();
+
+            if (classScheduleUpdated.StartDate.Date < oldStartDate.Date &&
+                classScheduleUpdated.StartDate.Date >= firstSession.LearningDate.Date &&
+                classScheduleUpdated.StartDate.Date <= lastSession.LearningDate.Date)
             {
-                // session.LearningDate
+                return false;
+            }
+
+            // check last learning date of updated schedule is greater than start date of next schedule
+            if (classScheduleUpdated.StartDate.Date <= firstSession.LearningDate.Date &&
+                sessionsUpdated.Last().LearningDate.Date >= firstSession.LearningDate.Date)
+            {
+                // for method call below
+                var fakeUpdateScheduleRequest = new UpdateClassScheduleRequest
+                {
+                    ClassDaysId = schedule.ClassDaysId,
+                    ClassHourStart = schedule.ClassHourStart,
+                    ClassHourEnd = schedule.ClassHourEnd
+                };
+
+                var learningDate = sessionsUpdated.Last().LearningDate.Date + TimeSpan.FromDays(1);
+                var i = 0;
+                var isTeacherDayOff = true;
+                var daysOff = teacherDayOff;
+
+                // update learning date for each session of next schedule
+                while (i < schedule.Sessions.Count)
+                {
+                    // if session is theory exam or practice exam -> don't check teacher day off
+                    if (sessions[i].SessionTypeId is TheoryExam or PracticeExam)
+                    {
+                        isTeacherDayOff = false;
+                        daysOff = globalDayOff;
+                    }
+
+                    if (IsValidLearningDate(fakeUpdateScheduleRequest, learningDate, daysOff, isTeacherDayOff))
+                    {
+                        if (i == 0)
+                        {
+                            schedule.StartDate = learningDate;
+                        }
+
+                        if (sessions[i].SessionTypeId is Theory or Practice)
+                        {
+                            schedule.EndDate = learningDate;
+                        }
+                        
+                        if (sessions[i].SessionTypeId is TheoryExam)
+                        {
+                            schedule.TheoryExamDate = learningDate;
+                        }
+
+                        if (sessions[i].SessionTypeId is PracticeExam)
+                        {
+                            schedule.PracticalExamDate = learningDate;
+                        }
+
+                        sessions[i].LearningDate = learningDate;
+                        i++;
+                    }
+
+                    learningDate += TimeSpan.FromDays(1);
+                }
+                
+                sessionsUpdated = schedule.Sessions.OrderBy(s => s.LearningDate).ToList();
+                _context.Update(schedule);
             }
         }
+
+        return true;
     }
 
     [HttpDelete]
@@ -684,7 +764,8 @@ public class ClassScheduleController : ControllerBase
         // if update, not check for current schedule
         if (isUpdate)
         {
-            listSchedule = listSchedule.Where(cs => cs.Id != classScheduleToCreate.Id);
+            listSchedule = listSchedule.Where(cs =>
+                cs.Id != classScheduleToCreate.Id && cs.ClassId != classScheduleToCreate.ClassId);
         }
 
         foreach (var schedule in listSchedule)
@@ -720,13 +801,14 @@ public class ClassScheduleController : ControllerBase
                     s1.ClassSchedule.WorkingTimeId == classScheduleToCreate.WorkingTimeId
                 ).ToList().Count > 0);
 
-        // if update, not check for current schedule
+        // if update, not check for current schedule and this class
         if (isUpdate)
         {
             check = classScheduleToCreate.Sessions.ToList()
                 .Find(s =>
                     _context.Sessions.Where(s1 =>
                         s1.ClassScheduleId != classScheduleToCreate.Id &&
+                        s1.ClassSchedule.ClassId != classScheduleToCreate.ClassId &&
                         s1.LearningDate.Date == s.LearningDate.Date &&
                         s1.RoomId == s.RoomId &&
                         s1.ClassSchedule.WorkingTimeId == classScheduleToCreate.WorkingTimeId
@@ -770,7 +852,8 @@ public class ClassScheduleController : ControllerBase
         return false;
     }
 
-    private bool IsValidLearningDateForCreate(CreateClassScheduleRequest request, DateTime learningDate,
+// for create
+    private bool IsValidLearningDate(CreateClassScheduleRequest request, DateTime learningDate,
         List<DayOff> listDayOff, bool isTeacherDayOff)
     {
         if (learningDate.DayOfWeek is DayOfWeek.Sunday)
@@ -829,7 +912,8 @@ public class ClassScheduleController : ControllerBase
         return true;
     }
 
-    private bool IsValidLearningDateForUpdate(UpdateClassScheduleRequest request, DateTime learningDate,
+// for update
+    private bool IsValidLearningDate(UpdateClassScheduleRequest request, DateTime learningDate,
         List<DayOff> listDayOff, bool isTeacherDayOff)
     {
         if (learningDate.DayOfWeek is DayOfWeek.Sunday)
@@ -1119,7 +1203,7 @@ public class ClassScheduleController : ControllerBase
             });
     }
 
-    // method get module in this class
+// method get module in this class
     private IQueryable<Module> GetModulesBelongToThisClass(int classId)
     {
         return _context.Modules
