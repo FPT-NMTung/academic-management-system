@@ -70,181 +70,121 @@ public class DayOffController : ControllerBase
             var error = ErrorDescription.Error[errorCode];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-
-        var dayOff = new DayOff()
+        
+        if (request.WorkingTimeIds.Length == 0)
         {
-            Title = request.Title,
-            Date = request.Date,
-            TeacherId = request.TeacherId,
-            WorkingTimeId = request.WorkingTimeId
-        };
-
-        _context.DaysOff.Add(dayOff);
-        try
-        {
-            _context.SaveChanges();
-            HandlingSchedule(request);
-            _context.SaveChanges();
-        }
-        catch (DbUpdateException)
-        {
-            var error = ErrorDescription.Error["E0102"];
+            var error = ErrorDescription.Error["E2071"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var response = GetDayOffsQuery().First(d => d.Id == dayOff.Id);
+        if (request.WorkingTimeIds.Any(time => time is > 3 or < 1))
+        {
+            var error = ErrorDescription.Error["E2071"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
-        return Ok(CustomResponse.Ok("Create day off successfully", response));
+        foreach (var item in request.WorkingTimeIds)
+        {
+            var isExist = _context.DaysOff.Any(d => d.Date.Date == request.Date.Date && d.WorkingTimeId == item);
+            if (!isExist) continue;
+            var error = ErrorDescription.Error["E0100"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // get list schedule affected by day off
+        var scheduleAffected = _context.Sessions
+            .Include(s => s.ClassSchedule)
+            .Where(s => s.LearningDate.Date == request.Date.Date)
+            .Where(s => request.WorkingTimeIds.Contains(s.ClassSchedule.WorkingTimeId))
+            .Select(s => s.ClassSchedule);
+
+        if (request.TeacherId != null)
+            scheduleAffected = scheduleAffected.Where(s => s.TeacherId == request.TeacherId);
+
+        var listScheduleAffected = scheduleAffected.ToList();
+        listScheduleAffected.ForEach(schedule => { UpdateSchedule(schedule, request); });
+
+        foreach (var item in request.WorkingTimeIds)
+        {
+            _context.DaysOff.Add(new DayOff
+            {
+                Title = request.Title,
+                Date = request.Date,
+                TeacherId = request.TeacherId,
+                WorkingTimeId = item
+            });
+        }
+        _context.SaveChanges();
+
+        return Ok(CustomResponse.Ok("Create day off successfully", null!));
     }
 
-    private void HandlingSchedule(CreateDayOffRequest request)
+    private void UpdateSchedule(ClassSchedule schedule, CreateDayOffRequest request)
     {
-        var schedule = _context.ClassSchedules
-            .Include(c => c.Sessions).FirstOrDefault(s =>
-                (request.TeacherId == s.TeacherId || request.TeacherId == null ) &&
-                s.WorkingTimeId == request.WorkingTimeId);
+        var listSessionNeedChange = _context.Sessions
+            .Where(s => s.ClassScheduleId == schedule.Id)
+            .Where(s => s.LearningDate.Date >= request.Date.Date)
+            .ToList();
 
-        if (schedule == null) return;
-
-        var existSession = schedule.Sessions.FirstOrDefault(s =>
-            s.LearningDate.Date.Date == request.Date.Date && s.ClassSchedule.WorkingTimeId == request.WorkingTimeId);
-
-        if (existSession != null)
+        // update schedule: learning date of current session to next session
+        for (var index = 0; index < listSessionNeedChange.Count; index++)
         {
-            var sessions = schedule.Sessions.Where(s => s.LearningDate.Date.Date >= existSession.LearningDate.Date)
-                .ToList();
+            var selectedSession = listSessionNeedChange[index];
+            var nextSession = index + 1 < listSessionNeedChange.Count ? listSessionNeedChange[index + 1] : null;
 
-            // change date to the next day
-            var i = 0;
-            while (i < sessions.Count)
+            if (nextSession == null)
             {
-                // last date or exam sessions
-                if (i == sessions.Count - 1 || sessions[i].SessionTypeId is TheoryExam or PracticeExam)
+                var nextDay = GetNextLearningDateValid(selectedSession.LearningDate.Date, schedule);
+                selectedSession.LearningDate = nextDay;
+
+                var sessionDub = _context.Sessions
+                    .Include(s => s.ClassSchedule)
+                    .FirstOrDefault(s =>
+                        s.ClassSchedule.ClassId == schedule.ClassId &&
+                        s.LearningDate.Date == nextDay.Date);
+
+                if (sessionDub != null)
                 {
-                    break;
+                    var nextSchedule = sessionDub.ClassSchedule;
+                    UpdateSchedule(nextSchedule, request);
                 }
 
-                var session = sessions[i];
-                var nextSession = sessions[++i];
-                session.LearningDate = nextSession.LearningDate;
+                break;
             }
 
-            // get list day off of teacher
-            var dayOff = _context.DaysOff.Where(d => d.Date.Date >= request.Date.Date &&
-                                                     (d.TeacherId == null || d.TeacherId == request.TeacherId));
+            selectedSession.LearningDate = nextSession.LearningDate;
+        }
+    }
 
-            var teacherDayOff = dayOff.ToList();
-            var globalDayOff = dayOff.Where(d => d.TeacherId == null).ToList();
+    private DateTime GetNextLearningDateValid(DateTime learningDate, ClassSchedule schedule)
+    {
+        while (true)
+        {
+            learningDate = learningDate.AddDays(1);
+            if (learningDate.DayOfWeek is DayOfWeek.Sunday)
+                continue;
 
-            //module have both practice and theory exam
-            var teExamSession = schedule.Sessions.FirstOrDefault(s => s.SessionTypeId == TheoryExam);
-            var peExamSession = schedule.Sessions.FirstOrDefault(s => s.SessionTypeId == PracticeExam);
-
-            if (teExamSession != null && peExamSession != null)
+            switch (schedule.ClassDaysId)
             {
-                schedule.EndDate = sessions[i].LearningDate;
-                // off last day while have both theory and practice exam(last day is practice exam)
-                if (request.Date.Date == peExamSession.LearningDate.Date)
-                {
-                    var practiceExamDate = peExamSession.LearningDate.AddDays(1);
-                    while (true)
-                    {
-                        if (IsValidLearningDate(schedule, practiceExamDate, globalDayOff, false))
-                        {
-                            peExamSession.LearningDate = practiceExamDate;
-                            schedule.PracticalExamDate = practiceExamDate;
-                            break;
-                        }
-
-                        practiceExamDate = practiceExamDate.AddDays(1);
-                    }
-                }
-                else
-                {
-                    sessions[i].LearningDate = sessions[i + 1].LearningDate;
-                    schedule.TheoryExamDate = sessions[i + 1].LearningDate;
-                    var nextExamDate = sessions[i + 1].LearningDate.AddDays(1);
-                    while (true)
-                    {
-                        if (IsValidLearningDate(schedule, nextExamDate, globalDayOff, false))
-                        {
-                            sessions[i + 1].LearningDate = nextExamDate;
-                            schedule.PracticalExamDate = nextExamDate;
-                            break;
-                        }
-
-                        nextExamDate = nextExamDate.AddDays(1);
-                    }
-                }
+                case 1 when learningDate.DayOfWeek is DayOfWeek.Tuesday or DayOfWeek.Thursday or DayOfWeek.Saturday:
+                case 2 when learningDate.DayOfWeek is DayOfWeek.Monday or DayOfWeek.Wednesday or DayOfWeek.Friday:
+                    continue;
             }
 
-            // module have only theory exam or practice exam
-            if ((teExamSession != null && peExamSession == null) || (peExamSession != null && teExamSession == null))
-            {
-                schedule.EndDate = sessions[i].LearningDate;
-                var learningDate = sessions[i].LearningDate.AddDays(1);
+            if (_context.DaysOff.Any(d =>
+                    d.Date.Date == learningDate.Date && d.WorkingTimeId == schedule.WorkingTimeId))
+                continue;
 
-                while (true)
-                {
-                    if (IsValidLearningDate(schedule, learningDate, globalDayOff, false))
-                    {
-                        sessions[i].LearningDate = learningDate;
-                        break;
-                    }
-
-                    learningDate = learningDate.AddDays(1);
-                }
-
-                if (teExamSession != null && peExamSession == null)
-                {
-                    teExamSession.LearningDate = learningDate;
-                }
-
-                if (peExamSession != null && teExamSession == null)
-                {
-                    peExamSession.LearningDate = learningDate;
-                }
-            }
-
-
-            // module is session theory or practice
-            if (sessions[i].SessionTypeId is Theory or Practice)
-            {
-                schedule.EndDate = sessions[i].LearningDate;
-                var learningDate = sessions[i].LearningDate.AddDays(1);
-                while (true)
-                {
-                    if (IsValidLearningDate(schedule, learningDate, teacherDayOff, true))
-                    {
-                        sessions[i].LearningDate = learningDate;
-                        schedule.EndDate = learningDate;
-                        break;
-                    }
-
-                    learningDate = learningDate.AddDays(1);
-                }
-            }
-
-            _context.UpdateRange(sessions);
-            _context.Update(schedule);
+            return learningDate;
         }
     }
 
     private string? GetCodeIfExistErrorWhenCreate(CreateDayOffRequest request)
     {
-        var isDayOffExist = _context.DaysOff.Any(d => d.Date.Date == request.Date.Date &&
-                                                      d.WorkingTimeId == request.WorkingTimeId &&
-                                                      d.TeacherId == request.TeacherId);
-        if (isDayOffExist)
-        {
-            return "E0100";
-        }
-
         if (request.Date < DateTime.Now)
         {
             return "E0101";
         }
-
         return null;
     }
 
