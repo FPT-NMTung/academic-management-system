@@ -82,7 +82,22 @@ public class StudentController : ControllerBase
             var s3 = RemoveDiacritics(student.LastName!.ToLower());
             var studentFullName = s2 + " " + s3;
             var s4 = RemoveDiacritics(student.EnrollNumber!.ToLower());
-            var s5 = RemoveDiacritics(student.CurrentClassName!.ToLower());
+            var s5 = "";
+            if (student.CurrentClass?.ClassName != null)
+            {
+                s5 = RemoveDiacritics(student.CurrentClass.ClassName!.ToLower());
+            }
+            else
+            {
+                if (student.OldClass != null)
+                {
+                    foreach (var c in student.OldClass)
+                    {
+                        s5 = RemoveDiacritics(c.ClassName!.ToLower());
+                    }
+                }
+            }
+
             var s6 = RemoveDiacritics(student.Email!.ToLower());
             var s7 = RemoveDiacritics(student.EmailOrganization!.ToLower());
 
@@ -484,7 +499,8 @@ public class StudentController : ControllerBase
             return NotFound(CustomResponse.NotFound("Not Found Student with id: " + id + " in this center"));
         }
 
-        var currentClass = GetAllClassesInThisCenterByContext().FirstOrDefault(c => c.Id == student.CurrentClassId);
+        var currentClass = GetAllClassesInThisCenterByContext()
+            .FirstOrDefault(c => student.CurrentClass != null && c.Id == student.CurrentClass.ClassId);
 
         if (currentClass == null)
         {
@@ -614,14 +630,24 @@ public class StudentController : ControllerBase
                 {
                     Id = u.Role.Id, Value = u.Role.Value
                 },
-                OldClassId = u.Student.StudentsClasses.Where(sc => !sc.IsActive)
-                    .First(sc => sc.StudentId == u.Student.UserId).Class.Id,
-                OldClassName = u.Student.StudentsClasses.Where(sc => !sc.IsActive)
-                    .First(sc => sc.StudentId == u.Student.UserId).Class.Name,
-                CurrentClassId = u.Student.StudentsClasses.Where(sc => sc.IsActive)
-                    .First(sc => sc.StudentId == u.Student.UserId).Class.Id,
-                CurrentClassName = u.Student.StudentsClasses.Where(sc => sc.IsActive)
-                    .First(sc => sc.StudentId == u.Student.UserId).Class.Name
+                // OldClassId = u.Student.StudentsClasses.Where(sc => !sc.IsActive)
+                //     .Where(sc => sc.StudentId == u.Student.UserId).Select(cs => cs.Class.Id).ToList(),
+                // CurrentClassId = u.Student.StudentsClasses.Where(sc => sc.IsActive)
+                //     .First(sc => sc.StudentId == u.Student.UserId).Class.Id,
+                // CurrentClassName = u.Student.StudentsClasses.Where(sc => sc.IsActive)
+                //     .First(sc => sc.StudentId == u.Student.UserId).Class.Name
+                OldClass = u.Student.StudentsClasses
+                    .Where(sc => !sc.IsActive && sc.StudentId == u.Student.UserId)
+                    .Select(sc => new ClassNameResponse()
+                    {
+                        ClassId = sc.Class.Id, ClassName = sc.Class.Name
+                    }).ToList(),
+                CurrentClass = u.Student.StudentsClasses
+                    .Where(sc => sc.IsActive && sc.StudentId == u.Student.UserId)
+                    .Select(sc => new ClassNameResponse()
+                    {
+                        ClassId = sc.Class.Id, ClassName = sc.Class.Name
+                    }).FirstOrDefault()
             })
             .Where(u => u.CenterId == _user.CenterId)
             .ToList();
@@ -698,14 +724,24 @@ public class StudentController : ControllerBase
                 {
                     Id = u.Role.Id, Value = u.Role.Value
                 },
-                OldClassId = u.Student.StudentsClasses.Where(sc => !sc.IsActive)
-                    .First(sc => sc.StudentId == u.Student.UserId).Class.Id,
-                OldClassName = u.Student.StudentsClasses.Where(sc => !sc.IsActive)
-                    .First(sc => sc.StudentId == u.Student.UserId).Class.Name,
-                CurrentClassId = u.Student.StudentsClasses.Where(sc => sc.IsActive)
-                    .First(sc => sc.StudentId == u.Student.UserId).Class.Id,
-                CurrentClassName = u.Student.StudentsClasses.Where(sc => sc.IsActive)
-                    .First(sc => sc.StudentId == u.Student.UserId).Class.Name
+                // OldClassId = u.Student.StudentsClasses.Where(sc => !sc.IsActive)
+                //     .Where(sc => sc.StudentId == u.Student.UserId).Select(cs => cs.Class.Id).ToList(),
+                // CurrentClassId = u.Student.StudentsClasses.Where(sc => sc.IsActive)
+                //     .First(sc => sc.StudentId == u.Student.UserId).Class.Id,
+                // CurrentClassName = u.Student.StudentsClasses.Where(sc => sc.IsActive)
+                //     .First(sc => sc.StudentId == u.Student.UserId).Class.Name
+                OldClass = u.Student.StudentsClasses
+                    .Where(sc => !sc.IsActive && sc.StudentId == u.Student.UserId)
+                    .Select(sc => new ClassNameResponse()
+                    {
+                        ClassId = sc.Class.Id, ClassName = sc.Class.Name
+                    }).ToList(),
+                CurrentClass = u.Student.StudentsClasses
+                    .Where(sc => sc.IsActive && sc.StudentId == u.Student.UserId)
+                    .Select(sc => new ClassNameResponse()
+                    {
+                        ClassId = sc.Class.Id, ClassName = sc.Class.Name
+                    }).FirstOrDefault()
             })
             .Where(u => u.CenterId == _user.CenterId)
             .ToList();
