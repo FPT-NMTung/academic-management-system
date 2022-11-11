@@ -488,11 +488,6 @@ public class StudentController : ControllerBase
     [Authorize(Roles = "admin, sro")]
     public IActionResult GetStudentCurrentClasses(int id)
     {
-        //  var student = _context.Students
-        //     .Include(s => s.StudentsClasses)
-        //     .ThenInclude(sc => sc.Class)
-        //     .FirstOrDefault(s => s.UserId == id && !s.IsDraft && s.StudentsClasses.Any(sc => sc.IsActive));
-
         var student = GetStudentsInThisCenterByContext().FirstOrDefault(s => s.UserId == id);
         if (student == null)
         {
@@ -630,12 +625,6 @@ public class StudentController : ControllerBase
                 {
                     Id = u.Role.Id, Value = u.Role.Value
                 },
-                // OldClassId = u.Student.StudentsClasses.Where(sc => !sc.IsActive)
-                //     .Where(sc => sc.StudentId == u.Student.UserId).Select(cs => cs.Class.Id).ToList(),
-                // CurrentClassId = u.Student.StudentsClasses.Where(sc => sc.IsActive)
-                //     .First(sc => sc.StudentId == u.Student.UserId).Class.Id,
-                // CurrentClassName = u.Student.StudentsClasses.Where(sc => sc.IsActive)
-                //     .First(sc => sc.StudentId == u.Student.UserId).Class.Name
                 OldClass = u.Student.StudentsClasses
                     .Where(sc => !sc.IsActive && sc.StudentId == u.Student.UserId)
                     .Select(sc => new ClassNameResponse()
@@ -724,12 +713,6 @@ public class StudentController : ControllerBase
                 {
                     Id = u.Role.Id, Value = u.Role.Value
                 },
-                // OldClassId = u.Student.StudentsClasses.Where(sc => !sc.IsActive)
-                //     .Where(sc => sc.StudentId == u.Student.UserId).Select(cs => cs.Class.Id).ToList(),
-                // CurrentClassId = u.Student.StudentsClasses.Where(sc => sc.IsActive)
-                //     .First(sc => sc.StudentId == u.Student.UserId).Class.Id,
-                // CurrentClassName = u.Student.StudentsClasses.Where(sc => sc.IsActive)
-                //     .First(sc => sc.StudentId == u.Student.UserId).Class.Name
                 OldClass = u.Student.StudentsClasses
                     .Where(sc => !sc.IsActive && sc.StudentId == u.Student.UserId)
                     .Select(sc => new ClassNameResponse()

@@ -1546,6 +1546,7 @@ public class ClassController : ControllerBase
     private List<StudentResponse> GetAllStudentsByClassId(int id)
     {
         var students = _context.Users.Include(u => u.Student)
+            .Include(u => u.Student.StudentsClasses)
             .Include(u => u.Student.Course)
             .Include(u => u.Student.Course.CourseFamily)
             .Include(u => u.Province)
