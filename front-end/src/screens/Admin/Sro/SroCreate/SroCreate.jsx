@@ -195,8 +195,21 @@ const SroCreate = ({ modeUpdate }) => {
       setIsUnlockDelete(true);
       return;
     }
+    toast.promise(
+      FetchApi(ManageSroApis.deleteSro, null, null, [String([`${id}`])]),
+      {
+        loading: "Đang xóa",
+        success: (res) => {
+          navigate("/admin/account/sro");
+          return "Xóa thành công";
+        },
+        error: (err) => {
+          return "Xóa thất bại";
+        },
+      }
+    );
 
-    toast.error('Chức năng đang được phát triển');
+ 
   };
 
   const handleChangeActive = () => {
@@ -211,7 +224,7 @@ const SroCreate = ({ modeUpdate }) => {
     });
   };
   const checkCanDelete = () => {
-    FetchApi(ManageSroApis.checkCanDeleteSro, null, null, [String([`${id}`])])
+    FetchApi(ManageSroApis.checkCanDeleteSro, null, null, [`${id}`])
       .then((res) => {
         if (res.data.can_delete === true) {
           setCanDelete(true);
@@ -223,21 +236,7 @@ const SroCreate = ({ modeUpdate }) => {
         toast.error('Lỗi kiểm tra khả năng xóa');
       });
   };
-  const handleDeleteUser = () => {
-    toast.promise(
-      FetchApi(ManageSroApis.deleteSro, null, null, [String([`${id}`])]),
-      {
-        loading: 'Đang xóa',
-        success: (res) => {
-          navigate('/admin/account/sro');
-          return 'Xóa thành công';
-        },
-        error: (err) => {
-          return 'Xóa thất bại';
-        },
-      }
-    );
-  };
+
 
   useEffect(() => {
     getListCenter();
@@ -533,7 +532,7 @@ const SroCreate = ({ modeUpdate }) => {
                   >
                     {listDistrict.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
-                        {e.prefix} {e.name}
+                        {`${e.prefix} ${e.name}`}
                       </Select.Option>
                     ))}
                   </Select>
@@ -560,7 +559,7 @@ const SroCreate = ({ modeUpdate }) => {
                   >
                     {listWard.map((e) => (
                       <Select.Option key={e.id} value={e.id}>
-                        {e.prefix} {e.name}
+                        {`${e.prefix} ${e.name}`}
                       </Select.Option>
                     ))}
                   </Select>
@@ -677,20 +676,7 @@ const SroCreate = ({ modeUpdate }) => {
                   {modeUpdate && 'Cập nhật'}
                 </Button>
 
-                <Button
-                  flat
-                  auto
-                  css={{
-                    width: '150px',
-                  }}
-                  color={'error'}
-                  onPress={handleDeleteUser}
-                  disabled={!canDelete}
-                  hidden={!modeUpdate}
-                >
-                  {canDelete === undefined && <Loading size="xs" />}
-                  {canDelete !== undefined && 'Xoá'}
-                </Button>
+                
               </div>
             </Card.Body>
           </Card>
@@ -748,6 +734,7 @@ const SroCreate = ({ modeUpdate }) => {
                         auto
                         icon={isUnlockDelete ? null : <FaLock />}
                         onPress={handleDelete}
+                        disabled={!canDelete}
                       >
                         {isUnlockDelete ? 'Xoá tài khoản' : 'Mở khoá'}
                       </Button>

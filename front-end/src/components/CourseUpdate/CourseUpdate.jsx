@@ -187,7 +187,7 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
               >
                 {listCourseFamily.map((e, index) => (
                   <Select.Option key={index} value={e.code}>
-                    {e.data} {e.code}
+                    {e.code}
                   </Select.Option>
                 ))}
               </Select>
