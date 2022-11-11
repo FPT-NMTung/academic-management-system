@@ -123,6 +123,12 @@ public class SroController : ControllerBase
     public IActionResult CreateSro([FromBody] CreateSroRequest request)
     {
         if (CheckSroNameForCreate(request, out var badRequest)) return badRequest;
+        
+        if(request.Birthday.Date >= DateTime.Now.Date)
+        {
+            var error = ErrorDescription.Error["E0022_3"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         if (CheckMobilePhoneForCreate(request, out var badRequestObjectResult)) return badRequestObjectResult;
 
@@ -218,6 +224,12 @@ public class SroController : ControllerBase
         }
 
         if (CheckSroNameForUpdate(request, out var badRequest)) return badRequest;
+        
+        if(request.Birthday.Date >= DateTime.Now.Date)
+        {
+            var error = ErrorDescription.Error["E0022_3"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         if (CheckMobilePhoneForUpdate(id, request, out var updateSro)) return updateSro;
 
@@ -280,7 +292,7 @@ public class SroController : ControllerBase
 
         var canDelete = CanDelete(id);
 
-        return Ok(CustomResponse.Ok("Can delete this teacher", new CheckSroCanDeleteResponse()
+        return Ok(CustomResponse.Ok("Can delete this sro", new CheckSroCanDeleteResponse()
         {
             CanDelete = canDelete
         }));
@@ -455,12 +467,14 @@ public class SroController : ControllerBase
         var user = _context.Users
             .Include(u => u.Sro)
             .Include(u => u.Sro.Classes)
-            .FirstOrDefault(u => u.Id == id && u.RoleId == SroRoleId);
+            .Include(u => u.ActiveRefreshTokens)
+            .FirstOrDefault(u => u.Id == id && u.RoleId == SroRoleId && u.ActiveRefreshTokens.Count == 0);
 
         if (user == null)
         {
             return false;
         }
+        
 
         return !user.Sro.Classes.Any();
     }

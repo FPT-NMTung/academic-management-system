@@ -293,6 +293,7 @@ public class CenterController : ControllerBase
             }
 
             center.IsActive = !center.IsActive;
+            center.UpdatedAt = DateTime.Now;
             _context.Centers.Update(center);
             _context.SaveChanges();
         }
