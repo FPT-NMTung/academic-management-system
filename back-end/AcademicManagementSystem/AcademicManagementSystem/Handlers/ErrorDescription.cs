@@ -250,6 +250,11 @@ public static class ErrorDescription
         { "E1109", new ErrorModel() { Message = "Promotion must be positive", Type = "student-error-00034" } },
         { "E1110", new ErrorModel() { Message = "Company salary must be positive", Type = "student-error-00035" } },
         { "E1114", new ErrorModel() { Message = "Fail to SaveChange when update student", Type = "student-error-00037" } },
+        { "E1122", new ErrorModel() { Message = "Current class is not exist in this center", Type = "student-error-0038" } },
+        { "E1123", new ErrorModel() { Message = "New class is not exist in this center", Type = "student-error-0039" } },
+        { "E1124", new ErrorModel() { Message = "Student is not in current class", Type = "student-error-0040" } },
+        { "E1125", new ErrorModel() { Message = "Student existed in new class", Type = "student-error-0041" } },
+        { "E1126", new ErrorModel() { Message = "Fail to SaveChange when change class student", Type = "student-error-00042" } },
         
         // class schedule
         { "E0077", new ErrorModel() { Message = "Module Not For This Class", Type = "class-schedule-error-0001" } },
