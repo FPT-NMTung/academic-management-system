@@ -142,9 +142,15 @@ public class StudentResponse
     [JsonPropertyName("course")]
     public CourseResponse? Course { get; set; }
     
-    [JsonPropertyName("class_id")]
-    public int? ClassId { get; set; }
+    [JsonPropertyName("old_class_id")]
+    public int? OldClassId { get; set; }
     
-    [JsonPropertyName("class_name")]
-    public string? ClassName { get; set; }
+    [JsonPropertyName("old_class_name")]
+    public string? OldClassName { get; set; }
+    
+    [JsonPropertyName("current_class_id")]
+    public int? CurrentClassId { get; set; }
+    
+    [JsonPropertyName("current_class_name")]
+    public string? CurrentClassName { get; set; }
 }
