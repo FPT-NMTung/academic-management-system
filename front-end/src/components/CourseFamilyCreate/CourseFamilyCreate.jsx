@@ -146,17 +146,7 @@ const CouseFamilyCreate = ({ onCreateSuccess }) => {
               </Button>
             </Form.Item>
           </Form>
-          {!isCreating && errorValue !== undefined && isFailed && (
-            <Text
-              size={14}
-              css={{
-                color: 'red',
-                textAlign: 'center',
-              }}
-            >
-              {errorValue}, vui lòng thử lại
-            </Text>
-          )}
+         
         </Card.Body>
       </Card>
     </Grid>
