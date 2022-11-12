@@ -479,4 +479,19 @@ export const ManageStudentApis = {
     method: 'PUT',
     contextType: 'application/json',
   },
+  listAvailableClassToChange: {
+    url: 'api/students/{0}/classes/available-to-change',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  changeClass: {
+    url: 'api/students/{0}/change-class',
+    method: 'PUT',
+    contextType: 'application/json',
+  },
+  getCurrentClasss: {
+    url: 'api/students/{0}/classes/',
+    method: 'GET',
+    contextType: 'application/json',
+  },
 };
