@@ -239,7 +239,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               rules={[
                 {
                   required: true,
-                  message: "Hãy chọc mã khóa học",
+                  message: "Hãy chọn mã khóa học",
                 },
               ]}
               style={{
