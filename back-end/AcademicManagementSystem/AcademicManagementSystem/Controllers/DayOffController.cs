@@ -31,8 +31,18 @@ public class DayOffController : ControllerBase
     [Authorize(Roles = "sro")]
     public IActionResult GetDaysOff()
     {
-        var daysOff = GetDayOffsQuery();
+        var daysOff = _context.DaysOff.Select(d => d.Date.Date).Distinct().ToList();
         return Ok(CustomResponse.Ok("Get days off successfully", daysOff));
+    }
+    
+    [HttpPost]
+    [Route("api/days-off/detail")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetDayOff([FromBody] GetDetailDayOffRequest request)
+    {
+        var selectDayOff = _context.DaysOff.Where(d => d.Date.Date == request.Date.Date).ToList();
+        
+        return Ok(CustomResponse.Ok("Get day off successfully", selectDayOff));
     }
 
     [HttpGet]
@@ -117,6 +127,32 @@ public class DayOffController : ControllerBase
         _context.SaveChanges();
 
         return Ok(CustomResponse.Ok("Create day off successfully", null!));
+    }
+    
+    [HttpDelete]
+    [Route("api/days-off/{id}")]
+    [Authorize(Roles = "sro")]
+    public IActionResult DeleteDayOff(int id)
+    {
+        var dayOff = _context.DaysOff.FirstOrDefault(d => d.Id == id);
+        if (dayOff == null)
+        {
+            return NotFound(CustomResponse.NotFound("Day off not found"));
+        }
+
+        _context.DaysOff.Remove(dayOff);
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E2072"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
+        return Ok(CustomResponse.Ok("Delete day off successfully", null!));
     }
 
     private void UpdateSchedule(ClassSchedule schedule, CreateDayOffRequest request)

@@ -2,13 +2,13 @@ import classes from './ThirdLayout.module.css';
 import Logo from '../../../images/logo_1.webp';
 import { NavLink } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { IoHome } from 'react-icons/io5';
+import { IoHome, IoTodaySharp } from 'react-icons/io5';
 import { Badge, Dropdown, Spacer, Text, User } from '@nextui-org/react';
 import { useNavigate } from 'react-router-dom';
 import FetchApi from '../../../apis/FetchApi';
 import { UserApis } from '../../../apis/ListApi';
 import { Fragment } from 'react';
-import { FaPowerOff, FaDoorOpen } from 'react-icons/fa';
+import { FaPowerOff, FaDoorOpen, FaCalendarDay } from 'react-icons/fa';
 import { MdManageAccounts } from 'react-icons/md';
 import { ImBooks, ImBook, ImLibrary } from 'react-icons/im';
 import {IoPeopleSharp} from 'react-icons/io5';
@@ -84,6 +84,12 @@ const menu = {
       label: 'Quản lý học viên',
       icon: <IoPeopleSharp size={16}/>,
       url: '/sro/manage/student',
+    },
+    {
+      key: '10',
+      label: 'Quản lý ngày nghỉ',
+      icon: <FaCalendarDay size={16}/>,
+      url: '/sro/manage/day-off',
     },
   ],
   teacher: [],

@@ -480,3 +480,11 @@ export const ManageStudentApis = {
     contextType: 'application/json',
   },
 };
+
+export const ManageDayOffApis = {
+  getDayOff: {
+    url: 'api/days-off',
+    method: 'GET',
+    contextType: 'application/json',
+  }
+}

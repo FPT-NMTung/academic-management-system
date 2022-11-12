@@ -291,7 +291,7 @@ public static class ErrorDescription
         { "E0101", new ErrorModel() { Message = "Date must >= today", Type = "day-off-error-0002" } },
         { "E0102", new ErrorModel() { Message = "Invalid data", Type = "day-off-error-0003" } },
         { "E2071", new ErrorModel() { Message = "Invalid working time", Type = "day-off-error-0004" } },
-
+        { "E2072", new ErrorModel() { Message = "Error when delete day-off", Type = "day-off-error-0005" } },
     };
 }
 
