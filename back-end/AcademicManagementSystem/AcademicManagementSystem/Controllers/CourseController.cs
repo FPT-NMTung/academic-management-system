@@ -120,7 +120,7 @@ public class CourseController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (request.SemesterCount is < 1 or > 10)
+        if (request.SemesterCount is < 1 or > 4)
         {
             var error = ErrorDescription.Error["E1020"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -205,7 +205,7 @@ public class CourseController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (request.SemesterCount is < 1 or > 10)
+        if (request.SemesterCount is < 1 or > 4)
         {
             var error = ErrorDescription.Error["E1020"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));

@@ -6,6 +6,10 @@ using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.AddressController.DistrictModel;
 using AcademicManagementSystem.Models.AddressController.ProvinceModel;
 using AcademicManagementSystem.Models.AddressController.WardModel;
+using AcademicManagementSystem.Models.CenterController;
+using AcademicManagementSystem.Models.ClassController;
+using AcademicManagementSystem.Models.ClassDaysController;
+using AcademicManagementSystem.Models.ClassStatusController;
 using AcademicManagementSystem.Models.CourseController;
 using AcademicManagementSystem.Models.CourseFamilyController;
 using AcademicManagementSystem.Models.GenderController;
@@ -78,7 +82,22 @@ public class StudentController : ControllerBase
             var s3 = RemoveDiacritics(student.LastName!.ToLower());
             var studentFullName = s2 + " " + s3;
             var s4 = RemoveDiacritics(student.EnrollNumber!.ToLower());
-            var s5 = RemoveDiacritics(student.ClassName!.ToLower());
+            var s5 = "";
+            if (student.CurrentClass?.ClassName != null)
+            {
+                s5 = RemoveDiacritics(student.CurrentClass.ClassName!.ToLower());
+            }
+            else
+            {
+                if (student.OldClass != null)
+                {
+                    foreach (var c in student.OldClass)
+                    {
+                        s5 = RemoveDiacritics(c.ClassName!.ToLower());
+                    }
+                }
+            }
+
             var s6 = RemoveDiacritics(student.Email!.ToLower());
             var s7 = RemoveDiacritics(student.EmailOrganization!.ToLower());
 
@@ -463,9 +482,153 @@ public class StudentController : ControllerBase
         return Ok(CustomResponse.Ok("Student updated successfully", studentResponse));
     }
 
+    // get class of student
+    [HttpGet]
+    [Route("api/students/{id:int}/classes")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult GetStudentCurrentClasses(int id)
+    {
+        var student = GetStudentsInThisCenterByContext().FirstOrDefault(s => s.UserId == id);
+        if (student == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Student with id: " + id + " in this center"));
+        }
+
+        var currentClass = GetAllClassesInThisCenterByContext()
+            .FirstOrDefault(c => student.CurrentClass != null && c.Id == student.CurrentClass.ClassId);
+
+        if (currentClass == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Class of Student with id: " + id + " in this center"));
+        }
+
+        return Ok(CustomResponse.Ok("Get student current class successfully", currentClass));
+    }
+
+    // get list class that student can move to
+    [HttpGet]
+    [Route("api/students/{id:int}/classes/available-to-change")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult GetStudentAvailableClasses(int id)
+    {
+        var student = GetStudentsInThisCenterByContext().FirstOrDefault(s => s.UserId == id);
+        if (student == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Student with id: " + id + " in this center"));
+        }
+
+        var currentClass = GetAllClassesInThisCenterByContext()
+            .FirstOrDefault(c => student.CurrentClass != null && c.Id == student.CurrentClass.ClassId);
+
+        if (currentClass == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Class of Student with id: " + id + " in this center"));
+        }
+
+        var availableClasses = GetAllClassesInThisCenterByContext()
+            .Where(c =>
+                c.Id != currentClass.Id &&
+                c.CourseFamily!.Code == currentClass.CourseFamily!.Code)
+            .ToList();
+
+        return Ok(CustomResponse.Ok("Get available classes for student successfully", availableClasses));
+    }
+
+    // move student to other class
+    [HttpPut]
+    [Route("api/students/{id:int}/change-class")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult ChangeClass(int id, [FromBody] ChangeClassStudentRequest request)
+    {
+        var student = _context.Students
+            .Include(s => s.StudentsClasses)
+            .FirstOrDefault(s => s.UserId == id);
+        if (student == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Student"));
+        }
+
+        if (!IsClassExists(request.CurrentClassId))
+        {
+            var error = ErrorDescription.Error["E1122"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsClassExists(request.NewClassId))
+        {
+            var error = ErrorDescription.Error["E1123"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check if student is not exist in current class
+        if (student.StudentsClasses.All(sc => sc.ClassId != request.CurrentClassId || !sc.IsActive))
+        {
+            var error = ErrorDescription.Error["E1124"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check if student is already in new class
+        if (student.StudentsClasses.Any(sc => sc.ClassId == request.NewClassId && sc.StudentId == id && sc.IsActive))
+        {
+            var error = ErrorDescription.Error["E1125"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // if new class is not in student class table, add it and change is_active current class to false
+        if (student.StudentsClasses.All(sc => sc.ClassId != request.NewClassId))
+        {
+            student.StudentsClasses.Add(new StudentClass()
+            {
+                ClassId = request.NewClassId,
+                IsActive = true,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            });
+            student.StudentsClasses
+                .FirstOrDefault(sc => sc.ClassId == request.CurrentClassId)!.IsActive = false;
+            student.StudentsClasses
+                .FirstOrDefault(sc => sc.ClassId == request.CurrentClassId)!.UpdatedAt = DateTime.Now;
+        }
+        else
+        {
+            // if new class is in student class table, update it to active and change is_active current class to false
+            var newClass = student.StudentsClasses.FirstOrDefault(sc => sc.ClassId == request.NewClassId);
+            if (newClass != null)
+            {
+                newClass.IsActive = true;
+                newClass.UpdatedAt = DateTime.Now;
+            }
+
+            student.StudentsClasses
+                .FirstOrDefault(sc => sc.ClassId == request.CurrentClassId)!.IsActive = false;
+            student.StudentsClasses
+                .FirstOrDefault(sc => sc.ClassId == request.CurrentClassId)!.UpdatedAt = DateTime.Now;
+        }
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E1126"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var studentResponse = GetStudentsInThisCenterByContext().FirstOrDefault(s => s.UserId == id);
+        if (studentResponse == null)
+        {
+            var error = ErrorDescription.Error["E1095"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        return Ok(CustomResponse.Ok("Student changed class successfully", studentResponse));
+    }
+
     private List<StudentResponse> GetStudentsInThisCenterByContext()
     {
-        var students = _context.Users.Include(u => u.Student)
+        var students = _context.Users
+            .Include(u => u.Student)
             .Include(u => u.Student.Course)
             .Include(u => u.Student.Course.CourseFamily)
             .Include(u => u.Province)
@@ -533,8 +696,18 @@ public class StudentController : ControllerBase
                 {
                     Id = u.Role.Id, Value = u.Role.Value
                 },
-                ClassId = u.Student.StudentsClasses.First(sc => sc.StudentId == u.Student.UserId).Class.Id,
-                ClassName = u.Student.StudentsClasses.First(sc => sc.StudentId == u.Student.UserId).Class.Name
+                OldClass = u.Student.StudentsClasses
+                    .Where(sc => !sc.IsActive && sc.StudentId == u.Student.UserId)
+                    .Select(sc => new ClassNameResponse()
+                    {
+                        ClassId = sc.Class.Id, ClassName = sc.Class.Name
+                    }).ToList(),
+                CurrentClass = u.Student.StudentsClasses
+                    .Where(sc => sc.IsActive && sc.StudentId == u.Student.UserId)
+                    .Select(sc => new ClassNameResponse()
+                    {
+                        ClassId = sc.Class.Id, ClassName = sc.Class.Name
+                    }).FirstOrDefault()
             })
             .Where(u => u.CenterId == _user.CenterId)
             .ToList();
@@ -611,14 +784,30 @@ public class StudentController : ControllerBase
                 {
                     Id = u.Role.Id, Value = u.Role.Value
                 },
-                ClassId = u.Student.StudentsClasses.First(sc => sc.StudentId == u.Student.UserId).Class.Id,
-                ClassName = u.Student.StudentsClasses.First(sc => sc.StudentId == u.Student.UserId).Class.Name
+                OldClass = u.Student.StudentsClasses
+                    .Where(sc => !sc.IsActive && sc.StudentId == u.Student.UserId)
+                    .Select(sc => new ClassNameResponse()
+                    {
+                        ClassId = sc.Class.Id, ClassName = sc.Class.Name
+                    }).ToList(),
+                CurrentClass = u.Student.StudentsClasses
+                    .Where(sc => sc.IsActive && sc.StudentId == u.Student.UserId)
+                    .Select(sc => new ClassNameResponse()
+                    {
+                        ClassId = sc.Class.Id, ClassName = sc.Class.Name
+                    }).FirstOrDefault()
             })
             .Where(u => u.CenterId == _user.CenterId)
             .ToList();
         return students;
     }
 
+    private bool IsClassExists(int classId)
+    {
+        return _context.Classes
+            .Include(c => c.Center)
+            .Any(c => c.Id == classId && c.Center.Id == _user.CenterId);
+    }
 
     private bool IsMobilePhoneExists(string mobilePhone, bool isUpdate, int userId)
     {
@@ -677,6 +866,83 @@ public class StudentController : ControllerBase
     private bool IsGenderExists(int genderId)
     {
         return _context.Genders.Any(g => g.Id == genderId);
+    }
+
+    private IQueryable<ClassResponse> GetAllClassesInThisCenterByContext()
+    {
+        return _context.Classes.Include(c => c.Center)
+            .Include(c => c.ClassDays)
+            .Include(c => c.ClassStatus)
+            .Include(c => c.Center.Province)
+            .Include(c => c.Center.District)
+            .Include(c => c.Center.Ward)
+            .Include(c => c.CourseFamily)
+            .Include(c => c.StudentsClasses)
+            .Include(c => c.Sro)
+            .ThenInclude(s => s.User)
+            .Select(c => new ClassResponse()
+            {
+                Id = c.Id,
+                Name = c.Name,
+                CenterId = c.CenterId,
+                CourseFamilyCode = c.CourseFamilyCode,
+                ClassDaysId = c.ClassDaysId,
+                ClassStatusId = c.ClassStatusId,
+                StartDate = c.StartDate,
+                CompletionDate = c.CompletionDate,
+                GraduationDate = c.GraduationDate,
+                ClassHourStart = c.ClassHourStart,
+                ClassHourEnd = c.ClassHourEnd,
+                CreatedAt = c.CreatedAt,
+                UpdatedAt = c.UpdatedAt,
+                Center = new CenterResponse()
+                {
+                    Id = c.Center.Id,
+                    Name = c.Center.Name,
+                    CreatedAt = c.Center.CreatedAt,
+                    UpdatedAt = c.Center.UpdatedAt,
+                    Province = new ProvinceResponse()
+                    {
+                        Id = c.Center.Province.Id,
+                        Code = c.Center.Province.Code,
+                        Name = c.Center.Province.Name,
+                    },
+                    District = new DistrictResponse()
+                    {
+                        Id = c.Center.District.Id,
+                        Name = c.Center.District.Name,
+                        Prefix = c.Center.District.Prefix
+                    },
+                    Ward = new WardResponse()
+                    {
+                        Id = c.Center.Ward.Id,
+                        Name = c.Center.Ward.Name,
+                        Prefix = c.Center.Ward.Prefix
+                    }
+                },
+                CourseFamily = new CourseFamilyResponse()
+                {
+                    Code = c.CourseFamily.Code,
+                    Name = c.CourseFamily.Name,
+                    IsActive = c.CourseFamily.IsActive,
+                    PublishedYear = c.CourseFamily.PublishedYear,
+                    CreatedAt = c.CourseFamily.CreatedAt,
+                    UpdatedAt = c.CourseFamily.UpdatedAt
+                },
+                ClassDays = new ClassDaysResponse()
+                {
+                    Id = c.ClassDays.Id,
+                    Value = c.ClassDays.Value
+                },
+                ClassStatus = new ClassStatusResponse()
+                {
+                    Id = c.ClassStatus.Id,
+                    Value = c.ClassStatus.Value
+                },
+                SroId = c.Sro.UserId,
+                SroFirstName = c.Sro.User.FirstName,
+                SroLastName = c.Sro.User.LastName
+            }).Where(c => c.CenterId == _user.CenterId);
     }
 
     private static string RemoveDiacritics(string text)
