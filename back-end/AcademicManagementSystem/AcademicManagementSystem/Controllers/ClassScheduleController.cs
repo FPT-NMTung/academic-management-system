@@ -636,14 +636,17 @@ public class ClassScheduleController : ControllerBase
             var sessions = schedule.Sessions.OrderBy(s => s.LearningDate).ToList();
             var firstSession = sessions.First(); // startDate
             var lastSession = sessions.Last();
+            var isStarted = sessions.Any(s => s.LearningDate.Date <= DateTime.Today);
 
             // case firstDate of request is smaller than oldStartDate and it is between firstDate and lastDate of previous schedule
             if (classScheduleUpdated.StartDate.Date < oldStartDate.Date &&
                 classScheduleUpdated.StartDate.Date >= firstSession.LearningDate.Date &&
-                classScheduleUpdated.StartDate.Date <= lastSession.LearningDate.Date)
+                classScheduleUpdated.StartDate.Date <= lastSession.LearningDate.Date && isStarted)
             {
                 return false;
             }
+            
+            if(isStarted) continue;
 
             /*
              *  case firstDate of request is smaller than oldStartDate and NOT between firstDate and lastDate of previous schedule
