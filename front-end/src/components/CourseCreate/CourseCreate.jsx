@@ -163,22 +163,20 @@ const CourseCreate = ({ onCreateSuccess }) => {
             </Form.Item>
             <Form.Item
               name={'semester'}
-              label={'Học Kỳ'}
+              label={'Số lượng kỳ học'}
               rules={[
                 {
-                  // message: 'Hãy nhập học kỳ',
+                  message: "Hãy chọn số lượng kỳ học",
                   required: true,
-                  validator: (_, value) => {
-                    // check regex phone number viet nam
-                    if (Validater.isNumber(value)) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(new Error('Học kỳ không hợp lệ'));
-                  },
                 },
               ]}
             >
-              <Input />
+               <Select dropdownStyle={{ zIndex: 9999 }}>
+                <Select.Option value={1}>1</Select.Option>
+                <Select.Option value={2}>2</Select.Option>
+                <Select.Option value={3}>3</Select.Option>
+                <Select.Option value={4}>4</Select.Option>
+              </Select>
             </Form.Item>
             <Form.Item wrapperCol={{ offset: 6, span: 10 }}>
             <Button

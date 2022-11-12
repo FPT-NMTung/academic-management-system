@@ -1,12 +1,12 @@
-import { Card, Grid, Button, Text,Loading } from '@nextui-org/react';
-import { Form, Select, Input, Spin, message } from 'antd';
-import { Fragment } from 'react';
-import { useEffect, useState } from 'react';
-import FetchApi from '../../apis/FetchApi';
-import { CourseFamilyApis, CourseApis } from '../../apis/ListApi';
-import classes from './CourseUpdate.module.css';
-import { Validater } from '../../validater/Validater';
-import toast from 'react-hot-toast';
+import { Card, Grid, Button, Text, Loading } from "@nextui-org/react";
+import { Form, Select, Input, Spin, message, Slider } from "antd";
+import { Fragment } from "react";
+import { useEffect, useState } from "react";
+import FetchApi from "../../apis/FetchApi";
+import { CourseFamilyApis, CourseApis } from "../../apis/ListApi";
+import classes from "./CourseUpdate.module.css";
+import { Validater } from "../../validater/Validater";
+import toast from "react-hot-toast";
 import { ErrorCodeApi } from "../../apis/ErrorCodeApi";
 
 const CourseUpdate = ({ data, onUpdateSuccess }) => {
@@ -45,22 +45,20 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
         }
       })
       .catch((err) => {
-        toast.error('Lỗi kiểm tra khả năng xóa');
+        toast.error("Lỗi kiểm tra khả năng xóa");
       });
   };
   const handleDelete = () => {
     toast.promise(
-      FetchApi(CourseApis.deleteCourse, null, null, [
-        String(data.codecourse),
-      ]),
+      FetchApi(CourseApis.deleteCourse, null, null, [String(data.codecourse)]),
       {
-        loading: 'Đang xóa',
+        loading: "Đang xóa",
         success: (res) => {
           onUpdateSuccess();
-          return 'Xóa thành công';
+          return "Xóa thành công";
         },
         error: (err) => {
-          return 'Xóa thất bại';
+          return "Xóa thất bại";
         },
       }
     );
@@ -83,23 +81,23 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
       is_active: true,
     };
     toast.promise(
-    FetchApi(CourseApis.updateCourse, body, null, [`${e.codecourse}`]),
-    {
-      loading: "Đang cập nhật...",
-      success: (res) => {
-        onUpdateSuccess();
-        return "Cập nhật thành công !";
-      },
-      error: (err) => {
-        setIsUpdating(false);
-        setIsFailed(true);
-        setMessageFailed(ErrorCodeApi[err.type_error]);
-        if (err?.type_error) {
-          return ErrorCodeApi[err.type_error];
-        }
-        return "Cập nhật thất bại !";
-      },
-    }
+      FetchApi(CourseApis.updateCourse, body, null, [`${e.codecourse}`]),
+      {
+        loading: "Đang cập nhật...",
+        success: (res) => {
+          onUpdateSuccess();
+          return "Cập nhật thành công !";
+        },
+        error: (err) => {
+          setIsUpdating(false);
+          setIsFailed(true);
+          setMessageFailed(ErrorCodeApi[err.type_error]);
+          if (err?.type_error) {
+            return ErrorCodeApi[err.type_error];
+          }
+          return "Cập nhật thất bại !";
+        },
+      }
       // .then((res) => {
       //   message.success('Cập nhật khóa học thành công');
       //   onUpdateSuccess();
@@ -108,7 +106,7 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
       //   setIsUpdating(false);
       //   setIsFailed(true);
       // }
-      );
+    );
   };
 
   return (
@@ -134,25 +132,25 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
           labelWrap
         >
           <Form.Item
-            name={'coursename'}
-            label={'Tên khóa học'}
+            name={"coursename"}
+            label={"Tên khóa học"}
             rules={[
               {
                 required: true,
                 validator: (_, value) => {
                   if (value === null || value === undefined) {
-                    return Promise.reject('Trường này không được để trống');
+                    return Promise.reject("Trường này không được để trống");
                   }
                   if (
                     Validater.isContaintSpecialCharacterForName(value.trim())
                   ) {
                     return Promise.reject(
-                      'Trường này không được chứa ký tự đặc biệt'
+                      "Trường này không được chứa ký tự đặc biệt"
                     );
                   }
                   if (value.trim().length < 1 || value.trim().length > 255) {
                     return Promise.reject(
-                      new Error('Trường phải từ 1 đến 255 ký tự')
+                      new Error("Trường phải từ 1 đến 255 ký tự")
                     );
                   }
                   return Promise.resolve();
@@ -165,12 +163,12 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
 
           <Fragment>
             <Form.Item
-              name={'course_family_code'}
-              label={'Mã chương trình học'}
+              name={"course_family_code"}
+              label={"Mã chương trình học"}
               rules={[
                 {
                   required: true,
-                  message: 'Hãy chọn mã chương trình học',
+                  message: "Hãy chọn mã chương trình học",
                 },
               ]}
             >
@@ -193,77 +191,72 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
               </Select>
             </Form.Item>
             <Form.Item
-              name={'codecourse'}
-              label={'Mã khóa học'}
+              name={"codecourse"}
+              label={"Mã khóa học"}
               rules={[
                 {
                   required: true,
-                  message: 'Hãy nhập mã khóa học',
+                  message: "Hãy nhập mã khóa học",
                 },
               ]}
             >
               <Input disabled />
             </Form.Item>
             <Form.Item
-              name={'semester_count'}
-              label={'Học kỳ'}
+              name={"semester_count"}
+              label={"Số lượng kỳ học"}
               rules={[
                 {
-                  // message: 'Hãy nhập học kỳ',
+                  message: "Hãy chọn số lượng kỳ học",
                   required: true,
-                  validator: (_, value) => {
-                    const semester = value.toString();
-                    // check regex phone number viet nam
-                    if (Validater.isNumber(semester)) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(new Error('Học kỳ không hợp lệ'));
-                  },
                 },
               ]}
             >
-              <Input />
+              <Select dropdownStyle={{ zIndex: 9999 }}>
+                <Select.Option value={1}>1</Select.Option>
+                <Select.Option value={2}>2</Select.Option>
+                <Select.Option value={3}>3</Select.Option>
+                <Select.Option value={4}>4</Select.Option>
+              </Select>
             </Form.Item>
           </Fragment>
 
-          <Form.Item wrapperCol={{ offset: 7, span: 99 }} >
-          <div
+          <Form.Item wrapperCol={{ offset: 7, span: 99 }}>
+            <div
               style={{
-                display: 'flex',
-                gap: '10px',
+                display: "flex",
+                gap: "10px",
               }}
             >
-          <Button
-              flat
-              auto
-              css={{
-                width: "120px",
-                
-              }}
-              type="primary"
-              htmlType="submit"
-              disabled={isUpdating}
-            >
-              Cập nhật
-            </Button>
-            <Button
+              <Button
                 flat
                 auto
                 css={{
-                  width: '80px',
+                  width: "120px",
                 }}
-                color={'error'}
+                type="primary"
+                htmlType="submit"
+                disabled={isUpdating}
+              >
+                Cập nhật
+              </Button>
+              <Button
+                flat
+                auto
+                css={{
+                  width: "80px",
+                }}
+                color={"error"}
                 disabled={!canDelete}
                 onPress={handleDelete}
               >
                 {canDelete === undefined && <Loading size="xs" />}
-                {canDelete !== undefined && 'Xoá'}
-              </Button>{' '}
-              </div>
+                {canDelete !== undefined && "Xoá"}
+              </Button>{" "}
+            </div>
           </Form.Item>
         </Form>
       )}
-    
     </Fragment>
   );
 };
