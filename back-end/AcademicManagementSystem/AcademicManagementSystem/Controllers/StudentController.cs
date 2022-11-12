@@ -525,12 +525,87 @@ public class StudentController : ControllerBase
             return NotFound(CustomResponse.NotFound("Not Found Class of Student with id: " + id + " in this center"));
         }
 
-        var availableClasses = GetAllClassesInThisCenterByContext()
-            .Where(c =>
-                c.Id != currentClass.Id &&
-                c.CourseFamily!.Code == currentClass.CourseFamily!.Code)
-            .ToList();
+        // var availableClasses = GetAllClassesInThisCenterByContext()
+        //     .Where(c =>
+        //         c.Id != currentClass.Id &&
+        //         c.CourseFamily!.Code == currentClass.CourseFamily!.Code)
+        //     .ToList();
 
+        // get available classes which student class is not more than 24
+        var availableClasses = _context.Classes
+            .Include(c => c.Center)
+            .Include(c => c.ClassSchedules)
+            .Include(c => c.ClassStatus)
+            .Include(c => c.CourseFamily)
+            .Include(c => c.StudentsClasses)
+            .ThenInclude(sc => sc.Student)
+            .Where(c => c.Center.Id == _user.CenterId &&
+                        c.Id != currentClass.Id &&
+                        c.CourseFamily.Code == currentClass.CourseFamily!.Code &&
+                        c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < 24)
+            .Select(c => new ClassResponse()
+            {
+                Id = c.Id,
+                Name = c.Name,
+                CenterId = c.CenterId,
+                CourseFamilyCode = c.CourseFamilyCode,
+                ClassDaysId = c.ClassDaysId,
+                ClassStatusId = c.ClassStatusId,
+                StartDate = c.StartDate,
+                CompletionDate = c.CompletionDate,
+                GraduationDate = c.GraduationDate,
+                ClassHourStart = c.ClassHourStart,
+                ClassHourEnd = c.ClassHourEnd,
+                CreatedAt = c.CreatedAt,
+                UpdatedAt = c.UpdatedAt,
+                Center = new CenterResponse()
+                {
+                    Id = c.Center.Id,
+                    Name = c.Center.Name,
+                    CreatedAt = c.Center.CreatedAt,
+                    UpdatedAt = c.Center.UpdatedAt,
+                    Province = new ProvinceResponse()
+                    {
+                        Id = c.Center.Province.Id,
+                        Code = c.Center.Province.Code,
+                        Name = c.Center.Province.Name,
+                    },
+                    District = new DistrictResponse()
+                    {
+                        Id = c.Center.District.Id,
+                        Name = c.Center.District.Name,
+                        Prefix = c.Center.District.Prefix
+                    },
+                    Ward = new WardResponse()
+                    {
+                        Id = c.Center.Ward.Id,
+                        Name = c.Center.Ward.Name,
+                        Prefix = c.Center.Ward.Prefix
+                    }
+                },
+                CourseFamily = new CourseFamilyResponse()
+                {
+                    Code = c.CourseFamily.Code,
+                    Name = c.CourseFamily.Name,
+                    IsActive = c.CourseFamily.IsActive,
+                    PublishedYear = c.CourseFamily.PublishedYear,
+                    CreatedAt = c.CourseFamily.CreatedAt,
+                    UpdatedAt = c.CourseFamily.UpdatedAt
+                },
+                ClassDays = new ClassDaysResponse()
+                {
+                    Id = c.ClassDays.Id,
+                    Value = c.ClassDays.Value
+                },
+                ClassStatus = new ClassStatusResponse()
+                {
+                    Id = c.ClassStatus.Id,
+                    Value = c.ClassStatus.Value
+                },
+                SroId = c.Sro.UserId,
+                SroFirstName = c.Sro.User.FirstName,
+                SroLastName = c.Sro.User.LastName
+            });
         return Ok(CustomResponse.Ok("Get available classes for student successfully", availableClasses));
     }
 
