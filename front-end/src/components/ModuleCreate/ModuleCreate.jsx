@@ -322,8 +322,25 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               name="hours"
               rules={[
                 {
-                  message: "Vui lòng nhập số tiếng học",
                   required: true,
+                  validator: (_, value) => {
+                    if (
+                      value === null ||
+                      value === undefined ||
+                      value === ''
+                    ) {
+                      return Promise.reject(
+                        'Trường này không được để trống'
+                      );
+                    }
+                    const salary = value.toString();
+                    if (Validater.isNumber(salary)) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error('Phải là số'));
+
+                    // check regex phone number viet nam
+                  },
                 },
               ]}
               style={{
@@ -337,8 +354,25 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               name="days"
               rules={[
                 {
-                  message: "Vui lòng nhập số buổi học",
                   required: true,
+                  validator: (_, value) => {
+                    if (
+                      value === null ||
+                      value === undefined ||
+                      value === ''
+                    ) {
+                      return Promise.reject(
+                        'Trường này không được để trống'
+                      );
+                    }
+                    const salary = value.toString();
+                    if (Validater.isNumber(salary)) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error('Phải là số'));
+
+                    // check regex phone number viet nam
+                  },
                 },
               ]}
               style={{
@@ -435,6 +469,34 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                 display: "inline-block",
                 width: "calc(50% - 8px)",
               }}
+              rules={[
+                {
+                  required: false,
+                  validator: (_, value) => {
+                    if (
+                      value === null ||
+                      value === undefined ||
+                      value === ''
+                    ) {
+                      return Promise.resolve();
+                    }
+                    
+                    const theory_grade = value.toString();
+                    if (Validater.isNumber(theory_grade) ) {
+                      return Promise.resolve();
+                     
+                    }
+                    return Promise.reject(new Error('Phải là số'));
+                  
+                    
+                    
+                  },
+                },
+                // {
+                //   whitespace: true,
+                //   message: "Trường không được chứa khoảng trắng",
+                // },
+              ]}
             >
               <Input
                 disabled={exam_type !== 1 && exam_type !== 3}
@@ -443,12 +505,42 @@ const ModuleCreate = ({ onCreateSuccess }) => {
             </Form.Item>
             <Form.Item
               name="max_practical_grade"
-              rules={[{}]}
               style={{
                 display: "inline-block",
                 width: "calc(50% - 8px)",
                 margin: "0 8px",
               }}
+              rules={[
+                {
+                  required: false,
+                  validator: (_, value) => {
+                    if (
+                      value === null ||
+                      value === undefined ||
+                      value === ''
+                    ) {
+                      return Promise.resolve();
+                    }
+                    if (
+                      value.trim().length < 1 ||
+                      value.trim().length > 100
+                    ) {
+                      return Promise.reject(
+                        new Error('Trường phải từ 1 đến 100 ký tự')
+                      );
+                    }
+                    const practical_grade = value.toString();
+                    if (Validater.isNumber(practical_grade)) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error('Phải là số'));
+                  },
+                },
+                // {
+                //   whitespace: true,
+                //   message: "Trường không được chứa khoảng trắng",
+                // },
+              ]}
             >
               <Input
                 disabled={exam_type !== 2 && exam_type !== 3}
@@ -549,18 +641,8 @@ const ModuleCreate = ({ onCreateSuccess }) => {
       )}
       {!isCreating &&
         isFailed &&
-        (form.resetFields(["max_theory_grade", "max_practical_grade"]),
-        (
-          <Text
-            size={14}
-            css={{
-              color: "red",
-              textAlign: "center",
-            }}
-          >
-            {errorValue}, vui lòng thử lại
-          </Text>
-        ))}
+        (form.resetFields(["max_theory_grade", "max_practical_grade"])
+        )}
     </Fragment>
   );
 };

@@ -263,17 +263,7 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
           </Form.Item>
         </Form>
       )}
-      {!isUpdating && messageFailed !== undefined && isFailed && (
-        <Text
-          size={14}
-          css={{
-            color: 'red',
-            textAlign: 'center',
-          }}
-        >
-          {messageFailed}, vui lòng thử lại
-        </Text>
-      )}
+    
     </Fragment>
   );
 };
