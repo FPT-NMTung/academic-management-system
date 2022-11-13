@@ -407,13 +407,6 @@ public class ClassScheduleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // check is learning or not
-        if (classScheduleContext.StartDate.Date <= DateTime.Now.Date)
-        {
-            var error = ErrorDescription.Error["E0081"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
         var module = _context.Modules.First(m => m.Id == classScheduleContext.ModuleId);
 
         var errorCode = GetCodeIfErrorOccurWhenUpdate(request, centerId, module);
@@ -425,6 +418,15 @@ public class ClassScheduleController : ControllerBase
 
         // remove sessions 
         var oldSessions = classScheduleContext.Sessions.ToList();
+
+        var isStart = oldSessions.Any(s => s.LearningDate <= DateTime.Now.Date);
+        
+        // check is learning or not
+        if(isStart)
+        {
+            var error = ErrorDescription.Error["E0098"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         foreach (var session in oldSessions)
         {
