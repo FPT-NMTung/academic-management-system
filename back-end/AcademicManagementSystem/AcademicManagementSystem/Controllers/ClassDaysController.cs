@@ -18,7 +18,7 @@ public class ClassDaysController : ControllerBase
     [HttpGet]
     [Route("api/class-days")]
     [Authorize(Roles = "admin, sro")]
-    public IActionResult GetClassStatuses()
+    public IActionResult GetClassDays()
     {
         var classDays =
             _context.ClassDays.Select(cd => new ClassDaysResponse()

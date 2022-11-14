@@ -239,6 +239,7 @@ public class ClassScheduleController : ControllerBase
                 {
                     classScheduleToCreate.StartDate = learningDate;
                 }
+
                 i++;
                 var session = new Session
                 {
@@ -406,13 +407,6 @@ public class ClassScheduleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // check is learning or not
-        if (classScheduleContext.StartDate.Date <= DateTime.Now.Date)
-        {
-            var error = ErrorDescription.Error["E0081"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
         var module = _context.Modules.First(m => m.Id == classScheduleContext.ModuleId);
 
         var errorCode = GetCodeIfErrorOccurWhenUpdate(request, centerId, module);
@@ -424,6 +418,15 @@ public class ClassScheduleController : ControllerBase
 
         // remove sessions 
         var oldSessions = classScheduleContext.Sessions.ToList();
+
+        var isStart = oldSessions.Any(s => s.LearningDate <= DateTime.Now.Date);
+        
+        // check is learning or not
+        if(isStart)
+        {
+            var error = ErrorDescription.Error["E0098"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         foreach (var session in oldSessions)
         {
@@ -635,73 +638,78 @@ public class ClassScheduleController : ControllerBase
             var sessions = schedule.Sessions.OrderBy(s => s.LearningDate).ToList();
             var firstSession = sessions.First(); // startDate
             var lastSession = sessions.Last();
+            var isStarted = sessions.Any(s => s.LearningDate.Date <= DateTime.Today);
 
+            // case firstDate of request is smaller than oldStartDate and it is between firstDate and lastDate of previous schedule
             if (classScheduleUpdated.StartDate.Date < oldStartDate.Date &&
                 classScheduleUpdated.StartDate.Date >= firstSession.LearningDate.Date &&
-                classScheduleUpdated.StartDate.Date <= lastSession.LearningDate.Date)
+                classScheduleUpdated.StartDate.Date <= lastSession.LearningDate.Date && isStarted)
             {
                 return false;
             }
+            
+            if(isStarted) continue;
 
-            // check last learning date of updated schedule is greater than start date of next schedule
-            if (classScheduleUpdated.StartDate.Date <= firstSession.LearningDate.Date &&
-                sessionsUpdated.Last().LearningDate.Date >= firstSession.LearningDate.Date)
+            /*
+             *  case firstDate of request is smaller than oldStartDate and NOT between firstDate and lastDate of previous schedule
+             *  or firstDate of request is bigger than oldStartDate
+             * => update all session of next schedule
+             */
+
+            // for method call below
+            var fakeUpdateScheduleRequest = new UpdateClassScheduleRequest
             {
-                // for method call below
-                var fakeUpdateScheduleRequest = new UpdateClassScheduleRequest
+                ClassDaysId = schedule.ClassDaysId,
+                ClassHourStart = schedule.ClassHourStart,
+                ClassHourEnd = schedule.ClassHourEnd
+            };
+
+            var learningDate = sessionsUpdated.Last().LearningDate.Date + TimeSpan.FromDays(1);
+            var i = 0;
+            var isTeacherDayOff = true;
+            var daysOff = teacherDayOff;
+
+            // update learning date for each session of next schedule
+            while (i < schedule.Sessions.Count)
+            {
+                // if session is theory exam or practice exam -> don't check teacher day off
+                if (sessions[i].SessionTypeId is TheoryExam or PracticeExam)
                 {
-                    ClassDaysId = schedule.ClassDaysId,
-                    ClassHourStart = schedule.ClassHourStart,
-                    ClassHourEnd = schedule.ClassHourEnd
-                };
-
-                var learningDate = sessionsUpdated.Last().LearningDate.Date + TimeSpan.FromDays(1);
-                var i = 0;
-                var isTeacherDayOff = true;
-                var daysOff = teacherDayOff;
-
-                // update learning date for each session of next schedule
-                while (i < schedule.Sessions.Count)
-                {
-                    // if session is theory exam or practice exam -> don't check teacher day off
-                    if (sessions[i].SessionTypeId is TheoryExam or PracticeExam)
-                    {
-                        isTeacherDayOff = false;
-                        daysOff = globalDayOff;
-                    }
-
-                    if (IsValidLearningDate(fakeUpdateScheduleRequest, learningDate, daysOff, isTeacherDayOff))
-                    {
-                        if (i == 0)
-                        {
-                            schedule.StartDate = learningDate;
-                        }
-
-                        if (sessions[i].SessionTypeId is Theory or Practice)
-                        {
-                            schedule.EndDate = learningDate;
-                        }
-                        
-                        if (sessions[i].SessionTypeId is TheoryExam)
-                        {
-                            schedule.TheoryExamDate = learningDate;
-                        }
-
-                        if (sessions[i].SessionTypeId is PracticeExam)
-                        {
-                            schedule.PracticalExamDate = learningDate;
-                        }
-
-                        sessions[i].LearningDate = learningDate;
-                        i++;
-                    }
-
-                    learningDate += TimeSpan.FromDays(1);
+                    isTeacherDayOff = false;
+                    daysOff = globalDayOff;
                 }
-                
-                sessionsUpdated = schedule.Sessions.OrderBy(s => s.LearningDate).ToList();
-                _context.Update(schedule);
+
+                if (IsValidLearningDate(fakeUpdateScheduleRequest, learningDate, daysOff, isTeacherDayOff))
+                {
+                    if (i == 0)
+                    {
+                        schedule.StartDate = learningDate;
+                    }
+
+                    if (sessions[i].SessionTypeId is Theory or Practice)
+                    {
+                        schedule.EndDate = learningDate;
+                    }
+
+                    if (sessions[i].SessionTypeId is TheoryExam)
+                    {
+                        schedule.TheoryExamDate = learningDate;
+                    }
+
+                    if (sessions[i].SessionTypeId is PracticeExam)
+                    {
+                        schedule.PracticalExamDate = learningDate;
+                    }
+
+                    sessions[i].LearningDate = learningDate;
+                    i++;
+                }
+
+                learningDate += TimeSpan.FromDays(1);
             }
+
+            sessionsUpdated = schedule.Sessions.OrderBy(s => s.LearningDate).ToList();
+            _context.Update(schedule);
         }
 
         return true;

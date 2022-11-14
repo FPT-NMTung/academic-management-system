@@ -239,7 +239,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               rules={[
                 {
                   required: true,
-                  message: "Hãy chọc mã khóa học",
+                  message: "Hãy chọn mã khóa học",
                 },
               ]}
               style={{
@@ -322,8 +322,19 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               name="hours"
               rules={[
                 {
-                  message: "Vui lòng nhập số tiếng học",
                   required: true,
+                  validator: (_, value) => {
+                    if (value === null || value === undefined || value === "") {
+                      return Promise.reject("Trường này không được để trống");
+                    }
+                    const hours = value.toString();
+                    if (Validater.isNumber(hours) && hours > 0 && hours <= 200) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error("Phải là số từ 1 đến 200"));
+
+                    // check regex phone number viet nam
+                  },
                 },
               ]}
               style={{
@@ -337,8 +348,19 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               name="days"
               rules={[
                 {
-                  message: "Vui lòng nhập số buổi học",
                   required: true,
+                  validator: (_, value) => {
+                    if (value === null || value === undefined || value === "") {
+                      return Promise.reject("Trường này không được để trống");
+                    }
+                    const days = value.toString();
+                    if (Validater.isNumber(days) && days > 0 && days <= 50) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error("Phải là số từ 1 đến 50"));
+
+                    // check regex phone number viet nam
+                  },
                 },
               ]}
               style={{
@@ -435,6 +457,26 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                 display: "inline-block",
                 width: "calc(50% - 8px)",
               }}
+              rules={[
+                {
+                  required: false,
+                  validator: (_, value) => {
+                    if (value === null || value === undefined || value === "") {
+                      return Promise.resolve();
+                    }
+
+                    const theory_grade = value.toString();
+                    if (
+                      Validater.isNumber(theory_grade) &&
+                      theory_grade <= 100 &&
+                      theory_grade >= 1
+                    ) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error("Phải là số từ 1 đến 100"));
+                  },
+                },
+              ]}
             >
               <Input
                 disabled={exam_type !== 1 && exam_type !== 3}
@@ -443,12 +485,35 @@ const ModuleCreate = ({ onCreateSuccess }) => {
             </Form.Item>
             <Form.Item
               name="max_practical_grade"
-              rules={[{}]}
               style={{
                 display: "inline-block",
                 width: "calc(50% - 8px)",
                 margin: "0 8px",
               }}
+              rules={[
+                {
+                  required: false,
+                  validator: (_, value) => {
+                    if (value === null || value === undefined || value === "") {
+                      return Promise.resolve();
+                    }
+
+                    const practical_grade = value.toString();
+                    if (
+                      Validater.isNumber(practical_grade) &&
+                      practical_grade <= 100 &&
+                      practical_grade >= 1
+                    ) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error("Phải là số từ 1 đến 100"));
+                  },
+                },
+                // {
+                //   whitespace: true,
+                //   message: "Trường không được chứa khoảng trắng",
+                // },
+              ]}
             >
               <Input
                 disabled={exam_type !== 2 && exam_type !== 3}
@@ -549,18 +614,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
       )}
       {!isCreating &&
         isFailed &&
-        (form.resetFields(["max_theory_grade", "max_practical_grade"]),
-        (
-          <Text
-            size={14}
-            css={{
-              color: "red",
-              textAlign: "center",
-            }}
-          >
-            {errorValue}, vui lòng thử lại
-          </Text>
-        ))}
+        form.resetFields(["max_theory_grade", "max_practical_grade"])}
     </Fragment>
   );
 };
