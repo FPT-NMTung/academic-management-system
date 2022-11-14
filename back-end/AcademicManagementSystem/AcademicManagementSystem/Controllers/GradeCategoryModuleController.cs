@@ -27,7 +27,7 @@ public class GradeCategoryModuleController : ControllerBase
 
     [HttpGet]
     [Route("api/modules/{moduleId:int}/grades")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult GetGradeCategoriesDetailByModuleId(int moduleId)
     {
         if (_context.Modules.Find(moduleId) == null)
@@ -42,8 +42,8 @@ public class GradeCategoryModuleController : ControllerBase
 
     [HttpPost]
     [Route("api/modules/{moduleId:int}/grades")]
-    [Authorize(Roles = "admin, sro")]
-    public IActionResult CreateGradeCategoryModule(int moduleId, [FromBody] CreateGradeCategoryModuleRequest request)
+    [Authorize(Roles = "admin")]
+    public IActionResult CreateOrUpdateGradeCategoryModule(int moduleId, [FromBody] CreateGradeCategoryModuleRequest request)
     {
         RemoveDataGradeCategoryAndGradeItem(moduleId);
         if (request.GradeCategoryDetails != null)
