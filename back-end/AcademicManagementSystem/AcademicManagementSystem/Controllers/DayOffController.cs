@@ -40,7 +40,18 @@ public class DayOffController : ControllerBase
     [Authorize(Roles = "sro")]
     public IActionResult GetDayOff([FromBody] GetDetailDayOffRequest request)
     {
-        var selectDayOff = _context.DaysOff.Where(d => d.Date.Date == request.Date.Date).ToList();
+        var selectDayOff = _context.DaysOff
+            .Include(d => d.Teacher)
+            .ThenInclude(d => d.User)
+            .Where(d => d.Date.Date == request.Date.Date)
+            .Select(d => new DetailDayOffResponse()
+            {
+                Title = d.Title,
+                TeacherId = d.Teacher.UserId,
+                TeacherFirstName = d.Teacher.User.FirstName,
+                TeacherLastName = d.Teacher.User.LastName,
+                WorkingTimeId = d.WorkingTimeId
+            });
 
         return Ok(CustomResponse.Ok("Get day off successfully", selectDayOff));
     }
@@ -68,7 +79,14 @@ public class DayOffController : ControllerBase
     [Authorize(Roles = "sro")]
     public IActionResult CreateDayOff([FromBody] CreateDayOffRequest request)
     {
-        var isTeacherFound = _context.Teachers.Any(t => t.UserId == request.TeacherId);
+        var sroId = _userService.GetUserId();
+        var centerId = _context.Sros.Include(sro => sro.User)
+            .FirstOrDefault(sro => Convert.ToInt32(sroId) == sro.UserId)?.User.CenterId;
+        
+        var isTeacherFound = _context.Teachers
+            .Include(t => t.User)
+            .Any(t => t.UserId == request.TeacherId && t.User.CenterId == centerId);
+        
         if (!isTeacherFound && request.TeacherId != null)
         {
             return NotFound(CustomResponse.NotFound("Teacher not found"));

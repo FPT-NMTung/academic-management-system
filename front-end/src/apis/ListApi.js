@@ -491,5 +491,10 @@ export const ManageDayOffApis = {
     url: 'api/days-off/detail',
     method: 'POST',
     contextType: 'application/json',
+  },
+  createDayOff: {
+    url: 'api/days-off',
+    method: 'POST',
+    contextType: 'application/json',
   }
 }
