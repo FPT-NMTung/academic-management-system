@@ -34,14 +34,14 @@ public class DayOffController : ControllerBase
         var daysOff = _context.DaysOff.Select(d => d.Date.Date).Distinct().ToList();
         return Ok(CustomResponse.Ok("Get days off successfully", daysOff));
     }
-    
+
     [HttpPost]
     [Route("api/days-off/detail")]
     [Authorize(Roles = "sro")]
     public IActionResult GetDayOff([FromBody] GetDetailDayOffRequest request)
     {
         var selectDayOff = _context.DaysOff.Where(d => d.Date.Date == request.Date.Date).ToList();
-        
+
         return Ok(CustomResponse.Ok("Get day off successfully", selectDayOff));
     }
 
@@ -80,7 +80,7 @@ public class DayOffController : ControllerBase
             var error = ErrorDescription.Error[errorCode];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         if (request.WorkingTimeIds.Length == 0)
         {
             var error = ErrorDescription.Error["E2071"];
@@ -95,10 +95,41 @@ public class DayOffController : ControllerBase
 
         foreach (var item in request.WorkingTimeIds)
         {
-            var isExist = _context.DaysOff.Any(d => d.Date.Date == request.Date.Date && d.WorkingTimeId == item);
-            if (!isExist) continue;
-            var error = ErrorDescription.Error["E0100"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            var selectDayOffs = _context.DaysOff
+                .Where(d => d.Date.Date == request.Date.Date && d.WorkingTimeId == item);
+
+            if (!selectDayOffs.Any())
+                continue;
+
+            if (selectDayOffs.First().TeacherId == null)
+            {
+                // can not create day off because day off global is already exist
+                var error = ErrorDescription.Error["E2073"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+
+            if (selectDayOffs.First().TeacherId != null && request.TeacherId == null)
+            {
+                foreach (var selectDayOff in selectDayOffs)
+                {
+                    _context.DaysOff.Remove(selectDayOff);
+                }
+
+                break;
+            }
+
+            if (selectDayOffs.First().TeacherId != null && request.TeacherId != null)
+            {
+                foreach (var selectDayOff in selectDayOffs)
+                {
+                    if (selectDayOff.TeacherId == request.TeacherId)
+                    {
+                        // can not create day off because day off of teacher is already exist
+                        var error = ErrorDescription.Error["E2073"];
+                        return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+                    }
+                }
+            }
         }
 
         // get list schedule affected by day off
@@ -124,11 +155,12 @@ public class DayOffController : ControllerBase
                 WorkingTimeId = item
             });
         }
+
         _context.SaveChanges();
 
         return Ok(CustomResponse.Ok("Create day off successfully", null!));
     }
-    
+
     [HttpDelete]
     [Route("api/days-off/{id}")]
     [Authorize(Roles = "sro")]
@@ -151,7 +183,7 @@ public class DayOffController : ControllerBase
             var error = ErrorDescription.Error["E2072"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         return Ok(CustomResponse.Ok("Delete day off successfully", null!));
     }
 
@@ -221,6 +253,7 @@ public class DayOffController : ControllerBase
         {
             return "E0101";
         }
+
         return null;
     }
 
