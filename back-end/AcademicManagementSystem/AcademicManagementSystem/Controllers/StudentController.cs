@@ -525,13 +525,13 @@ public class StudentController : ControllerBase
             return NotFound(CustomResponse.NotFound("Not Found Class of Student with id: " + id + " in this center"));
         }
 
-        // var availableClasses = GetAllClassesInThisCenterByContext()
-        //     .Where(c =>
-        //         c.Id != currentClass.Id &&
-        //         c.CourseFamily!.Code == currentClass.CourseFamily!.Code)
-        //     .ToList();
-
         // get available classes which student class is not more than 24
+        var availableClasses = GetAvailableClasses(currentClass);
+        return Ok(CustomResponse.Ok("Get available classes for student successfully", availableClasses));
+    }
+
+    private IQueryable<ClassResponse> GetAvailableClasses(ClassResponse currentClass)
+    {
         var availableClasses = _context.Classes
             .Include(c => c.Center)
             .Include(c => c.ClassSchedules)
@@ -606,7 +606,7 @@ public class StudentController : ControllerBase
                 SroFirstName = c.Sro.User.FirstName,
                 SroLastName = c.Sro.User.LastName
             });
-        return Ok(CustomResponse.Ok("Get available classes for student successfully", availableClasses));
+        return availableClasses;
     }
 
     // move student to other class
@@ -646,6 +646,20 @@ public class StudentController : ControllerBase
         if (student.StudentsClasses.Any(sc => sc.ClassId == request.NewClassId && sc.StudentId == id && sc.IsActive))
         {
             var error = ErrorDescription.Error["E1125"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check if number of student in student class is more than 24
+        var newClasses = _context.Classes
+            .Include(c => c.Center)
+            .Include(c => c.StudentsClasses)
+            .ThenInclude(sc => sc.Student)
+            .Any(c => c.Center.Id == _user.CenterId &&
+                      c.Id == request.NewClassId &&
+                      c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < 24);
+        if (!newClasses)
+        {
+            var error = ErrorDescription.Error["E1127"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
