@@ -115,7 +115,7 @@ public class DayOffController : ControllerBase
                     _context.DaysOff.Remove(selectDayOff);
                 }
 
-                break;
+                continue;
             }
 
             if (selectDayOffs.First().TeacherId != null && request.TeacherId != null)

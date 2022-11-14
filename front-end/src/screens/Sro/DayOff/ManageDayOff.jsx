@@ -1,4 +1,4 @@
-import { Card, Grid } from '@nextui-org/react';
+import { Card, Grid, Text } from '@nextui-org/react';
 import { Calendar, Select, Row, Col } from 'antd';
 import { useState } from 'react';
 import moment from 'moment';
@@ -23,15 +23,70 @@ const ManageDayOff = () => {
       });
   };
 
+  const getDetail = () => {
+    const body = {
+      date: selectedValue,
+    };
+
+    FetchApi(ManageDayOffApis.getDetail, body, null, null)
+      .then((res) => {
+        const dayOff = {
+          morning: [],
+          afternoon: [],
+          evening: [],
+        };
+        const { data } = res;
+
+        data.forEach((item) => {
+          if (item.workingTimeId === 1) {
+            dayOff.morning.push(item);
+          } else if (item.workingTimeId === 2) {
+            dayOff.afternoon.push(item);
+          } else {
+            dayOff.evening.push(item);
+          }
+        });
+      })
+      .catch((err) => {
+        toast.error('Lỗi lấy chi tiết ngày nghỉ');
+      });
+  };
+
+  useEffect(() => {
+    getDetail();
+  }, [selectedValue]);
+
   useEffect(() => {
     getListDayOff();
   }, []);
 
   return (
-    <Grid.Container gap={2}>
-      <Grid xs={4}>
-        <Card variant="bordered">
-          <Card.Body>
+    <Grid.Container gap={2} justify={'center'}>
+      <Grid xs={3}>
+        <Card
+          variant="bordered"
+          css={{
+            height: 'fit-content',
+          }}
+        >
+          <Card.Header>
+            <Text
+              p
+              b
+              size={14}
+              css={{
+                width: '100%',
+                textAlign: 'center',
+              }}
+            >
+              Lịch nghỉ
+            </Text>
+          </Card.Header>
+          <Card.Body
+            css={{
+              padding: '5px 10px',
+            }}
+          >
             <Calendar
               fullscreen={false}
               value={value}
@@ -82,9 +137,7 @@ const ManageDayOff = () => {
                     <Row gutter={8}>
                       <Col>
                         <Select
-                          size="small"
                           dropdownMatchSelectWidth={false}
-                          className="my-year-select"
                           value={year}
                           onChange={(newYear) => {
                             const now = value.clone().year(newYear);
@@ -96,7 +149,6 @@ const ManageDayOff = () => {
                       </Col>
                       <Col>
                         <Select
-                          size="small"
                           dropdownMatchSelectWidth={false}
                           value={month}
                           onChange={(newMonth) => {
@@ -113,15 +165,15 @@ const ManageDayOff = () => {
               }}
               mode="month"
               dateFullCellRender={(value) => {
-                console.log(value.format('DD/MM/YYYY'));
                 return (
                   <Card
                     variant={value.day() === 0 ? 'flat' : 'bordered'}
                     disableRipple={true}
                     css={{
-                      width: '60px',
+                      fontSize: '12px',
+                      width: '40px',
                       height: '40px',
-                      margin: '3px auto',
+                      margin: '1px auto',
                       display: 'flex',
                       justifyContent: 'center',
                       alignItems: 'center',
@@ -147,11 +199,11 @@ const ManageDayOff = () => {
                                 value.format('DD/MM/YYYY') ===
                                 moment(item).format('DD/MM/YYYY')
                             )
-                          ? '#88F1B6'
+                          ? '#fdd8e5'
                           : value.day() === 0
                           ? '#F1F1F1'
                           : '#fff',
-                      borderRadius: '8px',
+                      borderRadius: '10em',
                       borderColor:
                         value.format('DD/MM/YYYY') ===
                         moment().format('DD/MM/YYYY')
@@ -168,9 +220,78 @@ const ManageDayOff = () => {
           </Card.Body>
         </Card>
       </Grid>
-      <Grid xs={8}>
-        <Card variant="bordered">
-          <Card.Body></Card.Body>
+      <Grid xs={5}>
+        <Card
+          variant="bordered"
+          css={{
+            height: 'fit-content',
+          }}
+        >
+          <Card.Header>
+            <Text
+              p
+              b
+              size={14}
+              css={{
+                width: '100%',
+                textAlign: 'center',
+              }}
+            >
+              Lịch nghỉ của ngày {selectedValue.format('DD/MM/YYYY')}
+            </Text>
+          </Card.Header>
+          <Card.Body>
+            <Grid.Container gap={2}>
+              <Grid xs={12}>
+                <Card
+                  variant="bordered"
+                  css={{
+                    minHeight: '140px',
+                    borderStyle: 'dashed',
+                  }}
+                >
+                  <Card.Header>
+                    <Text p b size={14}>
+                      Buổi sáng
+                    </Text>
+                  </Card.Header>
+                  <Card.Body></Card.Body>
+                </Card>
+              </Grid>
+              <Grid xs={12}>
+                <Card
+                  variant="bordered"
+                  css={{
+                    minHeight: '140px',
+                    borderStyle: 'dashed',
+                  }}
+                >
+                  <Card.Header>
+                    <Text p b size={14}>
+                      Buổi chiều
+                    </Text>
+                  </Card.Header>
+                  <Card.Body></Card.Body>
+                </Card>
+              </Grid>
+              <Grid xs={12}>
+                <Card
+                  variant="bordered"
+                  css={{
+                    minHeight: '140px',
+                    borderStyle: 'dashed',
+                  }}
+                >
+                  <Card.Header>
+                    <Text p b size={14}>
+                      Buổi tối
+                    </Text>
+                  </Card.Header>
+                  <Card.Body></Card.Body>
+                </Card>
+              </Grid>
+            </Grid.Container>
+          </Card.Body>
         </Card>
       </Grid>
     </Grid.Container>
