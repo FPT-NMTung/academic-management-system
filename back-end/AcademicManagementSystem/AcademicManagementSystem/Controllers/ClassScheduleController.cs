@@ -225,7 +225,8 @@ public class ClassScheduleController : ControllerBase
 
         // get list day off of teacher
         var dayOff = _context.DaysOff.Where(d =>
-            (d.TeacherId == null || d.TeacherId == request.TeacherId) && d.Date.Date >= request.StartDate.Date);
+            (d.TeacherId == null || d.TeacherId == request.TeacherId) && d.Date.Date >= request.StartDate.Date && d.CenterId == centerId);
+        
         var teacherDayOff = dayOff.ToList();
         var globalDayOff = dayOff.Where(d => d.TeacherId == null).ToList();
 
