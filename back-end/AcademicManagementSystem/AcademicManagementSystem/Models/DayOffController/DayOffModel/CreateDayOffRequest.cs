@@ -13,7 +13,6 @@ public class CreateDayOffRequest
     [JsonPropertyName("teacher_id")]
     public int? TeacherId { get; set; }
     
-    [JsonPropertyName("working_time_id")]
-    public int WorkingTimeId { get; set; }
-    
+    [JsonPropertyName("working_time_ids")]
+    public int[] WorkingTimeIds { get; set; }
 }

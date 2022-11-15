@@ -525,13 +525,88 @@ public class StudentController : ControllerBase
             return NotFound(CustomResponse.NotFound("Not Found Class of Student with id: " + id + " in this center"));
         }
 
-        var availableClasses = GetAllClassesInThisCenterByContext()
-            .Where(c =>
-                c.Id != currentClass.Id &&
-                c.CourseFamily!.Code == currentClass.CourseFamily!.Code)
-            .ToList();
-
+        // get available classes which student class is not more than 24
+        var availableClasses = GetAvailableClasses(currentClass);
         return Ok(CustomResponse.Ok("Get available classes for student successfully", availableClasses));
+    }
+
+    private IQueryable<ClassResponse> GetAvailableClasses(ClassResponse currentClass)
+    {
+        var availableClasses = _context.Classes
+            .Include(c => c.Center)
+            .Include(c => c.ClassSchedules)
+            .Include(c => c.ClassStatus)
+            .Include(c => c.CourseFamily)
+            .Include(c => c.StudentsClasses)
+            .ThenInclude(sc => sc.Student)
+            .Where(c => c.Center.Id == _user.CenterId &&
+                        c.Id != currentClass.Id &&
+                        c.CourseFamily.Code == currentClass.CourseFamily!.Code &&
+                        c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < 24)
+            .Select(c => new ClassResponse()
+            {
+                Id = c.Id,
+                Name = c.Name,
+                CenterId = c.CenterId,
+                CourseFamilyCode = c.CourseFamilyCode,
+                ClassDaysId = c.ClassDaysId,
+                ClassStatusId = c.ClassStatusId,
+                StartDate = c.StartDate,
+                CompletionDate = c.CompletionDate,
+                GraduationDate = c.GraduationDate,
+                ClassHourStart = c.ClassHourStart,
+                ClassHourEnd = c.ClassHourEnd,
+                CreatedAt = c.CreatedAt,
+                UpdatedAt = c.UpdatedAt,
+                Center = new CenterResponse()
+                {
+                    Id = c.Center.Id,
+                    Name = c.Center.Name,
+                    CreatedAt = c.Center.CreatedAt,
+                    UpdatedAt = c.Center.UpdatedAt,
+                    Province = new ProvinceResponse()
+                    {
+                        Id = c.Center.Province.Id,
+                        Code = c.Center.Province.Code,
+                        Name = c.Center.Province.Name,
+                    },
+                    District = new DistrictResponse()
+                    {
+                        Id = c.Center.District.Id,
+                        Name = c.Center.District.Name,
+                        Prefix = c.Center.District.Prefix
+                    },
+                    Ward = new WardResponse()
+                    {
+                        Id = c.Center.Ward.Id,
+                        Name = c.Center.Ward.Name,
+                        Prefix = c.Center.Ward.Prefix
+                    }
+                },
+                CourseFamily = new CourseFamilyResponse()
+                {
+                    Code = c.CourseFamily.Code,
+                    Name = c.CourseFamily.Name,
+                    IsActive = c.CourseFamily.IsActive,
+                    PublishedYear = c.CourseFamily.PublishedYear,
+                    CreatedAt = c.CourseFamily.CreatedAt,
+                    UpdatedAt = c.CourseFamily.UpdatedAt
+                },
+                ClassDays = new ClassDaysResponse()
+                {
+                    Id = c.ClassDays.Id,
+                    Value = c.ClassDays.Value
+                },
+                ClassStatus = new ClassStatusResponse()
+                {
+                    Id = c.ClassStatus.Id,
+                    Value = c.ClassStatus.Value
+                },
+                SroId = c.Sro.UserId,
+                SroFirstName = c.Sro.User.FirstName,
+                SroLastName = c.Sro.User.LastName
+            });
+        return availableClasses;
     }
 
     // move student to other class
@@ -571,6 +646,20 @@ public class StudentController : ControllerBase
         if (student.StudentsClasses.Any(sc => sc.ClassId == request.NewClassId && sc.StudentId == id && sc.IsActive))
         {
             var error = ErrorDescription.Error["E1125"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check if number of student in student class is more than 24
+        var newClasses = _context.Classes
+            .Include(c => c.Center)
+            .Include(c => c.StudentsClasses)
+            .ThenInclude(sc => sc.Student)
+            .Any(c => c.Center.Id == _user.CenterId &&
+                      c.Id == request.NewClassId &&
+                      c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < 24);
+        if (!newClasses)
+        {
+            var error = ErrorDescription.Error["E1127"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 

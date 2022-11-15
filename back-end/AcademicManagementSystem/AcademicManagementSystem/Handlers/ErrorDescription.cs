@@ -254,8 +254,9 @@ public static class ErrorDescription
         { "E1123", new ErrorModel() { Message = "New class is not exist in this center", Type = "student-error-0039" } },
         { "E1124", new ErrorModel() { Message = "Student is not in current class", Type = "student-error-0040" } },
         { "E1125", new ErrorModel() { Message = "Student existed in new class", Type = "student-error-0041" } },
-        { "E1126", new ErrorModel() { Message = "Fail to SaveChange when change class student", Type = "student-error-00042" } },
-        
+        { "E1126", new ErrorModel() { Message = "Fail to SaveChange when change class student", Type = "student-error-00042" } },        
+        { "E1127", new ErrorModel() { Message = "New class already had 24 students", Type = "student-error-00043" } },
+
         // class schedule
         { "E0077", new ErrorModel() { Message = "Module Not For This Class", Type = "class-schedule-error-0001" } },
         { "E0077_1", new ErrorModel() { Message = "Teacher Not For This Center", Type = "class-schedule-error-0001_1" } },
@@ -295,7 +296,9 @@ public static class ErrorDescription
         { "E0100", new ErrorModel() { Message = "This day off already in database", Type = "day-off-error-0001" } },
         { "E0101", new ErrorModel() { Message = "Date must >= today", Type = "day-off-error-0002" } },
         { "E0102", new ErrorModel() { Message = "Invalid data", Type = "day-off-error-0003" } },
-
+        { "E2071", new ErrorModel() { Message = "Invalid working time", Type = "day-off-error-0004" } },
+        { "E2072", new ErrorModel() { Message = "Error when delete day-off", Type = "day-off-error-0005" } },
+        { "E2073", new ErrorModel() { Message = "Day off already exist", Type = "day-off-error-0006" } },
     };
 }
 

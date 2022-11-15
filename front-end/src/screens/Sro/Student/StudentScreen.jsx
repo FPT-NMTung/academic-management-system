@@ -42,7 +42,7 @@ FetchApi(ManageStudentApis.searchStudent,null,param,null).then((res) => {
           birthday: `${new Date(e.birthday).toLocaleDateString('vi-VN')}`,
           mobile_phone:e.mobile_phone,
           email_organization:e.email_organization,
-          class_name:e.class_name,
+          class_name:e.current_class.class_name,
           citizen_identity_card_no:e.citizen_identity_card_no,
           parental_phone:e.parental_phone,
           status:e.status,
