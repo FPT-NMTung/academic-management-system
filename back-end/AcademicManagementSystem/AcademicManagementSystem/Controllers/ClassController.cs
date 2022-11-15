@@ -1470,9 +1470,12 @@ public class ClassController : ControllerBase
 
         var listModule = _context.Modules
             .Include(m => m.ClassSchedules)
+            .ThenInclude(cs => cs.Class)
             .Include(m => m.CoursesModulesSemesters)
             .ThenInclude(cms => cms.Course)
-            .Where(m => m.CoursesModulesSemesters.First().Course.CourseFamilyCode == existedClass.CourseFamilyCode);
+            .Where(m =>
+                m.CoursesModulesSemesters.First().Course.CourseFamilyCode == existedClass.CourseFamilyCode &&
+                existedClass.CenterId == m.CenterId);
 
         var list = new List<ModuleStatusResponse>();
 
