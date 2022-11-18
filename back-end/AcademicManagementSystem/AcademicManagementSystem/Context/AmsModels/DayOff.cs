@@ -23,6 +23,10 @@ public class DayOff
     [Column("date", TypeName = "date")]
     public DateTime Date { get; set; }
     
+    [Column("center_id")]
+    public int CenterId { get; set; }
+    
     // relationships
     public virtual Teacher Teacher { get; set; }
+    public virtual Center Center { get; set; }
 }

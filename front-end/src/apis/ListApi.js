@@ -479,4 +479,37 @@ export const ManageStudentApis = {
     method: 'PUT',
     contextType: 'application/json',
   },
+  listAvailableClassToChange: {
+    url: 'api/students/{0}/classes/available-to-change',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  changeClass: {
+    url: 'api/students/{0}/change-class',
+    method: 'PUT',
+    contextType: 'application/json',
+  },
+  getCurrentClasss: {
+    url: 'api/students/{0}/classes/',
+    method: 'GET',
+    contextType: 'application/json',
+  },
 };
+
+export const ManageDayOffApis = {
+  getDayOff: {
+    url: 'api/days-off',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getDetail: {
+    url: 'api/days-off/detail',
+    method: 'POST',
+    contextType: 'application/json',
+  },
+  createDayOff: {
+    url: 'api/days-off',
+    method: 'POST',
+    contextType: 'application/json',
+  }
+}
