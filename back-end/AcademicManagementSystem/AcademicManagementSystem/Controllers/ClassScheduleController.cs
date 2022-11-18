@@ -623,7 +623,7 @@ public class ClassScheduleController : ControllerBase
 
         var dayOff = _context.DaysOff.Where(d =>
             (d.TeacherId == null || d.TeacherId == classScheduleUpdated.TeacherId) &&
-            d.Date.Date >= classScheduleUpdated.StartDate.Date && d.CenterId == classScheduleUpdated.Class.CenterId);
+            d.Date.Date >= classScheduleUpdated.StartDate.Date && d.CenterId == classScheduleUpdated.Module.CenterId).ToList();
         var teacherDayOff = dayOff.ToList();
         var globalDayOff = dayOff.Where(d => d.TeacherId == null).ToList();
         var lastUpdatedLearningDate = sessionsUpdated.Last().LearningDate.Date;
