@@ -449,7 +449,8 @@ public class ClassScheduleController : ControllerBase
 
         // get list day off of teacher
         var dayOff = _context.DaysOff.Where(d =>
-            (d.TeacherId == null || d.TeacherId == request.TeacherId) && d.Date.Date >= request.StartDate.Date);
+            (d.TeacherId == null || d.TeacherId == request.TeacherId) && d.Date.Date >= request.StartDate.Date &&
+            d.CenterId == centerId);
         var teacherDayOff = dayOff.ToList();
         var globalDayOff = dayOff.Where(d => d.TeacherId == null).ToList();
 
@@ -622,7 +623,7 @@ public class ClassScheduleController : ControllerBase
 
         var dayOff = _context.DaysOff.Where(d =>
             (d.TeacherId == null || d.TeacherId == classScheduleUpdated.TeacherId) &&
-            d.Date.Date >= classScheduleUpdated.StartDate.Date);
+            d.Date.Date >= classScheduleUpdated.StartDate.Date && d.CenterId == classScheduleUpdated.Class.CenterId);
         var teacherDayOff = dayOff.ToList();
         var globalDayOff = dayOff.Where(d => d.TeacherId == null).ToList();
         var lastUpdatedLearningDate = sessionsUpdated.Last().LearningDate.Date;
@@ -878,26 +879,21 @@ public class ClassScheduleController : ControllerBase
 
         if (isTeacherDayOff && isDayOff != null)
         {
-            if (isDayOff.WorkingTimeId == 7)
-            {
-                return false;
-            }
-
-            if (new List<int> { 1, 4, 5 }.Contains(isDayOff.WorkingTimeId) &&
+            if (isDayOff.WorkingTimeId == 1 &&
                 (IsTimeInRange(TimeSpan.FromHours(8), TimeSpan.FromHours(12), request.ClassHourStart)
                  || IsTimeInRange(TimeSpan.FromHours(8), TimeSpan.FromHours(12), request.ClassHourEnd)))
             {
                 return false;
             }
 
-            if (new List<int> { 2, 4, 6 }.Contains(isDayOff.WorkingTimeId) &&
+            if (isDayOff.WorkingTimeId == 2 &&
                 (IsTimeInRange(TimeSpan.FromHours(13), TimeSpan.FromHours(17), request.ClassHourStart)
                  || IsTimeInRange(TimeSpan.FromHours(13), TimeSpan.FromHours(17), request.ClassHourEnd)))
             {
                 return false;
             }
 
-            if (new List<int> { 3, 5, 6 }.Contains(isDayOff.WorkingTimeId) &&
+            if (isDayOff.WorkingTimeId == 3 &&
                 (IsTimeInRange(TimeSpan.FromHours(18), TimeSpan.FromHours(22), request.ClassHourStart)
                  || IsTimeInRange(TimeSpan.FromHours(18), TimeSpan.FromHours(22), request.ClassHourEnd)))
             {
