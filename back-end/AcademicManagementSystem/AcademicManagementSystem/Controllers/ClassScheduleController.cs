@@ -225,7 +225,9 @@ public class ClassScheduleController : ControllerBase
 
         // get list day off of teacher
         var dayOff = _context.DaysOff.Where(d =>
-            (d.TeacherId == null || d.TeacherId == request.TeacherId) && d.Date.Date >= request.StartDate.Date);
+            (d.TeacherId == null || d.TeacherId == request.TeacherId) && d.Date.Date >= request.StartDate.Date &&
+            d.CenterId == centerId);
+
         var teacherDayOff = dayOff.ToList();
         var globalDayOff = dayOff.Where(d => d.TeacherId == null).ToList();
 
@@ -407,13 +409,6 @@ public class ClassScheduleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // check is learning or not
-        if (classScheduleContext.StartDate.Date <= DateTime.Now.Date)
-        {
-            var error = ErrorDescription.Error["E0081"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
         var module = _context.Modules.First(m => m.Id == classScheduleContext.ModuleId);
 
         var errorCode = GetCodeIfErrorOccurWhenUpdate(request, centerId, module);
@@ -423,9 +418,18 @@ public class ClassScheduleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // remove sessions 
         var oldSessions = classScheduleContext.Sessions.ToList();
 
+        var isStart = oldSessions.Any(s => s.LearningDate.Date <= DateTime.Now.Date);
+
+        // check is learning or not
+        if (isStart)
+        {
+            var error = ErrorDescription.Error["E0098"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // remove sessions 
         foreach (var session in oldSessions)
         {
             classScheduleContext.Sessions.Remove(session);
@@ -445,7 +449,8 @@ public class ClassScheduleController : ControllerBase
 
         // get list day off of teacher
         var dayOff = _context.DaysOff.Where(d =>
-            (d.TeacherId == null || d.TeacherId == request.TeacherId) && d.Date.Date >= request.StartDate.Date);
+            (d.TeacherId == null || d.TeacherId == request.TeacherId) && d.Date.Date >= request.StartDate.Date &&
+            d.CenterId == centerId);
         var teacherDayOff = dayOff.ToList();
         var globalDayOff = dayOff.Where(d => d.TeacherId == null).ToList();
 
@@ -581,17 +586,11 @@ public class ClassScheduleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // var isRangeTimeInvalid = IsRangeTimeInvalid(classScheduleContext, true);
-        // if (isRangeTimeInvalid)
-        // {
-        //     var error = ErrorDescription.Error["E2070"];
-        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        // }
+        var isHandled = IsHandledNextScheduleOfThisClass(classScheduleContext, oldStartDate);
 
-        var check = ChangeLearningDateForNextScheduleOfThisClass(classScheduleContext, oldStartDate);
-        if (!check)
+        if (!isHandled)
         {
-            var error = ErrorDescription.Error["E0098"];
+            var error = ErrorDescription.Error["E0099"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -611,13 +610,10 @@ public class ClassScheduleController : ControllerBase
         return Ok(CustomResponse.Ok("Update class schedule successfully", response));
     }
 
-    /*
-     * TODO
-     */
-    private bool ChangeLearningDateForNextScheduleOfThisClass(ClassSchedule classScheduleUpdated, DateTime oldStartDate)
+    private bool IsHandledNextScheduleOfThisClass(ClassSchedule classScheduleUpdated, DateTime oldStartDate)
     {
         // get all next schedule of requested schedule order by start date ascending for this class
-        var nextSchedules = _context.ClassSchedules
+        var schedules = _context.ClassSchedules
             .Include(cs => cs.Sessions)
             .Where(cs => cs.ClassId == classScheduleUpdated.ClassId && classScheduleUpdated.Id != cs.Id)
             .OrderBy(cs => cs.StartDate)
@@ -627,29 +623,31 @@ public class ClassScheduleController : ControllerBase
 
         var dayOff = _context.DaysOff.Where(d =>
             (d.TeacherId == null || d.TeacherId == classScheduleUpdated.TeacherId) &&
-            d.Date.Date >= classScheduleUpdated.StartDate.Date);
+            d.Date.Date >= classScheduleUpdated.StartDate.Date && d.CenterId == classScheduleUpdated.Module.CenterId).ToList();
         var teacherDayOff = dayOff.ToList();
         var globalDayOff = dayOff.Where(d => d.TeacherId == null).ToList();
+        var lastUpdatedLearningDate = sessionsUpdated.Last().LearningDate.Date;
 
-        foreach (var schedule in nextSchedules)
+        foreach (var schedule in schedules)
         {
             var sessions = schedule.Sessions.OrderBy(s => s.LearningDate).ToList();
             var firstSession = sessions.First(); // startDate
             var lastSession = sessions.Last();
 
-            // case firstDate of request is smaller than oldStartDate and it is between firstDate and lastDate of previous schedule
-            if (classScheduleUpdated.StartDate.Date < oldStartDate.Date &&
-                classScheduleUpdated.StartDate.Date >= firstSession.LearningDate.Date &&
+            // this is previous schedule but startDate of requested schedule is less than last learning date of this schedule 
+            if (lastSession.LearningDate.Date < oldStartDate.Date &&
                 classScheduleUpdated.StartDate.Date <= lastSession.LearningDate.Date)
             {
                 return false;
             }
 
-            /*
-             *  case firstDate of request is smaller than oldStartDate and NOT between firstDate and lastDate of previous schedule
-             *  or firstDate of request is bigger than oldStartDate
-             * => update all session of next schedule
-             */
+            // skip previous schedule
+            if (lastSession.LearningDate.Date < oldStartDate)
+                continue;
+
+            // skip next schedule if last updated session smaller than first session of next schedule
+            if (lastUpdatedLearningDate < firstSession.LearningDate.Date)
+                continue;
 
             // for method call below
             var fakeUpdateScheduleRequest = new UpdateClassScheduleRequest
@@ -705,6 +703,7 @@ public class ClassScheduleController : ControllerBase
 
             sessionsUpdated = schedule.Sessions.OrderBy(s => s.LearningDate).ToList();
             _context.Update(schedule);
+            lastUpdatedLearningDate = sessionsUpdated.Last().LearningDate.Date;
         }
 
         return true;
@@ -880,26 +879,21 @@ public class ClassScheduleController : ControllerBase
 
         if (isTeacherDayOff && isDayOff != null)
         {
-            if (isDayOff.WorkingTimeId == 7)
-            {
-                return false;
-            }
-
-            if (new List<int> { 1, 4, 5 }.Contains(isDayOff.WorkingTimeId) &&
+            if (isDayOff.WorkingTimeId == 1 &&
                 (IsTimeInRange(TimeSpan.FromHours(8), TimeSpan.FromHours(12), request.ClassHourStart)
                  || IsTimeInRange(TimeSpan.FromHours(8), TimeSpan.FromHours(12), request.ClassHourEnd)))
             {
                 return false;
             }
 
-            if (new List<int> { 2, 4, 6 }.Contains(isDayOff.WorkingTimeId) &&
+            if (isDayOff.WorkingTimeId == 2 &&
                 (IsTimeInRange(TimeSpan.FromHours(13), TimeSpan.FromHours(17), request.ClassHourStart)
                  || IsTimeInRange(TimeSpan.FromHours(13), TimeSpan.FromHours(17), request.ClassHourEnd)))
             {
                 return false;
             }
 
-            if (new List<int> { 3, 5, 6 }.Contains(isDayOff.WorkingTimeId) &&
+            if (isDayOff.WorkingTimeId == 3 &&
                 (IsTimeInRange(TimeSpan.FromHours(18), TimeSpan.FromHours(22), request.ClassHourStart)
                  || IsTimeInRange(TimeSpan.FromHours(18), TimeSpan.FromHours(22), request.ClassHourEnd)))
             {
@@ -940,26 +934,21 @@ public class ClassScheduleController : ControllerBase
 
         if (isTeacherDayOff && isDayOff != null)
         {
-            if (isDayOff.WorkingTimeId == 7)
-            {
-                return false;
-            }
-
-            if (new List<int> { 1, 4, 5 }.Contains(isDayOff.WorkingTimeId) &&
+            if (isDayOff.WorkingTimeId == 1 &&
                 (IsTimeInRange(TimeSpan.FromHours(8), TimeSpan.FromHours(12), request.ClassHourStart)
                  || IsTimeInRange(TimeSpan.FromHours(8), TimeSpan.FromHours(12), request.ClassHourEnd)))
             {
                 return false;
             }
 
-            if (new List<int> { 2, 4, 6 }.Contains(isDayOff.WorkingTimeId) &&
+            if (isDayOff.WorkingTimeId == 2 &&
                 (IsTimeInRange(TimeSpan.FromHours(13), TimeSpan.FromHours(17), request.ClassHourStart)
                  || IsTimeInRange(TimeSpan.FromHours(13), TimeSpan.FromHours(17), request.ClassHourEnd)))
             {
                 return false;
             }
 
-            if (new List<int> { 3, 5, 6 }.Contains(isDayOff.WorkingTimeId) &&
+            if (isDayOff.WorkingTimeId == 3 &&
                 (IsTimeInRange(TimeSpan.FromHours(18), TimeSpan.FromHours(22), request.ClassHourStart)
                  || IsTimeInRange(TimeSpan.FromHours(18), TimeSpan.FromHours(22), request.ClassHourEnd)))
             {

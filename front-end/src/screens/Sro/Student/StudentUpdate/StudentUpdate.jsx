@@ -69,6 +69,8 @@ const StudentUpdate = () => {
   const [isGettingInformationStudent, setIsGettingInformationStudent] =
     useState(true);
   const [dataUser, setDataUser] = useState(undefined);
+  const [genderUser, setGenderUser] = useState(undefined);
+  const [avatarUser, setAvatarUser] = useState(undefined);
 
   const navigate = useNavigate();
   const [form] = Form.useForm();
@@ -144,8 +146,12 @@ const StudentUpdate = () => {
       `${id}`,
     ]).then((res) => {
       const data = res.data;
-      console.log(data);
       setDataUser(data);
+      // console.log(data.gender.id);
+      setGenderUser (data.gender.id) ;
+      setAvatarUser(data.avatar);
+
+
 
       form.setFieldsValue({
         first_name: data.first_name,
@@ -190,6 +196,8 @@ const StudentUpdate = () => {
       setIsGettingInformationStudent(false);
       getListDistrictForUpdate();
       getListWardForUpdate();
+   
+     
     });
   };
 
@@ -269,6 +277,8 @@ const StudentUpdate = () => {
     // getListTeacherType();
     getListCourse();
     getInformationStudent();
+    
+ 
   }, []);
   return (
     <Form
@@ -538,14 +548,16 @@ const StudentUpdate = () => {
                   }}
                   rules={[
                     {
-                      required: false,
+                      required: true,
                       validator: (_, value) => {
                         if (
                           value === null ||
                           value === undefined ||
                           value.trim() === ''
                         ) {
-                          return Promise.resolve();
+                          return Promise.reject(
+                            'Trường không được để trống'
+                          );
                         }
                         if (
                           Validater.isContaintSpecialCharacterForAddress(
@@ -1185,31 +1197,33 @@ const StudentUpdate = () => {
             >
               <div className={classes.contantLogo}>
                 <div className={classes.logo}>
-                  <Image
+                  {/* <Image
+                  preview={false}
                     className={classes.avatarMini}
                     width={250}
                     src="https://cdna.artstation.com/p/assets/images/images/048/859/290/large/xu-weili-4d6e20d94309f4e40f1a252e5f8711e.jpg?1651098275"
-                  />
-                  {/* {dataStudent.avatar && (
-                    <img className={classes.avatar} src={dataStudent.avatar} />
-                  )} */}
-
-                  {/* {!dataStudent.avatar && (
+                  /> */}
+                   {avatarUser && (
+                    <img className={classes.avatar} src={dataUser.avatar} />
+                  )} 
+                  {!avatarUser && ( 
                     <img
                       className={classes.avatarMini}
                       src={
-                        dataStudent.gender.id === 1
+                        genderUser === 1
                           ? ManImage
-                          : dataStudent.gender.id === 2
+                          : genderUser === 2
                           ? WomanImage
                           : ""
                       }
                     />
-                  )} */}
+                  )}
                 </div>
               </div>
-              <Upload>
-                <Button
+              <Upload  disabled={true} 
+              >
+                <Button 
+                disabled={true}
                   css={{
                     fontSize: '12px',
                     height: '28px',
