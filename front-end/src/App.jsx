@@ -29,6 +29,7 @@ import AddStudentToClass from './screens/Sro/Manage Class/AddStudentToClass/AddS
 import ManageSchedule from './screens/Sro/Manage Class/Schedule/ManageSchedule';
 import ScheduleDetail from './screens/Sro/Manage Class/ScheduleDetail/ScheduleDetail';
 import ScheduleEmpty from './screens/Sro/Manage Class/ScheduleEmpty/ScheduleEmpty';
+import ManageDayOff from './screens/Sro/DayOff/ManageDayOff';
 
 const App = () => {
   return (
@@ -65,6 +66,7 @@ const App = () => {
         <Route path="/sro/manage/student/:id/update" element={<StudentUpdate />} />
         <Route path="/sro/manage-class/:id/add" element={<AddStudentToClass />} />
         {/* <Route path="/sro/manage/student/:id/update" element={<p>grade</p>} /> */}
+        <Route path="/sro/manage/day-off" element={<ManageDayOff />} />
       </Route>
 
       {/* Routers for role admin */}
