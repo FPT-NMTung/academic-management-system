@@ -226,7 +226,7 @@ const ScheduleDetail = () => {
                   <Divider />
                   <Spacer y={1} />
                   <Grid.Container gap={2}>
-                    {dataSchedule.sessions.map((data, index) => {
+                    {dataSchedule.sessions.sort((a, b) => (new Date(a.learning_date) - new Date(b.learning_date))).map((data, index) => {
                       return (
                         <Grid key={index} xs={2}>
                           <Card variant="bordered" isPressable>
