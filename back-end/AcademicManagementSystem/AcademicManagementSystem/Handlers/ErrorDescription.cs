@@ -283,7 +283,7 @@ public static class ErrorDescription
         { "E0096", new ErrorModel() { Message = "Class schedule does not exist", Type = "class-schedule-error-0020" } },
         { "E0097", new ErrorModel() { Message = "This schedule not for this center", Type = "class-schedule-error-0021" } },
         { "E0098", new ErrorModel() { Message = "Can't update, this module is learning in class", Type = "class-schedule-error-0022" } },
-        { "E0099", new ErrorModel() { Message = "", Type = "class-schedule-error-0023" } },
+        { "E0099", new ErrorModel() { Message = "Can't update, startDate must bigger than last learning date of previous schedule", Type = "class-schedule-error-0023" } },
         { "E2064", new ErrorModel() { Message = "Teacher busy in this time", Type = "class-schedule-error-0024" } },
         { "E2065", new ErrorModel() { Message = "Room already used in this time", Type = "class-schedule-error-0025" } },
         { "E2066", new ErrorModel() { Message = "This class not have this module", Type = "class-schedule-error-0026" } },
@@ -296,7 +296,9 @@ public static class ErrorDescription
         { "E0100", new ErrorModel() { Message = "This day off already in database", Type = "day-off-error-0001" } },
         { "E0101", new ErrorModel() { Message = "Date must >= today", Type = "day-off-error-0002" } },
         { "E0102", new ErrorModel() { Message = "Invalid data", Type = "day-off-error-0003" } },
-
+        { "E2071", new ErrorModel() { Message = "Invalid working time", Type = "day-off-error-0004" } },
+        { "E2072", new ErrorModel() { Message = "Error when delete day-off", Type = "day-off-error-0005" } },
+        { "E2073", new ErrorModel() { Message = "Day off already exist", Type = "day-off-error-0006" } },
     };
 }
 

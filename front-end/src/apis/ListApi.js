@@ -495,3 +495,21 @@ export const ManageStudentApis = {
     contextType: 'application/json',
   },
 };
+
+export const ManageDayOffApis = {
+  getDayOff: {
+    url: 'api/days-off',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getDetail: {
+    url: 'api/days-off/detail',
+    method: 'POST',
+    contextType: 'application/json',
+  },
+  createDayOff: {
+    url: 'api/days-off',
+    method: 'POST',
+    contextType: 'application/json',
+  }
+}
