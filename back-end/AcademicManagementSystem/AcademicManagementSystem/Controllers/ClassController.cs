@@ -238,7 +238,6 @@ public class ClassController : ControllerBase
             return "E0068";
         }
 
-        // allow special characters: ()-_
         if (Regex.IsMatch(request.Name, StringConstant.RegexSpecialCharactersNotAllowForClassName))
         {
             return "E0069";
