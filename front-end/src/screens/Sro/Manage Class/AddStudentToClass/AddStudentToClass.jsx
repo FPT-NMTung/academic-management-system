@@ -70,6 +70,7 @@ const AddStudentToClass = () => {
     useState(true);
   const [dataUser, setDataUser] = useState(undefined);
 
+
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const { id } = useParams();
@@ -482,14 +483,16 @@ const AddStudentToClass = () => {
                   }}
                   rules={[
                     {
-                      required: false,
+                      required: true,
                       validator: (_, value) => {
                         if (
                           value === null ||
                           value === undefined ||
                           value.trim() === ''
                         ) {
-                          return Promise.resolve();
+                          return Promise.reject(
+                            'Trường không được để trống'
+                          );
                         }
                         if (
                           Validater.isContaintSpecialCharacterForAddress(
@@ -1188,9 +1191,10 @@ const AddStudentToClass = () => {
               <div className={classes.contantLogo}>
                 <div className={classes.logo}>
                   <Image
-                    className={classes.avatarMini}
+                  preview={false}
+                    className={classes.avatarDefault}
                     width={250}
-                    src="https://cdna.artstation.com/p/assets/images/images/048/859/290/large/xu-weili-4d6e20d94309f4e40f1a252e5f8711e.jpg?1651098275"
+                    src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
                   />
                   {/* {dataStudent.avatar && (
                       <img className={classes.avatar} src={dataStudent.avatar} />
@@ -1210,8 +1214,9 @@ const AddStudentToClass = () => {
                     )} */}
                 </div>
               </div>
-              <Upload>
+              <Upload disabled={true} >
                 <Button
+                    disabled={true}
                   css={{
                     fontSize: '12px',
                     height: '28px',
