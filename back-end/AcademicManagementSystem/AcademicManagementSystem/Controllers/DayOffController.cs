@@ -31,7 +31,10 @@ public class DayOffController : ControllerBase
     [Authorize(Roles = "sro")]
     public IActionResult GetDaysOff()
     {
-        var daysOff = _context.DaysOff.Select(d => d.Date.Date).Distinct().ToList();
+        var userId = Int32.Parse(_userService.GetUserId());
+        var centerId = _context.Users.FirstOrDefault(u => u.Id == userId)?.CenterId;
+        
+        var daysOff = _context.DaysOff.Where(d => d.CenterId == centerId).Select(d => d.Date.Date).Distinct().ToList();
         return Ok(CustomResponse.Ok("Get days off successfully", daysOff));
     }
 
@@ -40,10 +43,14 @@ public class DayOffController : ControllerBase
     [Authorize(Roles = "sro")]
     public IActionResult GetDayOff([FromBody] GetDetailDayOffRequest request)
     {
+        var userId = Int32.Parse(_userService.GetUserId());
+        var centerId = _context.Users.FirstOrDefault(u => u.Id == userId)?.CenterId;
+        
         var selectDayOff = _context.DaysOff
             .Include(d => d.Teacher)
             .ThenInclude(d => d.User)
             .Where(d => d.Date.Date == request.Date.Date)
+            .Where(d => d.CenterId == centerId)
             .Select(d => new DetailDayOffResponse()
             {
                 Title = d.Title,
@@ -82,11 +89,16 @@ public class DayOffController : ControllerBase
         var sroId = _userService.GetUserId();
         var centerId = _context.Sros.Include(sro => sro.User)
             .FirstOrDefault(sro => Convert.ToInt32(sroId) == sro.UserId)?.User.CenterId;
-        
+
+        if (centerId == null)
+        {
+            return NotFound(CustomResponse.NotFound("Sro not found"));
+        }
+
         var isTeacherFound = _context.Teachers
             .Include(t => t.User)
             .Any(t => t.UserId == request.TeacherId && t.User.CenterId == centerId);
-        
+
         if (!isTeacherFound && request.TeacherId != null)
         {
             return NotFound(CustomResponse.NotFound("Teacher not found"));
@@ -114,7 +126,10 @@ public class DayOffController : ControllerBase
         foreach (var item in request.WorkingTimeIds)
         {
             var selectDayOffs = _context.DaysOff
-                .Where(d => d.Date.Date == request.Date.Date && d.WorkingTimeId == item);
+                .Where(d =>
+                    d.Date.Date == request.Date.Date &&
+                    d.WorkingTimeId == item &&
+                    d.CenterId == centerId);
 
             if (!selectDayOffs.Any())
                 continue;
@@ -153,8 +168,10 @@ public class DayOffController : ControllerBase
         // get list schedule affected by day off
         var scheduleAffected = _context.Sessions
             .Include(s => s.ClassSchedule)
+            .ThenInclude(s => s.Class)
             .Where(s => s.LearningDate.Date == request.Date.Date)
             .Where(s => request.WorkingTimeIds.Contains(s.ClassSchedule.WorkingTimeId))
+            .Where(s => s.ClassSchedule.Class.CenterId == centerId)
             .Select(s => s.ClassSchedule);
 
         if (request.TeacherId != null)
@@ -170,7 +187,8 @@ public class DayOffController : ControllerBase
                 Title = request.Title,
                 Date = request.Date,
                 TeacherId = request.TeacherId,
-                WorkingTimeId = item
+                WorkingTimeId = item,
+                CenterId = (int)centerId
             });
         }
 
@@ -273,71 +291,6 @@ public class DayOffController : ControllerBase
         }
 
         return null;
-    }
-
-    private bool IsValidLearningDate(ClassSchedule request, DateTime learningDate, List<DayOff> listDayOff,
-        bool isTeacherDayOff)
-    {
-        if (learningDate.DayOfWeek is DayOfWeek.Sunday)
-            return false;
-
-        switch (request.ClassDaysId)
-        {
-            // monday, wednesday, friday
-            case 1:
-                if (learningDate.DayOfWeek is DayOfWeek.Tuesday or DayOfWeek.Thursday or DayOfWeek.Saturday)
-                    return false;
-                break;
-            // tuesday, thursday, saturday
-            case 2:
-                if (learningDate.DayOfWeek is DayOfWeek.Monday or DayOfWeek.Wednesday or DayOfWeek.Friday)
-                    return false;
-                break;
-        }
-
-        var isDayOff = listDayOff.Find(item => item.Date.Date == learningDate.Date);
-
-        if (isDayOff != null) return false;
-        // if (isTeacherDayOff && isDayOff != null)
-        // {
-        //     if (isDayOff.WorkingTimeId == 7)
-        //     {
-        //         return false;
-        //     }
-        //
-        //     if (new List<int> { 1, 4, 5 }.Contains(isDayOff.WorkingTimeId) &&
-        //         (IsTimeInRange(TimeSpan.FromHours(8), TimeSpan.FromHours(12), request.ClassHourStart)
-        //          || IsTimeInRange(TimeSpan.FromHours(8), TimeSpan.FromHours(12), request.ClassHourEnd)))
-        //     {
-        //         return false;
-        //     }
-        //
-        //     if (new List<int> { 2, 4, 6 }.Contains(isDayOff.WorkingTimeId) &&
-        //         (IsTimeInRange(TimeSpan.FromHours(13), TimeSpan.FromHours(17), request.ClassHourStart)
-        //          || IsTimeInRange(TimeSpan.FromHours(13), TimeSpan.FromHours(17), request.ClassHourEnd)))
-        //     {
-        //         return false;
-        //     }
-        //
-        //     if (new List<int> { 3, 5, 6 }.Contains(isDayOff.WorkingTimeId) &&
-        //         (IsTimeInRange(TimeSpan.FromHours(18), TimeSpan.FromHours(22), request.ClassHourStart)
-        //          || IsTimeInRange(TimeSpan.FromHours(18), TimeSpan.FromHours(22), request.ClassHourEnd)))
-        //     {
-        //         return false;
-        //     }
-        // }
-        //
-        // if (!isTeacherDayOff && isDayOff != null)
-        // {
-        //     return false;
-        // }
-
-        return true;
-    }
-
-    private bool IsTimeInRange(TimeSpan startHour, TimeSpan endHour, TimeSpan timeToCheck)
-    {
-        return timeToCheck <= endHour && timeToCheck >= startHour;
     }
 
     private IQueryable<DayOffResponse> GetDayOffsQuery()
