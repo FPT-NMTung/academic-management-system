@@ -548,14 +548,16 @@ const StudentUpdate = () => {
                   }}
                   rules={[
                     {
-                      required: false,
+                      required: true,
                       validator: (_, value) => {
                         if (
                           value === null ||
                           value === undefined ||
                           value.trim() === ''
                         ) {
-                          return Promise.resolve();
+                          return Promise.reject(
+                            'Trường không được để trống'
+                          );
                         }
                         if (
                           Validater.isContaintSpecialCharacterForAddress(
