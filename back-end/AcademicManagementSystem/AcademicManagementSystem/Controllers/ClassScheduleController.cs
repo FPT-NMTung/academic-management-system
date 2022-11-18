@@ -743,9 +743,11 @@ public class ClassScheduleController : ControllerBase
             _context.ClassSchedules.Remove(classSchedule);
             _context.SaveChanges();
 
+            // update class status if all schedule is deleted
             if (!_context.ClassSchedules.Any())
             {
                 classContext.ClassStatusId = StatusNotScheduled;
+                _context.SaveChanges();
             }
         }
         catch (Exception)
