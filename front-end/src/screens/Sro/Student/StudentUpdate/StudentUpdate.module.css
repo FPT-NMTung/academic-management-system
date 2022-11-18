@@ -23,6 +23,12 @@
     border: 1px solid #929496; */
     /* object-fit: contain; */
   }
+  .avatarDefault {
+    width: 100%;
+    border-radius: 50%;
+    border: 1px solid #929496;
+    object-fit: contain;
+  }
   .logo {
     width: 160px;
     height: 160px;
