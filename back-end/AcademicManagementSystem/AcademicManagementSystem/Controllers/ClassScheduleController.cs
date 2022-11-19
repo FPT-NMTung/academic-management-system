@@ -740,7 +740,7 @@ public class ClassScheduleController : ControllerBase
     [Authorize(Roles = "sro")]
     public IActionResult DeleteClassSchedule(int classId, int classScheduleId)
     {
-        var classContext = _context.Classes.Find(classId);
+        var classContext = _context.Classes.Include(c => c.ClassSchedules).FirstOrDefault(c => c.Id == classId);
         if (classContext == null)
         {
             var error = ErrorDescription.Error["E2066"];
@@ -763,7 +763,8 @@ public class ClassScheduleController : ControllerBase
             _context.SaveChanges();
 
             // update class status if all schedule is deleted
-            if (!_context.ClassSchedules.Any())
+            classContext.ClassSchedules.Remove(classSchedule);
+            if (!classContext.ClassSchedules.Any())
             {
                 classContext.ClassStatusId = StatusNotScheduled;
                 _context.SaveChanges();
