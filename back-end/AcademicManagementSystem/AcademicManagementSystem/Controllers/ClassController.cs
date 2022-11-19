@@ -32,7 +32,7 @@ public class ClassController : ControllerBase
     private readonly User _user;
     private const int RoleIdStudent = 4;
     private const int NotScheduleYet = 5;
-    private const int MaximumStudentInClass = 24;
+    private const int MaximumStudentInClass = 200;
 
     public ClassController(AmsContext context, IUserService userService)
     {
@@ -884,6 +884,13 @@ public class ClassController : ControllerBase
                                 error.Type));
                         }
 
+                        if (newBirthday.Date > DateTime.Now.Date)
+                        {
+                            var error = ErrorDescription.Error["E1128"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message + " at student no " + studentNo,
+                                error.Type));
+                        }
+
                         var user = new User()
                         {
                             FirstName = firstName!.Trim(),
@@ -1281,6 +1288,12 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        if (request.Birthday.Date > DateTime.Now.Date)
+        {
+            var error = ErrorDescription.Error["E1128"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         // create user from request
         var user = new User()
         {
@@ -1545,6 +1558,70 @@ public class ClassController : ControllerBase
 
         return Ok(CustomResponse.Ok("Delete students successfully", null!));
     }
+
+    // merge class
+    // [HttpPut]
+    // [Route("api/classes/{id:int}/merge-class")]
+    // [Authorize(Roles = "admin, sro")]
+    // public IActionResult MergeClass(int id, [FromBody] MergeClassRequest request)
+    // {
+    //     var existedClass = _context.Classes.Any(c => c.Id == id);
+    //     if (!existedClass)
+    //     {
+    //         var error = ErrorDescription.Error["E1073"];
+    //         return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+    //     }
+    //
+    //     var existedClassToMerge = _context.Classes.Any(c => c.Id == id);
+    //     if (!existedClassToMerge)
+    //     {
+    //         var error = ErrorDescription.Error["E1073"];
+    //         return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+    //     }
+    //
+    //     var students = _context.Users
+    //         .Include(u => u.Student)
+    //         .Include(u => u.Student.StudentsClasses)
+    //         .Where(u => u.Student.StudentsClasses.Any(sc => sc.ClassId == id))
+    //         .ToList();
+    //
+    //     if (students.Count == 0)
+    //     {
+    //         return Ok(CustomResponse.Ok("No student in class", null!));
+    //     }
+    //
+    //     foreach (var student in students)
+    //     {
+    //         var existedStudent = _context.Users
+    //             .Include(u => u.Student)
+    //             .Include(u => u.Student.StudentsClasses)
+    //             .Any(u => u.Student.StudentsClasses.Any(sc => sc.ClassId == id && u.Student.UserId == student.Student.UserId));
+    //
+    //         if (existedStudent)
+    //         {
+    //             _context.StudentsClasses.Remove(
+    //                 student.Student.StudentsClasses.First(sc => sc.StudentId == student.Student.UserId));
+    //             _context.Students.Remove(student.Student);
+    //             _context.Users.Remove(student);
+    //         }
+    //         else
+    //         {
+    //             student.Student.StudentsClasses.First(sc => sc.StudentId == student.Student.UserId).ClassId = id;
+    //         }
+    //     }
+    //
+    //     try
+    //     {
+    //         _context.SaveChanges();
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         var error = ErrorDescription.Error["E1074"];
+    //         return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+    //     }
+    //
+    //     return Ok(CustomResponse.Ok("Merge class successfully", null!));
+    // }
 
     private List<StudentResponse> GetAllStudentsByClassId(int id)
     {

@@ -197,6 +197,7 @@ public static class ErrorDescription
         { "E0074", new ErrorModel() { Message = "CompletionDate can't equal or smaller than StartDate(AdmissionDate) ", Type = "class-error-0074" } },
         { "E0075", new ErrorModel() { Message = "GraduationDate can't smaller than CompletionDate", Type = "class-error-0075" } },
         { "E0076", new ErrorModel() { Message = "Update StartDate(AdmissionDate) can't smaller than created StartDate(AdmissionDate)", Type = "class-error-0076" } },
+        { "E1128", new ErrorModel() { Message = "Birthday must less than Now", Type = "class-error-0077" } },
 
         // student class
         { "E1069", new ErrorModel() { Message = "Fail to SaveChange when import Students to class by excel", Type = "student-class-error-0001" } },
@@ -256,6 +257,7 @@ public static class ErrorDescription
         { "E1125", new ErrorModel() { Message = "Student existed in new class", Type = "student-error-0041" } },
         { "E1126", new ErrorModel() { Message = "Fail to SaveChange when change class student", Type = "student-error-00042" } },        
         { "E1127", new ErrorModel() { Message = "New class already had 24 students", Type = "student-error-00043" } },
+        { "E1129", new ErrorModel() { Message = "Birthday must less than Now", Type = "student-error-0044" } },
 
         // class schedule
         { "E0077", new ErrorModel() { Message = "Module Not For This Class", Type = "class-schedule-error-0001" } },
