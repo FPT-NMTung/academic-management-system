@@ -28,6 +28,7 @@ public class StudentController : ControllerBase
     private readonly AmsContext _context;
     private readonly User _user;
     private const int RoleIdStudent = 4;
+    private const int MaxNumberStudentInClass = 200;
 
     public StudentController(AmsContext context, IUserService userService)
     {
@@ -525,7 +526,7 @@ public class StudentController : ControllerBase
             return NotFound(CustomResponse.NotFound("Not Found Class of Student with id: " + id + " in this center"));
         }
 
-        // get available classes which student class is not more than 24
+        // get available classes which student class is not more than 200
         var availableClasses = GetAvailableClasses(currentClass);
         return Ok(CustomResponse.Ok("Get available classes for student successfully", availableClasses));
     }
@@ -541,8 +542,7 @@ public class StudentController : ControllerBase
             .ThenInclude(sc => sc.Student)
             .Where(c => c.Center.Id == _user.CenterId &&
                         c.Id != currentClass.Id &&
-                        c.CourseFamily.Code == currentClass.CourseFamily!.Code &&
-                        c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < 24)
+                        c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < MaxNumberStudentInClass)
             .Select(c => new ClassResponse()
             {
                 Id = c.Id,
@@ -656,7 +656,7 @@ public class StudentController : ControllerBase
             .ThenInclude(sc => sc.Student)
             .Any(c => c.Center.Id == _user.CenterId &&
                       c.Id == request.NewClassId &&
-                      c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < 24);
+                      c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < MaxNumberStudentInClass);
         if (!newClasses)
         {
             var error = ErrorDescription.Error["E1127"];
