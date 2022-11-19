@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using AcademicManagementSystem.Models.BasicResponse;
 using AcademicManagementSystem.Models.TeacherSkillController.Skill;
 
 namespace AcademicManagementSystem.Models.TeacherSkillController;
