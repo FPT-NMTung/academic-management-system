@@ -54,6 +54,7 @@ public class DayOffController : ControllerBase
             .Where(d => d.CenterId == centerId)
             .Select(d => new DetailDayOffResponse()
             {
+                Id = d.Id,
                 Title = d.Title,
                 TeacherId = d.Teacher.UserId,
                 TeacherFirstName = d.Teacher.User.FirstName,
@@ -173,6 +174,7 @@ public class DayOffController : ControllerBase
             .Where(s => s.LearningDate.Date == request.Date.Date)
             .Where(s => request.WorkingTimeIds.Contains(s.ClassSchedule.WorkingTimeId))
             .Where(s => s.ClassSchedule.Class.CenterId == centerId)
+            .Where(s => s.SessionTypeId == 1 || s.SessionTypeId == 2)
             .Select(s => s.ClassSchedule);
 
         if (request.TeacherId != null)
@@ -259,6 +261,15 @@ public class DayOffController : ControllerBase
 
             selectedSession.LearningDate = nextSession.LearningDate;
         }
+        
+        var listSession = _context.Sessions
+            .Where(s => s.ClassScheduleId == schedule.Id)
+            .Where(s => s.SessionTypeId == 1 || s.SessionTypeId == 2)
+            .OrderBy(s => s.LearningDate.Date)
+            .ToList();
+        
+        schedule.StartDate = listSession.First().LearningDate;
+        schedule.EndDate = listSession.Last().LearningDate;
     }
 
     private DateTime GetNextLearningDateValid(DateTime learningDate, ClassSchedule schedule)
