@@ -23,6 +23,7 @@ import {
 } from '../../apis/ListApi';
 import classes from './ScheduleCreate.module.css';
 import moment from 'moment';
+import { ErrorCodeApi } from '../../apis/ErrorCodeApi';
 
 const ScheduleCreate = ({ dataModule, onSuccess }) => {
   const [listTeacher, setListTeacher] = useState([]);
@@ -140,6 +141,9 @@ const ScheduleCreate = ({ dataModule, onSuccess }) => {
           return 'Tạo lịch học thành công';
         },
         error: (err) => {
+          if (err?.type_error) {
+            return ErrorCodeApi[err.type_error];
+          }
           return 'Tạo lịch học thất bại';
         },
       }
