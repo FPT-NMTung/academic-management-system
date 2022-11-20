@@ -54,6 +54,7 @@ public class DayOffController : ControllerBase
             .Where(d => d.CenterId == centerId)
             .Select(d => new DetailDayOffResponse()
             {
+                Id = d.Id,
                 Title = d.Title,
                 TeacherId = d.Teacher.UserId,
                 TeacherFirstName = d.Teacher.User.FirstName,

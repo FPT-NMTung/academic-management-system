@@ -1,4 +1,12 @@
-import { Button, Card, Grid, Modal, Text } from '@nextui-org/react';
+import {
+  Button,
+  Card,
+  Grid,
+  Loading,
+  Modal,
+  Table,
+  Text,
+} from '@nextui-org/react';
 import { Calendar, Select, Row, Col, Form, Input } from 'antd';
 import { Fragment, useState } from 'react';
 import moment from 'moment';
@@ -9,6 +17,7 @@ import { ManageDayOffApis, ManageTeacherApis } from '../../../apis/ListApi';
 import toast from 'react-hot-toast';
 import classes from './ManageDayOff.module.css';
 import { Validater } from '../../../validater/Validater';
+import { MdDelete } from 'react-icons/md';
 
 const ManageDayOff = () => {
   const [listDayOff, setListDayOff] = useState([]);
@@ -45,7 +54,11 @@ const ManageDayOff = () => {
       });
   };
 
-  const getDetail = () => {
+  const getDetail = (isShowReload) => {
+    if (isShowReload) {
+      setDetailDayOff(undefined);
+    }
+
     const body = {
       date: moment.utc(selectedValue).local().format(),
     };
@@ -77,7 +90,7 @@ const ManageDayOff = () => {
   };
 
   useEffect(() => {
-    getDetail();
+    getDetail(true);
   }, [selectedValue]);
 
   useEffect(() => {
@@ -98,13 +111,30 @@ const ManageDayOff = () => {
       success: (res) => {
         setIsOpenCreateDayOff(false);
         getListDayOff();
-        getDetail();
+        getDetail(false);
         return 'Tạo ngày nghỉ thành công';
       },
       error: (err) => {
         return 'Lỗi tạo ngày nghỉ';
       },
     });
+  };
+
+  const handleDeleteDayOff = (id) => {
+    toast.promise(
+      FetchApi(ManageDayOffApis.deleteDayOff, null, null, [String(id)]),
+      {
+        loading: 'Đang xóa ngày nghỉ',
+        success: (res) => {
+          getListDayOff();
+          getDetail(false);
+          return 'Xóa ngày nghỉ thành công';
+        },
+        error: (err) => {
+          return 'Lỗi xóa ngày nghỉ';
+        },
+      }
+    );
   };
 
   return (
@@ -394,167 +424,297 @@ const ManageDayOff = () => {
                 paddingTop: '0px',
               }}
             >
-              <Grid.Container gap={2}>
-                <Grid xs={12}>
-                  <Card
-                    variant="bordered"
-                    css={{
-                      minHeight: '140px',
-                      borderStyle: 'dashed',
-                    }}
-                  >
-                    <Card.Header>
-                      <Text p b size={14}>
-                        Buổi sáng
-                      </Text>
-                    </Card.Header>
-                    <Card.Body>
-                      {detailDayOff?.morning.length === 0 && (
-                        <Text
-                          p
-                          size={14}
-                          css={{
-                            textAlign: 'center',
-                          }}
-                          color={'lightGray'}
-                          i
-                        >
-                          Không có lịch nghỉ
+              {!detailDayOff && (
+                <div className={classes.loadingDiv}>
+                  <Loading size="sm" />
+                </div>
+              )}
+              {detailDayOff && (
+                <Grid.Container gap={2}>
+                  <Grid xs={12}>
+                    <Card
+                      variant="bordered"
+                      css={{
+                        minHeight: '140px',
+                        borderStyle: 'dashed',
+                      }}
+                    >
+                      <Card.Header>
+                        <Text p b size={14}>
+                          Buổi sáng
                         </Text>
-                      )}
-                      {detailDayOff?.morning[0]?.teacher_id === null && (
-                        <Text
-                          p
-                          size={14}
-                          css={{
-                            textAlign: 'center',
-                          }}
-                        >
-                          <b>Lịch nghỉ chung của Trung tâm: </b>
-                          {detailDayOff?.morning[0]?.title}
+                      </Card.Header>
+                      <Card.Body
+                        css={{
+                          padding: '5px 10px',
+                        }}
+                      >
+                        {detailDayOff?.morning.length === 0 && (
+                          <Text
+                            p
+                            size={14}
+                            css={{
+                              textAlign: 'center',
+                            }}
+                            color={'lightGray'}
+                            i
+                          >
+                            Không có lịch nghỉ
+                          </Text>
+                        )}
+                        {detailDayOff?.morning[0]?.teacher_id === null && (
+                          <Text
+                            p
+                            size={14}
+                            css={{
+                              textAlign: 'center',
+                            }}
+                          >
+                            <b>Lịch nghỉ chung của Trung tâm: </b>
+                            {detailDayOff?.morning[0]?.title}
+                          </Text>
+                        )}
+                        {detailDayOff !== undefined &&
+                          detailDayOff.morning[0] !== undefined &&
+                          detailDayOff.morning[0].teacher_id !== null && (
+                            <Table
+                              css={{ padding: 0 }}
+                              lined
+                              headerLined
+                              shadow={false}
+                            >
+                              <Table.Header>
+                                <Table.Column>Giáo viên</Table.Column>
+                                <Table.Column>Lý do</Table.Column>
+                                <Table.Column
+                                  css={{
+                                    width: '10px',
+                                  }}
+                                >
+                                  Xoá
+                                </Table.Column>
+                              </Table.Header>
+                              <Table.Body>
+                                {detailDayOff?.morning.map((item) => (
+                                  <Table.Row>
+                                    <Table.Cell>
+                                      {item.teacher_first_name}{' '}
+                                      {item.teacher_last_name}
+                                    </Table.Cell>
+                                    <Table.Cell>{item.title}</Table.Cell>
+                                    <Table.Cell
+                                      css={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                      }}
+                                    >
+                                      <MdDelete
+                                        className={classes.buttonDelete}
+                                        size={16}
+                                        color={'#F31260'}
+                                        onClick={() => {
+                                          handleDeleteDayOff(item.id);
+                                        }}
+                                      />
+                                    </Table.Cell>
+                                  </Table.Row>
+                                ))}
+                              </Table.Body>
+                            </Table>
+                          )}
+                      </Card.Body>
+                    </Card>
+                  </Grid>
+                  <Grid xs={12}>
+                    <Card
+                      variant="bordered"
+                      css={{
+                        minHeight: '140px',
+                        borderStyle: 'dashed',
+                      }}
+                    >
+                      <Card.Header>
+                        <Text p b size={14}>
+                          Buổi chiều
                         </Text>
-                      )}
-                      {detailDayOff?.morning[0]?.teacher_id !== null
-                        ? detailDayOff?.morning.map((item) => (
-                            <Text p size={14}>
-                              <b>
-                                {item.teacher_first_name}{' '}
-                                {item.teacher_last_name}
-                              </b>
-                              : {item.title}
-                            </Text>
-                          ))
-                        : null}
-                    </Card.Body>
-                  </Card>
-                </Grid>
-                <Grid xs={12}>
-                  <Card
-                    variant="bordered"
-                    css={{
-                      minHeight: '140px',
-                      borderStyle: 'dashed',
-                    }}
-                  >
-                    <Card.Header>
-                      <Text p b size={14}>
-                        Buổi chiều
-                      </Text>
-                    </Card.Header>
-                    <Card.Body>
-                      {detailDayOff?.afternoon.length === 0 && (
-                        <Text
-                          p
-                          size={14}
-                          css={{
-                            textAlign: 'center',
-                          }}
-                          color={'lightGray'}
-                          i
-                        >
-                          Không có lịch nghỉ
+                      </Card.Header>
+                      <Card.Body
+                        css={{
+                          padding: '5px 10px',
+                        }}
+                      >
+                        {detailDayOff?.afternoon.length === 0 && (
+                          <Text
+                            p
+                            size={14}
+                            css={{
+                              textAlign: 'center',
+                            }}
+                            color={'lightGray'}
+                            i
+                          >
+                            Không có lịch nghỉ
+                          </Text>
+                        )}
+                        {detailDayOff?.afternoon[0]?.teacher_id === null && (
+                          <Text
+                            p
+                            size={14}
+                            css={{
+                              textAlign: 'center',
+                            }}
+                          >
+                            <b>Lịch nghỉ chung của Trung tâm: </b>
+                            {detailDayOff?.afternoon[0]?.title}
+                          </Text>
+                        )}
+                        {detailDayOff !== undefined &&
+                          detailDayOff.afternoon[0] !== undefined &&
+                          detailDayOff.afternoon[0].teacher_id !== null && (
+                            <Table
+                              css={{ padding: 0 }}
+                              lined
+                              headerLined
+                              shadow={false}
+                            >
+                              <Table.Header>
+                                <Table.Column>Giáo viên</Table.Column>
+                                <Table.Column>Lý do</Table.Column>
+                                <Table.Column
+                                  css={{
+                                    width: '10px',
+                                  }}
+                                >
+                                  Xoá
+                                </Table.Column>
+                              </Table.Header>
+                              <Table.Body>
+                                {detailDayOff?.afternoon.map((item) => (
+                                  <Table.Row>
+                                    <Table.Cell>
+                                      {item.teacher_first_name}{' '}
+                                      {item.teacher_last_name}
+                                    </Table.Cell>
+                                    <Table.Cell>{item.title}</Table.Cell>
+                                    <Table.Cell
+                                      css={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                      }}
+                                    >
+                                      <MdDelete
+                                        className={classes.buttonDelete}
+                                        size={16}
+                                        color={'#F31260'}
+                                        onClick={() => {
+                                          handleDeleteDayOff(item.id);
+                                        }}
+                                      />
+                                    </Table.Cell>
+                                  </Table.Row>
+                                ))}
+                              </Table.Body>
+                            </Table>
+                          )}
+                      </Card.Body>
+                    </Card>
+                  </Grid>
+                  <Grid xs={12}>
+                    <Card
+                      variant="bordered"
+                      css={{
+                        minHeight: '140px',
+                        borderStyle: 'dashed',
+                      }}
+                    >
+                      <Card.Header>
+                        <Text p b size={14}>
+                          Buổi tối
                         </Text>
-                      )}
-                      {detailDayOff?.afternoon[0]?.teacher_id === null && (
-                        <Text
-                          p
-                          size={14}
-                          css={{
-                            textAlign: 'center',
-                          }}
-                        >
-                          <b>Lịch nghỉ chung của Trung tâm: </b>
-                          {detailDayOff?.afternoon[0]?.title}
-                        </Text>
-                      )}
-                      {detailDayOff?.afternoon[0]?.teacher_id !== null
-                        ? detailDayOff?.afternoon.map((item) => (
-                            <Text p size={14}>
-                              <b>
-                                {item.teacher_first_name}{' '}
-                                {item.teacher_last_name}
-                              </b>
-                              : {item.title}
-                            </Text>
-                          ))
-                        : null}
-                    </Card.Body>
-                  </Card>
-                </Grid>
-                <Grid xs={12}>
-                  <Card
-                    variant="bordered"
-                    css={{
-                      minHeight: '140px',
-                      borderStyle: 'dashed',
-                    }}
-                  >
-                    <Card.Header>
-                      <Text p b size={14}>
-                        Buổi tối
-                      </Text>
-                    </Card.Header>
-                    <Card.Body>
-                      {detailDayOff?.evening.length === 0 && (
-                        <Text
-                          p
-                          size={14}
-                          css={{
-                            textAlign: 'center',
-                          }}
-                          color={'lightGray'}
-                          i
-                        >
-                          Không có lịch nghỉ
-                        </Text>
-                      )}
-                      {detailDayOff?.evening[0]?.teacher_id === null && (
-                        <Text
-                          p
-                          size={14}
-                          css={{
-                            textAlign: 'center',
-                          }}
-                        >
-                          <b>Lịch nghỉ chung của Trung tâm: </b>
-                          {detailDayOff?.evening[0]?.title}
-                        </Text>
-                      )}
-                      {detailDayOff?.evening[0]?.teacher_id !== null
-                        ? detailDayOff?.evening.map((item) => (
-                            <Text p size={14}>
-                              <b>
-                                {item.teacher_first_name}{' '}
-                                {item.teacher_last_name}
-                              </b>
-                              : {item.title}
-                            </Text>
-                          ))
-                        : null}
-                    </Card.Body>
-                  </Card>
-                </Grid>
-              </Grid.Container>
+                      </Card.Header>
+                      <Card.Body
+                        css={{
+                          padding: '5px 10px',
+                        }}
+                      >
+                        {detailDayOff?.evening.length === 0 && (
+                          <Text
+                            p
+                            size={14}
+                            css={{
+                              textAlign: 'center',
+                            }}
+                            color={'lightGray'}
+                            i
+                          >
+                            Không có lịch nghỉ
+                          </Text>
+                        )}
+                        {detailDayOff?.evening[0]?.teacher_id === null && (
+                          <Text
+                            p
+                            size={14}
+                            css={{
+                              textAlign: 'center',
+                            }}
+                          >
+                            <b>Lịch nghỉ chung của Trung tâm: </b>
+                            {detailDayOff?.evening[0]?.title}
+                          </Text>
+                        )}
+                        {detailDayOff !== undefined &&
+                          detailDayOff.evening[0] !== undefined &&
+                          detailDayOff.evening[0].teacher_id !== null && (
+                            <Table
+                              css={{ padding: 0 }}
+                              lined
+                              headerLined
+                              shadow={false}
+                            >
+                              <Table.Header>
+                                <Table.Column>Giáo viên</Table.Column>
+                                <Table.Column>Lý do</Table.Column>
+                                <Table.Column
+                                  css={{
+                                    width: '10px',
+                                  }}
+                                >
+                                  Xoá
+                                </Table.Column>
+                              </Table.Header>
+                              <Table.Body>
+                                {detailDayOff?.evening.map((item) => (
+                                  <Table.Row>
+                                    <Table.Cell>
+                                      {item.teacher_first_name}{' '}
+                                      {item.teacher_last_name}
+                                    </Table.Cell>
+                                    <Table.Cell>{item.title}</Table.Cell>
+                                    <Table.Cell
+                                      css={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                      }}
+                                    >
+                                      <MdDelete
+                                        className={classes.buttonDelete}
+                                        size={16}
+                                        color={'#F31260'}
+                                        onClick={() => {
+                                          handleDeleteDayOff(item.id);
+                                        }}
+                                      />
+                                    </Table.Cell>
+                                  </Table.Row>
+                                ))}
+                              </Table.Body>
+                            </Table>
+                          )}
+                      </Card.Body>
+                    </Card>
+                  </Grid>
+                </Grid.Container>
+              )}
             </Card.Body>
           </Card>
         </Grid>

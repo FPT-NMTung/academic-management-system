@@ -4,6 +4,9 @@ namespace AcademicManagementSystem.Models.DayOffController.DayOffModel;
 
 public class DetailDayOffResponse
 {
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
+    
     [JsonPropertyName("teacher_id")]
     public int? TeacherId { get; set; }
     
