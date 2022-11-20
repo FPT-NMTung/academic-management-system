@@ -16,7 +16,6 @@ import FetchApi from '../../../apis/FetchApi';
 import { ManageDayOffApis, ManageTeacherApis } from '../../../apis/ListApi';
 import toast from 'react-hot-toast';
 import classes from './ManageDayOff.module.css';
-import { Validater } from '../../../validater/Validater';
 import { MdDelete } from 'react-icons/md';
 
 const ManageDayOff = () => {
