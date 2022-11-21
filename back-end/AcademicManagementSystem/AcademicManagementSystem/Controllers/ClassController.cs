@@ -32,7 +32,7 @@ public class ClassController : ControllerBase
     private readonly User _user;
     private const int RoleIdStudent = 4;
     private const int NotScheduleYet = 5;
-    private const int MaximumStudentInClass = 100;
+    private const int MaxNumberStudentInClass = 100;
 
     public ClassController(AmsContext context, IUserService userService)
     {
@@ -950,7 +950,7 @@ public class ClassController : ControllerBase
                         _context.Users.Add(user);
                         _context.Students.Add(user.Student);
                         _context.StudentsClasses.Add(user.Student.StudentsClasses.First());
-                        if (studentNo == MaximumStudentInClass) break;
+                        if (studentNo == MaxNumberStudentInClass) break;
                     }
 
                     try
@@ -996,7 +996,7 @@ public class ClassController : ControllerBase
             .Include(sc => sc.Class)
             .Include(sc => sc.Student)
             .Count(sc => sc.ClassId == id && sc.IsActive);
-        if (numberOfStudentInClass >= MaximumStudentInClass)
+        if (numberOfStudentInClass >= MaxNumberStudentInClass)
         {
             var error = ErrorDescription.Error["E1116"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -1577,69 +1577,213 @@ public class ClassController : ControllerBase
         return Ok(CustomResponse.Ok("Get number of students successfully", numberOfStudents));
     }
 
-    // merge class
-    // [HttpPut]
-    // [Route("api/classes/{id:int}/merge-class")]
-    // [Authorize(Roles = "admin, sro")]
-    // public IActionResult MergeClass(int id, [FromBody] MergeClassRequest request)
-    // {
-    //     var existedClass = _context.Classes.Any(c => c.Id == id);
-    //     if (!existedClass)
-    //     {
-    //         var error = ErrorDescription.Error["E1073"];
-    //         return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-    //     }
-    //
-    //     var existedClassToMerge = _context.Classes.Any(c => c.Id == id);
-    //     if (!existedClassToMerge)
-    //     {
-    //         var error = ErrorDescription.Error["E1073"];
-    //         return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-    //     }
-    //
-    //     var students = _context.Users
-    //         .Include(u => u.Student)
-    //         .Include(u => u.Student.StudentsClasses)
-    //         .Where(u => u.Student.StudentsClasses.Any(sc => sc.ClassId == id))
-    //         .ToList();
-    //
-    //     if (students.Count == 0)
-    //     {
-    //         return Ok(CustomResponse.Ok("No student in class", null!));
-    //     }
-    //
-    //     foreach (var student in students)
-    //     {
-    //         var existedStudent = _context.Users
-    //             .Include(u => u.Student)
-    //             .Include(u => u.Student.StudentsClasses)
-    //             .Any(u => u.Student.StudentsClasses.Any(sc => sc.ClassId == id && u.Student.UserId == student.Student.UserId));
-    //
-    //         if (existedStudent)
-    //         {
-    //             _context.StudentsClasses.Remove(
-    //                 student.Student.StudentsClasses.First(sc => sc.StudentId == student.Student.UserId));
-    //             _context.Students.Remove(student.Student);
-    //             _context.Users.Remove(student);
-    //         }
-    //         else
-    //         {
-    //             student.Student.StudentsClasses.First(sc => sc.StudentId == student.Student.UserId).ClassId = id;
-    //         }
-    //     }
-    //
-    //     try
-    //     {
-    //         _context.SaveChanges();
-    //     }
-    //     catch (Exception e)
-    //     {
-    //         var error = ErrorDescription.Error["E1074"];
-    //         return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-    //     }
-    //
-    //     return Ok(CustomResponse.Ok("Merge class successfully", null!));
-    // }
+    // merge 1 class in to this class
+    [HttpPost]
+    [Route("api/classes/{id:int}/merge")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult MergeClass1(int id, [FromBody] MergeClassRequest request)
+    {
+        var existedClass = _context.Classes
+            .Include(c => c.Center)
+            .Any(c => c.Id == id && c.CenterId == _user.CenterId);
+        if (!existedClass)
+        {
+            var error = ErrorDescription.Error["E1073"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var existedClassToMerge = _context.Classes
+            .Include(c => c.Center)
+            .Any(c => c.Id == request.ClassId && c.CenterId == _user.CenterId);
+        if (!existedClassToMerge)
+        {
+            var error = ErrorDescription.Error["E1073"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var students = _context.StudentsClasses
+            .Include(sc => sc.Student)
+            .Where(sc => sc.ClassId == request.ClassId && sc.IsActive)
+            .ToList();
+
+        foreach (var student in students)
+        {
+            student.ClassId = id;
+        }
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E1074"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        return Ok(CustomResponse.Ok("Merge class successfully", null!));
+    }
+
+
+    [HttpPut]
+    [Route("api/classes/{id:int}/merge-class")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult MergeClass(int id, [FromBody] MergeClassRequest request)
+    {
+        var existedClass = _context.Classes.Any(c => c.Id == id);
+        if (!existedClass)
+        {
+            var error = ErrorDescription.Error["E1073"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var existedClassToMerge = _context.Classes.Any(c => c.Id == id);
+        if (!existedClassToMerge)
+        {
+            var error = ErrorDescription.Error["E1073"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var students = _context.Users
+            .Include(u => u.Student)
+            .Include(u => u.Student.StudentsClasses)
+            .Where(u => u.Student.StudentsClasses.Any(sc => sc.ClassId == id))
+            .ToList();
+
+        if (students.Count == 0)
+        {
+            return Ok(CustomResponse.Ok("No student in class", null!));
+        }
+
+        foreach (var student in students)
+        {
+            var existedStudent = _context.Users
+                .Include(u => u.Student)
+                .Include(u => u.Student.StudentsClasses)
+                .Any(u => u.Student.StudentsClasses.Any(sc =>
+                    sc.ClassId == id && u.Student.UserId == student.Student.UserId));
+
+            if (existedStudent)
+            {
+                _context.StudentsClasses.Remove(
+                    student.Student.StudentsClasses.First(sc => sc.StudentId == student.Student.UserId));
+                _context.Students.Remove(student.Student);
+                _context.Users.Remove(student);
+            }
+            else
+            {
+                student.Student.StudentsClasses.First(sc => sc.StudentId == student.Student.UserId).ClassId = id;
+            }
+        }
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E1074"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        return Ok(CustomResponse.Ok("Merge class successfully", null!));
+    }
+
+    // get list class can merge
+    [HttpGet]
+    [Route("api/classes/{id:int}/available-to-merge")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult GetAvailableClassesToMerge(int id)
+    {
+        var currentClass = GetAllClassesInThisCenterByContext()
+            .FirstOrDefault(c => c.Id == id);
+
+        if (currentClass == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Class with id: " + id + " in this center"));
+        }
+
+        var availableClasses = GetAvailableClasses(currentClass);
+        return Ok(CustomResponse.Ok("Get available classes for student successfully", availableClasses));
+    }
+
+    private IQueryable<ClassResponse> GetAvailableClasses(ClassResponse currentClass)
+    {
+        var availableClasses = _context.Classes
+            .Include(c => c.Center)
+            .Include(c => c.ClassSchedules)
+            .Include(c => c.ClassStatus)
+            .Include(c => c.CourseFamily)
+            .Include(c => c.StudentsClasses)
+            .ThenInclude(sc => sc.Student)
+            .Where(c => c.Center.Id == _user.CenterId &&
+                        c.Id != currentClass.Id &&
+                        c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < MaxNumberStudentInClass)
+            .Select(c => new ClassResponse()
+            {
+                Id = c.Id,
+                Name = c.Name,
+                CenterId = c.CenterId,
+                CourseFamilyCode = c.CourseFamilyCode,
+                ClassDaysId = c.ClassDaysId,
+                ClassStatusId = c.ClassStatusId,
+                StartDate = c.StartDate,
+                CompletionDate = c.CompletionDate,
+                GraduationDate = c.GraduationDate,
+                ClassHourStart = c.ClassHourStart,
+                ClassHourEnd = c.ClassHourEnd,
+                CreatedAt = c.CreatedAt,
+                UpdatedAt = c.UpdatedAt,
+                Center = new CenterResponse()
+                {
+                    Id = c.Center.Id,
+                    Name = c.Center.Name,
+                    CreatedAt = c.Center.CreatedAt,
+                    UpdatedAt = c.Center.UpdatedAt,
+                    Province = new ProvinceResponse()
+                    {
+                        Id = c.Center.Province.Id,
+                        Code = c.Center.Province.Code,
+                        Name = c.Center.Province.Name,
+                    },
+                    District = new DistrictResponse()
+                    {
+                        Id = c.Center.District.Id,
+                        Name = c.Center.District.Name,
+                        Prefix = c.Center.District.Prefix
+                    },
+                    Ward = new WardResponse()
+                    {
+                        Id = c.Center.Ward.Id,
+                        Name = c.Center.Ward.Name,
+                        Prefix = c.Center.Ward.Prefix
+                    }
+                },
+                CourseFamily = new CourseFamilyResponse()
+                {
+                    Code = c.CourseFamily.Code,
+                    Name = c.CourseFamily.Name,
+                    IsActive = c.CourseFamily.IsActive,
+                    PublishedYear = c.CourseFamily.PublishedYear,
+                    CreatedAt = c.CourseFamily.CreatedAt,
+                    UpdatedAt = c.CourseFamily.UpdatedAt
+                },
+                ClassDays = new ClassDaysResponse()
+                {
+                    Id = c.ClassDays.Id,
+                    Value = c.ClassDays.Value
+                },
+                ClassStatus = new ClassStatusResponse()
+                {
+                    Id = c.ClassStatus.Id,
+                    Value = c.ClassStatus.Value
+                },
+                SroId = c.Sro.UserId,
+                SroFirstName = c.Sro.User.FirstName,
+                SroLastName = c.Sro.User.LastName
+            });
+        return availableClasses;
+    }
 
     private List<StudentResponse> GetAllStudentsByClassId(int id)
     {
