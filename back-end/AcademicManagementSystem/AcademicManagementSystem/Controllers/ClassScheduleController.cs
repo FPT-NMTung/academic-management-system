@@ -605,7 +605,7 @@ public class ClassScheduleController : ControllerBase
 
         /*
         * number of old sessions < number of new sessions:
-        * - update old sessions by new each session till new sessions end
+        * - update old sessions by new each session till old session
         * - add new sessions after old sessions end
         */
         if (oldSessions.Count < updatedSessions.Count)
