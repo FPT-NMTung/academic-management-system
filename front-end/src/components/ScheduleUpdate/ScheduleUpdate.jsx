@@ -23,9 +23,9 @@ import {
 } from '../../apis/ListApi';
 import moment from 'moment';
 import { ErrorCodeApi } from '../../apis/ErrorCodeApi';
-import classes from './ScheduleCreate.module.css';
+import classes from './ScheduleUpdate.module.css';
 
-const ScheduleCreate = ({ dataModule, onSuccess }) => {
+const ScheduleUpdate = ({ dataModule, dataSchedule, onSuccess }) => {
   const [listTeacher, setListTeacher] = useState([]);
   const [listRoom, setListRoom] = useState([]);
   const [dataModuleDetail, setDataModuleDetail] = useState(undefined);
@@ -56,30 +56,10 @@ const ScheduleCreate = ({ dataModule, onSuccess }) => {
       });
   };
 
-  const getInformationClass = () => {
-    FetchApi(ManageClassApis.getInformationClass, null, null, [String(id)])
-      .then((res) => {
-        console.log(res);
-        form.setFieldsValue({
-          class_days_id: res.data.class_days_id,
-          time: [
-            moment(res.data.class_hour_start, 'HH:mm:ss'),
-            moment(res.data.class_hour_end, 'HH:mm:ss'),
-          ],
-        });
-      })
-      .catch((err) => {
-        toast.error('Lỗi lấy thông tin lớp học');
-      });
-  };
-
-  const getInofrmationModule = () => {
+  const getInformationModule = () => {
     FetchApi(ModulesApis.getModuleByID, null, null, [String(moduleId)])
       .then((res) => {
-        form.setFieldsValue({
-          duration: res.data.days,
-        });
-        setDuration(res.data.days);
+        console.log(res.data);
         setDataModuleDetail(res.data);
       })
       .catch((err) => {
@@ -87,11 +67,42 @@ const ScheduleCreate = ({ dataModule, onSuccess }) => {
       });
   };
 
+  const fillDataToForm = () => {
+    console.log(form);
+    console.log(dataSchedule);
+
+    form.setFieldsValue({
+      teacher_id: dataSchedule.teacher.id,
+      class_days_id: dataSchedule.class_days.id,
+      start_date: moment(dataSchedule.start_date, 'YYYY-MM-DD'),
+      working_time_id: dataSchedule.working_time_id,
+      time: [
+        moment(dataSchedule.class_hour_start, 'HH:mm:ss'),
+        moment(dataSchedule.class_hour_end, 'HH:mm:ss'),
+      ],
+      theory_room_id: dataSchedule.theory_room_id,
+      lab_room_id: dataSchedule.lab_room_id,
+      exam_room_id: dataSchedule.exam_room_id,
+      duration: dataSchedule.duration,
+      note: dataSchedule.note,
+    });
+
+    setDuration(dataSchedule.duration);
+    const sessionPractice = dataSchedule.sessions.sort((session1, session2) => {
+      return new Date(session1.learning_date) - new Date(session2.learning_date);
+    })
+    .map((session, index) => {
+      return session.session_type === 2 ? index + 1 : null;
+    })
+    .filter((session) => session !== null);
+    setListSessionPractice(sessionPractice);
+  };
+
   useEffect(() => {
     getListTeacher();
     getListRoom();
-    getInformationClass();
-    getInofrmationModule();
+    getInformationModule();
+    fillDataToForm();
   }, []);
 
   const handleChangeSession = (status, value) => {
@@ -130,21 +141,20 @@ const ScheduleCreate = ({ dataModule, onSuccess }) => {
       note: e.note,
     };
 
-    console.log(body);
     toast.promise(
-      FetchApi(ManageScheduleApis.createSchedule, body, null, [String(id)]),
+      FetchApi(ManageScheduleApis.updateSchedule, body, null, [String(dataSchedule.id)]),
       {
-        loading: 'Đang tạo lịch học',
+        loading: 'Đang cập nhật lịch học',
         success: (res) => {
           onSuccess();
           handleUpdateListCourse();
-          return 'Tạo lịch học thành công';
+          return 'Cập nhật lịch học thành công';
         },
         error: (err) => {
           if (err?.type_error) {
             return ErrorCodeApi[err.type_error];
           }
-          return 'Tạo lịch học thất bại';
+          return 'Cập nhật lịch học thất bại';
         },
       }
     );
@@ -324,7 +334,7 @@ const ScheduleCreate = ({ dataModule, onSuccess }) => {
             type="primary"
             htmlType="submit"
           >
-            Tạo lịch học
+            Cập nhật lịch học
           </Button>
         </div>
       </Form>
@@ -332,4 +342,4 @@ const ScheduleCreate = ({ dataModule, onSuccess }) => {
   );
 };
 
-export default ScheduleCreate;
+export default ScheduleUpdate;

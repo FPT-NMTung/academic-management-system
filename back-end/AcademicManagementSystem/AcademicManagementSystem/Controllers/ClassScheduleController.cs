@@ -118,6 +118,10 @@ public class ClassScheduleController : ControllerBase
             },
             ClassHourStart = classSchedule.ClassHourStart,
             ClassHourEnd = classSchedule.ClassHourEnd,
+            TheoryRoomId = classSchedule.TheoryRoomId,
+            LabRoomId = classSchedule.LabRoomId,
+            ExamRoomId = classSchedule.ExamRoomId,
+            WorkingTimeId = classSchedule.WorkingTimeId,
             Note = classSchedule.Note,
             Sessions = classSchedule.Sessions.Select(s => new SessionResponse()
             {
