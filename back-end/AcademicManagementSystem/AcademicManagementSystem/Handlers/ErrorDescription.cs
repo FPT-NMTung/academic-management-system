@@ -67,6 +67,7 @@ public static class ErrorDescription
         { "E0022_1", new ErrorModel() { Message = "EmailOrganization Already Belong To Another Email", Type = "sro-error-0022-1" } },
         { "E0022_2", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "sro-error-0022-2" } },
         { "E0022_3", new ErrorModel() { Message = "BirthDay must before today", Type = "sro-error-0022-3" } },
+        { "E0022_4", new ErrorModel() { Message = "Publish date citizen card must before today", Type = "sro-error-0022-4" } },
         { "E2057", new ErrorModel() { Message = "Change status sro failed", Type = "sro-error-2057" } },
         { "E1119", new ErrorModel() { Message = "Delete sro fail", Type = "sro-error-1001" } },
 
@@ -154,6 +155,7 @@ public static class ErrorDescription
         { "E0052_2", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "teacher-error-0052-2" } },
         { "E0052_3", new ErrorModel() { Message = "BirthDay must before today", Type = "teacher-error-0052-3" } },
         { "E0052_4", new ErrorModel() { Message = "Salary can't smaller than 0", Type = "teacher-error-0052-4" } },
+        { "E0052_5", new ErrorModel() { Message = "Publish date citizen card must before today", Type = "teacher-error-0052-5" } },
         { "E2056", new ErrorModel() { Message = "Change status teacher failed", Type = "teacher-error-2056" } },
         { "E1118", new ErrorModel() { Message = "Delete teacher fail", Type = "teacher-error-1001" } },
 
