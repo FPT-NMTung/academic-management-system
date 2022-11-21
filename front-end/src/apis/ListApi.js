@@ -451,6 +451,11 @@ export const ManageScheduleApis = {
     method: 'POST',
     contextType: 'application/json',
   },
+  updateSchedule: {
+    url: 'api/classes-schedules/{0}',
+    method: 'PUT',
+    contextType: 'application/json',
+  },
   deleteSchedule: {
     url: 'api/classes/{0}/schedules/{1}',
     method: 'DELETE',
@@ -511,5 +516,10 @@ export const ManageDayOffApis = {
     url: 'api/days-off',
     method: 'POST',
     contextType: 'application/json',
-  }
+  },
+  deleteDayOff: {
+    url: 'api/days-off/{0}',
+    method: 'DELETE',
+    contextType: 'application/json',
+  },
 }

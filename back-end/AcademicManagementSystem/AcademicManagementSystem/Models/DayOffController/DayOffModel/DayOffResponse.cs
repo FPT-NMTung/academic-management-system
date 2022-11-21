@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using AcademicManagementSystem.Models.BasicResponse;
 using AcademicManagementSystem.Models.TeacherSkillController;
 using AcademicManagementSystem.Models.WorkingTime;
 

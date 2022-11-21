@@ -238,7 +238,6 @@ public class ClassController : ControllerBase
             return "E0068";
         }
 
-        // allow special characters: ()-_
         if (Regex.IsMatch(request.Name, StringConstant.RegexSpecialCharactersNotAllowForClassName))
         {
             return "E0069";
@@ -1494,7 +1493,7 @@ public class ClassController : ControllerBase
 
         listModule.ToList().ForEach(m =>
         {
-            var hasSchedule = m.ClassSchedules.Where(cs => cs.ClassId == id && cs.ModuleId == m.Id).ToList().Count > 0;
+            var findSchedule = m.ClassSchedules.Where(cs => cs.ClassId == id && cs.ModuleId == m.Id);
             var moduleStatus = new ModuleStatusResponse()
             {
                 Module = new ModuleResponse()
@@ -1502,9 +1501,12 @@ public class ClassController : ControllerBase
                     Id = m.Id,
                     ModuleName = m.ModuleName,
                     ModuleType = m.ModuleType,
+                    CreatedAt = m.CreatedAt,
+                    UpdatedAt = m.UpdatedAt,
                 },
-                ScheduleId = hasSchedule ? m.ClassSchedules.First().Id : 0,
-                Status = hasSchedule
+                ScheduleId = findSchedule.ToList().Count > 0 ? m.ClassSchedules.First().Id : 0,
+                ScheduleStartTime = findSchedule.ToList().Count > 0 ? m.ClassSchedules.First().StartDate : null,
+                Status = findSchedule.ToList().Count > 0,
             };
             list.Add(moduleStatus);
         });
