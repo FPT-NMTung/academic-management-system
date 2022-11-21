@@ -1559,6 +1559,24 @@ public class ClassController : ControllerBase
         return Ok(CustomResponse.Ok("Delete students successfully", null!));
     }
 
+    [HttpGet]
+    [Route("api/classes/{id:int}/number-of-students")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult GetNumberOfStudentsInClass(int id)
+    {
+        var existedClass = _context.Classes
+            .Include(c => c.Center)
+            .Any(c => c.Id == id && c.CenterId == _user.CenterId);
+        if (!existedClass)
+        {
+            var error = ErrorDescription.Error["E1073"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var numberOfStudents = _context.StudentsClasses.Count(sc => sc.ClassId == id && sc.IsActive);
+        return Ok(CustomResponse.Ok("Get number of students successfully", numberOfStudents));
+    }
+
     // merge class
     // [HttpPut]
     // [Route("api/classes/{id:int}/merge-class")]

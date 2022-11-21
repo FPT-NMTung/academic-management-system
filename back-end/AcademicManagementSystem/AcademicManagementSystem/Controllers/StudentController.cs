@@ -532,7 +532,7 @@ public class StudentController : ControllerBase
             return NotFound(CustomResponse.NotFound("Not Found Class of Student with id: " + id + " in this center"));
         }
 
-        // get available classes which student class is not more than 200
+        // get available classes which student class is not more than 100
         var availableClasses = GetAvailableClasses(currentClass);
         return Ok(CustomResponse.Ok("Get available classes for student successfully", availableClasses));
     }

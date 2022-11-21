@@ -210,7 +210,7 @@ public static class ErrorDescription
         { "E1112", new ErrorModel() { Message = "Student EnrollNumber is existed", Type = "student-class-error-0009" } },
         { "E1113", new ErrorModel() { Message = "Fail to SaveChange when add Student", Type = "student-class-error-0010" } },
         { "E1115", new ErrorModel() { Message = "EnrollNumber is existed", Type = "student-class-error-0011" } },
-        { "E1116", new ErrorModel() { Message = "Cannot add student to class because the class already has 24 students", Type = "student-class-error-0011" } },
+        { "E1116", new ErrorModel() { Message = "Cannot add student to class because the class already has 100 students", Type = "student-class-error-0011" } },
 
         // student
         { "E1076", new ErrorModel() { Message = "First name is not match with format", Type = "student-error-0001" } },
