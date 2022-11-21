@@ -32,7 +32,7 @@ public class ClassController : ControllerBase
     private readonly User _user;
     private const int RoleIdStudent = 4;
     private const int NotScheduleYet = 5;
-    private const int MaximumStudentInClass = 200;
+    private const int MaximumStudentInClass = 100;
 
     public ClassController(AmsContext context, IUserService userService)
     {

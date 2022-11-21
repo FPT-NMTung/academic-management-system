@@ -28,7 +28,7 @@ public class StudentController : ControllerBase
     private readonly AmsContext _context;
     private readonly User _user;
     private const int RoleIdStudent = 4;
-    private const int MaxNumberStudentInClass = 200;
+    private const int MaxNumberStudentInClass = 100;
 
     public StudentController(AmsContext context, IUserService userService)
     {
