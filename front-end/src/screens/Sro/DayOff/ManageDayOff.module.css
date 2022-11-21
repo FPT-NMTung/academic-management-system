@@ -2,3 +2,15 @@
   display        : flex;
   justify-content: center;
 }
+
+.loadingDiv {
+  display        : flex;
+  justify-content: center;
+  align-items    : center;
+
+  height: 400px;
+}
+
+.buttonDelete {
+  cursor: pointer;
+}

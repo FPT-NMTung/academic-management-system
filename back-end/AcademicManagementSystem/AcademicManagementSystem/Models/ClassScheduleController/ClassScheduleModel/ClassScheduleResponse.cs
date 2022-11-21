@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using AcademicManagementSystem.Models.BasicResponse;
 using AcademicManagementSystem.Models.ClassDaysController;
 using AcademicManagementSystem.Models.ClassStatusController;
 using AcademicManagementSystem.Models.RoomController.RoomModel;
@@ -78,6 +79,9 @@ public class ClassScheduleResponse
     
     [JsonPropertyName("sessions")]
     public List<SessionResponse> Sessions { get; set; }
+    
+    [JsonPropertyName("working_time_id")]
+    public int WorkingTimeId { get; set; }
 
     [JsonPropertyName("created_at")]
     public DateTime CreatedAt { get; set; }

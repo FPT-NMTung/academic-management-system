@@ -1,7 +1,9 @@
 ﻿using AcademicManagementSystem.Context;
 using AcademicManagementSystem.Controllers;
 using AcademicManagementSystem.Models.RoomController.RoomModel;
+using AcademicManagementSystem.Services;
 using AcademicManagementSystemTest.MockData;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +13,8 @@ public class TestRoomController
 {
     private readonly AmsContext _context;
     private readonly RoomController _controller;
-
+    private readonly IUserService _userService;
+    
     public TestRoomController()
     {
         var optionsInMemoryDb = new DbContextOptionsBuilder<AmsContext>()
@@ -19,7 +22,8 @@ public class TestRoomController
             .Options;
 
         _context = new AmsContext(optionsInMemoryDb);
-        _controller = new RoomController(_context, null);
+        _userService = new UserService(new HttpContextAccessor()); 
+        _controller = new RoomController(_context, _userService);
         Init();
     }
 
@@ -66,7 +70,7 @@ public class TestRoomController
         {
             CenterId = 1,
             RoomTypeId = 1,
-            Name = "_Room 1",
+            Name = "Room @",
             Capacity = 30
         };
 

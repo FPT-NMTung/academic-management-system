@@ -12,10 +12,10 @@ public static class ErrorDescription
         { "E0005", new ErrorModel() { Message = "Invalid Data for CREATE room ", Type = "room-error-0005" } },
         { "E0006", new ErrorModel() { Message = "Capacity for CREATE room must be between 20 and 100", Type = "room-error-0006" } },
         { "E0007", new ErrorModel() { Message = "Name for CREATE room cannot be empty", Type = "room-error-0007" } },
-        { "E0008", new ErrorModel() { Message = "Name for CREATE room must match with format", Type = "room-error-0008" } },
+        { "E0008", new ErrorModel() { Message = "Name for CREATE room must match with format(allow characters: ' ( ) _ -", Type = "room-error-0008" } },
         { "E0009", new ErrorModel() { Message = "roomId for UPDATE not found", Type = "room-error-0009" } },
         { "E0010", new ErrorModel() { Message = "Name for UPDATE room cannot be empty", Type = "room-error-0010" } },
-        { "E0011", new ErrorModel() { Message = "Name for UPDATE room must match with format", Type = "room-error-0011" } },
+        { "E0011", new ErrorModel() { Message = "Name for UPDATE room must match with format(allow characters: ' ( ) _ -", Type = "room-error-0011" } },
         { "E0012", new ErrorModel() { Message = "centerId for UPDATE room not found", Type = "room-error-0012" } },
         { "E0013", new ErrorModel() { Message = "roomTypeId for UPDATE room not found", Type = "room-error-0013" } },
         { "E0014", new ErrorModel() { Message = "Capacity for UPDATE room must be between 20 and 100", Type = "room-error-0014" } },
@@ -67,6 +67,7 @@ public static class ErrorDescription
         { "E0022_1", new ErrorModel() { Message = "EmailOrganization Already Belong To Another Email", Type = "sro-error-0022-1" } },
         { "E0022_2", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "sro-error-0022-2" } },
         { "E0022_3", new ErrorModel() { Message = "BirthDay must before today", Type = "sro-error-0022-3" } },
+        { "E0022_4", new ErrorModel() { Message = "Publish date citizen card must before today", Type = "sro-error-0022-4" } },
         { "E2057", new ErrorModel() { Message = "Change status sro failed", Type = "sro-error-2057" } },
         { "E1119", new ErrorModel() { Message = "Delete sro fail", Type = "sro-error-1001" } },
 
@@ -154,6 +155,7 @@ public static class ErrorDescription
         { "E0052_2", new ErrorModel() { Message = "Email And EmailOrganization Must Be Different", Type = "teacher-error-0052-2" } },
         { "E0052_3", new ErrorModel() { Message = "BirthDay must before today", Type = "teacher-error-0052-3" } },
         { "E0052_4", new ErrorModel() { Message = "Salary can't smaller than 0", Type = "teacher-error-0052-4" } },
+        { "E0052_5", new ErrorModel() { Message = "Publish date citizen card must before today", Type = "teacher-error-0052-5" } },
         { "E2056", new ErrorModel() { Message = "Change status teacher failed", Type = "teacher-error-2056" } },
         { "E1118", new ErrorModel() { Message = "Delete teacher fail", Type = "teacher-error-1001" } },
 
@@ -188,7 +190,7 @@ public static class ErrorDescription
 
         //class
         { "E0068", new ErrorModel() { Message = "Class name can't be empty", Type = "class-error-0068" } },
-        { "E0069", new ErrorModel() { Message = "Class name must match with format(allow characters: ( ) _ - ", Type = "class-error-0069" } },
+        { "E0069", new ErrorModel() { Message = "Class name must match with format(allow characters: ' ( ) _ - ", Type = "class-error-0069" } },
         { "E0070", new ErrorModel() { Message = "Class already exist", Type = "class-error-0070" } },
         { "E0071", new ErrorModel() { Message = "Add class failed, data not valid", Type = "class-error-0071" } },
         { "E0072", new ErrorModel() { Message = "Class hour start must less than hour end, learning time must be 1h - 4h", Type = "class-error-0072" } },
@@ -283,7 +285,7 @@ public static class ErrorDescription
         { "E0096", new ErrorModel() { Message = "Class schedule does not exist", Type = "class-schedule-error-0020" } },
         { "E0097", new ErrorModel() { Message = "This schedule not for this center", Type = "class-schedule-error-0021" } },
         { "E0098", new ErrorModel() { Message = "Can't update, this module is learning in class", Type = "class-schedule-error-0022" } },
-        { "E0099", new ErrorModel() { Message = "Can't update, startDate must bigger than last learning date of previous schedule", Type = "class-schedule-error-0023" } },
+        { "E0099", new ErrorModel() { Message = "Can't update, this time have started schedule", Type = "class-schedule-error-0023" } },
         { "E2064", new ErrorModel() { Message = "Teacher busy in this time", Type = "class-schedule-error-0024" } },
         { "E2065", new ErrorModel() { Message = "Room already used in this time", Type = "class-schedule-error-0025" } },
         { "E2066", new ErrorModel() { Message = "This class not have this module", Type = "class-schedule-error-0026" } },

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace AcademicManagementSystem.Models.TeacherSkillController;
+namespace AcademicManagementSystem.Models.BasicResponse;
 
 public class BasicTeacherInformationResponse
 {

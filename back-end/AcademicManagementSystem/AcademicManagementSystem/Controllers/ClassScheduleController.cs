@@ -1,6 +1,7 @@
 ﻿using AcademicManagementSystem.Context;
 using AcademicManagementSystem.Context.AmsModels;
 using AcademicManagementSystem.Handlers;
+using AcademicManagementSystem.Models.BasicResponse;
 using AcademicManagementSystem.Models.ClassDaysController;
 using AcademicManagementSystem.Models.ClassScheduleController.ClassScheduleModel;
 using AcademicManagementSystem.Models.ClassStatusController;
@@ -117,6 +118,10 @@ public class ClassScheduleController : ControllerBase
             },
             ClassHourStart = classSchedule.ClassHourStart,
             ClassHourEnd = classSchedule.ClassHourEnd,
+            TheoryRoomId = classSchedule.TheoryRoomId,
+            LabRoomId = classSchedule.LabRoomId,
+            ExamRoomId = classSchedule.ExamRoomId,
+            WorkingTimeId = classSchedule.WorkingTimeId,
             Note = classSchedule.Note,
             Sessions = classSchedule.Sessions.Select(s => new SessionResponse()
             {
@@ -186,6 +191,10 @@ public class ClassScheduleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        /*
+        * Check input data like: module for this class or not, durations in range, startDate must < today,
+        * LearningTime must match with workingTime(1,2,3), room type must correct, range of learningTime...
+        */
         var errorCode = GetCodeIfErrorOccurWhenCreate(classId, request, centerId, module);
         if (errorCode != null)
         {
@@ -411,6 +420,11 @@ public class ClassScheduleController : ControllerBase
 
         var module = _context.Modules.First(m => m.Id == classScheduleContext.ModuleId);
 
+
+        /*
+        * Check input data like: durations in range, startDate must < today,
+        * LearningTime must match with workingTime(1,2,3), room type must correct, range of learningTime...
+        */
         var errorCode = GetCodeIfErrorOccurWhenUpdate(request, centerId, module);
         if (errorCode != null)
         {
@@ -418,11 +432,11 @@ public class ClassScheduleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var oldSessions = classScheduleContext.Sessions.ToList();
-
+        var oldSessions = classScheduleContext.Sessions.OrderBy(s => s.LearningDate).ToList();
+        var updatedSessions = new List<Session>();
         var isStart = oldSessions.Any(s => s.LearningDate.Date <= DateTime.Now.Date);
 
-        // check is learning or not
+        // check schedule is started or not
         if (isStart)
         {
             var error = ErrorDescription.Error["E0098"];
@@ -430,15 +444,16 @@ public class ClassScheduleController : ControllerBase
         }
 
         // remove sessions 
-        foreach (var session in oldSessions)
-        {
-            classScheduleContext.Sessions.Remove(session);
-        }
-
-        _context.Sessions.RemoveRange(oldSessions);
+        // foreach (var session in oldSessions)
+        // {
+        //     classScheduleContext.Sessions.Remove(session);
+        // }
+        //
+        // _context.Sessions.RemoveRange(oldSessions);
 
         var practiceSessions = new List<int>();
-        // remove duplicate
+
+        // remove duplicate practice sessions
         if (request.PracticeSession != null)
         {
             practiceSessions = request.PracticeSession.Distinct().ToList();
@@ -497,7 +512,8 @@ public class ClassScheduleController : ControllerBase
                     session.RoomId = (int)request.TheoryRoomId!;
                 }
 
-                classScheduleContext.Sessions.Add(session);
+                // add to new list
+                updatedSessions.Add(session);
             }
 
             if (i == request.Duration)
@@ -524,7 +540,8 @@ public class ClassScheduleController : ControllerBase
                     };
                     classScheduleContext.TheoryExamDate = learningDate;
                     learningDate += TimeSpan.FromDays(1);
-                    classScheduleContext.Sessions.Add(session);
+                    // add to new list
+                    updatedSessions.Add(session);
                     break;
                 }
 
@@ -549,7 +566,8 @@ public class ClassScheduleController : ControllerBase
                         EndTime = request.ClassHourStart + TimeSpan.FromHours(2.5),
                     };
                     classScheduleContext.PracticalExamDate = learningDate;
-                    classScheduleContext.Sessions.Add(session);
+                    // add to new list
+                    updatedSessions.Add(session);
                     break;
                 }
 
@@ -557,19 +575,76 @@ public class ClassScheduleController : ControllerBase
             }
         }
 
-        var oldStartDate = classScheduleContext.StartDate;
+        var oldStartDate = oldSessions.First().LearningDate.Date;
+        
+        /*
+         * number of old sessions >= number of new sessions:
+         * - update old sessions by new each session till new sessions end
+         * - remove old sessions after new sessions end
+         */
+        if (oldSessions.Count >= updatedSessions.Count)
+        {
+            for (var j = 0; j < updatedSessions.Count; j++)
+            {
+                oldSessions[j].SessionTypeId = updatedSessions[j].SessionTypeId;
+                oldSessions[j].Title = updatedSessions[j].Title;
+                oldSessions[j].RoomId = updatedSessions[j].RoomId;
+                oldSessions[j].LearningDate = updatedSessions[j].LearningDate;
+                oldSessions[j].StartTime = updatedSessions[j].StartTime;
+                oldSessions[j].EndTime = updatedSessions[j].EndTime;
+            }
+
+            if (oldSessions.Count > updatedSessions.Count)
+            {
+                // list of old sessions after new sessions end (redundant)
+                var removeSessions = oldSessions.Skip(updatedSessions.Count).ToList();
+
+                foreach (var session in removeSessions)
+                {
+                    oldSessions.Remove(session);
+                    _context.Sessions.Remove(session);
+                }
+            }
+        }
+
+        /*
+        * number of old sessions < number of new sessions:
+        * - update old sessions by new each session till old session
+        * - add new sessions after old sessions end
+        */
+        if (oldSessions.Count < updatedSessions.Count)
+        {
+            for (var j = 0; j < oldSessions.Count; j++)
+            {
+                oldSessions[j].SessionTypeId = updatedSessions[j].SessionTypeId;
+                oldSessions[j].Title = updatedSessions[j].Title;
+                oldSessions[j].RoomId = updatedSessions[j].RoomId;
+                oldSessions[j].LearningDate = updatedSessions[j].LearningDate;
+                oldSessions[j].StartTime = updatedSessions[j].StartTime;
+                oldSessions[j].EndTime = updatedSessions[j].EndTime;
+            }
+
+            for (var j = oldSessions.Count; j < updatedSessions.Count; j++)
+            {
+                oldSessions.Add(updatedSessions[j]);
+            }
+        }
 
         // re assign value for class schedule
+
+        classScheduleContext.Sessions = oldSessions;
+
         classScheduleContext.TeacherId = request.TeacherId;
         classScheduleContext.ClassDaysId = request.ClassDaysId;
         classScheduleContext.WorkingTimeId = request.WorkingTimeId;
         classScheduleContext.TheoryRoomId = request.TheoryRoomId;
         classScheduleContext.LabRoomId = request.LabRoomId;
         classScheduleContext.ExamRoomId = request.ExamRoomId;
-        classScheduleContext.StartDate =
-            classScheduleContext.Sessions.OrderBy(cs => cs.LearningDate).First().LearningDate;
+        classScheduleContext.StartDate = oldSessions.First().LearningDate.Date;
         classScheduleContext.EndDate = endDate;
         classScheduleContext.Note = request.Note;
+        classScheduleContext.ClassHourStart = request.ClassHourStart;
+        classScheduleContext.ClassHourEnd = request.ClassHourEnd;
         classScheduleContext.UpdatedAt = DateTime.Now;
 
         var isTeacherBusy = CheckTeacherBusy(classScheduleContext, true);
@@ -586,7 +661,7 @@ public class ClassScheduleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var isHandled = IsHandledNextScheduleOfThisClass(classScheduleContext, oldStartDate);
+        var isHandled = CheckHandleSchedulesOfThisClass(classScheduleContext, oldStartDate);
 
         if (!isHandled)
         {
@@ -610,7 +685,7 @@ public class ClassScheduleController : ControllerBase
         return Ok(CustomResponse.Ok("Update class schedule successfully", response));
     }
 
-    private bool IsHandledNextScheduleOfThisClass(ClassSchedule classScheduleUpdated, DateTime oldStartDate)
+    private bool CheckHandleSchedulesOfThisClass(ClassSchedule classScheduleUpdated, DateTime oldStartDate)
     {
         // get all next schedule of requested schedule order by start date ascending for this class
         var schedules = _context.ClassSchedules
@@ -622,8 +697,10 @@ public class ClassScheduleController : ControllerBase
         var sessionsUpdated = classScheduleUpdated.Sessions.OrderBy(cs => cs.LearningDate).ToList();
 
         var dayOff = _context.DaysOff.Where(d =>
-            (d.TeacherId == null || d.TeacherId == classScheduleUpdated.TeacherId) &&
-            d.Date.Date >= classScheduleUpdated.StartDate.Date && d.CenterId == classScheduleUpdated.Module.CenterId).ToList();
+                (d.TeacherId == null || d.TeacherId == classScheduleUpdated.TeacherId) &&
+                d.Date.Date >= classScheduleUpdated.StartDate.Date &&
+                d.CenterId == classScheduleUpdated.Module.CenterId)
+            .ToList();
         var teacherDayOff = dayOff.ToList();
         var globalDayOff = dayOff.Where(d => d.TeacherId == null).ToList();
         var lastUpdatedLearningDate = sessionsUpdated.Last().LearningDate.Date;
@@ -634,22 +711,33 @@ public class ClassScheduleController : ControllerBase
             var firstSession = sessions.First(); // startDate
             var lastSession = sessions.Last();
 
-            // this is previous schedule but startDate of requested schedule is less than last learning date of this schedule 
+            var isStarted = sessions.Any(s => s.LearningDate.Date <= DateTime.Today);
+
+            /*
+                this is previous schedule 
+                also startDate of updated schedule is <= endDate of any previous schedule
+                but schedule is started (done or learning) -> can't update
+             */
             if (lastSession.LearningDate.Date < oldStartDate.Date &&
-                classScheduleUpdated.StartDate.Date <= lastSession.LearningDate.Date)
+                classScheduleUpdated.StartDate.Date <= lastSession.LearningDate.Date && isStarted)
             {
                 return false;
             }
 
-            // skip previous schedule
-            if (lastSession.LearningDate.Date < oldStartDate)
-                continue;
-
-            // skip next schedule if last updated session smaller than first session of next schedule
+            // skip update next schedule if last updated session smaller than first session of next schedule
             if (lastUpdatedLearningDate < firstSession.LearningDate.Date)
                 continue;
 
-            // for method call below
+            /*
+                this is previous schedule but updated startDate bigger than last session of previous schedule (not started) 
+                (previous unaffected)
+                -> skip update this previous schedule
+             */
+            if (lastSession.LearningDate.Date < oldStartDate.Date &&
+                classScheduleUpdated.StartDate.Date > lastSession.LearningDate.Date)
+                continue;
+
+            // for method call below to check valid learningDate base on this properties
             var fakeUpdateScheduleRequest = new UpdateClassScheduleRequest
             {
                 ClassDaysId = schedule.ClassDaysId,
@@ -700,7 +788,7 @@ public class ClassScheduleController : ControllerBase
 
                 learningDate += TimeSpan.FromDays(1);
             }
-
+            schedule.UpdatedAt = DateTime.Now;
             sessionsUpdated = schedule.Sessions.OrderBy(s => s.LearningDate).ToList();
             _context.Update(schedule);
             lastUpdatedLearningDate = sessionsUpdated.Last().LearningDate.Date;
@@ -714,7 +802,7 @@ public class ClassScheduleController : ControllerBase
     [Authorize(Roles = "sro")]
     public IActionResult DeleteClassSchedule(int classId, int classScheduleId)
     {
-        var classContext = _context.Classes.Find(classId);
+        var classContext = _context.Classes.Include(c => c.ClassSchedules).FirstOrDefault(c => c.Id == classId);
         if (classContext == null)
         {
             var error = ErrorDescription.Error["E2066"];
@@ -734,13 +822,15 @@ public class ClassScheduleController : ControllerBase
         try
         {
             _context.ClassSchedules.Remove(classSchedule);
+            _context.SaveChanges();
 
-            if (_context.ClassSchedules.ToList().Count <= 1)
+            // update class status if all schedule is deleted
+            classContext.ClassSchedules.Remove(classSchedule);
+            if (!classContext.ClassSchedules.Any())
             {
                 classContext.ClassStatusId = StatusNotScheduled;
+                _context.SaveChanges();
             }
-
-            _context.SaveChanges();
         }
         catch (Exception)
         {
@@ -749,6 +839,124 @@ public class ClassScheduleController : ControllerBase
         }
 
         return Ok(CustomResponse.Ok("Delete class schedule successfully", null!));
+    }
+
+    /*
+    * Get all session that duplicate TEACHER in same time for this center
+    */
+    [HttpGet]
+    [Route("api/classes-schedules/sessions-duplicate-teacher")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetSessionsDuplicateTeacherInSameTime()
+    {
+        var centerId = _context.Sros.Include(sro => sro.User)
+            .FirstOrDefault(sro => sro.UserId == int.Parse(_userService.GetUserId()))?.User.CenterId;
+
+        var sessions = _context.Sessions
+            .Include(s => s.ClassSchedule.Class)
+            .Include(s => s.ClassSchedule.Module)
+            .Include(s => s.ClassSchedule.Teacher)
+            .ThenInclude(t => t.User)
+            .Where(s => s.ClassSchedule.Class.CenterId == centerId)
+            .ToList();
+
+        // group by learning date, working time, teacherId to get sessions that has duplicate teachers in that time
+        var sessionsDuplicate = sessions
+            .GroupBy(s => new { s.LearningDate.Date, s.ClassSchedule.WorkingTimeId, s.ClassSchedule.TeacherId })
+            .Where(g => g.Count() > 1)
+            .Select(g => new SessionDuplicateTeacherResponse()
+            {
+                LearningDate = g.Key.Date,
+                WorkingTimeId = g.Key.WorkingTimeId,
+                Teacher = new BasicTeacherInformationResponse()
+                {
+                    Id = g.Key.TeacherId,
+                    FirstName = g.First().ClassSchedule.Teacher.User.FirstName,
+                    LastName = g.First().ClassSchedule.Teacher.User.LastName,
+                    EmailOrganization = g.First().ClassSchedule.Teacher.User.EmailOrganization
+                },
+
+                Sessions = g.Select(s => new BasicSessionDuplicateResponse()
+                {
+                    Id = s.Id,
+                    Title = s.Title,
+                    Class = new BasicClassResponse()
+                    {
+                        Id = s.ClassSchedule.Class.Id,
+                        Name = s.ClassSchedule.Class.Name
+                    },
+                    Module = new BasicModuleResponse()
+                    {
+                        Id = s.ClassSchedule.Module.Id,
+                        Name = s.ClassSchedule.Module.ModuleName
+                    },
+                }).ToList()
+            })
+            .OrderBy(s => s.LearningDate)
+            .ToList();
+
+        return Ok(CustomResponse.Ok("Get sessions duplicate teacher successfully", sessionsDuplicate));
+    }
+
+    /*
+     * Get all session that duplicate ROOM in same time for this center
+     */
+    [HttpGet]
+    [Route("api/classes-schedules/sessions-duplicate-room")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetSessionsDuplicateRoomInSameTime()
+    {
+        var centerId = _context.Sros.Include(sro => sro.User)
+            .FirstOrDefault(sro => sro.UserId == int.Parse(_userService.GetUserId()))?.User.CenterId;
+
+        var sessions = _context.Sessions
+            .Include(s => s.ClassSchedule.Class)
+            .Include(s => s.ClassSchedule.Module)
+            .Include(s => s.Room)
+            .Include(s => s.Room.RoomType)
+            .Where(s => s.ClassSchedule.Class.CenterId == centerId)
+            .ToList();
+
+        // group by learning date, working time, roomId to get sessions that has duplicate rooms in that time
+        var sessionsDuplicate = sessions
+            .GroupBy(s => new { s.LearningDate.Date, s.ClassSchedule.WorkingTimeId, s.RoomId })
+            .Where(g => g.Count() > 1)
+            .Select(g => new SessionDuplicateRoomResponse()
+            {
+                LearningDate = g.Key.Date,
+                WorkingTimeId = g.Key.WorkingTimeId,
+                Room = new RoomResponse()
+                {
+                    Id = g.First().Room.Id,
+                    Name = g.First().Room.Name,
+                    Capacity = g.First().Room.Capacity,
+                    Room = new RoomTypeResponse()
+                    {
+                        Id = g.First().Room.RoomType.Id,
+                        Value = g.First().Room.RoomType.Value,
+                    }
+                },
+
+                Sessions = g.Select(s => new BasicSessionDuplicateResponse()
+                {
+                    Id = s.Id,
+                    Title = s.Title,
+                    Class = new BasicClassResponse()
+                    {
+                        Id = s.ClassSchedule.Class.Id,
+                        Name = s.ClassSchedule.Class.Name
+                    },
+                    Module = new BasicModuleResponse()
+                    {
+                        Id = s.ClassSchedule.Module.Id,
+                        Name = s.ClassSchedule.Module.ModuleName
+                    },
+                }).ToList()
+            })
+            .OrderBy(s => s.LearningDate)
+            .ToList();
+
+        return Ok(CustomResponse.Ok("Get sessions duplicate teacher successfully", sessionsDuplicate));
     }
 
     private bool CheckTeacherBusy(ClassSchedule classScheduleToCreate, bool isUpdate)
@@ -854,7 +1062,7 @@ public class ClassScheduleController : ControllerBase
         return false;
     }
 
-// for create
+    // for create
     private bool IsValidLearningDate(CreateClassScheduleRequest request, DateTime learningDate,
         List<DayOff> listDayOff, bool isTeacherDayOff)
     {
@@ -909,7 +1117,7 @@ public class ClassScheduleController : ControllerBase
         return true;
     }
 
-// for update
+    // for update
     private bool IsValidLearningDate(UpdateClassScheduleRequest request, DateTime learningDate,
         List<DayOff> listDayOff, bool isTeacherDayOff)
     {
