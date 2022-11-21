@@ -428,8 +428,8 @@ public class ClassScheduleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var oldSessions = classScheduleContext.Sessions.ToList();
-
+        var oldSessions = classScheduleContext.Sessions.OrderBy(s => s.LearningDate).ToList();
+        var updatedSessions = new List<Session>();
         var isStart = oldSessions.Any(s => s.LearningDate.Date <= DateTime.Now.Date);
 
         // check schedule is started or not
@@ -440,12 +440,12 @@ public class ClassScheduleController : ControllerBase
         }
 
         // remove sessions 
-        foreach (var session in oldSessions)
-        {
-            classScheduleContext.Sessions.Remove(session);
-        }
-
-        _context.Sessions.RemoveRange(oldSessions);
+        // foreach (var session in oldSessions)
+        // {
+        //     classScheduleContext.Sessions.Remove(session);
+        // }
+        //
+        // _context.Sessions.RemoveRange(oldSessions);
 
         var practiceSessions = new List<int>();
 
@@ -508,7 +508,8 @@ public class ClassScheduleController : ControllerBase
                     session.RoomId = (int)request.TheoryRoomId!;
                 }
 
-                classScheduleContext.Sessions.Add(session);
+                // add to new list
+                updatedSessions.Add(session);
             }
 
             if (i == request.Duration)
@@ -535,7 +536,8 @@ public class ClassScheduleController : ControllerBase
                     };
                     classScheduleContext.TheoryExamDate = learningDate;
                     learningDate += TimeSpan.FromDays(1);
-                    classScheduleContext.Sessions.Add(session);
+                    // add to new list
+                    updatedSessions.Add(session);
                     break;
                 }
 
@@ -560,7 +562,8 @@ public class ClassScheduleController : ControllerBase
                         EndTime = request.ClassHourStart + TimeSpan.FromHours(2.5),
                     };
                     classScheduleContext.PracticalExamDate = learningDate;
-                    classScheduleContext.Sessions.Add(session);
+                    // add to new list
+                    updatedSessions.Add(session);
                     break;
                 }
 
@@ -568,17 +571,72 @@ public class ClassScheduleController : ControllerBase
             }
         }
 
-        var oldStartDate = classScheduleContext.StartDate;
+        var oldStartDate = oldSessions.First().LearningDate.Date;
+        
+        /*
+         * number of old sessions >= number of new sessions:
+         * - update old sessions by new each session till new sessions end
+         * - remove old sessions after new sessions end
+         */
+        if (oldSessions.Count >= updatedSessions.Count)
+        {
+            for (var j = 0; j < updatedSessions.Count; j++)
+            {
+                oldSessions[j].SessionTypeId = updatedSessions[j].SessionTypeId;
+                oldSessions[j].Title = updatedSessions[j].Title;
+                oldSessions[j].RoomId = updatedSessions[j].RoomId;
+                oldSessions[j].LearningDate = updatedSessions[j].LearningDate;
+                oldSessions[j].StartTime = updatedSessions[j].StartTime;
+                oldSessions[j].EndTime = updatedSessions[j].EndTime;
+            }
+
+            if (oldSessions.Count > updatedSessions.Count)
+            {
+                // list of old sessions after new sessions end (redundant)
+                var removeSessions = oldSessions.Skip(updatedSessions.Count).ToList();
+
+                foreach (var session in removeSessions)
+                {
+                    oldSessions.Remove(session);
+                    _context.Sessions.Remove(session);
+                }
+            }
+        }
+
+        /*
+        * number of old sessions < number of new sessions:
+        * - update old sessions by new each session till old session
+        * - add new sessions after old sessions end
+        */
+        if (oldSessions.Count < updatedSessions.Count)
+        {
+            for (var j = 0; j < oldSessions.Count; j++)
+            {
+                oldSessions[j].SessionTypeId = updatedSessions[j].SessionTypeId;
+                oldSessions[j].Title = updatedSessions[j].Title;
+                oldSessions[j].RoomId = updatedSessions[j].RoomId;
+                oldSessions[j].LearningDate = updatedSessions[j].LearningDate;
+                oldSessions[j].StartTime = updatedSessions[j].StartTime;
+                oldSessions[j].EndTime = updatedSessions[j].EndTime;
+            }
+
+            for (var j = oldSessions.Count; j < updatedSessions.Count; j++)
+            {
+                oldSessions.Add(updatedSessions[j]);
+            }
+        }
 
         // re assign value for class schedule
+
+        classScheduleContext.Sessions = oldSessions;
+
         classScheduleContext.TeacherId = request.TeacherId;
         classScheduleContext.ClassDaysId = request.ClassDaysId;
         classScheduleContext.WorkingTimeId = request.WorkingTimeId;
         classScheduleContext.TheoryRoomId = request.TheoryRoomId;
         classScheduleContext.LabRoomId = request.LabRoomId;
         classScheduleContext.ExamRoomId = request.ExamRoomId;
-        classScheduleContext.StartDate =
-            classScheduleContext.Sessions.OrderBy(cs => cs.LearningDate).First().LearningDate;
+        classScheduleContext.StartDate = oldSessions.First().LearningDate.Date;
         classScheduleContext.EndDate = endDate;
         classScheduleContext.Note = request.Note;
         classScheduleContext.ClassHourStart = request.ClassHourStart;
@@ -726,7 +784,7 @@ public class ClassScheduleController : ControllerBase
 
                 learningDate += TimeSpan.FromDays(1);
             }
-
+            schedule.UpdatedAt = DateTime.Now;
             sessionsUpdated = schedule.Sessions.OrderBy(s => s.LearningDate).ToList();
             _context.Update(schedule);
             lastUpdatedLearningDate = sessionsUpdated.Last().LearningDate.Date;
@@ -740,7 +798,7 @@ public class ClassScheduleController : ControllerBase
     [Authorize(Roles = "sro")]
     public IActionResult DeleteClassSchedule(int classId, int classScheduleId)
     {
-        var classContext = _context.Classes.Find(classId);
+        var classContext = _context.Classes.Include(c => c.ClassSchedules).FirstOrDefault(c => c.Id == classId);
         if (classContext == null)
         {
             var error = ErrorDescription.Error["E2066"];
@@ -763,7 +821,8 @@ public class ClassScheduleController : ControllerBase
             _context.SaveChanges();
 
             // update class status if all schedule is deleted
-            if (!_context.ClassSchedules.Any())
+            classContext.ClassSchedules.Remove(classSchedule);
+            if (!classContext.ClassSchedules.Any())
             {
                 classContext.ClassStatusId = StatusNotScheduled;
                 _context.SaveChanges();
