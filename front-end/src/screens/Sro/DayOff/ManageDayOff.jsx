@@ -17,6 +17,7 @@ import { ManageDayOffApis, ManageTeacherApis } from '../../../apis/ListApi';
 import toast from 'react-hot-toast';
 import classes from './ManageDayOff.module.css';
 import { MdDelete } from 'react-icons/md';
+import { ErrorCodeApi } from '../../../apis/ErrorCodeApi';
 
 const ManageDayOff = () => {
   const [listDayOff, setListDayOff] = useState([]);
@@ -114,6 +115,9 @@ const ManageDayOff = () => {
         return 'Tạo ngày nghỉ thành công';
       },
       error: (err) => {
+        if (err?.type_error) {
+          return ErrorCodeApi[err.type_error];
+        }
         return 'Lỗi tạo ngày nghỉ';
       },
     });
@@ -130,6 +134,9 @@ const ManageDayOff = () => {
           return 'Xóa ngày nghỉ thành công';
         },
         error: (err) => {
+          if (err?.type_error) {
+            return ErrorCodeApi[err.type_error];
+          }
           return 'Lỗi xóa ngày nghỉ';
         },
       }
