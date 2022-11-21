@@ -4,6 +4,6 @@ namespace AcademicManagementSystem.Models.ClassController;
 
 public class MergeClassRequest
 {
-    [JsonPropertyName("classId")]
+    [JsonPropertyName("class_id")]
     public int ClassId { get; set; }
 }
