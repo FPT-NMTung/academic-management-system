@@ -2,6 +2,7 @@
 using AcademicManagementSystem.Context;
 using AcademicManagementSystem.Context.AmsModels;
 using AcademicManagementSystem.Handlers;
+using AcademicManagementSystem.Models.BasicResponse;
 using AcademicManagementSystem.Models.TeacherSkillController;
 using AcademicManagementSystem.Models.TeacherSkillController.Skill;
 using Microsoft.AspNetCore.Authorization;
@@ -101,7 +102,7 @@ public class TeacherSkillController : ControllerBase
                 skill.Name = Regex.Replace(skill.Name, StringConstant.RegexWhiteSpaces, " ").Trim();
                 skill.Name = skill.Name.Replace(" ' ", "'").Trim();
 
-                if (Regex.IsMatch(skill.Name, StringConstant.RegexSpecialCharacterForSkillName))
+                if (Regex.IsMatch(skill.Name, StringConstant.RegexSpecialCharacterNotAllowForSkillName))
                 {
                     var error = ErrorDescription.Error["E1062"];
                     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));

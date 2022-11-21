@@ -64,15 +64,15 @@ public struct StringConstant
     public const string RegexToneMarkUserNameWithApostrophe =
         @"^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếệỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹỹý \t](?!.*'')[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếệỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹỹý' \t]*[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếệỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹỹý \t]$";
 
-    public const string RegexSpecialCharsNotAllowForPersonName = @"[~`!@#$%^&*()_+=\[{\]};:<>|.""\\/?,-]";
+    public const string RegexSpecialCharsNotAllowForPersonName = @"[~`!@#$%^&*+=\[{\]};:<>|.""\\/?,-()_]"; // allow: ' 
 
-    public const string RegexSpecialCharactersNotAllowForClassName = @"[~`!@#$%^&*()+=\[{\]};:<>|.""\\/?,]";
+    public const string RegexSpecialCharactersNotAllowForClassName = @"[~`!@#$%^&*+=\[{\]};:<>|.""\\/?,]"; // allow: ' -()_
 
-    public const string RegexSpecialCharactersNotAllowForRoomName = RegexSpecialCharactersNotAllowForClassName;
+    public const string RegexSpecialCharactersNotAllowForRoomName = RegexSpecialCharactersNotAllowForClassName; // allow: ' -()_
 
     public const string RegexSpecialCharacterNotAllowForModuleName = @"[~`!@$%^*+=|\\{}':;<>/?[\]]";
 
-    public const string RegexSpecialCharacterForSkillName = @"[!@$%^*_=\[{\]};:<>|/?,]";
+    public const string RegexSpecialCharacterNotAllowForSkillName = @"[~`!@$%^&*+=\[{\]};:<>|""\\/?,]"; // allow: ' -()_ . # 
     
     public const string RegexSpecialCharacterForAddress = @"[~!@#$%^&*+=|\\{}':.;<>/?[\]""]";
     
