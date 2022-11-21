@@ -1604,8 +1604,32 @@ public class ClassController : ControllerBase
         // get list student in first class
         var listStudentsInFirstClass = _context.StudentsClasses
             .Include(sc => sc.Student)
-            .Where(sc => sc.ClassId == id && sc.IsActive)
+            .Where(sc => sc.ClassId == id && sc.IsActive && !sc.Student.IsDraft)
             .ToList();
+
+        // get list student in second class
+        var listStudentsInSecondClass = _context.StudentsClasses
+            .Include(sc => sc.Student)
+            .Where(sc => sc.ClassId == request.ClassId && sc.IsActive && !sc.Student.IsDraft)
+            .ToList();
+
+        if (listStudentsInFirstClass.Count == 0)
+        {
+            var error = ErrorDescription.Error["E1134"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (listStudentsInSecondClass.Count == 0)
+        {
+            var error = ErrorDescription.Error["E1135"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (listStudentsInFirstClass.Count + listStudentsInSecondClass.Count > MaxNumberStudentInClass)
+        {
+            var error = ErrorDescription.Error["E1133"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         foreach (var student in listStudentsInFirstClass)
         {
@@ -1651,71 +1675,6 @@ public class ClassController : ControllerBase
 
         return Ok(CustomResponse.Ok("Merge class successfully", null!));
     }
-
-
-    // [HttpPut]
-    // [Route("api/classes/{id:int}/merge-class")]
-    // [Authorize(Roles = "admin, sro")]
-    // public IActionResult MergeClass(int id, [FromBody] MergeClassRequest request)
-    // {
-    //     var existedClass = _context.Classes.Any(c => c.Id == id);
-    //     if (!existedClass)
-    //     {
-    //         var error = ErrorDescription.Error["E1073"];
-    //         return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-    //     }
-    //
-    //     var existedClassToMerge = _context.Classes.Any(c => c.Id == id);
-    //     if (!existedClassToMerge)
-    //     {
-    //         var error = ErrorDescription.Error["E1073"];
-    //         return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-    //     }
-    //
-    //     var students = _context.Users
-    //         .Include(u => u.Student)
-    //         .Include(u => u.Student.StudentsClasses)
-    //         .Where(u => u.Student.StudentsClasses.Any(sc => sc.ClassId == id))
-    //         .ToList();
-    //
-    //     if (students.Count == 0)
-    //     {
-    //         return Ok(CustomResponse.Ok("No student in class", null!));
-    //     }
-    //
-    //     foreach (var student in students)
-    //     {
-    //         var existedStudent = _context.Users
-    //             .Include(u => u.Student)
-    //             .Include(u => u.Student.StudentsClasses)
-    //             .Any(u => u.Student.StudentsClasses.Any(sc =>
-    //                 sc.ClassId == id && u.Student.UserId == student.Student.UserId));
-    //
-    //         if (existedStudent)
-    //         {
-    //             _context.StudentsClasses.Remove(
-    //                 student.Student.StudentsClasses.First(sc => sc.StudentId == student.Student.UserId));
-    //             _context.Students.Remove(student.Student);
-    //             _context.Users.Remove(student);
-    //         }
-    //         else
-    //         {
-    //             student.Student.StudentsClasses.First(sc => sc.StudentId == student.Student.UserId).ClassId = id;
-    //         }
-    //     }
-    //
-    //     try
-    //     {
-    //         _context.SaveChanges();
-    //     }
-    //     catch (Exception e)
-    //     {
-    //         var error = ErrorDescription.Error["E1074"];
-    //         return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-    //     }
-    //
-    //     return Ok(CustomResponse.Ok("Merge class successfully", null!));
-    // }
 
     // get list class can merge
     [HttpGet]
@@ -1884,95 +1843,6 @@ public class ClassController : ControllerBase
                 }
             })
             .Where(s => s.CenterId == _user.CenterId)
-            .ToList();
-        return students;
-    }
-
-    private List<StudentResponse> GetStudentsInThisCenterByContext()
-    {
-        var students = _context.Users
-            .Include(u => u.Student)
-            .Include(u => u.Student.Course)
-            .Include(u => u.Student.Course.CourseFamily)
-            .Include(u => u.Province)
-            .Include(u => u.District)
-            .Include(u => u.Ward)
-            .Include(u => u.Center)
-            .Include(u => u.Role)
-            .Include(u => u.Gender)
-            .Include(u => u.Student.StudentsClasses)
-            .ThenInclude(sc => sc.Class)
-            .Where(u => u.RoleId == RoleIdStudent && !u.Student.IsDraft)
-            .Select(u => new StudentResponse()
-            {
-                UserId = u.Student.UserId, Promotion = u.Student.Promotion, Status = u.Student.Status,
-                University = u.Student.University, ApplicationDate = u.Student.ApplicationDate,
-                ApplicationDocument = u.Student.ApplicationDocument, CompanyAddress = u.Student.CompanyAddress,
-                CompanyPosition = u.Student.CompanyPosition, CompanySalary = u.Student.CompanySalary,
-                ContactAddress = u.Student.ContactAddress, ContactPhone = u.Student.ContactPhone,
-                CourseCode = u.Student.CourseCode, EnrollNumber = u.Student.EnrollNumber,
-                FacebookUrl = u.Student.FacebookUrl, FeePlan = u.Student.FeePlan, HighSchool = u.Student.HighSchool,
-                HomePhone = u.Student.HomePhone, ParentalName = u.Student.ParentalName,
-                ParentalRelationship = u.Student.ParentalRelationship, ParentalPhone = u.Student.ParentalPhone,
-                PortfolioUrl = u.Student.PortfolioUrl, StatusDate = u.Student.StatusDate,
-                WorkingCompany = u.Student.WorkingCompany, IsDraft = u.Student.IsDraft, Avatar = u.Avatar,
-
-                FirstName = u.FirstName, LastName = u.LastName, Birthday = u.Birthday, Email = u.Email,
-                MobilePhone = u.MobilePhone, CenterId = u.CenterId, EmailOrganization = u.EmailOrganization,
-                CenterName = u.Center.Name, CreatedAt = u.CreatedAt, UpdatedAt = u.UpdatedAt,
-                CitizenIdentityCardNo = u.CitizenIdentityCardNo,
-                CitizenIdentityCardPublishedDate = u.CitizenIdentityCardPublishedDate,
-                CitizenIdentityCardPublishedPlace = u.CitizenIdentityCardPublishedPlace,
-
-                Course = new CourseResponse()
-                {
-                    Code = u.Student.Course.Code, Name = u.Student.Course.Name,
-                    SemesterCount = u.Student.Course.SemesterCount,
-                    CourseFamilyCode = u.Student.Course.CourseFamilyCode, IsActive = u.Student.Course.IsActive,
-                    CreatedAt = u.Student.Course.CreatedAt,
-                    UpdatedAt = u.Student.Course.UpdatedAt, CourseFamily = new CourseFamilyResponse()
-                    {
-                        Code = u.Student.Course.CourseFamily.Code, Name = u.Student.Course.CourseFamily.Name,
-                        IsActive = u.Student.Course.CourseFamily.IsActive,
-                        PublishedYear = u.Student.Course.CourseFamily.PublishedYear,
-                        CreatedAt = u.Student.Course.CourseFamily.CreatedAt,
-                        UpdatedAt = u.Student.Course.CourseFamily.UpdatedAt
-                    }
-                },
-                Province = new ProvinceResponse()
-                {
-                    Id = u.Province.Id, Name = u.Province.Name, Code = u.Province.Code
-                },
-                District = new DistrictResponse()
-                {
-                    Id = u.District.Id, Name = u.District.Name, Prefix = u.District.Prefix
-                },
-                Ward = new WardResponse()
-                {
-                    Id = u.Ward.Id, Name = u.Ward.Name, Prefix = u.Ward.Prefix
-                },
-                Gender = new GenderResponse()
-                {
-                    Id = u.Gender.Id, Value = u.Gender.Value
-                },
-                Role = new RoleResponse()
-                {
-                    Id = u.Role.Id, Value = u.Role.Value
-                },
-                OldClass = u.Student.StudentsClasses
-                    .Where(sc => !sc.IsActive && sc.StudentId == u.Student.UserId)
-                    .Select(sc => new ClassNameResponse()
-                    {
-                        ClassId = sc.Class.Id, ClassName = sc.Class.Name
-                    }).ToList(),
-                CurrentClass = u.Student.StudentsClasses
-                    .Where(sc => sc.IsActive && sc.StudentId == u.Student.UserId)
-                    .Select(sc => new ClassNameResponse()
-                    {
-                        ClassId = sc.Class.Id, ClassName = sc.Class.Name
-                    }).FirstOrDefault()
-            })
-            .Where(u => u.CenterId == _user.CenterId)
             .ToList();
         return students;
     }

@@ -655,7 +655,7 @@ public class StudentController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // check if number of student in student class is more than 24
+        // check if number of student in student class is more than 100
         var newClasses = _context.Classes
             .Include(c => c.Center)
             .Include(c => c.StudentsClasses)

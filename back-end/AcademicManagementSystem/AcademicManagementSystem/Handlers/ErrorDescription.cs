@@ -199,6 +199,9 @@ public static class ErrorDescription
         { "E0076", new ErrorModel() { Message = "Update StartDate(AdmissionDate) can't smaller than created StartDate(AdmissionDate)", Type = "class-error-0076" } },
         { "E1128", new ErrorModel() { Message = "Birthday must less than Now", Type = "class-error-0077" } },
         { "E1132", new ErrorModel() { Message = "Fail to SaveChange when merge class", Type = "class-error-0078" } },
+        { "E1133", new ErrorModel() { Message = "Total number of students in both class is more than 100", Type = "class-error-0079" } },
+        { "E1134", new ErrorModel() { Message = "There is no student in first class", Type = "class-error-0080" } },
+        { "E1135", new ErrorModel() { Message = "There is no student in second class", Type = "class-error-0081" } },
 
         // student class
         { "E1069", new ErrorModel() { Message = "Fail to SaveChange when import Students to class by excel", Type = "student-class-error-0001" } },
