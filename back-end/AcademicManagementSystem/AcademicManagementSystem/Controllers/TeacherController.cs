@@ -254,7 +254,7 @@ public class TeacherController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
         
-        if (request.CitizenIdentityCardPublishedDate >= DateTime.Now)
+        if (request.CitizenIdentityCardPublishedDate >= DateTime.Now.Date)
         {
             var error = ErrorDescription.Error["E0052_5"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -450,7 +450,7 @@ public class TeacherController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
         
-        if (request.CitizenIdentityCardPublishedDate >= DateTime.Now)
+        if (request.CitizenIdentityCardPublishedDate >= DateTime.Now.Date)
         {
             var error = ErrorDescription.Error["E0052_5"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));

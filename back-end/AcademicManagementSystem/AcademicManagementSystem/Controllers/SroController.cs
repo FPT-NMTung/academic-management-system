@@ -140,7 +140,7 @@ public class SroController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
         
-        if (request.CitizenIdentityCardPublishedDate >= DateTime.Now)
+        if (request.CitizenIdentityCardPublishedDate >= DateTime.Now.Date)
         {
             var error = ErrorDescription.Error["E0022_4"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -248,7 +248,7 @@ public class SroController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
         
-        if (request.CitizenIdentityCardPublishedDate >= DateTime.Now)
+        if (request.CitizenIdentityCardPublishedDate >= DateTime.Now.Date)
         {
             var error = ErrorDescription.Error["E0022_4"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
