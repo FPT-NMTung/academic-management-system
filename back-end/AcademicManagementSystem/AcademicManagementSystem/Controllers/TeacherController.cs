@@ -35,7 +35,7 @@ public class TeacherController : ControllerBase
 
     [HttpGet]
     [Route("api/teachers")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult GetAllTeachers()
     {
         var teachers = GetAllUserRoleTeacher();
@@ -45,7 +45,7 @@ public class TeacherController : ControllerBase
     // get teachers by center id
     [HttpGet]
     [Route("api/centers/{centerId}/teachers")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult GetTeachersByCenterId(int centerId)
     {
         var teachers = GetAllUserRoleTeacher().Where(t => t.CenterId == centerId);
@@ -70,7 +70,7 @@ public class TeacherController : ControllerBase
     // get teachers by teacher type id
     [HttpGet]
     [Route("api/teacher-types/teachers")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult GetTeachersByTeacherTypeId([FromQuery] int teacherTypeId)
     {
         var teachers = GetAllUserRoleTeacher().Where(t => t.TeacherType.Id == teacherTypeId);
@@ -80,7 +80,7 @@ public class TeacherController : ControllerBase
     // get teachers by working time id
     [HttpGet]
     [Route("api/working-times/teachers")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult GetTeachersByWorkingTimeId([FromQuery] int workingTimeId)
     {
         var teachers = GetAllUserRoleTeacher().Where(t => t.WorkingTime.Id == workingTimeId);
@@ -90,7 +90,7 @@ public class TeacherController : ControllerBase
     // search teacher by by firstName, lastName, nickname, mobilePhone, email, emailOrganization
     [HttpGet]
     [Route("api/teachers/search")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult SearchTeachers([FromQuery] string? firstName, [FromQuery] string? lastName,
         [FromQuery] string? nickname, [FromQuery] string? mobilePhone, [FromQuery] string? email,
         [FromQuery] string? emailOrganization)
@@ -251,6 +251,12 @@ public class TeacherController : ControllerBase
         if (!Regex.IsMatch(request.TaxCode, StringConstant.RegexTenDigits))
         {
             var error = ErrorDescription.Error["E0054"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
+        if (request.CitizenIdentityCardPublishedDate >= DateTime.Now)
+        {
+            var error = ErrorDescription.Error["E0052_5"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
         
@@ -441,6 +447,12 @@ public class TeacherController : ControllerBase
         if (!Regex.IsMatch(request.TaxCode, StringConstant.RegexTenDigits))
         {
             var error = ErrorDescription.Error["E0054"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
+        if (request.CitizenIdentityCardPublishedDate >= DateTime.Now)
+        {
+            var error = ErrorDescription.Error["E0052_5"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
         

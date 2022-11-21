@@ -139,6 +139,12 @@ public class SroController : ControllerBase
             var error = ErrorDescription.Error["E0027"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
+        
+        if (request.CitizenIdentityCardPublishedDate >= DateTime.Now)
+        {
+            var error = ErrorDescription.Error["E0022_4"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         if (!Regex.IsMatch(request.CitizenIdentityCardNo, StringConstant.RegexCitizenIdCardNo))
         {
@@ -239,6 +245,12 @@ public class SroController : ControllerBase
         if (IsCitizenIdentityCardNoExists(request.CitizenIdentityCardNo, true, id))
         {
             var error = ErrorDescription.Error["E0027"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
+        if (request.CitizenIdentityCardPublishedDate >= DateTime.Now)
+        {
+            var error = ErrorDescription.Error["E0022_4"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 

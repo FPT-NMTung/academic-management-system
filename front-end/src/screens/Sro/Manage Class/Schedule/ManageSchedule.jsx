@@ -61,7 +61,18 @@ const ManageSchedule = () => {
   const getListModule = () => {
     FetchApi(ManageClassApis.getAllModulesOfClass, null, null, [String(id)])
       .then((res) => {
-        setListModule(res.data);
+        const listHasSchedule = res.data.filter((item) => {
+          return item.status === true;
+        }).sort((a, b) => {
+          return new Date(a.schedule_start_time) - new Date(b.schedule_start_time);
+        });
+        const listNotSchedule = res.data.filter((item) => {
+          return item.status === false;
+        }).sort((a, b) => {
+          return new Date(a.module.created_at) - new Date(b.module.created_at);
+        });
+
+        setListModule([...listHasSchedule, ...listNotSchedule]);
       })
       .catch((err) => {
         navigate('/404');

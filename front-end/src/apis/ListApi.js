@@ -511,5 +511,10 @@ export const ManageDayOffApis = {
     url: 'api/days-off',
     method: 'POST',
     contextType: 'application/json',
-  }
+  },
+  deleteDayOff: {
+    url: 'api/days-off/{0}',
+    method: 'DELETE',
+    contextType: 'application/json',
+  },
 }

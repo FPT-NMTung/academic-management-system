@@ -58,7 +58,7 @@ public class SkillController : ControllerBase
         //check module name
         request.Name = Regex.Replace(request.Name, StringConstant.RegexWhiteSpaces, " ");
         request.Name = request.Name.Replace(" ' ", "'").Trim();
-        if (Regex.IsMatch(request.Name, StringConstant.RegexSpecialCharacterForSkillName))
+        if (Regex.IsMatch(request.Name, StringConstant.RegexSpecialCharacterNotAllowForSkillName))
         {
             var error = ErrorDescription.Error["E1062"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -117,7 +117,7 @@ public class SkillController : ControllerBase
         //check skill name
         request.Name = Regex.Replace(request.Name, StringConstant.RegexWhiteSpaces, " ");
         request.Name = request.Name.Replace(" ' ", "'").Trim();
-        if (Regex.IsMatch(request.Name, StringConstant.RegexSpecialCharacterForSkillName))
+        if (Regex.IsMatch(request.Name, StringConstant.RegexSpecialCharacterNotAllowForSkillName))
         {
             var error = ErrorDescription.Error["E1062"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
