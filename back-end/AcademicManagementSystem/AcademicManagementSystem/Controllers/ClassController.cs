@@ -32,7 +32,7 @@ public class ClassController : ControllerBase
     private readonly User _user;
     private const int RoleIdStudent = 4;
     private const int NotScheduleYet = 5;
-    private const int MaximumStudentInClass = 24;
+    private const int MaxNumberStudentInClass = 100;
 
     public ClassController(AmsContext context, IUserService userService)
     {
@@ -883,6 +883,13 @@ public class ClassController : ControllerBase
                                 error.Type));
                         }
 
+                        if (newBirthday.Date > DateTime.Now.Date)
+                        {
+                            var error = ErrorDescription.Error["E1128"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message + " at student no " + studentNo,
+                                error.Type));
+                        }
+
                         var user = new User()
                         {
                             FirstName = firstName!.Trim(),
@@ -942,7 +949,7 @@ public class ClassController : ControllerBase
                         _context.Users.Add(user);
                         _context.Students.Add(user.Student);
                         _context.StudentsClasses.Add(user.Student.StudentsClasses.First());
-                        if (studentNo == MaximumStudentInClass) break;
+                        if (studentNo == MaxNumberStudentInClass) break;
                     }
 
                     try
@@ -988,7 +995,7 @@ public class ClassController : ControllerBase
             .Include(sc => sc.Class)
             .Include(sc => sc.Student)
             .Count(sc => sc.ClassId == id && sc.IsActive);
-        if (numberOfStudentInClass >= MaximumStudentInClass)
+        if (numberOfStudentInClass >= MaxNumberStudentInClass)
         {
             var error = ErrorDescription.Error["E1116"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -1280,6 +1287,12 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        if (request.Birthday.Date > DateTime.Now.Date)
+        {
+            var error = ErrorDescription.Error["E1128"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         // create user from request
         var user = new User()
         {
@@ -1546,6 +1559,319 @@ public class ClassController : ControllerBase
         }
 
         return Ok(CustomResponse.Ok("Delete students successfully", null!));
+    }
+
+    [HttpGet]
+    [Route("api/classes/{id:int}/number-of-students")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult GetNumberOfStudentsInClass(int id)
+    {
+        var existedClass = _context.Classes
+            .Include(c => c.Center)
+            .Any(c => c.Id == id && c.CenterId == _user.CenterId);
+        if (!existedClass)
+        {
+            var error = ErrorDescription.Error["E1073"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var numberOfStudents = _context.StudentsClasses.Count(sc => sc.ClassId == id && sc.IsActive);
+        return Ok(CustomResponse.Ok("Get number of students successfully", numberOfStudents));
+    }
+
+    // get list class can merge
+    [HttpGet]
+    [Route("api/classes/{id:int}/available-to-merge")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult GetAvailableClassesToMerge(int id)
+    {
+        var currentClass = GetAllClassesInThisCenterByContext()
+            .FirstOrDefault(c => c.Id == id);
+
+        if (currentClass == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Class with id: " + id + " in this center"));
+        }
+
+        var availableClasses = GetAvailableClasses(currentClass);
+        return Ok(CustomResponse.Ok("Get available classes for student successfully", availableClasses));
+    }
+
+    // merge 1 class in to this class
+    [HttpPut]
+    [Route("api/classes/{id:int}/merge")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult MergeClass(int id, [FromBody] MergeClassRequest request)
+    {
+        var firstClass = _context.Classes
+            .Include(c => c.Center)
+            .Any(c => c.Id == id && c.CenterId == _user.CenterId);
+        if (!firstClass)
+        {
+            var error = ErrorDescription.Error["E1130"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var secondClass = _context.Classes
+            .Include(c => c.Center)
+            .Any(c => c.Id == request.ClassId && c.CenterId == _user.CenterId);
+        if (!secondClass)
+        {
+            var error = ErrorDescription.Error["E1131"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // get list student in first class
+        var listStudentsInFirstClass = _context.StudentsClasses
+            .Include(sc => sc.Student)
+            .Where(sc => sc.ClassId == id && sc.IsActive && !sc.Student.IsDraft)
+            .ToList();
+
+        // get list student in second class
+        var listStudentsInSecondClass = _context.StudentsClasses
+            .Include(sc => sc.Student)
+            .Where(sc => sc.ClassId == request.ClassId && sc.IsActive && !sc.Student.IsDraft)
+            .ToList();
+
+        if (listStudentsInFirstClass.Count == 0)
+        {
+            var error = ErrorDescription.Error["E1134"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (listStudentsInSecondClass.Count == 0)
+        {
+            var error = ErrorDescription.Error["E1135"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (listStudentsInFirstClass.Count + listStudentsInSecondClass.Count > MaxNumberStudentInClass)
+        {
+            var error = ErrorDescription.Error["E1133"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        foreach (var student in listStudentsInFirstClass)
+        {
+            // if student in second class is not in student class table, add it and change is_active first class to false
+            if (!_context.StudentsClasses.Any(sc => sc.StudentId == student.StudentId && sc.ClassId == request.ClassId))
+            {
+                _context.StudentsClasses.Add(new StudentClass()
+                {
+                    StudentId = student.StudentId,
+                    ClassId = request.ClassId,
+                    IsActive = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                });
+                student.IsActive = false;
+                student.UpdatedAt = DateTime.Now;
+            }
+            else
+            {
+                // if student in second class is in student class table, change is_active first class to false
+                var studentClass = _context.StudentsClasses
+                    .FirstOrDefault(sc => sc.StudentId == student.StudentId && sc.ClassId == request.ClassId);
+                if (studentClass != null)
+                {
+                    studentClass.IsActive = true;
+                    studentClass.UpdatedAt = DateTime.Now;
+                }
+
+                student.IsActive = false;
+                student.UpdatedAt = DateTime.Now;
+            }
+        }
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E1132"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        return Ok(CustomResponse.Ok("Merge class successfully", null!));
+    }
+
+    // merge class 2
+    [HttpPut]
+    [Route("api/classes/merge")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult MergeClass2([FromBody] MergeClassRequest2 request)
+    {
+        var firstClass = _context.Classes
+            .Include(c => c.Center)
+            .Any(c => c.Id == request.FirstClassId && c.CenterId == _user.CenterId);
+        if (!firstClass)
+        {
+            var error = ErrorDescription.Error["E1130"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var secondClass = _context.Classes
+            .Include(c => c.Center)
+            .Any(c => c.Id == request.SecondClassId && c.CenterId == _user.CenterId);
+        if (!secondClass)
+        {
+            var error = ErrorDescription.Error["E1131"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // get list student in first class
+        var listStudentsInFirstClass = _context.StudentsClasses
+            .Include(sc => sc.Student)
+            .Where(sc => sc.ClassId == request.FirstClassId && sc.IsActive && !sc.Student.IsDraft)
+            .ToList();
+
+        // get list student in second class
+        var listStudentsInSecondClass = _context.StudentsClasses
+            .Include(sc => sc.Student)
+            .Where(sc => sc.ClassId == request.SecondClassId && sc.IsActive && !sc.Student.IsDraft)
+            .ToList();
+
+        if (listStudentsInFirstClass.Count == 0)
+        {
+            var error = ErrorDescription.Error["E1134"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (listStudentsInSecondClass.Count == 0)
+        {
+            var error = ErrorDescription.Error["E1135"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (listStudentsInFirstClass.Count + listStudentsInSecondClass.Count > MaxNumberStudentInClass)
+        {
+            var error = ErrorDescription.Error["E1133"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        foreach (var student in listStudentsInFirstClass)
+        {
+            // if student in second class is not in student class table, add it and change is_active first class to false
+            if (!_context.StudentsClasses.Any(sc =>
+                    sc.StudentId == student.StudentId && sc.ClassId == request.SecondClassId))
+            {
+                _context.StudentsClasses.Add(new StudentClass()
+                {
+                    StudentId = student.StudentId,
+                    ClassId = request.SecondClassId,
+                    IsActive = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                });
+                student.IsActive = false;
+                student.UpdatedAt = DateTime.Now;
+            }
+            else
+            {
+                // if student in second class is in student class table, change is_active first class to false
+                var studentClass = _context.StudentsClasses
+                    .FirstOrDefault(sc => sc.StudentId == student.StudentId && sc.ClassId == request.SecondClassId);
+                if (studentClass != null)
+                {
+                    studentClass.IsActive = true;
+                    studentClass.UpdatedAt = DateTime.Now;
+                }
+
+                student.IsActive = false;
+                student.UpdatedAt = DateTime.Now;
+            }
+        }
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var error = ErrorDescription.Error["E1132"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        return Ok(CustomResponse.Ok("Merge class successfully", null!));
+    }
+
+    private IQueryable<ClassResponse> GetAvailableClasses(ClassResponse currentClass)
+    {
+        var availableClasses = _context.Classes
+            .Include(c => c.Center)
+            .Include(c => c.ClassSchedules)
+            .Include(c => c.ClassStatus)
+            .Include(c => c.CourseFamily)
+            .Include(c => c.StudentsClasses)
+            .ThenInclude(sc => sc.Student)
+            .Where(c => c.Center.Id == _user.CenterId &&
+                        c.Id != currentClass.Id &&
+                        c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < MaxNumberStudentInClass)
+            .Select(c => new ClassResponse()
+            {
+                Id = c.Id,
+                Name = c.Name,
+                CenterId = c.CenterId,
+                CourseFamilyCode = c.CourseFamilyCode,
+                ClassDaysId = c.ClassDaysId,
+                ClassStatusId = c.ClassStatusId,
+                StartDate = c.StartDate,
+                CompletionDate = c.CompletionDate,
+                GraduationDate = c.GraduationDate,
+                ClassHourStart = c.ClassHourStart,
+                ClassHourEnd = c.ClassHourEnd,
+                CreatedAt = c.CreatedAt,
+                UpdatedAt = c.UpdatedAt,
+                Center = new CenterResponse()
+                {
+                    Id = c.Center.Id,
+                    Name = c.Center.Name,
+                    CreatedAt = c.Center.CreatedAt,
+                    UpdatedAt = c.Center.UpdatedAt,
+                    Province = new ProvinceResponse()
+                    {
+                        Id = c.Center.Province.Id,
+                        Code = c.Center.Province.Code,
+                        Name = c.Center.Province.Name,
+                    },
+                    District = new DistrictResponse()
+                    {
+                        Id = c.Center.District.Id,
+                        Name = c.Center.District.Name,
+                        Prefix = c.Center.District.Prefix
+                    },
+                    Ward = new WardResponse()
+                    {
+                        Id = c.Center.Ward.Id,
+                        Name = c.Center.Ward.Name,
+                        Prefix = c.Center.Ward.Prefix
+                    }
+                },
+                CourseFamily = new CourseFamilyResponse()
+                {
+                    Code = c.CourseFamily.Code,
+                    Name = c.CourseFamily.Name,
+                    IsActive = c.CourseFamily.IsActive,
+                    PublishedYear = c.CourseFamily.PublishedYear,
+                    CreatedAt = c.CourseFamily.CreatedAt,
+                    UpdatedAt = c.CourseFamily.UpdatedAt
+                },
+                ClassDays = new ClassDaysResponse()
+                {
+                    Id = c.ClassDays.Id,
+                    Value = c.ClassDays.Value
+                },
+                ClassStatus = new ClassStatusResponse()
+                {
+                    Id = c.ClassStatus.Id,
+                    Value = c.ClassStatus.Value
+                },
+                SroId = c.Sro.UserId,
+                SroFirstName = c.Sro.User.FirstName,
+                SroLastName = c.Sro.User.LastName
+            });
+        return availableClasses;
     }
 
     private List<StudentResponse> GetAllStudentsByClassId(int id)

@@ -28,6 +28,7 @@ public class StudentController : ControllerBase
     private readonly AmsContext _context;
     private readonly User _user;
     private const int RoleIdStudent = 4;
+    private const int MaxNumberStudentInClass = 100;
 
     public StudentController(AmsContext context, IUserService userService)
     {
@@ -420,6 +421,12 @@ public class StudentController : ControllerBase
             var error = ErrorDescription.Error["E1110"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
+        
+        if(request.Birthday.Date > DateTime.Now.Date)
+        {
+            var error = ErrorDescription.Error["E1129"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         user.FirstName = request.FirstName;
         user.LastName = request.LastName;
@@ -525,7 +532,7 @@ public class StudentController : ControllerBase
             return NotFound(CustomResponse.NotFound("Not Found Class of Student with id: " + id + " in this center"));
         }
 
-        // get available classes which student class is not more than 24
+        // get available classes which student class is not more than 100
         var availableClasses = GetAvailableClasses(currentClass);
         return Ok(CustomResponse.Ok("Get available classes for student successfully", availableClasses));
     }
@@ -541,8 +548,7 @@ public class StudentController : ControllerBase
             .ThenInclude(sc => sc.Student)
             .Where(c => c.Center.Id == _user.CenterId &&
                         c.Id != currentClass.Id &&
-                        c.CourseFamily.Code == currentClass.CourseFamily!.Code &&
-                        c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < 24)
+                        c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < MaxNumberStudentInClass)
             .Select(c => new ClassResponse()
             {
                 Id = c.Id,
@@ -649,14 +655,14 @@ public class StudentController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // check if number of student in student class is more than 24
+        // check if number of student in student class is more than 100
         var newClasses = _context.Classes
             .Include(c => c.Center)
             .Include(c => c.StudentsClasses)
             .ThenInclude(sc => sc.Student)
             .Any(c => c.Center.Id == _user.CenterId &&
                       c.Id == request.NewClassId &&
-                      c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < 24);
+                      c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < MaxNumberStudentInClass);
         if (!newClasses)
         {
             var error = ErrorDescription.Error["E1127"];
