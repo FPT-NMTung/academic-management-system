@@ -202,22 +202,7 @@ import {
                   </Text>
                 </Grid>
                 <Grid sm={1}>
-                <Text
-                    b
-                    size={12}
-                    p
-                    css={{
-                      width: '100%',
-                      textAlign: 'center',
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
-                  >
-                    Khảo sát
-                  </Text>
-                <Switch size={'sm'} color="success">
-                 
-                </Switch>
+               
                 </Grid>
               </Grid.Container>
             </Card.Header>
