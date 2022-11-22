@@ -126,10 +126,17 @@ const ManageClass = () => {
           Hủy
         </Badge>
       );
+    }
+      else if (id === 5) {
+        return (
+          <Badge variant="flat" color="default">
+            Chưa lên lịch
+          </Badge>
+        );
     } else {
       return (
-        <Badge variant="flat" color="primary">
-          Chưa lên lịch
+        <Badge variant="flat" color="success">
+         Đã ghép
         </Badge>
       );
     }
