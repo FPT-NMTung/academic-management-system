@@ -91,6 +91,12 @@ const menu = {
       icon: <FaCalendarDay size={16}/>,
       url: '/sro/manage/day-off',
     },
+    {
+      key: '11',
+      label: 'Quản lý giáo viên',
+      icon: <MdManageAccounts size={16}/>,
+      url: '/sro/manage/teacher',
+    },
   ],
   teacher: [],
   student: [],
