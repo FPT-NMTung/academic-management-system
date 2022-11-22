@@ -199,7 +199,6 @@ const AddStudentToClass = () => {
         return 'Thành công';
       },
       error: (err) => {
-        console.log('Ádasdasd');
         setMessageFailed(ErrorCodeApi[err.type_error]);
         setIsCreatingOrUpdating(false);
         if (err?.type_error) {

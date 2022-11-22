@@ -85,9 +85,9 @@ const ClassCreate = ({ modeUpdate }) => {
         error: (err) => {
           setisCreatingOrUpdating(false);
           setMessageFailed(ErrorCodeApi[err.type_error]);
-          // if (err?.type_error) {
-          //   return ErrorCodeApi[err.type_error];
-          // }
+          if (err?.type_error) {
+            return ErrorCodeApi[err.type_error];
+          }
           return 'Thất bại !';
         },
       }
@@ -434,11 +434,14 @@ const ClassCreate = ({ modeUpdate }) => {
                         <Select.Option key="102" value={3}>
                           Đã hoàn thành
                         </Select.Option>
-                        <Select.Option key="103" value={5}>
+                        <Select.Option key="103" value={4}>
+                          Huỷ
+                        </Select.Option>
+                        <Select.Option key="104" value={5}>
                           Chưa lên lịch
                         </Select.Option>
-                        <Select.Option key="104" value={4}>
-                          Huỷ
+                        <Select.Option key="105" value={6}>
+                          Đã ghép
                         </Select.Option>
                       </Select>
                     </Form.Item>
@@ -493,7 +496,7 @@ const ClassCreate = ({ modeUpdate }) => {
                         width: '100%',
                       }}
                     >
-                      {!isCreatingOrUpdating && messageFailed !== undefined && (
+                      {/* {!isCreatingOrUpdating && messageFailed !== undefined && (
                         <Text
                           size={14}
                           css={{
@@ -503,7 +506,7 @@ const ClassCreate = ({ modeUpdate }) => {
                         >
                           {messageFailed}
                         </Text>
-                      )}
+                      )} */}
                     </Form.Item>
                     <Form.Item
                       style={{
