@@ -46,3 +46,9 @@
   border-style : solid;
   border-color : lightgray;
 }
+
+.avatarEdit {
+  display       : flex;
+  flex-direction: column;
+  align-items   : center;
+}

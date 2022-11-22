@@ -124,7 +124,7 @@ public class UserController : ControllerBase
             CloudBlockBlob cblob = cont.GetBlockBlobReference($"avatar/user-id-{user.Id}.png");
             cblob.Properties.ContentType = "image/png";
         
-            var bytes = Convert.FromBase64String(image);
+            var bytes = Convert.FromBase64String(image.Split(',')[1]);
             using (var stream = new MemoryStream(bytes))
             {
                 cblob.UploadFromStream(stream);
@@ -135,7 +135,7 @@ public class UserController : ControllerBase
             user.UpdatedAt = DateTime.Now;
             _context.SaveChanges();
         }
-        catch (Exception)
+        catch (Exception e)
         {
             return false;
         }
