@@ -26,6 +26,7 @@ const StudentScreen = () => {
       enrollNumber: form.getFieldValue("enrollNumber"),
       className: form.getFieldValue("className"),
       emailOrganization: form.getFieldValue("emailOrganization"),
+      email: "",
       courseCode: form.getFieldValue("courseCode"),
     }
 FetchApi(ManageStudentApis.searchStudent,null,param,null).then((res) => {
@@ -42,7 +43,8 @@ FetchApi(ManageStudentApis.searchStudent,null,param,null).then((res) => {
           birthday: `${new Date(e.birthday).toLocaleDateString('vi-VN')}`,
           mobile_phone:e.mobile_phone,
           email_organization:e.email_organization,
-          class_name:e.current_class.class_name,
+          // class_name:e.current_class.class_name,
+          class_name:e.current_class?.class_name ? e.current_class.class_name : "",
           citizen_identity_card_no:e.citizen_identity_card_no,
           parental_phone:e.parental_phone,
           status:e.status,
@@ -231,7 +233,7 @@ FetchApi(ManageStudentApis.searchStudent,null,param,null).then((res) => {
                       <Table.Cell><b> {data.studentName}</b></Table.Cell>
                       <Table.Cell >{data.gender}</Table.Cell>
                       <Table.Cell>{data.birthday}</Table.Cell>
-                      <Table.Cell>{data.class_name}</Table.Cell>                   
+                      <Table.Cell>{data.class_name}</Table.Cell>                      
                       <Table.Cell>{data.mobile_phone}</Table.Cell>
                       <Table.Cell>{data.email_organization}</Table.Cell>
                       <Table.Cell>{data.citizen_identity_card_no}</Table.Cell>

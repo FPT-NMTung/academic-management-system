@@ -397,6 +397,11 @@ export const ManageClassApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  getAllClass: {
+    url: 'api/classes',
+    method: 'GET',
+    contextType: 'application/json',
+  },
   createClass: {
     url: 'api/classes',
     method: 'POST',
@@ -448,6 +453,18 @@ export const ManageClassApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  mergeClass: {
+    url: 'api/classes/merge',
+    method: 'PUT',
+    contextType: 'application/json',
+  },
+  getAvailableClassToMerge: {
+    url: 'api/classes/{0}/available-to-merge',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+
+
 };
 
 export const ManageScheduleApis = {
