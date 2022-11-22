@@ -1683,6 +1683,19 @@ public class ClassController : ControllerBase
             }
         }
 
+        var firstClassChange = _context.Classes.FirstOrDefault(c => c.Id == id);
+        if (firstClassChange != null)
+        {
+            firstClassChange.ClassStatusId = 6;
+            firstClassChange.UpdatedAt = DateTime.Now;
+        }
+
+        var secondClassChange = _context.Classes.FirstOrDefault(c => c.Id == request.ClassId);
+        if (secondClassChange != null)
+        {
+            secondClassChange.UpdatedAt = DateTime.Now;
+        }
+
         try
         {
             _context.SaveChanges();
@@ -1783,6 +1796,19 @@ public class ClassController : ControllerBase
             }
         }
 
+        var firstClassChange = _context.Classes.FirstOrDefault(c => c.Id == request.FirstClassId);
+        if (firstClassChange != null)
+        {
+            firstClassChange.ClassStatusId = 6;
+            firstClassChange.UpdatedAt = DateTime.Now;
+        }
+
+        var secondClassChange = _context.Classes.FirstOrDefault(c => c.Id == request.SecondClassId);
+        if (secondClassChange != null)
+        {
+            secondClassChange.UpdatedAt = DateTime.Now;
+        }
+
         try
         {
             _context.SaveChanges();
@@ -1807,7 +1833,8 @@ public class ClassController : ControllerBase
             .ThenInclude(sc => sc.Student)
             .Where(c => c.Center.Id == _user.CenterId &&
                         c.Id != currentClass.Id &&
-                        c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < MaxNumberStudentInClass)
+                        c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < MaxNumberStudentInClass &&
+                        c.StudentsClasses.Any(sc => sc.ClassId == c.Id && sc.IsActive && !sc.Student.IsDraft))
             .Select(c => new ClassResponse()
             {
                 Id = c.Id,
@@ -1886,7 +1913,8 @@ public class ClassController : ControllerBase
             .Include(u => u.Center)
             .Include(u => u.Role)
             .Include(u => u.Gender)
-            .Where(u => u.RoleId == RoleIdStudent && u.Student.StudentsClasses.Any(sc => sc.ClassId == id))
+            .Where(u => u.RoleId == RoleIdStudent &&
+                        u.Student.StudentsClasses.Any(sc => sc.ClassId == id && sc.IsActive))
             .Select(u => new StudentResponse()
             {
                 UserId = u.Student.UserId, Promotion = u.Student.Promotion, Status = u.Student.Status,
