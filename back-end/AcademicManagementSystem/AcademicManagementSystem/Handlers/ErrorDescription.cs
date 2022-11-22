@@ -216,9 +216,9 @@ public static class ErrorDescription
         { "E1112", new ErrorModel() { Message = "Student EnrollNumber is existed", Type = "student-class-error-0009" } },
         { "E1113", new ErrorModel() { Message = "Fail to SaveChange when add Student", Type = "student-class-error-0010" } },
         { "E1115", new ErrorModel() { Message = "EnrollNumber is existed", Type = "student-class-error-0011" } },
-        { "E1116", new ErrorModel() { Message = "Cannot add student to class because the class already has 100 students", Type = "student-class-error-0011" } },
-        { "E1130", new ErrorModel() { Message = "First Class is not exists in center", Type = "student-class-error-0012" } },
-        { "E1131", new ErrorModel() { Message = "Second Class is not exists in center", Type = "student-class-error-0013" } },
+        { "E1116", new ErrorModel() { Message = "Cannot add student to class because the class already has 100 students", Type = "student-class-error-0012" } },
+        { "E1130", new ErrorModel() { Message = "First Class is not exists in center", Type = "student-class-error-0013" } },
+        { "E1131", new ErrorModel() { Message = "Second Class is not exists in center", Type = "student-class-error-0014" } },
 
         // student
         { "E1076", new ErrorModel() { Message = "First name is not match with format", Type = "student-error-0001" } },
@@ -263,8 +263,8 @@ public static class ErrorDescription
         { "E1123", new ErrorModel() { Message = "New class is not exist in this center", Type = "student-error-0039" } },
         { "E1124", new ErrorModel() { Message = "Student is not in current class", Type = "student-error-0040" } },
         { "E1125", new ErrorModel() { Message = "Student existed in new class", Type = "student-error-0041" } },
-        { "E1126", new ErrorModel() { Message = "Fail to SaveChange when change class student", Type = "student-error-00042" } },        
-        { "E1127", new ErrorModel() { Message = "New class already had 24 students", Type = "student-error-00043" } },
+        { "E1126", new ErrorModel() { Message = "Fail to SaveChange when change class student", Type = "student-error-0042" } },        
+        { "E1127", new ErrorModel() { Message = "New class already had 100 students", Type = "student-error-0043" } },
         { "E1129", new ErrorModel() { Message = "Birthday must less than Now", Type = "student-error-0044" } },
 
         // class schedule
