@@ -69,7 +69,7 @@ public class UserController : ControllerBase
             return BadRequest(CustomResponse.BadRequest("Upload image to Azure Storage failed", null!));
         }
         
-        return Ok();
+        return Ok(CustomResponse.Ok("Update avatar successfully", null!));
     }
     
     [HttpPost]
@@ -100,7 +100,7 @@ public class UserController : ControllerBase
             return BadRequest(CustomResponse.BadRequest("Upload image to Azure Storage failed", null!));
         }
         
-        return Ok();
+        return Ok(CustomResponse.Ok("Update avatar successfully", null!));
     }
     
     private bool UploadImageToAzureStorage(string image, User user)
@@ -121,7 +121,8 @@ public class UserController : ControllerBase
                 PublicAccess = BlobContainerPublicAccessType.Blob
             });
         
-            CloudBlockBlob cblob = cont.GetBlockBlobReference($"avatar/user-id-{user.Id}.png");
+            var time = DateTime.Now.ToString("yyyyMMddHHmmss");
+            CloudBlockBlob cblob = cont.GetBlockBlobReference($"avatar/user-id-{user.Id}-{time}.png");
             cblob.Properties.ContentType = "image/png";
         
             var bytes = Convert.FromBase64String(image.Split(',')[1]);

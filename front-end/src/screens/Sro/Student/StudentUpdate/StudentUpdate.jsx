@@ -38,6 +38,7 @@ import ManImage from '../../../../images/3d-fluency-businessman-1.png';
 import WomanImage from '../../../../images/3d-fluency-businesswoman-1.png';
 import moment from 'moment';
 import { ErrorCodeApi } from '../../../../apis/ErrorCodeApi';
+import ChangeAvatar from '../../../../components/ChangeAvatar/ChangeAvatar';
 
 const translateStatusStudent = {
   1: 'Studying',
@@ -71,6 +72,8 @@ const StudentUpdate = () => {
   const [dataUser, setDataUser] = useState(undefined);
   const [genderUser, setGenderUser] = useState(undefined);
   const [avatarUser, setAvatarUser] = useState(undefined);
+  const [openChangeAvatar, setOpenChangeAvatar] = useState(false);
+  const [avatar, setAvatar] = useState(undefined);
 
   const navigate = useNavigate();
   const [form] = Form.useForm();
@@ -148,10 +151,8 @@ const StudentUpdate = () => {
       const data = res.data;
       setDataUser(data);
       // console.log(data.gender.id);
-      setGenderUser (data.gender.id) ;
+      setGenderUser(data.gender.id);
       setAvatarUser(data.avatar);
-
-
 
       form.setFieldsValue({
         first_name: data.first_name,
@@ -196,8 +197,6 @@ const StudentUpdate = () => {
       setIsGettingInformationStudent(false);
       getListDistrictForUpdate();
       getListWardForUpdate();
-   
-     
     });
   };
 
@@ -277,8 +276,6 @@ const StudentUpdate = () => {
     // getListTeacherType();
     getListCourse();
     getInformationStudent();
-    
- 
   }, []);
   return (
     <Form
@@ -555,9 +552,7 @@ const StudentUpdate = () => {
                           value === undefined ||
                           value.trim() === ''
                         ) {
-                          return Promise.reject(
-                            'Trường không được để trống'
-                          );
+                          return Promise.reject('Trường không được để trống');
                         }
                         if (
                           Validater.isContaintSpecialCharacterForAddress(
@@ -1203,10 +1198,10 @@ const StudentUpdate = () => {
                     width={250}
                     src="https://cdna.artstation.com/p/assets/images/images/048/859/290/large/xu-weili-4d6e20d94309f4e40f1a252e5f8711e.jpg?1651098275"
                   /> */}
-                   {avatarUser && (
-                    <img className={classes.avatar} src={dataUser.avatar} />
-                  )} 
-                  {!avatarUser && ( 
+                  {avatarUser && (
+                    <img className={classes.avatar} src={avatarUser} />
+                  )}
+                  {!avatarUser && (
                     <img
                       className={classes.avatarMini}
                       src={
@@ -1214,30 +1209,39 @@ const StudentUpdate = () => {
                           ? ManImage
                           : genderUser === 2
                           ? WomanImage
-                          : ""
+                          : ''
                       }
                     />
                   )}
                 </div>
               </div>
-              <Upload  disabled={true} 
-              >
-                <Button 
-                disabled={true}
+              <div>
+                <Button
                   css={{
                     fontSize: '12px',
                     height: '28px',
-                    margin: '16px 0 0 0',
+                    margin: '16px auto 0',
                   }}
                   auto
                   flat
                   icon={<UploadOutlined />}
+                  onPress={() => {
+                    setOpenChangeAvatar(true);
+                  }}
                 >
                   Upload
                 </Button>
-              </Upload>
-
-              {/* </div> */}
+              </div>
+              <ChangeAvatar
+                open={openChangeAvatar}
+                userId={id}
+                onSuccess={({ reload }) => {
+                  setOpenChangeAvatar(false);
+                  if (reload) {
+                    getInformationStudent();
+                  }
+                }}
+              />
             </Card.Body>
           </Card>
           <Card variant="bordered">
