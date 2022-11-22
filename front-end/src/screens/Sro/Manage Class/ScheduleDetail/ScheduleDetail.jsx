@@ -25,6 +25,7 @@ import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import FetchApi from '../../../../apis/FetchApi';
 import { ManageScheduleApis, ModulesApis } from '../../../../apis/ListApi';
 import ScheduleCreate from '../../../../components/ScheduleCreate/ScheduleCreate';
+import ScheduleUpdate from '../../../../components/ScheduleUpdate/ScheduleUpdate';
 import classes from './ScheduleDetail.module.css';
 
 const ScheduleDetail = () => {
@@ -32,6 +33,7 @@ const ScheduleDetail = () => {
   const [gettingData, setGettingData] = useState(true);
   const [dataModule, setDataModule] = useState(undefined);
   const [createMode, setCreateMode] = useState(false);
+  const [editMode, setEditMode] = useState(false);
 
   const { id, moduleId } = useParams();
   const [handleUpdateListCourse] = useOutletContext();
@@ -72,52 +74,77 @@ const ScheduleDetail = () => {
 
   const handleSuccess = () => {
     setCreateMode(false);
+    setEditMode(false);
     getData();
   };
 
   const handleDeleteSchedule = () => {
-    toast
-      .promise(
-        FetchApi(ManageScheduleApis.deleteSchedule, null, null, [
-          String(id),
-          String(dataSchedule?.id),
-        ]),
-        {
-          loading: 'Đang xóa lịch học...',
-          success: () => {
-            getData();
-            handleUpdateListCourse();
-            return 'Xóa lịch học thành công!';
-          },
-          error: (err) => {
-            return 'Xóa lịch học thất bại!';
-          },
-        }
-      )
+    toast.promise(
+      FetchApi(ManageScheduleApis.deleteSchedule, null, null, [
+        String(id),
+        String(dataSchedule?.id),
+      ]),
+      {
+        loading: 'Đang xóa lịch học...',
+        success: () => {
+          getData();
+          handleUpdateListCourse();
+          return 'Xóa lịch học thành công!';
+        },
+        error: (err) => {
+          return 'Xóa lịch học thất bại!';
+        },
+      }
+    );
   };
 
   useEffect(() => {
     getData();
     setCreateMode(false);
+    setEditMode(false);
   }, [id, moduleId]);
 
   return (
     <Card variant={'bordered'}>
       <Card.Header>
-        <Text
-          p
-          b
-          size={14}
-          css={{
-            width: '100%',
-            textAlign: 'center',
-          }}
-        >
-          {createMode ? 'Tạo lịch học' : 'Thông tin lịch học'}
-        </Text>
+        <Grid.Container justify="space-between">
+          <Grid xs={4}>
+            {editMode && (
+              <Button
+                flat
+                auto
+                color={'error'}
+                size={'sm'}
+                onPress={() => {
+                  setEditMode(false);
+                }}
+              >
+                Trở về
+              </Button>
+            )}
+          </Grid>
+          <Grid xs={4}>
+            <Text
+              p
+              b
+              size={14}
+              css={{
+                width: '100%',
+                textAlign: 'center',
+              }}
+            >
+              {createMode
+                ? 'Tạo lịch học'
+                : editMode
+                ? 'Chỉnh sửa lịch học'
+                : 'Thông tin lịch học'}
+            </Text>
+          </Grid>
+          <Grid xs={4}></Grid>
+        </Grid.Container>
       </Card.Header>
       <Card.Body>
-        {!createMode && (
+        {!createMode && !editMode && (
           <Fragment>
             {(gettingData || dataModule === undefined) && (
               <div className={classes.loading}>
@@ -199,16 +226,26 @@ const ScheduleDetail = () => {
                         )}
                       </b>
                     </Descriptions.Item>
-                    <Descriptions.Item label="Ngày cập nhật">
+                    <Descriptions.Item span={2} label="Ngày cập nhật">
                       <b>
                         {new Date(dataSchedule.updated_at).toLocaleDateString(
                           'vi-VN'
                         )}
                       </b>
                     </Descriptions.Item>
+                    <Descriptions.Item span={2} label="Ghi chú">
+                      <i>{dataSchedule.note}</i>
+                    </Descriptions.Item>
                     <Descriptions.Item>
                       <div className={classes.buttonGroupEdit}>
-                        <Button auto flat color="primary">
+                        <Button
+                          auto
+                          flat
+                          color="primary"
+                          onPress={() => {
+                            setEditMode(true);
+                          }}
+                        >
                           Chỉnh sửa
                         </Button>
                         <Button
@@ -217,7 +254,7 @@ const ScheduleDetail = () => {
                           color="error"
                           onPress={handleDeleteSchedule}
                         >
-                          Xoá (TEST)
+                          Xoá
                         </Button>
                       </div>
                     </Descriptions.Item>
@@ -226,66 +263,71 @@ const ScheduleDetail = () => {
                   <Divider />
                   <Spacer y={1} />
                   <Grid.Container gap={2}>
-                    {dataSchedule.sessions.sort((a, b) => (new Date(a.learning_date) - new Date(b.learning_date))).map((data, index) => {
-                      return (
-                        <Grid key={index} xs={2}>
-                          <Card variant="bordered" isPressable>
-                            <Card.Body
-                              css={{
-                                padding: '6px 12px',
-                                backgroundColor:
-                                  data.session_type === 3 ||
-                                  data.session_type === 4
-                                    ? '#7828C8'
-                                    : '',
-                              }}
-                            >
-                              <div className={classes.infoSlotSession}>
-                                <Text
-                                  p
-                                  size={12}
-                                  color={
+                    {dataSchedule.sessions
+                      .sort(
+                        (a, b) =>
+                          new Date(a.learning_date) - new Date(b.learning_date)
+                      )
+                      .map((data, index) => {
+                        return (
+                          <Grid key={index} xs={2}>
+                            <Card variant="bordered" isPressable>
+                              <Card.Body
+                                css={{
+                                  padding: '6px 12px',
+                                  backgroundColor:
                                     data.session_type === 3 ||
                                     data.session_type === 4
-                                      ? '#fff'
-                                      : '#000'
-                                  }
-                                >
-                                  <b>Slot {index + 1}</b>
-                                </Text>
-                                <Text
-                                  p
-                                  size={12}
-                                  color={
-                                    data.session_type === 3 ||
-                                    data.session_type === 4
-                                      ? '#fff'
-                                      : '#000'
-                                  }
-                                >
-                                  {new Date(
-                                    data.learning_date
-                                  ).toLocaleDateString('vi-VN')}
-                                </Text>
-                              </div>
-                              <Spacer y={0.6} />
-                              <Text
-                                p
-                                size={12}
-                                color={
-                                  data.session_type === 3 ||
-                                  data.session_type === 4
-                                    ? '#fff'
-                                    : '#000'
-                                }
+                                      ? '#7828C8'
+                                      : '',
+                                }}
                               >
-                                Phòng <b>{data.room.name}</b>
-                              </Text>
-                            </Card.Body>
-                          </Card>
-                        </Grid>
-                      );
-                    })}
+                                <div className={classes.infoSlotSession}>
+                                  <Text
+                                    p
+                                    size={12}
+                                    color={
+                                      data.session_type === 3 ||
+                                      data.session_type === 4
+                                        ? '#fff'
+                                        : '#000'
+                                    }
+                                  >
+                                    <b>Slot {index + 1}</b>
+                                  </Text>
+                                  <Text
+                                    p
+                                    size={12}
+                                    color={
+                                      data.session_type === 3 ||
+                                      data.session_type === 4
+                                        ? '#fff'
+                                        : '#000'
+                                    }
+                                  >
+                                    {new Date(
+                                      data.learning_date
+                                    ).toLocaleDateString('vi-VN')}
+                                  </Text>
+                                </div>
+                                <Spacer y={0.6} />
+                                <Text
+                                  p
+                                  size={12}
+                                  color={
+                                    data.session_type === 3 ||
+                                    data.session_type === 4
+                                      ? '#fff'
+                                      : '#000'
+                                  }
+                                >
+                                  Phòng <b>{data.room.name}</b>
+                                </Text>
+                              </Card.Body>
+                            </Card>
+                          </Grid>
+                        );
+                      })}
                   </Grid.Container>
                 </div>
               )}
@@ -293,6 +335,13 @@ const ScheduleDetail = () => {
         )}
         {createMode && dataModule !== undefined && (
           <ScheduleCreate dataModule={dataModule} onSuccess={handleSuccess} />
+        )}
+        {editMode && dataModule !== undefined && (
+          <ScheduleUpdate
+            dataModule={dataModule}
+            dataSchedule={dataSchedule}
+            onSuccess={handleSuccess}
+          />
         )}
       </Card.Body>
     </Card>

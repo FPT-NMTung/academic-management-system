@@ -79,6 +79,9 @@ public class ClassScheduleResponse
     
     [JsonPropertyName("sessions")]
     public List<SessionResponse> Sessions { get; set; }
+    
+    [JsonPropertyName("working_time_id")]
+    public int WorkingTimeId { get; set; }
 
     [JsonPropertyName("created_at")]
     public DateTime CreatedAt { get; set; }
