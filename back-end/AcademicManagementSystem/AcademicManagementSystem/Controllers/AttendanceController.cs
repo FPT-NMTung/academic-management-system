@@ -84,11 +84,6 @@ public class AttendanceController : ControllerBase
             var attendances = _context.Attendances.Where(a => a.SessionId == sessionId).ToList();
             _context.Attendances.RemoveRange(attendances);
 
-            if (attendances.Any())
-            {
-                _context.SaveChanges();
-            }
-
             // can't take attendance before learning date
             // if (DateTime.Today < session.LearningDate.Date)
             // {
@@ -186,11 +181,6 @@ public class AttendanceController : ControllerBase
             // remove attendance before take attendance
             var attendances = _context.Attendances.Where(a => a.SessionId == sessionId).ToList();
             _context.Attendances.RemoveRange(attendances);
-
-            if (attendances.Any())
-            {
-                _context.SaveChanges();
-            }
 
             // can't take attendance before learning date
             if (DateTime.Today < session.LearningDate.Date)
