@@ -178,7 +178,7 @@ const ManageDayOff = () => {
                   required: true,
                   validator: (_, value) => {
                     if (value === null || value === undefined) {
-                      return Promise.reject('Trường này không được để trống');
+                      return Promise.reject('Trường phải từ 1 đến 255 ký tự');
                     }
                     if (value.trim().length < 1 || value.trim().length > 255) {
                       return Promise.reject(
@@ -584,35 +584,35 @@ const ManageDayOff = () => {
                         )}
                         {detailDayOff?.afternoon[0]?.teacher_id === null && (
                           <Fragment>
-                          <Text
-                            p
-                            size={14}
-                            css={{
-                              textAlign: 'center',
-                            }}
-                          >
-                            <b>Lịch nghỉ chung của cơ sở: </b>
-                            {detailDayOff?.afternoon[0]?.title}
-                          </Text>
-                          <div>
-                            <Button
-                              color={'error'}
-                              size={'sm'}
-                              auto
-                              flat
+                            <Text
+                              p
+                              size={14}
                               css={{
-                                margin: '10px auto 0',
-                              }}
-                              onPress={() => {
-                                handleDeleteDayOff(
-                                  detailDayOff?.afternoon[0]?.id
-                                );
+                                textAlign: 'center',
                               }}
                             >
-                              Xoá
-                            </Button>
-                          </div>
-                        </Fragment>
+                              <b>Lịch nghỉ chung của cơ sở: </b>
+                              {detailDayOff?.afternoon[0]?.title}
+                            </Text>
+                            <div>
+                              <Button
+                                color={'error'}
+                                size={'sm'}
+                                auto
+                                flat
+                                css={{
+                                  margin: '10px auto 0',
+                                }}
+                                onPress={() => {
+                                  handleDeleteDayOff(
+                                    detailDayOff?.afternoon[0]?.id
+                                  );
+                                }}
+                              >
+                                Xoá
+                              </Button>
+                            </div>
+                          </Fragment>
                         )}
                         {detailDayOff !== undefined &&
                           detailDayOff.afternoon[0] !== undefined &&
@@ -698,35 +698,35 @@ const ManageDayOff = () => {
                         )}
                         {detailDayOff?.evening[0]?.teacher_id === null && (
                           <Fragment>
-                          <Text
-                            p
-                            size={14}
-                            css={{
-                              textAlign: 'center',
-                            }}
-                          >
-                            <b>Lịch nghỉ chung của cơ sở: </b>
-                            {detailDayOff?.evening[0]?.title}
-                          </Text>
-                          <div>
-                            <Button
-                              color={'error'}
-                              size={'sm'}
-                              auto
-                              flat
+                            <Text
+                              p
+                              size={14}
                               css={{
-                                margin: '10px auto 0',
-                              }}
-                              onPress={() => {
-                                handleDeleteDayOff(
-                                  detailDayOff?.evening[0]?.id
-                                );
+                                textAlign: 'center',
                               }}
                             >
-                              Xoá
-                            </Button>
-                          </div>
-                        </Fragment>
+                              <b>Lịch nghỉ chung của cơ sở: </b>
+                              {detailDayOff?.evening[0]?.title}
+                            </Text>
+                            <div>
+                              <Button
+                                color={'error'}
+                                size={'sm'}
+                                auto
+                                flat
+                                css={{
+                                  margin: '10px auto 0',
+                                }}
+                                onPress={() => {
+                                  handleDeleteDayOff(
+                                    detailDayOff?.evening[0]?.id
+                                  );
+                                }}
+                              >
+                                Xoá
+                              </Button>
+                            </div>
+                          </Fragment>
                         )}
                         {detailDayOff !== undefined &&
                           detailDayOff.evening[0] !== undefined &&

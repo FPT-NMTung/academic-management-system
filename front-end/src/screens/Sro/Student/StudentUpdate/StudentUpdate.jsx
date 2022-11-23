@@ -323,7 +323,7 @@ const StudentUpdate = () => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            'Trường này không được để trống'
+                            'Trường phải từ 1 đến 255 ký tự'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
@@ -359,7 +359,7 @@ const StudentUpdate = () => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            'Trường này không được để trống'
+                            'Trường phải từ 1 đến 255 ký tự'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
@@ -666,7 +666,7 @@ const StudentUpdate = () => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            'Trường này không được để trống'
+                            'Trường phải từ 1 đến 255 ký tự'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
@@ -723,7 +723,7 @@ const StudentUpdate = () => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            'Trường này không được để trống'
+                            'Trường phải từ 1 đến 255 ký tự'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
@@ -1407,7 +1407,7 @@ const StudentUpdate = () => {
                     required: true,
                     validator: (_, value) => {
                       if (value === null || value === undefined) {
-                        return Promise.reject('Trường này không được để trống');
+                        return Promise.reject('Trường phải từ 1 đến 255 ký tự');
                       }
                       if (
                         Validater.isContaintSpecialCharacterForName(

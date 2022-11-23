@@ -259,7 +259,7 @@ const AddStudentToClass = () => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            'Trường này không được để trống'
+                            'Trường phải từ 1 đến 255 ký tự'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
@@ -295,7 +295,7 @@ const AddStudentToClass = () => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            'Trường này không được để trống'
+                            'Trường phải từ 1 đến 255 ký tự'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
@@ -633,7 +633,7 @@ const AddStudentToClass = () => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            'Trường này không được để trống'
+                            'Trường phải từ 1 đến 255 ký tự'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
@@ -699,7 +699,7 @@ const AddStudentToClass = () => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            'Trường này không được để trống'
+                            'Trường phải từ 1 đến 255 ký tự'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
@@ -1273,7 +1273,7 @@ const AddStudentToClass = () => {
                         value === undefined ||
                         value === ''
                       ) {
-                        return Promise.reject('Trường này không được để trống');
+                        return Promise.reject('Trường phải từ 1 đến 100 ký tự');
                       }
 
                       if (Validater.isContaintSpecialCharacter(value.trim())) {
@@ -1444,7 +1444,7 @@ const AddStudentToClass = () => {
                     required: true,
                     validator: (_, value) => {
                       if (value === null || value === undefined) {
-                        return Promise.reject('Trường này không được để trống');
+                        return Promise.reject('Trường phải từ 1 đến 255 ký tự');
                       }
                       if (
                         Validater.isContaintSpecialCharacterForName(
