@@ -302,6 +302,14 @@ public static class ErrorDescription
         { "E2069", new ErrorModel() { Message = "Error when delete class schedule", Type = "class-schedule-error-0029" } },
         { "E2070", new ErrorModel() { Message = "Only one module can be studied in a period of time", Type = "class-schedule-error-0030" } },
 
+        // attendance
+        { "E0200", new ErrorModel() { Message = "Invalid data", Type = "attendance-error-0000" } },
+        { "E0201", new ErrorModel() { Message = "Attendance has been taken for this session", Type = "attendance-error-0001" } },
+        { "E0202", new ErrorModel() { Message = "All student must in class", Type = "attendance-error-0002" } },
+        { "E0203", new ErrorModel() { Message = "Session not found", Type = "attendance-error-0003" } },
+        { "E0204", new ErrorModel() { Message = "Class schedule not found", Type = "attendance-error-0004" } },
+        { "E0205", new ErrorModel() { Message = "Can't take attendance this time", Type = "attendance-error-0005" } },
+        
         // Day off
         { "E0100", new ErrorModel() { Message = "This day off already in database", Type = "day-off-error-0001" } },
         { "E0101", new ErrorModel() { Message = "Date must >= today", Type = "day-off-error-0002" } },
