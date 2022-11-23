@@ -13,9 +13,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import FetchApi from '../../../../apis/FetchApi';
 import { ManageSroApis } from '../../../../apis/ListApi';
 import { AiFillPhone } from 'react-icons/ai';
-import { MdEmail } from 'react-icons/md';
+import { MdEmail, MdModeEdit } from 'react-icons/md';
 import { HiOfficeBuilding } from 'react-icons/hi';
 import { Spin, Descriptions, Table } from 'antd';
+import ChangeAvatar from '../../../../components/ChangeAvatar/ChangeAvatar';
 
 const gender = {
   1: 'Nam',
@@ -27,6 +28,7 @@ const gender = {
 const SroDetail = () => {
   const [dataUser, setDataUser] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [openChangeAvatar, setOpenChangeAvatar] = useState(false);
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -74,6 +76,26 @@ const SroDetail = () => {
                 <div className={classes.logo}>
                   {dataUser.avatar && (
                     <img className={classes.avatar} src={dataUser.avatar} />
+                  )}
+                  <div
+                    className={classes.buttonEdit}
+                    onClick={() => {
+                      setOpenChangeAvatar(true);
+                    }}
+                  >
+                    <MdModeEdit />
+                  </div>
+                  {openChangeAvatar && (
+                    <ChangeAvatar
+                      open={openChangeAvatar}
+                      userId={id}
+                      onSuccess={({ reload }) => {
+                        setOpenChangeAvatar(false);
+                        if (reload) {
+                          getDataUser();
+                        }
+                      }}
+                    />
                   )}
                 </div>
                 <Spacer y={0.7} />

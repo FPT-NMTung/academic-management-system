@@ -73,7 +73,6 @@ const StudentUpdate = () => {
   const [genderUser, setGenderUser] = useState(undefined);
   const [avatarUser, setAvatarUser] = useState(undefined);
   const [openChangeAvatar, setOpenChangeAvatar] = useState(false);
-  const [avatar, setAvatar] = useState(undefined);
 
   const navigate = useNavigate();
   const [form] = Form.useForm();
@@ -1232,7 +1231,7 @@ const StudentUpdate = () => {
                   Upload
                 </Button>
               </div>
-              <ChangeAvatar
+              {openChangeAvatar && <ChangeAvatar
                 open={openChangeAvatar}
                 userId={id}
                 onSuccess={({ reload }) => {
@@ -1241,7 +1240,7 @@ const StudentUpdate = () => {
                     getInformationStudent();
                   }
                 }}
-              />
+              />}
             </Card.Body>
           </Card>
           <Card variant="bordered">

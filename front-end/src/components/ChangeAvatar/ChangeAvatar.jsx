@@ -50,78 +50,74 @@ const ChangeAvatar = ({ userId, open, onSuccess }) => {
   }, [open]);
 
   return (
-    <Fragment>
-      {open && (
-        <Modal
-          open={open}
-          blur
-          onClose={() => {
-            onSuccess({ reload: false });
+    <Modal
+      open={open}
+      blur
+      onClose={() => {
+        onSuccess({ reload: false });
+      }}
+      closeButton
+      preventClose
+    >
+      <Modal.Header>
+        <Text p b size={14}>
+          Thay đổi ảnh
+        </Text>
+      </Modal.Header>
+      <Modal.Body>
+        <div className={classes.avatarEdit}>
+          <AvatarEditor
+            ref={refAvatar}
+            borderRadius={220}
+            image={file}
+            width={220}
+            height={220}
+            border={0}
+            color={[0, 0, 0, 0.3]} // RGBA
+            scale={(scaleImage + 100) / 100}
+            rotate={0}
+            className={classes.avatar}
+          />
+          <Slider
+            style={{
+              width: '220px',
+            }}
+            defaultValue={scaleImage}
+            onChange={(value) => setScaleImage(value)}
+            disabled={!isHaveFile}
+          />
+        </div>
+        <Upload
+          fileList={fileList}
+          showUploadList={false}
+          multiple={false}
+          beforeUpload={(file) => {
+            const isImage =
+              file.type === 'image/jpeg' || file.type === 'image/png';
+            if (!isImage) {
+              toast.error(`${file.name} không phải là ảnh`);
+            }
+            return isImage || Upload.LIST_IGNORE;
           }}
-          closeButton
-          preventClose
+          onChange={(info) => {
+            setFile(info.file.originFileObj);
+          }}
         >
-          <Modal.Header>
-            <Text p b size={14}>
-              Thay đổi ảnh
-            </Text>
-          </Modal.Header>
-          <Modal.Body>
-            <div className={classes.avatarEdit}>
-              <AvatarEditor
-                ref={refAvatar}
-                borderRadius={220}
-                image={file}
-                width={220}
-                height={220}
-                border={0}
-                color={[0, 0, 0, 0.3]} // RGBA
-                scale={(scaleImage + 100) / 100}
-                rotate={0}
-                className={classes.avatar}
-              />
-              <Slider
-                style={{
-                  width: '220px',
-                }}
-                defaultValue={scaleImage}
-                onChange={(value) => setScaleImage(value)}
-                disabled={!isHaveFile}
-              />
-            </div>
-            <Upload
-              fileList={fileList}
-              showUploadList={false}
-              multiple={false}
-              beforeUpload={(file) => {
-                const isImage =
-                  file.type === 'image/jpeg' || file.type === 'image/png';
-                if (!isImage) {
-                  toast.error(`${file.name} is not a image file`);
-                }
-                return isImage || Upload.LIST_IGNORE;
-              }}
-              onChange={(info) => {
-                setFile(info.file.originFileObj);
-              }}
-            >
-              <Button auto color={'warning'} flat icon={<IoImage />}>
-                Tải ảnh lên
-              </Button>
-            </Upload>
-            <Button
-              onClick={handleUpload}
-              auto
-              color={'default'}
-              flat
-              icon={<IoImage />}
-            >
-              Xác nhận
-            </Button>
-          </Modal.Body>
-        </Modal>
-      )}
-    </Fragment>
+          <Button auto color={'warning'} flat icon={<IoImage />}>
+            Tải ảnh lên
+          </Button>
+        </Upload>
+        <Button
+          onClick={handleUpload}
+          auto
+          color={'default'}
+          flat
+          icon={<IoImage />}
+        >
+          Xác nhận
+        </Button>
+      </Modal.Body>
+    </Modal>
   );
 };
 
