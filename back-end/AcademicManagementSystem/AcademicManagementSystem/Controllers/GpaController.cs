@@ -36,6 +36,13 @@ public class GpaController : ControllerBase
     [Authorize(Roles = "admin, sro, student")]
     public IActionResult GetQuestionsByFormId(int formId)
     {
+        // check if form exists
+        var form = _context.Forms.Find(formId);
+        if (form == null)
+        {
+            return NotFound(CustomResponse.NotFound("Form not found with id " + formId));
+        }
+
         var questions = _context.Questions
             .Include(q => q.Forms)
             .Where(q => q.Forms.Any(f => f.Id == formId))
@@ -52,6 +59,24 @@ public class GpaController : ControllerBase
     [Authorize(Roles = "admin, sro, student")]
     public IActionResult GetAnswersByQuestionId(int formId, int questionId)
     {
+        // check if form exists or not
+        var form = _context.Forms.Find(formId);
+        if (form == null)
+        {
+            return NotFound(CustomResponse.NotFound("Form not found with id " + formId));
+        }
+
+        // check if question in form exists or not
+        var question = _context.Questions
+            .Include(q => q.Forms)
+            .Where(q => q.Forms.Any(f => f.Id == formId))
+            .FirstOrDefault(q => q.Id == questionId);
+        if (question == null)
+        {
+            return NotFound(
+                CustomResponse.NotFound("Question not found with id " + questionId + " in form id " + formId));
+        }
+
         var answers = _context.Answers
             .Include(a => a.Question)
             .Include(a => a.Question.Forms)
