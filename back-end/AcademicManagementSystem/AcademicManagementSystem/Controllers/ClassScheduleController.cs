@@ -8,7 +8,6 @@ using AcademicManagementSystem.Models.ClassStatusController;
 using AcademicManagementSystem.Models.RoomController.RoomModel;
 using AcademicManagementSystem.Models.RoomController.RoomTypeModel;
 using AcademicManagementSystem.Models.Sessions;
-using AcademicManagementSystem.Models.TeacherSkillController;
 using AcademicManagementSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -158,7 +157,8 @@ public class ClassScheduleController : ControllerBase
         var centerId = _context.Sros.Include(sro => sro.User)
             .FirstOrDefault(sro => sro.UserId == Int32.Parse(_userService.GetUserId()))?.User.CenterId;
 
-        var classContext = _context.Classes.FirstOrDefault(cl => cl.CenterId == centerId && cl.Id == classId);
+        var classContext = _context.Classes.Include(c => c.ClassSchedules)
+            .FirstOrDefault(cl => cl.CenterId == centerId && cl.Id == classId);
         if (classContext == null)
         {
             return NotFound(CustomResponse.NotFound("Class not found"));
@@ -372,8 +372,14 @@ public class ClassScheduleController : ControllerBase
         }
 
         // update class status
-        classContext.ClassStatusId = StatusScheduled;
-
+        var isStarted = classContext.ClassSchedules.Any(cs => cs.StartDate.Date <= DateTime.Today);
+        
+        //  if class not started any schedule => status = scheduled
+        if (!isStarted)
+        {
+            classContext.ClassStatusId = StatusScheduled;
+        }
+        
         _context.ClassSchedules.Add(classScheduleToCreate);
 
         try
@@ -576,7 +582,7 @@ public class ClassScheduleController : ControllerBase
         }
 
         var oldStartDate = oldSessions.First().LearningDate.Date;
-        
+
         /*
          * number of old sessions >= number of new sessions:
          * - update old sessions by new each session till new sessions end
@@ -788,6 +794,7 @@ public class ClassScheduleController : ControllerBase
 
                 learningDate += TimeSpan.FromDays(1);
             }
+
             schedule.UpdatedAt = DateTime.Now;
             sessionsUpdated = schedule.Sessions.OrderBy(s => s.LearningDate).ToList();
             _context.Update(schedule);
