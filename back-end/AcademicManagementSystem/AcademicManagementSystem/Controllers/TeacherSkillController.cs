@@ -23,7 +23,7 @@ public class TeacherSkillController : ControllerBase
 
     [HttpGet]
     [Route("api/skills/{skillId:int}/teachers")]
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "admin, sro")]
     public IActionResult GetTeachersHasSkillBySkillId(int skillId)
     {
         var skillExists = _context.Skills.Any(s => s.Id == skillId);

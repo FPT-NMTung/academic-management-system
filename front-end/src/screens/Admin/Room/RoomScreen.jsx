@@ -22,6 +22,7 @@ import CreateRoom from '../../../components/CreateRoom/CreateRoom';
 import UpdateRoom from '../../../components/UpdateRoom/UpdateRoom';
 import { FaPen } from 'react-icons/fa';
 import toast from 'react-hot-toast';
+import ChangeAvatar from '../../../components/ChangeAvatar/ChangeAvatar';
 
 const RoomScreen = () => {
   const [listRooms, setListRooms] = useState([]);
@@ -114,6 +115,7 @@ const RoomScreen = () => {
 
   return (
     <Fragment>
+      <ChangeAvatar/>
       <Modal open={isOpenCreateRoom} blur closeButton={true} width={500}>
         <Modal.Header>
           <Text b size={14}>
