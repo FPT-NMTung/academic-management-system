@@ -1,41 +1,51 @@
 .layout {
-    display              : grid;
-    grid-template-columns: 1fr 1fr;
-  }
-  
-  .buttonCreate {
-    width          : 100%;
-    display        : flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items    : center;
-  }
-  .contantLogo {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display              : grid;
+  grid-template-columns: 1fr 1fr;
+}
 
-  }
-  .avatarMini {
-    width: 70%;
-    /* border-radius: 50%;
-    border: 1px solid #929496; */
-    /* object-fit: contain; */
-  }
-  .avatarDefault {
-    width: 100%;
-    border-radius: 50%;
-    border: 1px solid #929496;
-    object-fit: contain;
-  }
-  .logo {
-    width: 160px;
-    height: 160px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 10em;
-    background-color: rgb(238, 238, 238);
-    border: 1px solid #d9d9d9; 
-  }
+.buttonCreate {
+  width          : 100%;
+  display        : flex;
+  flex-direction : column;
+  justify-content: center;
+  align-items    : center;
+}
+
+.contantLogo {
+  width         : 100%;
+  display       : flex;
+  flex-direction: column;
+  align-items   : center;
+
+}
+
+.avatarMini {
+  width        : 70%;
+  /* border-radius: 50%;
+  border       : 1px solid #929496;
+  object-fit   : contain; */
+}
+
+.avatar {
+  width        : 100%;
+  border-radius: 50%;
+  object-fit   : contain;
+}
+
+.avatarDefault {
+  width        : 100%;
+  border-radius: 50%;
+  border       : 1px solid #929496;
+  object-fit   : contain;
+}
+
+.logo {
+  width           : 160px;
+  height          : 160px;
+  display         : flex;
+  justify-content : center;
+  align-items     : center;
+  border-radius   : 10em;
+  background-color: rgb(238, 238, 238);
+  border          : 1px solid #d9d9d9;
+}
