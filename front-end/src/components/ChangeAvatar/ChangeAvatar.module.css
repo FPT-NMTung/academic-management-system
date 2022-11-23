@@ -1,0 +1,54 @@
+.main {
+  display              : grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.rightBar {
+  display       : flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  row-gap: 20px;
+}
+
+.avatar {
+  border: 1px solid lightgray;
+}
+
+.buttonGroup {
+  display   : flex;
+  column-gap: 20px;
+}
+
+.preview {
+  text-align: center;
+}
+
+.preview>img {
+  width        : 200px;
+  height       : 200px;
+  border-radius: 10em;
+
+  margin-bottom: 10px;
+}
+
+.image {
+  text-align: center;
+}
+
+.image>img {
+  margin-bottom: 15px;
+  width        : 250px;
+
+  border-radius: 10em;
+  border-width : 2px;
+  border-style : solid;
+  border-color : lightgray;
+}
+
+.avatarEdit {
+  display       : flex;
+  flex-direction: column;
+  align-items   : center;
+}
