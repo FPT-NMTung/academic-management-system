@@ -358,6 +358,16 @@ export const UserApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  changeAvatarForAdmin: {
+    url: 'api/admin/users/{0}/avatar',
+    method: 'POST',
+    contextType: 'application/json',
+  },
+  changeAvatarForSro: {
+    url: 'api/sro/users/{0}/avatar',
+    method: 'POST',
+    contextType: 'application/json',
+  },
 };
 
 export const GradeType = {
