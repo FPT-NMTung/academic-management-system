@@ -876,6 +876,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                   ]}
                 >
                   <InputNumber
+                    min={0}
                     placeholder="Mức lương"
                     formatter={(value) =>
                       `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")

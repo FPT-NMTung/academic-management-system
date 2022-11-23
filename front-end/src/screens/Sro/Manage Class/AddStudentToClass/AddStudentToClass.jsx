@@ -1142,6 +1142,7 @@ const AddStudentToClass = () => {
                   ]}
                 >
                   <InputNumber
+                    min={0}
                     placeholder="5000000"
                     formatter={(value) =>
                       `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')

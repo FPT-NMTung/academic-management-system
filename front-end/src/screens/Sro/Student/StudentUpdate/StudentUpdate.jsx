@@ -1150,9 +1150,16 @@ const StudentUpdate = () => {
                     // },
                   ]}
                 >
-                  <Input placeholder="5000000" />
+                  <InputNumber
+                    min={0}
+                    placeholder="5000000"
+                    formatter={(value) =>
+                      `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                    }
+                    parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
+                    style={{ width: '100%' }}
+                  />
                 </Form.Item>
-
                 <div></div>
               </div>
               <Spacer y={0.1} />
