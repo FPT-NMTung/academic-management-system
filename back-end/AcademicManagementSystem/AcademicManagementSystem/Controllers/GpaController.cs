@@ -2,6 +2,7 @@ using AcademicManagementSystem.Context;
 using AcademicManagementSystem.Models.GpaController;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AcademicManagementSystem.Controllers;
 
@@ -28,4 +29,21 @@ public class GpaController : ControllerBase
             }).ToList();
         return Ok(CustomResponse.Ok("Forms retrieved successfully", forms));
     }
+
+    // get all question by form id
+    [HttpGet]
+    [Route("api/gpa/forms/{formId:int}/questions")]
+    [Authorize(Roles = "admin, sro, student")]
+    public IActionResult GetQuestionsByFormId(int formId)
+    {
+        var questions = _context.Questions
+            .Include(q => q.Forms)
+            .Where(q => q.Forms.Any(f => f.Id == formId))
+            .Select(q => new QuestionResponse()
+            {
+                Id = q.Id, Content = q.Content
+            }).ToList();
+        return Ok(CustomResponse.Ok("Questions retrieved successfully", questions));
+    }
+    
 }
