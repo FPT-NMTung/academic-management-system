@@ -45,5 +45,21 @@ public class GpaController : ControllerBase
             }).ToList();
         return Ok(CustomResponse.Ok("Questions retrieved successfully", questions));
     }
-    
+
+    // get all answer by question id
+    [HttpGet]
+    [Route("api/gpa/forms/{formId:int}/questions/{questionId:int}/answers")]
+    [Authorize(Roles = "admin, sro, student")]
+    public IActionResult GetAnswersByQuestionId(int formId, int questionId)
+    {
+        var answers = _context.Answers
+            .Include(a => a.Question)
+            .Include(a => a.Question.Forms)
+            .Where(a => a.Question.Forms.Any(f => f.Id == formId) && a.Question.Id == questionId)
+            .Select(a => new AnswerResponse()
+            {
+                Id = a.Id, QuestionId = a.QuestionId, AnswerNo = a.AnswerNo, Content = a.Content
+            }).ToList();
+        return Ok(CustomResponse.Ok("Answers retrieved successfully", answers));
+    }
 }
