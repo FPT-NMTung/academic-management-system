@@ -9,22 +9,21 @@ import {
   Spacer,
   Table,
   Text,
-} from '@nextui-org/react';
-import classes from './DetailClass.module.css';
-import { FaCloudDownloadAlt, FaCloudUploadAlt } from 'react-icons/fa';
-import { IoArrowBackCircle } from 'react-icons/io5';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import FetchApi from '../../../../apis/FetchApi';
-import { ManageClassApis } from '../../../../apis/ListApi';
-import { Descriptions, Skeleton } from 'antd';
-import toast from 'react-hot-toast';
-import { Fragment } from 'react';
-import { Upload } from 'antd';
-import { FcFile } from 'react-icons/fc';
-import { ErrorCodeApi } from '../../../../apis/ErrorCodeApi';
-import { RiEyeFill } from 'react-icons/ri';
-import { MdDelete, MdPersonAdd, MdSave } from 'react-icons/md';
+} from "@nextui-org/react";
+import classes from "./DetailClass.module.css";
+import { FaCloudDownloadAlt, FaCloudUploadAlt } from "react-icons/fa";
+import { IoArrowBackCircle } from "react-icons/io5";
+import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import FetchApi from "../../../../apis/FetchApi";
+import { ManageClassApis,ManageStudentApis } from "../../../../apis/ListApi";
+import { Descriptions, Skeleton, Form, Select, Upload,Input } from "antd";
+import toast from "react-hot-toast";
+import { Fragment } from "react";
+import { FcFile } from "react-icons/fc";
+import { ErrorCodeApi } from "../../../../apis/ErrorCodeApi";
+import { RiEyeFill } from "react-icons/ri";
+import { MdDelete, MdPersonAdd, MdSave } from "react-icons/md";
 
 const renderGender = (id) => {
   if (id === 1) {
@@ -58,10 +57,26 @@ const DetailClass = () => {
   const [dataClass, setDataClass] = useState(undefined);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [listStudent, setListStudent] = useState(undefined);
-
+  const [isOpenModalMerge, setIsOpenModalMerge] = useState(false);
+  const [form] = Form.useForm();
   const navigate = useNavigate();
+  const [currentClass, setCurrentClass] = useState(null);
+  const [listClassToMerge, setListClassToMerge] = useState([]);
+  const [messageFailed, setMessageFailed] = useState(undefined);
+
   const { id } = useParams();
 
+  // const getCurrentClass = () => {
+  //   // setIsLoading(true);
+  //   FetchApi(ManageStudentApis.getCurrentClasss, null, null, [`${id}`])
+  //     .then((res) => {
+  //       setCurrentClass(res.data.name);
+  //       // setIsLoading(false);
+  //     })
+  //     .catch(() => {
+  //       navigate("/404");
+  //     });
+  // };
   const renderStatus = (id) => {
     if (id === 1) {
       return (
@@ -87,10 +102,17 @@ const DetailClass = () => {
           Hủy
         </Badge>
       );
-    } else {
+    } 
+    else if (id === 5) {
       return (
-        <Badge variant="flat" color="primary">
+        <Badge variant="flat" color="default">
           Chưa lên lịch
+        </Badge>
+      );
+  } else {
+      return (
+        <Badge variant="flat" color="success">
+          Đã ghép
         </Badge>
       );
     }
@@ -102,7 +124,7 @@ const DetailClass = () => {
         setDataClass(res.data);
       })
       .catch((err) => {
-        navigate('/404');
+        navigate("/404");
       });
   };
 
@@ -113,7 +135,7 @@ const DetailClass = () => {
         setListStudent(res.data);
       })
       .catch((err) => {
-        toast.error('Lỗi lấy danh sách học viên');
+        toast.error("Lỗi lấy danh sách học viên");
       });
   };
 
@@ -121,39 +143,50 @@ const DetailClass = () => {
     toast.promise(
       FetchApi(ManageClassApis.downloadTemplate, null, null, null),
       {
-        loading: 'Đang tải xuống...',
+        loading: "Đang tải xuống...",
         success: (blob) => {
           const url = window.URL.createObjectURL(new Blob([blob]));
-          const link = document.createElement('a');
+          const link = document.createElement("a");
           link.href = url;
-          link.setAttribute('download', 'template.xlsx');
+          link.setAttribute("download", "template.xlsx");
           document.body.appendChild(link);
           link.click();
           link.parentNode.removeChild(link);
 
-          return 'Tải xuống thành công';
+          return "Tải xuống thành công";
         },
-        error: 'Tải xuống thất bại',
+        error: "Tải xuống thất bại",
       }
     );
   };
-
+  const getAllClassToMerge= () => {
+    FetchApi(ManageClassApis.getAvailableClassToMerge, null, null, 
+      [String(id)],
+    )
+      .then((res) => {
+        setListClassToMerge(res.data);
+        console.log(res.data);
+      })
+      .catch(() => {
+        navigate("/404");
+      });
+  };
   const handleOpenModal = () => {
     setIsOpenModal(true);
   };
 
   const handleUploadFile = (e) => {
     const a = new FormData();
-    a.append('file', e.file);
+    a.append("file", e.file);
 
     setIsOpenModal(false);
     toast.promise(
       FetchApi(ManageClassApis.importStudent, a, undefined, [String(id)]),
       {
-        loading: 'Đang tải lên...',
+        loading: "Đang tải lên...",
         success: (res) => {
           getAllStudent();
-          return 'Tải lên thành công';
+          return "Tải lên thành công";
         },
         error: (err) => {
           return ErrorCodeApi[err.type_error];
@@ -166,10 +199,10 @@ const DetailClass = () => {
     toast.promise(
       FetchApi(ManageClassApis.clearStudent, null, undefined, [String(id)]),
       {
-        loading: 'Đang xóa...',
+        loading: "Đang xóa...",
         success: (res) => {
           getAllStudent();
-          return 'Xóa thành công';
+          return "Xóa thành công";
         },
         error: (err) => {
           return ErrorCodeApi[err.type_error];
@@ -195,7 +228,7 @@ const DetailClass = () => {
     if (listStudent.find((item) => item.is_draft)) {
       return true;
     }
-
+                  
     return false;
   };
 
@@ -203,10 +236,10 @@ const DetailClass = () => {
     toast.promise(
       FetchApi(ManageClassApis.saveStudent, null, undefined, [String(id)]),
       {
-        loading: 'Đang lưu...',
+        loading: "Đang lưu...",
         success: (res) => {
           getAllStudent();
-          return 'Lưu thành công';
+          return "Lưu thành công";
         },
         error: (err) => {
           return ErrorCodeApi[err.type_error];
@@ -214,34 +247,139 @@ const DetailClass = () => {
       }
     );
   };
-
+  const handleOpenModalMerge = () => {
+    setIsOpenModalMerge(true);
+    getAllClassToMerge();
+    // getCurrentClass();
+  };
   const handleSelectOption = (key) => {
     switch (key) {
-      case 'add':
+      case "add":
         navigate(`/sro/manage-class/${id}/add`);
         break;
-      case 'import':
+      case "import":
         handleOpenModal();
         break;
-      case 'download':
+      case "download":
         handleDownload();
         break;
-      case 'clear':
+      case "clear":
         handleClear();
         break;
-      case 'save':
+      case "save":
         handleSave();
         break;
-      case 'schedule':
+      case "schedule":
         navigate(`/sro/manage-class/${id}/schedule`);
+        break;
+      case "merge":
+        handleOpenModalMerge();
         break;
       default:
         break;
     }
   };
+  const handleSubmitFormMergeClass = (e) => {
+    form.resetFields();
+    console.log(dataClass.id);
+    console.log(e.merge_class);
+    const body = {
+      first_class_id: dataClass.id,
+      second_class_id: e.merge_class,
+    };
+
+    toast.promise(
+      FetchApi(ManageClassApis.mergeClass, body, null, null),
+      {
+        loading: "Đang cập nhật...",
+        success: (res) => {
+          setIsOpenModalMerge(false);
+          getAllStudent();
+          getData();
+
+          return "Cập nhật thành công";
+        },
+        error: (err) => {
+          setMessageFailed(ErrorCodeApi[err.type_error]);
+          if (err?.type_error) {
+            return "Thất bại ! " + ErrorCodeApi[err.type_error];
+          }
+          return "Cập nhật thất bại";
+        },
+      }
+    );
+  };
 
   return (
     <Fragment>
+      <Modal
+        open={isOpenModalMerge}
+        width="500px"
+        blur
+        onClose={() => {
+          setIsOpenModalMerge(false);
+        }}
+      >
+        <Modal.Header>
+          <Text size={16} b>
+            Ghép lớp
+          </Text>
+        </Modal.Header>
+        <Modal.Body>
+          <Form
+            labelCol={{ span: 7 }}
+            wrapperCol={{ span: 12 }}
+            layout="horizontal"
+            onFinish={handleSubmitFormMergeClass}
+            form={form}
+          >
+            <Form.Item name={"current_class"} label={"Lớp hiện tại"}>
+              <Input disabled={true} placeholder={dataClass?.name}></Input>
+            </Form.Item>
+            <Form.Item
+              name={"merge_class"}
+              label={"Lớp ghép tới"}
+              rules={[
+                {
+                  required: true,
+                  message: "Hãy chọn lớp ghép đến",
+                },
+              ]}
+            >
+              <Select
+                placeholder="Chọn lớp ghép tới"
+                dropdownStyle={{ zIndex: 9999 }}
+              >
+                {listClassToMerge.map((e) => (
+                  <Select.Option key={e.id} value={e.id}>
+                    {e.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item wrapperCol={{ offset: 9, span: 99 }}>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "10px",
+                }}
+              >
+                <Button
+                  flat
+                  auto
+                  css={{
+                    width: "120px",
+                  }}
+                  type="primary"
+                  htmlType="submit"
+                >
+                  Cập nhật
+                </Button>
+              </div>
+            </Form.Item>
+          </Form>
+        </Modal.Body>
+      </Modal>
       <Modal
         open={isOpenModal}
         width="500px"
@@ -252,7 +390,7 @@ const DetailClass = () => {
       >
         <Modal.Body
           css={{
-            padding: '20px',
+            padding: "20px",
           }}
         >
           <Upload.Dragger
@@ -278,15 +416,15 @@ const DetailClass = () => {
         <Grid
           xs={3}
           css={{
-            display: 'flex',
-            flexDirection: 'column',
+            display: "flex",
+            flexDirection: "column",
             gap: 20,
           }}
         >
           <Card
             variant="bordered"
             css={{
-              height: 'fit-content',
+              height: "fit-content",
             }}
           >
             <Card.Header>
@@ -294,7 +432,7 @@ const DetailClass = () => {
                 p
                 b
                 size={16}
-                css={{ width: '100%', textAlign: 'center' }}
+                css={{ width: "100%", textAlign: "center" }}
                 color="error"
               >
                 Thông tin cơ bản
@@ -315,7 +453,7 @@ const DetailClass = () => {
                   <Descriptions.Item label="Ngày tạo">
                     <b>
                       {new Date(dataClass?.created_at).toLocaleDateString(
-                        'vi-VN'
+                        "vi-VN"
                       )}
                     </b>
                   </Descriptions.Item>
@@ -329,7 +467,7 @@ const DetailClass = () => {
           <Card
             variant="bordered"
             css={{
-              height: 'fit-content',
+              height: "fit-content",
             }}
           >
             <Card.Header>
@@ -337,7 +475,7 @@ const DetailClass = () => {
                 p
                 b
                 size={16}
-                css={{ width: '100%', textAlign: 'center' }}
+                css={{ width: "100%", textAlign: "center" }}
                 color="error"
               >
                 Thời gian và kế hoạch
@@ -356,39 +494,39 @@ const DetailClass = () => {
                   <Descriptions.Item label="Ngày bắt đầu (dự tính)">
                     <b>
                       {new Date(dataClass?.start_date).toLocaleDateString(
-                        'vi-VN'
+                        "vi-VN"
                       )}
                     </b>
                   </Descriptions.Item>
                   <Descriptions.Item label="Thời gian học">
                     <b>
-                      {dataClass?.class_hour_start?.split(':')[0] +
-                        ':' +
-                        dataClass?.class_hour_start?.split(':')[1]}
-                      {' => '}
-                      {dataClass?.class_hour_end?.split(':')[0] +
-                        ':' +
-                        dataClass?.class_hour_end?.split(':')[1]}
+                      {dataClass?.class_hour_start?.split(":")[0] +
+                        ":" +
+                        dataClass?.class_hour_start?.split(":")[1]}
+                      {" => "}
+                      {dataClass?.class_hour_end?.split(":")[0] +
+                        ":" +
+                        dataClass?.class_hour_end?.split(":")[1]}
                     </b>
                   </Descriptions.Item>
                   <Descriptions.Item label="Ngày học trong tuần">
                     <b>
                       {dataClass?.class_days?.id === 1
-                        ? 'Thứ 2, 4, 6'
-                        : 'Thứ 3, 5, 7'}
+                        ? "Thứ 2, 4, 6"
+                        : "Thứ 3, 5, 7"}
                     </b>
                   </Descriptions.Item>
                   <Descriptions.Item label="Ngày hoàn thành (dự tính)">
                     <b>
                       {new Date(dataClass?.completion_date).toLocaleDateString(
-                        'vi-VN'
+                        "vi-VN"
                       )}
                     </b>
                   </Descriptions.Item>
                   <Descriptions.Item label="Ngày tốt nghiệp (dự tính)">
                     <b>
                       {new Date(dataClass?.graduation_date).toLocaleDateString(
-                        'vi-VN'
+                        "vi-VN"
                       )}
                     </b>
                   </Descriptions.Item>
@@ -397,7 +535,7 @@ const DetailClass = () => {
             </Card.Body>
           </Card>
         </Grid>
-        <Grid xs={9} direction={'column'}>
+        <Grid xs={9} direction={"column"}>
           <Card variant="bordered">
             <Card.Body
               css={{
@@ -410,9 +548,9 @@ const DetailClass = () => {
                     flat
                     auto
                     icon={<IoArrowBackCircle size={20} />}
-                    color={'error'}
+                    color={"error"}
                     onPress={() => {
-                      navigate('/sro/manage-class');
+                      navigate("/sro/manage-class");
                     }}
                   >
                     Trở về
@@ -420,7 +558,7 @@ const DetailClass = () => {
                 </Grid>
                 <Grid xs={4} justify="center">
                   {isDraft() && (
-                    <Badge variant={'flat'} color="warning" size="md">
+                    <Badge variant={"flat"} color="warning" size="md">
                       Danh sách dạng bản nháp
                     </Badge>
                   )}
@@ -434,7 +572,7 @@ const DetailClass = () => {
                       onAction={handleSelectOption}
                       color="secondary"
                       aria-label="Actions"
-                      css={{ $$dropdownMenuWidth: '340px' }}
+                      css={{ $$dropdownMenuWidth: "340px" }}
                     >
                       <Dropdown.Section title="Cơ bản">
                         {isDraft() && (
@@ -442,7 +580,7 @@ const DetailClass = () => {
                             key="add"
                             description="Thêm học viên thủ công"
                             icon={<MdPersonAdd />}
-                            color={'success'}
+                            color={"success"}
                           >
                             Thêm học viên
                           </Dropdown.Item>
@@ -452,7 +590,7 @@ const DetailClass = () => {
                             key="import"
                             description="Tải lên danh sách học viên"
                             icon={<FaCloudUploadAlt />}
-                            color={'success'}
+                            color={"success"}
                           >
                             Import
                           </Dropdown.Item>
@@ -462,7 +600,7 @@ const DetailClass = () => {
                             key="download"
                             description="Tải xuống file mẫu"
                             icon={<FaCloudDownloadAlt />}
-                            color={'primary'}
+                            color={"primary"}
                           >
                             Download file mẫu
                           </Dropdown.Item>
@@ -472,7 +610,7 @@ const DetailClass = () => {
                             key="save"
                             description="Lưu danh sách học viên"
                             icon={<MdSave />}
-                            color={'warning'}
+                            color={"warning"}
                           >
                             Lưu
                           </Dropdown.Item>
@@ -482,7 +620,7 @@ const DetailClass = () => {
                             key="schedule"
                             description="Xem tất cả lịch học của lớp"
                             icon={<MdPersonAdd />}
-                            color={'success'}
+                            color={"success"}
                           >
                             Lịch học
                           </Dropdown.Item>
@@ -492,7 +630,7 @@ const DetailClass = () => {
                             key="merge"
                             description="Gộp lớp này với lớp khác"
                             icon={<MdPersonAdd />}
-                            color={'secondary'}
+                            color={"secondary"}
                           >
                             Gộp lớp học
                           </Dropdown.Item>
@@ -502,7 +640,7 @@ const DetailClass = () => {
                         <Dropdown.Section title="Nguy hiểm">
                           <Dropdown.Item
                             key="clear"
-                            color={'error'}
+                            color={"error"}
                             description="Xóa danh sách học viên"
                             icon={<MdDelete />}
                           >
@@ -519,17 +657,17 @@ const DetailClass = () => {
           <Spacer y={1} />
           <Card variant="bordered">
             <Card.Header>
-              <Text p b size={14} css={{ width: '100%', textAlign: 'center' }}>
+              <Text p b size={14} css={{ width: "100%", textAlign: "center" }}>
                 Danh sách học viên
               </Text>
             </Card.Header>
             {listStudent === undefined && (
               <div
                 style={{
-                  height: '400px',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
+                  height: "400px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
                 <Loading />
@@ -538,17 +676,17 @@ const DetailClass = () => {
             {listStudent !== undefined && listStudent.length === 0 && (
               <div
                 style={{
-                  height: '400px',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
+                  height: "400px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
                 <Text
                   i
                   p
                   size={14}
-                  css={{ width: '100%', textAlign: 'center' }}
+                  css={{ width: "100%", textAlign: "center" }}
                 >
                   Không có dữ liệu học viên trong lớp học này
                 </Text>
@@ -570,10 +708,10 @@ const DetailClass = () => {
                     <Table.Row key={index}>
                       <Table.Cell>{item.enroll_number}</Table.Cell>
                       <Table.Cell>
-                        {item.first_name + ' ' + item.last_name}
+                        {item.first_name + " " + item.last_name}
                       </Table.Cell>
                       <Table.Cell>
-                        {new Date(item.birthday).toLocaleDateString('vi-VN')}
+                        {new Date(item.birthday).toLocaleDateString("vi-VN")}
                       </Table.Cell>
                       <Table.Cell>{item.email}</Table.Cell>
                       <Table.Cell>{item.email_organization}</Table.Cell>
@@ -582,7 +720,7 @@ const DetailClass = () => {
                         <RiEyeFill
                           size={20}
                           color="5EA2EF"
-                          style={{ cursor: 'pointer' }}
+                          style={{ cursor: "pointer" }}
                           onClick={() => {
                             navigate(`/sro/manage/student/${item.user_id}`);
                           }}

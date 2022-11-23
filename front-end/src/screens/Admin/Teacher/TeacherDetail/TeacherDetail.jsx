@@ -13,7 +13,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Descriptions, Form, Input, Select, Spin, Tag } from 'antd';
 import { useState, useEffect, Fragment } from 'react';
 import { AiFillPhone } from 'react-icons/ai';
-import { MdEmail } from 'react-icons/md';
+import { MdEmail, MdModeEdit } from 'react-icons/md';
 import { HiOfficeBuilding } from 'react-icons/hi';
 import FetchApi from '../../../../apis/FetchApi';
 import { ManageSkillApis, ManageTeacherApis } from '../../../../apis/ListApi';
@@ -22,6 +22,7 @@ import WomanImage from '../../../../images/3d-fluency-businesswoman-1.png';
 import { RiSettingsFill } from 'react-icons/ri';
 import toast from 'react-hot-toast';
 import { Validater } from '../../../../validater/Validater';
+import ChangeAvatar from '../../../../components/ChangeAvatar/ChangeAvatar';
 
 const gender = {
   1: 'Nam',
@@ -36,6 +37,7 @@ const TeacherDetail = () => {
   const [isEditSkill, setIsEditSkill] = useState(false);
   const [listSkill, setListSkill] = useState(undefined);
   const [cloneListSkill, setCloneListSkill] = useState(undefined);
+  const [openChangeAvatar, setOpenChangeAvatar] = useState(false);
 
   const [form] = Form.useForm();
 
@@ -142,16 +144,24 @@ const TeacherDetail = () => {
                   {dataUser.avatar && (
                     <img className={classes.avatar} src={dataUser.avatar} />
                   )}
-                  {!dataUser.avatar && (
-                    <img
-                      className={classes.avatarMini}
-                      src={
-                        dataUser.gender.id === 1
-                          ? ManImage
-                          : dataUser.gender.id === 2
-                          ? WomanImage
-                          : ''
-                      }
+                  <div
+                    className={classes.buttonEdit}
+                    onClick={() => {
+                      setOpenChangeAvatar(true);
+                    }}
+                  >
+                    <MdModeEdit />
+                  </div>
+                  {openChangeAvatar && (
+                    <ChangeAvatar
+                      open={openChangeAvatar}
+                      userId={id}
+                      onSuccess={({ reload }) => {
+                        setOpenChangeAvatar(false);
+                        if (reload) {
+                          getDataUser();
+                        }
+                      }}
                     />
                   )}
                 </div>
@@ -276,7 +286,7 @@ const TeacherDetail = () => {
                           <Form.Item
                             style={{
                               width: 'calc(60% - 16px)',
-                              marginBottom: '0'
+                              marginBottom: '0',
                             }}
                             rules={[
                               {

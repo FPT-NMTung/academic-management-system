@@ -30,6 +30,8 @@ import ManageSchedule from './screens/Sro/Manage Class/Schedule/ManageSchedule';
 import ScheduleDetail from './screens/Sro/Manage Class/ScheduleDetail/ScheduleDetail';
 import ScheduleEmpty from './screens/Sro/Manage Class/ScheduleEmpty/ScheduleEmpty';
 import ManageDayOff from './screens/Sro/DayOff/ManageDayOff';
+import ManageTeacher from './screens/Sro/Teacher/ManageTeacher';
+import TeacherInfo from './screens/Sro/Teacher/TeacherInfo/TeacherInfo';
 
 const App = () => {
   return (
@@ -67,6 +69,8 @@ const App = () => {
         <Route path="/sro/manage-class/:id/add" element={<AddStudentToClass />} />
         {/* <Route path="/sro/manage/student/:id/update" element={<p>grade</p>} /> */}
         <Route path="/sro/manage/day-off" element={<ManageDayOff />} />
+        <Route path="/sro/manage/teacher" element={<ManageTeacher/>} />
+        <Route path="/sro/manage/teacher/:id" element={<TeacherInfo/>} />
       </Route>
 
       {/* Routers for role admin */}

@@ -358,6 +358,16 @@ export const UserApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  changeAvatarForAdmin: {
+    url: 'api/admin/users/{0}/avatar',
+    method: 'POST',
+    contextType: 'application/json',
+  },
+  changeAvatarForSro: {
+    url: 'api/sro/users/{0}/avatar',
+    method: 'POST',
+    contextType: 'application/json',
+  },
 };
 
 export const GradeType = {
@@ -384,6 +394,11 @@ export const GradeModuleSemesterApis = {
 export const ManageClassApis = {
   searchClass: {
     url: 'api/classes/search',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getAllClass: {
+    url: 'api/classes',
     method: 'GET',
     contextType: 'application/json',
   },
@@ -438,6 +453,18 @@ export const ManageClassApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  mergeClass: {
+    url: 'api/classes/merge',
+    method: 'PUT',
+    contextType: 'application/json',
+  },
+  getAvailableClassToMerge: {
+    url: 'api/classes/{0}/available-to-merge',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+
+
 };
 
 export const ManageScheduleApis = {
