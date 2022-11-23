@@ -1,6 +1,6 @@
 import AvatarEditor from 'react-avatar-editor';
 import classes from './ChangeAvatar.module.css';
-import { Modal, Text } from '@nextui-org/react';
+import { Button as ButtonNextUI, Modal, Text } from '@nextui-org/react';
 import { Fragment, useRef, useState } from 'react';
 import { Button, Slider, Upload } from 'antd';
 import FetchApi from '../../apis/FetchApi';
@@ -87,35 +87,52 @@ const ChangeAvatar = ({ userId, open, onSuccess }) => {
             disabled={!isHaveFile}
           />
         </div>
-        <Upload
-          fileList={fileList}
-          showUploadList={false}
-          multiple={false}
-          beforeUpload={(file) => {
-            const isImage =
-              file.type === 'image/jpeg' || file.type === 'image/png';
-            if (!isImage) {
-              toast.error(`${file.name} không phải là ảnh`);
-            }
-            return isImage || Upload.LIST_IGNORE;
-          }}
-          onChange={(info) => {
-            setFile(info.file.originFileObj);
-          }}
-        >
-          <Button auto color={'warning'} flat icon={<IoImage />}>
-            Tải ảnh lên
-          </Button>
-        </Upload>
-        <Button
-          onClick={handleUpload}
-          auto
-          color={'default'}
-          flat
-          icon={<IoImage />}
-        >
-          Xác nhận
-        </Button>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+        }}>
+          <Upload
+            fileList={fileList}
+            showUploadList={false}
+            multiple={false}
+            beforeUpload={(file) => {
+              const isImage =
+                file.type === 'image/jpeg' || file.type === 'image/png';
+              if (!isImage) {
+                toast.error(`${file.name} không phải là ảnh`);
+              }
+              return isImage || Upload.LIST_IGNORE;
+            }}
+            onChange={(info) => {
+              setFile(info.file.originFileObj);
+            }}
+          >
+            <Button
+              auto
+              color={'warning'}
+              flat
+              style={{
+                borderRadius: '10px',
+                margin: '0 auto',
+              }}
+            >
+              Tải ảnh lên
+            </Button>
+          </Upload>
+        </div>
+        <div>
+          <ButtonNextUI
+            css={{
+              margin: '0 auto',
+            }}
+            onClick={handleUpload}
+            auto
+            color={'success'}
+            flat
+          >
+            Lưu hình ảnh
+          </ButtonNextUI>
+        </div>
       </Modal.Body>
     </Modal>
   );
