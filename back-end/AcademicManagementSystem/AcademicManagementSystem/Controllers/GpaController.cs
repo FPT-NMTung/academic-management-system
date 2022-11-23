@@ -83,8 +83,13 @@ public class GpaController : ControllerBase
             .Where(a => a.Question.Forms.Any(f => f.Id == formId) && a.Question.Id == questionId)
             .Select(a => new AnswerResponse()
             {
-                Id = a.Id, QuestionId = a.QuestionId, AnswerNo = a.AnswerNo, Content = a.Content
-            }).ToList();
+                Id = a.Id, QuestionId = a.QuestionId, AnswerNo = a.AnswerNo, Content = a.Content,
+                Question = new QuestionResponse()
+                {
+                    Id = a.Question.Id, Content = a.Question.Content
+                }
+            })
+            .ToList();
         return Ok(CustomResponse.Ok("Answers retrieved successfully", answers));
     }
 }

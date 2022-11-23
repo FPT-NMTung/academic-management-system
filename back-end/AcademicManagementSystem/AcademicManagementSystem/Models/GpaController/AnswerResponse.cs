@@ -15,4 +15,7 @@ public class AnswerResponse
     
     [JsonPropertyName("content")]
     public string Content { get; set; }
+    
+    [JsonPropertyName("question")]
+    public QuestionResponse Question { get; set; }
 }
