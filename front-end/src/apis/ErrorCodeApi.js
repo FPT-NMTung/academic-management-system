@@ -160,6 +160,7 @@ export const ErrorCodeApi = {
   "class-error-0070": "Lớp học đã tồn tại",
   "class-error-0071": "Thông tin lớp học không hợp lệ",
   "class-error-0072": "Thời gian bắt đầu nhỏ hơn thời gian kết thúc và phải từ 1 - 4 tiếng",
+  "class-error-0072-1":"Giờ học phải từ 8 giờ sáng đến 10 giờ tối",
   "class-error-0073": "Ngày nhập học không thể nhỏ hơn ngày hiện tại",
   "class-error-0074": "Ngày hoàn thành không thể bằng hoặc nhỏ hơn ngày nhập học",
   "class-error-0075": "Ngày tốt nghiệp không thể nhỏ hơn ngày hoàn thành",
@@ -252,6 +253,9 @@ export const ErrorCodeApi = {
   "class-schedule-error-0028": "Lịch học không tồn tại",
   "class-schedule-error-0029": "Lỗi khi xóa lịch học",
   "class-schedule-error-0030": "Không thể bắt đầu lịch học mới khi lịch học trước đó chưa kết thúc",
+
+  "class-error-0080": "Không có học viên nào trong Lớp hiện tại",
+  "class-error-0081": "Không có học viên nào trong Lớp cần ghép",
 
   "day-off-error-0001": "Ngày nghỉ đã có trong hệ thống",
   "day-off-error-0002": "Ngày nghỉ phải từ ngày hiện tại trở đi",
