@@ -1639,11 +1639,11 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (listStudentsInSecondClass.Count == 0)
-        {
-            var error = ErrorDescription.Error["E1135"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
+        // if (listStudentsInSecondClass.Count == 0)
+        // {
+        //     var error = ErrorDescription.Error["E1135"];
+        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        // }
 
         if (listStudentsInFirstClass.Count + listStudentsInSecondClass.Count > MaxNumberStudentInClass)
         {
@@ -1751,11 +1751,11 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (listStudentsInSecondClass.Count == 0)
-        {
-            var error = ErrorDescription.Error["E1135"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
+        // if (listStudentsInSecondClass.Count == 0)
+        // {
+        //     var error = ErrorDescription.Error["E1135"];
+        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        // }
 
         if (listStudentsInFirstClass.Count + listStudentsInSecondClass.Count > MaxNumberStudentInClass)
         {
