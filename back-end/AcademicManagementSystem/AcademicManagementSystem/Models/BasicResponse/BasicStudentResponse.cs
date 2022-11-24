@@ -18,4 +18,6 @@ public class BasicStudentResponse
     
     [JsonPropertyName("last_name")]
     public string LastName { get; set; }
+    
+    public string? Avatar { get; set; }
 }
