@@ -151,7 +151,7 @@ public class ClassScheduleController : ControllerBase
         return Ok(CustomResponse.Ok("Get detail schedule successfully", res));
     }
 
-    // get class schedules of student, include all session and attendances information
+    // get class schedules of student, include all session and attendance information of this student
     [HttpGet]
     [Route("api/schedules/students")]
     [Authorize(Roles = "student")]
@@ -225,7 +225,7 @@ public class ClassScheduleController : ControllerBase
                         }
                     },
                     SessionType = s.SessionType.Id,
-                    Attendance = s.Attendances.Select(a => new StudentAttendanceResponse()
+                    Attendances = s.Attendances.Select(a => new StudentAttendanceResponse()
                     {
                         Student = new BasicStudentResponse()
                         {
@@ -241,13 +241,112 @@ public class ClassScheduleController : ControllerBase
                             Value = a.AttendanceStatus.Value
                         },
                         Note = a.Note
-                    }).FirstOrDefault(a => a.Student.UserId == userId)
+                    }).Where(a => a.Student.UserId == userId).ToList()
                 }).ToList(),
                 CreatedAt = cs.CreatedAt,
                 UpdatedAt = cs.UpdatedAt,
             });
 
         return Ok(CustomResponse.Ok("Get schedules for student successfully", classSchedule));
+    }
+
+    // get class schedules for teacher, include all session and attendances information of students
+    [HttpGet]
+    [Route("api/schedules/teachers")]
+    [Authorize(Roles = "teacher")]
+    public IActionResult GetAllSchedulesOfTeacher()
+    {
+        var userId = Convert.ToInt32(_userService.GetUserId());
+
+        var classSchedule = _context.ClassSchedules
+            .Include(cs => cs.Class)
+            .Include(cs => cs.Class.StudentsClasses)
+            .Include(cs => cs.Teacher)
+            .ThenInclude(t => t.User)
+            .Include(cs => cs.ClassStatus)
+            .Include(cs => cs.ClassDays)
+            .Include(cs => cs.Module)
+            .Include(cs => cs.Sessions)
+            .ThenInclude(cs => cs.SessionType)
+            .Include(s => s.Sessions)
+            .ThenInclude(r => r.Room)
+            .ThenInclude(r => r.RoomType)
+            .Where(cs => cs.TeacherId == userId)
+            .Select(cs => new ClassScheduleForStudentResponse()
+            {
+                Id = cs.Id,
+                ClassId = cs.ClassId,
+                Duration = cs.Duration,
+                StartDate = cs.StartDate,
+                EndDate = cs.EndDate,
+                Teacher = new BasicTeacherInformationResponse()
+                {
+                    Id = cs.Teacher.UserId,
+                    LastName = cs.Teacher.User.LastName,
+                    FirstName = cs.Teacher.User.FirstName,
+                    EmailOrganization = cs.Teacher.User.EmailOrganization,
+                },
+                ClassStatus = new ClassStatusResponse()
+                {
+                    Id = cs.ClassStatus.Id,
+                    Value = cs.ClassStatus.Value,
+                },
+                ModuleId = cs.Module.Id,
+                ModuleName = cs.Module.ModuleName,
+                ClassDays = new ClassDaysResponse()
+                {
+                    Id = cs.ClassDays.Id,
+                    Value = cs.ClassDays.Value,
+                },
+                ClassHourStart = cs.ClassHourStart,
+                ClassHourEnd = cs.ClassHourEnd,
+                TheoryRoomId = cs.TheoryRoomId,
+                LabRoomId = cs.LabRoomId,
+                ExamRoomId = cs.ExamRoomId,
+                WorkingTimeId = cs.WorkingTimeId,
+                Note = cs.Note,
+                Sessions = cs.Sessions.Select(s => new SessionWithAttendanceResponse()
+                {
+                    Id = s.Id,
+                    Title = s.Title,
+                    LearningDate = s.LearningDate,
+                    StartTime = s.StartTime,
+                    EndTime = s.EndTime,
+                    Room = new RoomResponse()
+                    {
+                        Id = s.Room.Id,
+                        Name = s.Room.Name,
+                        Capacity = s.Room.Capacity,
+                        Room = new RoomTypeResponse()
+                        {
+                            Id = s.Room.RoomType.Id,
+                            Value = s.Room.RoomType.Value,
+                        }
+                    },
+                    SessionType = s.SessionType.Id,
+                    Attendances = s.Attendances.Select(a => new StudentAttendanceResponse()
+                    {
+                        Student = new BasicStudentResponse()
+                        {
+                            UserId = a.StudentId,
+                            EnrollNumber = a.Student.EnrollNumber,
+                            EmailOrganization = a.Student.User.EmailOrganization,
+                            FirstName = a.Student.User.FirstName,
+                            LastName = a.Student.User.LastName
+                        },
+                        AttendanceStatus = new AttendanceStatusResponse()
+                        {
+                            Id = a.AttendanceStatus.Id,
+                            Value = a.AttendanceStatus.Value
+                        },
+                        Note = a.Note
+                    }).ToList()
+                }).ToList(),
+                CreatedAt = cs.CreatedAt,
+                UpdatedAt = cs.UpdatedAt,
+            });
+
+        return Ok(CustomResponse.Ok("Get schedules for teacher successfully", classSchedule));
     }
 
     [HttpPost]
