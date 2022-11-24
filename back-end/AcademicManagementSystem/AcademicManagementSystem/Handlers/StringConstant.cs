@@ -94,6 +94,4 @@ public struct StringConstant
     // 9 or 12 digits
     public const string RegexCitizenIdCardNo = @"^(\d{9}|\d{12})$";
 
-    public const string RegexEmail =
-        @"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
 }
