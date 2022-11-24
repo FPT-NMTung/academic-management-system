@@ -317,7 +317,7 @@ const SroCreate = ({ modeUpdate }) => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            'Trường này không được để trống'
+                            'Trường phải từ 1 đến 255 ký tự'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
@@ -353,7 +353,7 @@ const SroCreate = ({ modeUpdate }) => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            'Trường này không được để trống'
+                            'Trường phải từ 1 đến 255 ký tự'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
@@ -607,7 +607,7 @@ const SroCreate = ({ modeUpdate }) => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            'Trường này không được để trống'
+                            'Trường phải từ 1 đến 255 ký tự'
                           );
                         }
                         if (
