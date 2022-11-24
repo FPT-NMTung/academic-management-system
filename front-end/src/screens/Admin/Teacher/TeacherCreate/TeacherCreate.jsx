@@ -375,7 +375,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            "Trường này không được để trống"
+                            "Trường phải từ 1 đến 255 ký tự"
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
@@ -411,7 +411,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            "Trường này không được để trống"
+                            "Trường phải từ 1 đến 255 ký tự"
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
@@ -664,7 +664,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            "Trường này không được để trống"
+                            "Trường phải từ 1 đến 255 ký tự"
                           );
                         }
                         if (
@@ -876,6 +876,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                   ]}
                 >
                   <InputNumber
+                    min={0}
                     placeholder="Mức lương"
                     formatter={(value) =>
                       `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")

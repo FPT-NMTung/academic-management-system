@@ -294,7 +294,7 @@ const TeacherDetail = () => {
                                 validator: (_, value) => {
                                   if (value === null || value === undefined) {
                                     return Promise.reject(
-                                      'Trường này không được để trống'
+                                      'Trường phải từ 1 đến 255 ký tự'
                                     );
                                   }
                                   if (

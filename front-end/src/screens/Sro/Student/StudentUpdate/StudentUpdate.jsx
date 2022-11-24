@@ -323,7 +323,7 @@ const StudentUpdate = () => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            'Trường này không được để trống'
+                            'Trường phải từ 1 đến 255 ký tự'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
@@ -359,7 +359,7 @@ const StudentUpdate = () => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            'Trường này không được để trống'
+                            'Trường phải từ 1 đến 255 ký tự'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
@@ -666,7 +666,7 @@ const StudentUpdate = () => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            'Trường này không được để trống'
+                            'Trường phải từ 1 đến 255 ký tự'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
@@ -723,7 +723,7 @@ const StudentUpdate = () => {
                       validator: (_, value) => {
                         if (value === null || value === undefined) {
                           return Promise.reject(
-                            'Trường này không được để trống'
+                            'Trường phải từ 1 đến 255 ký tự'
                           );
                         }
                         if (Validater.isNotHumanName(value.trim())) {
@@ -1150,9 +1150,16 @@ const StudentUpdate = () => {
                     // },
                   ]}
                 >
-                  <Input placeholder="5000000" />
+                  <InputNumber
+                    min={0}
+                    placeholder="5000000"
+                    formatter={(value) =>
+                      `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                    }
+                    parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
+                    style={{ width: '100%' }}
+                  />
                 </Form.Item>
-
                 <div></div>
               </div>
               <Spacer y={0.1} />
@@ -1400,7 +1407,7 @@ const StudentUpdate = () => {
                     required: true,
                     validator: (_, value) => {
                       if (value === null || value === undefined) {
-                        return Promise.reject('Trường này không được để trống');
+                        return Promise.reject('Trường phải từ 1 đến 255 ký tự');
                       }
                       if (
                         Validater.isContaintSpecialCharacterForName(
