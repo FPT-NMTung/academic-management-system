@@ -153,7 +153,7 @@ const CenterUpdate = ({ data, onUpdateSuccess }) => {
                 required: true,
                 validator: (_, value) => {
                   if (value === null || value === undefined) {
-                    return Promise.reject('Trường này không được để trống');
+                    return Promise.reject('Trường phải từ 1 đến 100 ký tự');
                   }
                   if (
                     Validater.isContaintSpecialCharacterForName(value.trim())
