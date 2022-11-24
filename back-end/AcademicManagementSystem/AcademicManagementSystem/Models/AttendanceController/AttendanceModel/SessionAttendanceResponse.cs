@@ -27,7 +27,7 @@ public class StudentAttendanceResponse
     public BasicStudentResponse Student { get; set; }
     
     [JsonPropertyName("attendance_status")]
-    public AttendanceStatusResponse AttendanceStatus { get; set; }
+    public AttendanceStatusResponse? AttendanceStatus { get; set; }
     
     [JsonPropertyName("note")]
     public string? Note { get; set; }
