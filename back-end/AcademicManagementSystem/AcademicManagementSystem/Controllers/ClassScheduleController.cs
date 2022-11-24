@@ -225,22 +225,25 @@ public class ClassScheduleController : ControllerBase
                         }
                     },
                     SessionType = s.SessionType.Id,
-                    Attendances = s.Attendances.Select(a => new StudentAttendanceResponse()
+                    Attendances = s.ClassSchedule.Class.StudentsClasses.Select(sc => new StudentAttendanceResponse()
                     {
                         Student = new BasicStudentResponse()
                         {
-                            UserId = a.StudentId,
-                            EnrollNumber = a.Student.EnrollNumber,
-                            EmailOrganization = a.Student.User.EmailOrganization,
-                            FirstName = a.Student.User.FirstName,
-                            LastName = a.Student.User.LastName
+                            UserId = sc.StudentId,
+                            EnrollNumber = sc.Student.EnrollNumber,
+                            EmailOrganization = sc.Student.User.EmailOrganization,
+                            FirstName = sc.Student.User.FirstName,
+                            LastName = sc.Student.User.LastName,
+                            Avatar = sc.Student.User.Avatar
                         },
-                        AttendanceStatus = new AttendanceStatusResponse()
-                        {
-                            Id = a.AttendanceStatus.Id,
-                            Value = a.AttendanceStatus.Value
-                        },
-                        Note = a.Note
+                        AttendanceStatus = s.Attendances.Where(a => a.StudentId == sc.StudentId)
+                            .Select(a => new AttendanceStatusResponse()
+                            {
+                                Id = a.AttendanceStatus.Id,
+                                Value = a.AttendanceStatus.Value
+                            }).FirstOrDefault(),
+                        Note = s.Attendances.Where(a => a.StudentId == sc.StudentId)
+                            .Select(a => a.Note).FirstOrDefault()
                     }).Where(a => a.Student.UserId == userId).ToList()
                 }).ToList(),
                 CreatedAt = cs.CreatedAt,
@@ -324,22 +327,25 @@ public class ClassScheduleController : ControllerBase
                         }
                     },
                     SessionType = s.SessionType.Id,
-                    Attendances = s.Attendances.Select(a => new StudentAttendanceResponse()
+                    Attendances = s.ClassSchedule.Class.StudentsClasses.Select(sc => new StudentAttendanceResponse()
                     {
                         Student = new BasicStudentResponse()
                         {
-                            UserId = a.StudentId,
-                            EnrollNumber = a.Student.EnrollNumber,
-                            EmailOrganization = a.Student.User.EmailOrganization,
-                            FirstName = a.Student.User.FirstName,
-                            LastName = a.Student.User.LastName
+                            UserId = sc.StudentId,
+                            EnrollNumber = sc.Student.EnrollNumber,
+                            EmailOrganization = sc.Student.User.EmailOrganization,
+                            FirstName = sc.Student.User.FirstName,
+                            LastName = sc.Student.User.LastName,
+                            Avatar = sc.Student.User.Avatar
                         },
-                        AttendanceStatus = new AttendanceStatusResponse()
-                        {
-                            Id = a.AttendanceStatus.Id,
-                            Value = a.AttendanceStatus.Value
-                        },
-                        Note = a.Note
+                        AttendanceStatus = s.Attendances.Where(a => a.StudentId == sc.StudentId)
+                            .Select(a => new AttendanceStatusResponse()
+                            {
+                                Id = a.AttendanceStatus.Id,
+                                Value = a.AttendanceStatus.Value
+                            }).FirstOrDefault(),
+                        Note = s.Attendances.Where(a => a.StudentId == sc.StudentId)
+                            .Select(a => a.Note).FirstOrDefault()
                     }).ToList()
                 }).ToList(),
                 CreatedAt = cs.CreatedAt,
