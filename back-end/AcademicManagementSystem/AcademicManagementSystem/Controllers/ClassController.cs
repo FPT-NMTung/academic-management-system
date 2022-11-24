@@ -33,6 +33,7 @@ public class ClassController : ControllerBase
     private const int RoleIdStudent = 4;
     private const int NotScheduleYet = 5;
     private const int MaxNumberStudentInClass = 100;
+    private const int StatusMerged = 6;
 
     public ClassController(AmsContext context, IUserService userService)
     {
@@ -1639,11 +1640,11 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (listStudentsInSecondClass.Count == 0)
-        {
-            var error = ErrorDescription.Error["E1135"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
+        // if (listStudentsInSecondClass.Count == 0)
+        // {
+        //     var error = ErrorDescription.Error["E1135"];
+        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        // }
 
         if (listStudentsInFirstClass.Count + listStudentsInSecondClass.Count > MaxNumberStudentInClass)
         {
@@ -1686,7 +1687,7 @@ public class ClassController : ControllerBase
         var firstClassChange = _context.Classes.FirstOrDefault(c => c.Id == id);
         if (firstClassChange != null)
         {
-            firstClassChange.ClassStatusId = 6;
+            firstClassChange.ClassStatusId = StatusMerged;
             firstClassChange.UpdatedAt = DateTime.Now;
         }
 
@@ -1695,6 +1696,14 @@ public class ClassController : ControllerBase
         {
             secondClassChange.UpdatedAt = DateTime.Now;
         }
+
+        // delete session and delete class schedule of first class
+        var listSessionOfFirstClass = _context.Sessions
+            .Include(s => s.ClassSchedule)
+            .Where(s => s.ClassSchedule.ClassId == id && s.ClassSchedule.StartDate.Date > DateTime.Now.Date)
+            .ToList();
+        _context.Sessions.RemoveRange(listSessionOfFirstClass);
+        _context.ClassSchedules.RemoveRange(listSessionOfFirstClass.Select(s => s.ClassSchedule));
 
         try
         {
@@ -1751,11 +1760,11 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (listStudentsInSecondClass.Count == 0)
-        {
-            var error = ErrorDescription.Error["E1135"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
+        // if (listStudentsInSecondClass.Count == 0)
+        // {
+        //     var error = ErrorDescription.Error["E1135"];
+        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        // }
 
         if (listStudentsInFirstClass.Count + listStudentsInSecondClass.Count > MaxNumberStudentInClass)
         {
@@ -1799,7 +1808,7 @@ public class ClassController : ControllerBase
         var firstClassChange = _context.Classes.FirstOrDefault(c => c.Id == request.FirstClassId);
         if (firstClassChange != null)
         {
-            firstClassChange.ClassStatusId = 6;
+            firstClassChange.ClassStatusId = StatusMerged;
             firstClassChange.UpdatedAt = DateTime.Now;
         }
 
@@ -1808,6 +1817,15 @@ public class ClassController : ControllerBase
         {
             secondClassChange.UpdatedAt = DateTime.Now;
         }
+
+        // delete session and delete class schedule of first class
+        var listSessionOfFirstClass = _context.Sessions
+            .Include(s => s.ClassSchedule)
+            .Where(s => s.ClassSchedule.ClassId == request.FirstClassId &&
+                        s.ClassSchedule.StartDate.Date > DateTime.Now.Date)
+            .ToList();
+        _context.Sessions.RemoveRange(listSessionOfFirstClass);
+        _context.ClassSchedules.RemoveRange(listSessionOfFirstClass.Select(s => s.ClassSchedule));
 
         try
         {
