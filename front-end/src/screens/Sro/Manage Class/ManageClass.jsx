@@ -126,17 +126,16 @@ const ManageClass = () => {
           Hủy
         </Badge>
       );
-    }
-      else if (id === 5) {
-        return (
-          <Badge variant="flat" color="default">
-            Chưa lên lịch
-          </Badge>
-        );
+    } else if (id === 5) {
+      return (
+        <Badge variant="flat" color="default">
+          Chưa lên lịch
+        </Badge>
+      );
     } else {
       return (
         <Badge variant="flat" color="success">
-         Đã ghép
+          Đã ghép
         </Badge>
       );
     }
@@ -280,8 +279,8 @@ const ManageClass = () => {
         <Card variant="bordered">
           <Card.Header>
             <Grid.Container>
-              <Grid sm={1}></Grid>
-              <Grid sm={10}>
+              <Grid sm={3}></Grid>
+              <Grid sm={6}>
                 <Text
                   b
                   size={14}
@@ -294,21 +293,30 @@ const ManageClass = () => {
                   Danh sách lớp học
                 </Text>
               </Grid>
-
-              <Grid sm={1}>
-                <Button
-                  flat
-                  auto
-                  css={{
-                    width: '100%',
-                  }}
-                  type="primary"
-                  onPress={() => {
-                    navigate('/sro/manage-class/create');
-                  }}
-                >
-                  + Tạo mới
-                </Button>
+              <Grid sm={3}>
+                <div className={classes.buttonControl}>
+                  <Button
+                    color={'secondary'}
+                    flat
+                    auto
+                    type="primary"
+                    onPress={() => {
+                      navigate('/sro/manage-class/progress');
+                    }}
+                  >
+                    Tiến độ học
+                  </Button>
+                  <Button
+                    flat
+                    auto
+                    type="primary"
+                    onPress={() => {
+                      navigate('/sro/manage-class/create');
+                    }}
+                  >
+                    + Tạo mới
+                  </Button>
+                </div>
               </Grid>
             </Grid.Container>
           </Card.Header>
