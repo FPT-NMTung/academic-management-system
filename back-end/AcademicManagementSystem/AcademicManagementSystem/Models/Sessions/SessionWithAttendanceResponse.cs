@@ -27,7 +27,7 @@ public class SessionWithAttendanceResponse
     [JsonPropertyName("session_type")]
     public int SessionType { get; set; }
     
-    [JsonPropertyName("attendance")]
-    public StudentAttendanceResponse? Attendance { get; set; }
+    [JsonPropertyName("attendances")]
+    public List<StudentAttendanceResponse> Attendances { get; set; }
 
 }
