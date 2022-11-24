@@ -3,12 +3,59 @@ import { useNavigate } from 'react-router-dom';
 import Timeline from 'react-calendar-timeline';
 import 'react-calendar-timeline/lib/Timeline.css';
 import moment from 'moment';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import FetchApi from '../../../../apis/FetchApi';
+import { ManageScheduleApis } from '../../../../apis/ListApi';
+import toast from 'react-hot-toast';
 
 const ProgressLearn = () => {
+  const [gettingData, setGettingData] = useState(false);
+  const [groups, setGroups] = useState([]);
+  const [schedule, setSchedule] = useState([]);
+
   const navigate = useNavigate();
 
+  const getProgressDate = () => {
+    setGettingData(true);
+
+    FetchApi(ManageScheduleApis.progress, null, null, null)
+      .then((res) => {
+        const data = res.data;
+        const temp = data.sort((a, b) => {
+          return new Date(a.class.created_at) - new Date(b.class.created_at);
+        }).map((item) => {
+          return {
+            id: item.class.id,
+            title: item.class.name,
+          };
+        });
+        const sc = data.map((item) => {
+          return item.schedule.map((s) => {
+            return {
+              id: s.id,
+              group: item.class.id,
+              title: s.module_name,
+              start_time: moment(s.start_date),
+              end_time: moment(s.end_date),
+            };
+          });
+        }).flat()
+        setSchedule(sc);
+        setGroups(temp);
+        setGettingData(false);
+      })
+      .catch((err) => {
+        toast.error('Lỗi tải dữ liệu');
+      });
+  };
+
+  useEffect(() => {
+    getProgressDate();
+  }, []);
+
   return (
-    <Card>
+    <Card variant='bordered'>
       <Card.Header>
         <Grid.Container>
           <Grid xs={4}>
@@ -33,52 +80,18 @@ const ProgressLearn = () => {
         </Grid.Container>
       </Card.Header>
       <Card.Body>
-        <Timeline
-          groups={[
-            {
-              id: 1,
-              title: 'group 1',
-            },
-            {
-              id: 2,
-              title: 'group 2',
-            },
-          ]}
-          items={[
-            {
-              id: 1,
-              group: 1,
-              title: 'item 1',
-              start_time: moment(),
-              end_time: moment().add(1, 'hour'),
-            },
-            {
-              id: 2,
-              group: 2,
-              title: 'item 2',
-              start_time: moment('2022-10-10'),
-              end_time: moment('2022-12-12'),
-            },
-            {
-              id: 4,
-              group: 2,
-              title: 'item 2',
-              start_time: moment('2022-12-14'),
-              end_time: moment('2023-02-12'),
-            },
-            {
-              id: 3,
-              group: 1,
-              title: 'item 3',
-              start_time: moment().add(2, 'hour'),
-              end_time: moment().add(3, 'hour'),
-            },
-          ]}
-          defaultTimeStart={moment().add(-6, 'month')}
-          defaultTimeEnd={moment().add(6, 'month')}
-          minZoom={30 * 24 * 60 * 60 * 1000}
-          maxZoom={3 * 365 * 24 * 60 * 60 * 1000}
-        />
+        {!gettingData && (
+          <Timeline
+            groups={groups}
+            items={schedule}
+            defaultTimeStart={moment().add(-6, 'month')}
+            defaultTimeEnd={moment().add(6, 'month')}
+            minZoom={30 * 24 * 60 * 60 * 1000}
+            maxZoom={3 * 365 * 24 * 60 * 60 * 1000}
+            canMove={false}
+            canResize={false}
+          />
+        )}
       </Card.Body>
     </Card>
   );

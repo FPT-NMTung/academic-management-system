@@ -487,6 +487,11 @@ export const ManageScheduleApis = {
     url: 'api/classes/{0}/schedules/{1}',
     method: 'DELETE',
     contextType: 'application/json',
+  },
+  progress: {
+    url: 'api/classes/progress',
+    method: 'GET',
+    contextType: 'application/json',
   }
 };
 
