@@ -550,3 +550,21 @@ export const ManageDayOffApis = {
     contextType: 'application/json',
   },
 }
+export const ManageGpa = {
+  getForm: {
+    url: 'api/gpa/forms',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getQuestionByFormID: {
+    url: 'api/gpa/forms/{0}/questions',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getAnswerByQuestionID: {
+    url: 'api/gpa/forms/{0}/questions/{1}/answers',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+ 
+}

@@ -508,12 +508,12 @@ public class SroController : ControllerBase
             return true;
         }
 
-        // if (!Regex.IsMatch(request.Email!, StringConstant.RegexEmail))
-        // {
-        //     var error = ErrorDescription.Error["E0031"];
-        //     actionResult1 = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        //     return true;
-        // }
+        if (!Regex.IsMatch(request.Email, StringConstant.RegexEmailCopilot))
+        {
+            var error = ErrorDescription.Error["E0031"];
+            actionResult1 = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
 
         if (IsEmailOrganizationExists(request.EmailOrganization, false, 0))
         {
@@ -537,11 +537,13 @@ public class SroController : ControllerBase
             return true;
         }
 
-        // if (!Regex.IsMatch(request.EmailOrganization!, StringConstant.RegexEmail))
-        // {
-        //     actionResult1 = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        //     return true;
-        // }
+        if (!Regex.IsMatch(request.EmailOrganization, StringConstant.RegexEmailCopilot))
+        {
+            var error = ErrorDescription.Error["E0032"];
+            actionResult1 = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;
+        }
+        
         actionResult1 = null!;
         return false;
     }
@@ -619,12 +621,12 @@ public class SroController : ControllerBase
             return true;
         }
 
-        // if (!Regex.IsMatch(request.Email!, StringConstant.RegexEmail))
-        // {
-        //     var error = ErrorDescription.Error["E0031"];
-        //     badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        //     return true;        
-        // }
+        if (!Regex.IsMatch(request.Email, StringConstant.RegexEmailCopilot))
+        {
+            var error = ErrorDescription.Error["E0031"];
+            badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;        
+        }
 
         if (IsEmailOrganizationExists(request.EmailOrganization, true, id))
         {
@@ -648,12 +650,12 @@ public class SroController : ControllerBase
             return true;
         }
 
-        // if (!Regex.IsMatch(request.EmailOrganization!, StringConstant.RegexEmail))
-        // {
-        //     var error = ErrorDescription.Error["E0032"];
-        //     badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        //     return true;   
-        // }
+        if (!Regex.IsMatch(request.EmailOrganization, StringConstant.RegexEmailCopilot))
+        {
+            var error = ErrorDescription.Error["E0032"];
+            badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            return true;   
+        }
         badRequestObjectResult = null!;
         return false;
     }
