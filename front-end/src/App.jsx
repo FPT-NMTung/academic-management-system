@@ -32,6 +32,8 @@ import ScheduleEmpty from './screens/Sro/Manage Class/ScheduleEmpty/ScheduleEmpt
 import ManageDayOff from './screens/Sro/DayOff/ManageDayOff';
 import ManageTeacher from './screens/Sro/Teacher/ManageTeacher';
 import TeacherInfo from './screens/Sro/Teacher/TeacherInfo/TeacherInfo';
+import FeedbackScreen from './screens/Student/Feedback/FeedbackScreen';
+import DoFeedback from './screens/Student/Feedback/Feedback/DoFeedback/DoFeedback';
 import ProgressLearn from './screens/Sro/Manage Class/ProgressLearn/ProgressLearn';
 
 const App = () => {
@@ -41,12 +43,15 @@ const App = () => {
       <Route path={'/'} element={<RequireAuth />} />
 
       {/* Routers for role student */}
-      <Route path={'/student'} element={<FirstLayout><RequireAuth role={'student'} /></FirstLayout>}>
+      <Route path={'/student'} element={<ThirdLayout><RequireAuth role={'student'} /></ThirdLayout>}>
         <Route index element={<Navigate to="/student/schedule" replace />} />
         <Route path="/student/schedule" element={<Schedule />} />
         <Route path="/student/attendance" element={<p>attendance</p>} />
         <Route path="/student/grade" element={<p>grade</p>} />
+        <Route path="/student/feedback" element={<FeedbackScreen />} />
+        <Route path="/student/feedback/:id" element={<DoFeedback/> } />
       </Route>
+
 
       {/* Routers for role teacher */}
       <Route path={'/teacher'}>
