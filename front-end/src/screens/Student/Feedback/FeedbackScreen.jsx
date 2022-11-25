@@ -11,7 +11,7 @@ import FetchApi from "../../../apis/FetchApi";
 
 
 const FeedbackScreen = () => {
-    const [isOpenModal, setIsOpenModal] = useState(false);
+
     const [form] = Form.useForm();
     const [listForm, setListForm] = useState([]);
     const [listQuestion, setListQuestion] = useState([]);
@@ -34,48 +34,7 @@ const FeedbackScreen = () => {
       }, []);
   return (
     <div className={classes.main}>
-         <Modal
-        open={isOpenModal}
-        width="1000px"
-        blur
-        onClose={() => {
-          setIsOpenModal(false);
-        }}
-      >
-       <Modal.Header>
-            <Text b size={16}>Ý kiến về việc giảng dậy</Text>
-   
-       </Modal.Header>
-        <Modal.Body
-          css={{
-            padding: "20px",
-          }}
          
-        >
-            <Form
-       
-          layout="horizontal"
-          labelAlign="right"
-          labelWrap
-
-
-        >
-            <Form.Item>
-
-          <Radio.Group label="Options" defaultValue="0">
-      <Radio value="1">Option 1</Radio>
-      <Radio value="2" >
-        Option 2
-      </Radio>
-      <Radio value="3">Option 3</Radio>
-      <Radio value="4">
-        Option 4
-      </Radio>
-    </Radio.Group>
-            </Form.Item>
-    </Form>
-        </Modal.Body>
-      </Modal>
       <Grid.Container gap={2}>
     
         <Grid sm={12}>
@@ -85,7 +44,7 @@ const FeedbackScreen = () => {
               height: 'fit-content',
             }}
           >
-            <Card.Body>
+     
             <Table aria-label=""  css={{
             
                 height:"fit-content"
@@ -108,8 +67,7 @@ const FeedbackScreen = () => {
                         color="5EA2EF"
                         style={{ cursor: "pointer" }}
                         onClick={() => {
-                            setIsOpenModal(true);
-                            // getQuestion();
+                         
                             navigate(`/student/feedback/${item.id}`);
 
                         }}/>
@@ -120,7 +78,7 @@ const FeedbackScreen = () => {
               </Table.Body>
              
             </Table>
-            </Card.Body>
+         
           </Card>
         </Grid>
         
