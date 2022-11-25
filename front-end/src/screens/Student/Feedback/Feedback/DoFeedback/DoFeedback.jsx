@@ -1,4 +1,4 @@
-import classes from "../../../ScheduleScreen/ScheduleScreen.module.css";
+import classes from "../../../../../components/ModuleCreate/ModuleCreate.module.css";
 import {
   Radio,
   Card,
@@ -26,21 +26,45 @@ const DoFeedback = () => {
 
   const [listQuestion, setListQuestion] = useState([]);
   const [listAnswer, setListAnswer] = useState([]);
+  const [listForm, setListForm] = useState([]);
   const navigate = useNavigate();
-  const [isLoading, setisLoading] = useState(false);
+  const [isLoading, setisLoading] = useState(true);
   const { id } = useParams();
+  const getForm = () => {
+    setisLoading(true);
+    FetchApi(ManageGpa.getForm)
+      .then((res) => {
+        setListForm(res.data);
+        setisLoading(false);
+      })
+      .catch((err) => {
+        navigate("/404");
+      });
+  };
   const GetQuestions = () => {
+    setisLoading(true);
     FetchApi(ManageGpa.getQuestionByFormID, null, null, [String(id)])
       .then((res) => {
         setListQuestion(res.data);
-        console.log(res.data);
+        setisLoading(false);
+      })
+      .catch((err) => {
+        navigate("/404");
+      });
+  };
+  const GetAnswer = () => {
+    FetchApi(ManageGpa.getQuestionByFormID, null, null, [String(id)])
+      .then((res) => {
+        setListQuestion(res.data);
       })
       .catch((err) => {
         navigate("/404");
       });
   };
   useEffect(() => {
+    getForm();
     GetQuestions();
+    GetAnswer();
   }, []);
   return (
     <Fragment>
@@ -51,264 +75,126 @@ const DoFeedback = () => {
       )}
       {!isLoading && (
         <Form
-          // labelCol={{ xs: {
-          //   span: 24,
-          // },
-          // sm: {
-          //   span: 8,
-          // }, }}
-
-          // labelCol={{
-          //   span: 1,
-          // }}
-          // wrapperCol={{
-          //   span: 24,
-          // }}
           layout="Vertical"
           labelAlign="center"
-
           // onFinish={handleSubmitForm}
           form={form}
         >
-          <Grid.Container gap={2} justify="center">
-            <Grid sm={12} direction={"column"}>
-              <Card variant="bordered">
-                <Card.Header>
-                  <Text
-                    b
-                    size={16}
-                    p
-                    css={{
-                      width: "100%",
-                      textAlign: "center",
-                    }}
-                  >
-                    Ý kiến về việc giảng dậy
-                  </Text>
-                </Card.Header>
-                <Card.Body>
-                  {listQuestion.map((item, index) => (
-                    <Card variant="bordered">
-                          <Form.Item
-                      label={item.content}
+          <Grid.Container gap={1} justify="center">
+            <Grid sm={8} direction={"column"}>
+              <Card
+                variant="bordered"
+                css={{
+                  padding: "10px 20px",
+                  borderTop: "solid 12px #cee4fe",
+                  marginBottom: "12px",
+                }}
+              >
+                {listForm.map((item, index) => (
+                  <Fragment>
+                    <Text
+                      b
+                      size={24}
+                      p
+                      css={{
+                        textAlign: "start",
+                        display: "inline-block",
+                      }}
+                    >
+                      {item.title}
+                    </Text>
+                    <Spacer y={0.5} />
+                    <Text
+                      size={12}
+                      p
+                      css={{
+                        width: "100%",
+                        textAlign: "start",
+                      }}
+                    >
+                      {item.description}
+                    </Text>
+                    <Spacer y={0.5} />
+                    <Card.Divider />
+                    <Spacer y={0.4} />
+                    <Text
+                      size={14}
+                      p
+                      css={{
+                        width: "100%",
+                        textAlign: "start",
+                        color: "red",
+                      }}
+                    >
+                      *Require
+                    </Text>
+                  </Fragment>
+                ))}
+              </Card>
+
+              {listQuestion.map((item, index) => (
+                <Card
+                  variant="bordered"
+                  css={{ padding: "20px 20px", marginBottom: "12px" }}
+                >
+                  <Fragment>
+                    <div style={{ dispay: "flex", flex: "1", width: "100%" }}>
+                      <Text
+                        size={16}
+                        css={{
+                          textAlign: "start",
+                        }}
+                      >
+                        {item.content}
+                        <span style={{ color: "red" }}> *</span>
+                      </Text>
+                    </div>
+                    <Spacer y={1} />
+                    <Form.Item
                       name="class_name"
                       style={{
                         width: "100%",
                         display: "block",
                       }}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng chọn đáp án",
+                        },
+                      ]}
                     >
-                      <Radio.Group
-                        css={{ display: "block" }}
-                        label=""
-                        defaultValue="0"
-                        size="sm"
-                      >
-                        <Radio value="1">Option 1</Radio>
-                        <Radio value="2">Option 2</Radio>
-                        <Radio value="3">Option 3</Radio>
-                        <Radio value="4">Option 4</Radio>
+                      <Radio.Group label="" defaultValue="0" size="xs">
+                        <Radio value="1">Always punctual (Luôn đúng giờ)</Radio>
+                        <Radio value="2">
+                          Mostly punctual (Phần lớn đúng giờ)
+                        </Radio>
+                        <Radio value="3">
+                          Rarely all punctual (Ít khi đúng giờ)
+                        </Radio>
+                        <Radio value="4">
+                          Not at all punctual (Không bao giờ đúng giờ)
+                        </Radio>
                       </Radio.Group>
+                      <Spacer y={0.5} />
+                      <Card.Divider />
                     </Form.Item>
-                    </Card>
-                  
-                  ))}
-
-                  {/* <Form.Item
-                  style={{
-                    marginBottom: 0,
+                  </Fragment>
+                </Card>
+              ))}
+              <Spacer y={0.5} />
+              <Form.Item>
+                <Button
+                  auto
+                  flat
+                  css={{
+                    width: "100px",
                   }}
-                  rules={[
-                    {
-                      required: true,
-                    },
-                  ]}
+                  type="primary"
+                  htmlType="submit"
                 >
-                  <Form.Item
-                    label="Ngày Nhập Học"
-                    name="start_date"
-                    rules={[
-                      {
-                        message: 'Vui lòng chọn ngày nhập học',
-                        required: true,
-                      },
-                    ]}
-                    style={{
-                      display: 'inline-block',
-                      width: 'calc(50% - 8px)',
-                    }}
-                  >
-                   
-                  </Form.Item>
-
-                  <Form.Item
-                    label="Chương trình học"
-                    name="course_family_code"
-                    rules={[
-                      {
-                        message: 'Vui lòng chọn chương trình học',
-                        required: true,
-                      },
-                    ]}
-                    style={{
-                      display: 'inline-block',
-                      width: 'calc(50% - 8px)',
-                      margin: '0 8px',
-                    }}
-                  >
-                   
-                  </Form.Item>
-                </Form.Item>
-                <Form.Item
-                  style={{
-                    marginBottom: 0,
-                  }}
-                  rules={[
-                    {
-                      required: true,
-                    },
-                  ]}
-                >
-                  <Form.Item
-                    label="Ngày Hoàn Thành"
-                    name="completion_date"
-                    rules={[
-                      {
-                        message: 'Vui lòng chọn ngày hoàn thành',
-                        required: true,
-                      },
-                    ]}
-                    style={{
-                      display: 'inline-block',
-                      width: 'calc(50% - 8px)',
-                    }}
-                  >
-                   
-                  </Form.Item>
-                  <Form.Item
-                    label="Ngày Tốt Nghiệp"
-                    name="graduation_date"
-                    rules={[
-                      {
-                        message: 'Vui lòng chọn ngày tốt nghiệp',
-                        required: true,
-                      },
-                    ]}
-                    style={{
-                      display: 'inline-block',
-                      width: 'calc(50% - 8px)',
-                      margin: '0 8px',
-                    }}
-                  >
-                   
-                  </Form.Item>
-                </Form.Item>
-                <Form.Item
-                  style={{
-                    marginBottom: 0,
-                  }}
-                  rules={[
-                    {
-                      required: true,
-                    },
-                  ]}
-                >
-                  <Form.Item
-                    label="Trạng thái lớp"
-                    name="class_status_id"
-                   
-                    style={{
-                      display: 'inline-block',
-                      width: 'calc(50% - 8px)',
-                    }}
-                  >
-                    <Select
-                      showSearch
-                    
-                      placeholder="Trạng thái lớp học"
-                      style={{ width: '100%' }}
-                      dropdownStyle={{ zIndex: 9999 }}
-                     
-                    >
-                      <Select.Option key="100" value={1}>
-                        Đã lên lịch
-                      </Select.Option>
-                      <Select.Option key="101" value={2}>
-                        Đang học
-                      </Select.Option>
-                      <Select.Option key="102" value={3}>
-                        Đã hoàn thành
-                      </Select.Option>
-                      <Select.Option key="103" value={4}>
-                        Huỷ
-                      </Select.Option>
-                      <Select.Option key="104" value={5}>
-                        Chưa lên lịch
-                      </Select.Option>
-                      <Select.Option key="105" value={6}>
-                        Đã ghép
-                      </Select.Option>
-                    </Select>
-                  </Form.Item>
-                  <Form.Item
-                    label="Ngày Học"
-                    name="class_days_id"
-                   
-                    style={{
-                      display: 'inline-block',
-                      width: 'calc(50% - 8px)',
-                      margin: '0 8px',
-                    }}
-                  >
-                    <Select
-                      showSearch
-                      placeholder="Ngày học trong tuần"
-                      style={{ width: '100%' }}
-                      dropdownStyle={{ zIndex: 9999 }}
-                     
-                    >
-                      
-                    </Select>
-                  </Form.Item>
-                </Form.Item>
-
-                <Form.Item
-                  style={{}}
-                  rules={[
-                    {
-                      required: true,
-                    },
-                  ]}
-                >
-                  <Form.Item
-                    style={{
-                      display: 'inline-block',
-                      textAlign: 'center',
-                      width: '100%',
-                    }}
-                  >
-               
-                  </Form.Item>
-                  <Form.Item
-                    style={{
-                      float: 'right',
-                      display: 'inline-block',
-                      // width: "calc(50% - 8px)",
-                      margin: '0 8px -25px 0',
-                    }}
-                  >
-                    <Button
-                      flat
-                      auto
-                      type="primary"
-                      htmlType="submit"
-                    //   loading={isCreatingOrUpdating}
-                    >
-                      Gửi
-                    </Button>
-                  </Form.Item>
-                </Form.Item> */}
-                </Card.Body>
-              </Card>
+                  {"Gửi"}
+                </Button>
+              </Form.Item>
             </Grid>
           </Grid.Container>
         </Form>

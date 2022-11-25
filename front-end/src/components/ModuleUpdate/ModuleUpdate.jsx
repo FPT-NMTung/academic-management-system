@@ -11,7 +11,9 @@ import classes from './ModuleUpdate.module.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import ModuleGradeType from '../ModuleGradeType/ModuleGradeType';
 import { Validater } from '../../validater/Validater';
+import { IoArrowBackCircle } from "react-icons/io5";
 import toast from 'react-hot-toast';
+import { Fragment } from "react";
 
 const TYPE_MODULE = {
   'Lý thuyết': 1,
@@ -228,8 +230,33 @@ const ModuleUpdate = () => {
   }, []);
 
   return (
+
+
     <Grid.Container justify="center" gap={2}>
-      <Grid xs={6}>
+
+
+
+    <Button
+    css={{
+      position: 'absolute',
+      left: '35px',
+      top:'110px',
+    }}
+    flat
+    auto
+    icon={<IoArrowBackCircle size={20} />}
+    color={"error"}
+    onPress={() => {
+      navigate("/admin/manage-course/module");
+    }}
+  >
+    Trở về
+  </Button>
+
+
+    
+         
+      <Grid sm={6}>
         <Card
           variant="bordered"
           css={{
@@ -636,7 +663,7 @@ const ModuleUpdate = () => {
           </Card.Body>
         </Card>
       </Grid>
-      <Grid xs={4}>
+      <Grid sm={4}>
         <Card
           variant="bordered"
           css={{
