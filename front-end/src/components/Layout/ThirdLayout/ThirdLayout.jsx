@@ -121,12 +121,12 @@ const menu = {
       icon: <RiMedalFill size={18}/>,
       url: '/student/grade',
     },
-    {
-      key: '15',
-      label:'Ý kiến về việc giảng dậy',
-      icon: <MdFeedback size={18}/>,
-      url: '/student/feedback',
-    }
+    // {
+    //   key: '15',
+    //   label:'Ý kiến về việc giảng dậy',
+    //   icon: <MdFeedback size={18}/>,
+    //   url: '/student/feedback',
+    // }
     
   ],
 };

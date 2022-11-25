@@ -566,5 +566,10 @@ export const ManageGpa = {
     method: 'GET',
     contextType: 'application/json',
   },
+  getQandA: {
+    url: 'api/gpa/forms/{0}/questions/answers',
+    method: 'GET',
+    contextType: 'application/json',
+  },
  
 }

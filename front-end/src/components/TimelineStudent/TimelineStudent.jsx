@@ -1,4 +1,4 @@
-import { Card, Text, Badge, Table } from '@nextui-org/react';
+import { Card, Text, Badge, Table ,Button } from '@nextui-org/react';
 import { Timeline } from 'antd';
 
 const TimelineStudent = () => {
@@ -125,6 +125,7 @@ const TimelineStudent = () => {
         </Card>
       </Timeline.Item>
     </Timeline>
+    
   );
 };
 
