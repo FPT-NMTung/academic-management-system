@@ -38,16 +38,24 @@ public class ClassScheduleController : ControllerBase
     [HttpGet]
     [Route("api/classes/{classId:int}/schedules")]
     [Authorize(Roles = "sro")]
-    public IActionResult GetClassScheduleByClassId(int classId)
+    public IActionResult GetClassSchedulesByClassId(int classId)
     {
-        var classContext = _context.Classes.Find(classId);
+        var userId = Convert.ToInt32(_userService.GetUserId());
+        var user = _context.Users.First(u => u.Id == userId);
+
+        var classContext = _context.Classes.Include(c => c.Center).FirstOrDefault(c => c.Id == classId);
         if (classContext == null)
         {
             return NotFound(CustomResponse.NotFound("Class not found"));
         }
 
+        if (classContext.CenterId != user.CenterId)
+        {
+            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
+        }
+
         var classSchedule = GetClassSchedulesResponse(classId).OrderBy(response => response.StartDate);
-        return Ok(CustomResponse.Ok("Get class schedule successfully", classSchedule));
+        return Ok(CustomResponse.Ok("Get class schedules successfully", classSchedule));
     }
 
     [HttpGet]
@@ -180,6 +188,7 @@ public class ClassScheduleController : ControllerBase
                 Duration = cs.Duration,
                 StartDate = cs.StartDate,
                 EndDate = cs.EndDate,
+                ClassName = cs.Class.Name,
                 Teacher = new BasicTeacherInformationResponse()
                 {
                     Id = cs.Teacher.UserId,
@@ -244,7 +253,7 @@ public class ClassScheduleController : ControllerBase
                             }).FirstOrDefault(),
                         Note = s.Attendances.Where(a => a.StudentId == sc.StudentId)
                             .Select(a => a.Note).FirstOrDefault()
-                    }).Where(a => a.Student.UserId == userId).ToList()
+                    }).Where(a => a.Student.UserId == userId).ToList() // get only this student attendance
                 }).ToList(),
                 CreatedAt = cs.CreatedAt,
                 UpdatedAt = cs.UpdatedAt,
@@ -275,13 +284,14 @@ public class ClassScheduleController : ControllerBase
             .ThenInclude(r => r.Room)
             .ThenInclude(r => r.RoomType)
             .Where(cs => cs.TeacherId == userId)
-            .Select(cs => new ClassScheduleForStudentResponse()
+            .Select(cs => new ClassScheduleResponse()
             {
                 Id = cs.Id,
                 ClassId = cs.ClassId,
                 Duration = cs.Duration,
                 StartDate = cs.StartDate,
                 EndDate = cs.EndDate,
+                ClassName = cs.Class.Name,
                 Teacher = new BasicTeacherInformationResponse()
                 {
                     Id = cs.Teacher.UserId,
@@ -308,7 +318,7 @@ public class ClassScheduleController : ControllerBase
                 ExamRoomId = cs.ExamRoomId,
                 WorkingTimeId = cs.WorkingTimeId,
                 Note = cs.Note,
-                Sessions = cs.Sessions.Select(s => new SessionWithAttendanceResponse()
+                Sessions = cs.Sessions.Select(s => new SessionResponse()
                 {
                     Id = s.Id,
                     Title = s.Title,
@@ -327,26 +337,6 @@ public class ClassScheduleController : ControllerBase
                         }
                     },
                     SessionType = s.SessionType.Id,
-                    Attendances = s.ClassSchedule.Class.StudentsClasses.Select(sc => new StudentAttendanceResponse()
-                    {
-                        Student = new BasicStudentResponse()
-                        {
-                            UserId = sc.StudentId,
-                            EnrollNumber = sc.Student.EnrollNumber,
-                            EmailOrganization = sc.Student.User.EmailOrganization,
-                            FirstName = sc.Student.User.FirstName,
-                            LastName = sc.Student.User.LastName,
-                            Avatar = sc.Student.User.Avatar
-                        },
-                        AttendanceStatus = s.Attendances.Where(a => a.StudentId == sc.StudentId)
-                            .Select(a => new AttendanceStatusResponse()
-                            {
-                                Id = a.AttendanceStatus.Id,
-                                Value = a.AttendanceStatus.Value
-                            }).FirstOrDefault(),
-                        Note = s.Attendances.Where(a => a.StudentId == sc.StudentId)
-                            .Select(a => a.Note).FirstOrDefault()
-                    }).ToList()
                 }).ToList(),
                 CreatedAt = cs.CreatedAt,
                 UpdatedAt = cs.UpdatedAt,
@@ -654,14 +644,6 @@ public class ClassScheduleController : ControllerBase
             var error = ErrorDescription.Error["E0098"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-
-        // remove sessions 
-        // foreach (var session in oldSessions)
-        // {
-        //     classScheduleContext.Sessions.Remove(session);
-        // }
-        //
-        // _context.Sessions.RemoveRange(oldSessions);
 
         var practiceSessions = new List<int>();
 
@@ -1055,7 +1037,7 @@ public class ClassScheduleController : ControllerBase
     }
 
     /*
-    * Get all session that duplicate TEACHER in same time for this center
+    * Get all session that duplicate TEACHER in same time for this center after update
     */
     [HttpGet]
     [Route("api/classes-schedules/sessions-duplicate-teacher")]
@@ -1112,7 +1094,7 @@ public class ClassScheduleController : ControllerBase
     }
 
     /*
-     * Get all session that duplicate ROOM in same time for this center
+     * Get all session that duplicate ROOM in same time for this center after update
      */
     [HttpGet]
     [Route("api/classes-schedules/sessions-duplicate-room")]
