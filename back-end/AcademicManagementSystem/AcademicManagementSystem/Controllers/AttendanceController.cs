@@ -25,6 +25,7 @@ public class AttendanceController : ControllerBase
     }
 
     // get all attendances of this class for 1 module (class schedule)
+    // if teacher logged in, get attendances of all students in this schedule (all sessions)
     [HttpGet]
     [Route("api/classes-schedules/{id:int}/attendances")]
     [Authorize(Roles = "sro, teacher")]
@@ -32,7 +33,7 @@ public class AttendanceController : ControllerBase
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
         var user = _context.Users.First(u => u.Id == userId);
-        
+
         var schedule = _context.ClassSchedules
             .Include(cs => cs.Class)
             .FirstOrDefault(cs => cs.Id == id);
@@ -40,12 +41,12 @@ public class AttendanceController : ControllerBase
         {
             return NotFound(CustomResponse.NotFound("Class schedule not found"));
         }
-        
-        if(schedule.Class.CenterId != user.CenterId)
+
+        if (schedule.Class.CenterId != user.CenterId)
         {
             return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
         }
-        
+
         // if teacher logged in, check if he is the teacher of this class
         if (user.RoleId == RoleTeacher && schedule.TeacherId != user.Id)
         {
@@ -64,7 +65,7 @@ public class AttendanceController : ControllerBase
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
         var user = _context.Users.First(u => u.Id == userId);
-        
+
         var schedule = _context.ClassSchedules
             .Include(cs => cs.Class)
             .Include(cs => cs.Sessions)
@@ -73,9 +74,9 @@ public class AttendanceController : ControllerBase
         {
             return NotFound(CustomResponse.NotFound("Class schedule not found"));
         }
-        
+
         // not same center
-        if(schedule.Class.CenterId != user.CenterId)
+        if (schedule.Class.CenterId != user.CenterId)
         {
             return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
         }
@@ -85,22 +86,108 @@ public class AttendanceController : ControllerBase
         {
             return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
         }
-        
+
         if (schedule.Sessions.All(s => s.Id != sessionId))
         {
             return NotFound(CustomResponse.NotFound("Session not found"));
         }
-        
+
         var attendancesInSession = GetAllSessionsWithAttendances(user.CenterId, scheduleId)
             .Where(a => a.SessionId == sessionId);
 
         return Ok(CustomResponse.Ok("Get attendance for session successfully", attendancesInSession));
     }
 
+    // student get his/her attendances of 1 current class, module
+    [HttpGet]
+    [Route("api/classes/{classId:int}/modules/{moduleId:int}/attendances/student")]
+    [Authorize(Roles = "student")]
+    public IActionResult GetAttendancesOfStudentByClassIdAndModuleId(int classId, int moduleId)
+    {
+        var userId = Convert.ToInt32(_userService.GetUserId());
+
+        // get class that have logged in student in this class and modules for this class
+        var classContext = _context.Classes
+            .Include(c => c.Center)
+            .Include(c => c.StudentsClasses)
+            .Include(c => c.CourseFamily)
+            .ThenInclude(cf => cf.Courses)
+            .ThenInclude(c => c.CoursesModulesSemesters)
+            .ThenInclude(cms => cms.Module)
+            .FirstOrDefault(c => c.Id == classId && c.StudentsClasses.Any(sc => sc.StudentId == userId && sc.IsActive));
+
+        if (classContext == null)
+        {
+            return NotFound(CustomResponse.NotFound("Student not in this class"));
+        }
+
+        var isModuleInClass = classContext.CourseFamily.Courses
+            .SelectMany(c => c.CoursesModulesSemesters)
+            .Any(cms => cms.ModuleId == moduleId);
+
+        if (!isModuleInClass)
+        {
+            return NotFound(CustomResponse.NotFound("Module not found for this class"));
+        }
+
+        var attendances = _context.Sessions
+            .Include(s => s.ClassSchedule)
+            .Include(s => s.ClassSchedule.Class)
+            .Include(s => s.ClassSchedule.Class.StudentsClasses)
+            .Include(s => s.ClassSchedule.Module)
+            .Include(s => s.Attendances)
+            .Where(s => s.ClassSchedule.Class.Id == classId && s.ClassSchedule.ModuleId == moduleId)
+            .Select(s => new SessionAttendanceResponse()
+            {
+                SessionId = s.Id,
+                Title = s.Title,
+                LearningDate = s.LearningDate,
+
+                ClassSchedule = new BasicClassScheduleResponse()
+                {
+                    Id = s.ClassScheduleId,
+                    Class = new BasicClassResponse()
+                    {
+                        Id = s.ClassSchedule.Class.Id,
+                        Name = s.ClassSchedule.Class.Name
+                    },
+                    Module = new BasicModuleResponse()
+                    {
+                        Id = s.ClassSchedule.Module.Id,
+                        Name = s.ClassSchedule.Module.ModuleName
+                    }
+                },
+
+                StudentAttendances = s.ClassSchedule.Class.StudentsClasses.Select(sc => new StudentAttendanceResponse()
+                {
+                    Student = new BasicStudentResponse()
+                    {
+                        UserId = sc.StudentId,
+                        EnrollNumber = sc.Student.EnrollNumber,
+                        EmailOrganization = sc.Student.User.EmailOrganization,
+                        FirstName = sc.Student.User.FirstName,
+                        LastName = sc.Student.User.LastName,
+                        Avatar = sc.Student.User.Avatar
+                    },
+                    AttendanceStatus = s.Attendances.Where(a => a.StudentId == sc.StudentId)
+                        .Select(a => new AttendanceStatusResponse()
+                        {
+                            Id = a.AttendanceStatus.Id,
+                            Value = a.AttendanceStatus.Value
+                        }).FirstOrDefault(),
+                    Note = s.Attendances.Where(a => a.StudentId == sc.StudentId)
+                        .Select(a => a.Note).FirstOrDefault()
+                }).Where(sa => sa.Student.UserId == userId).ToList() // get only this student attendance
+            });
+
+        return Ok(CustomResponse.Ok("Get attendance for student successfully", attendances));
+    }
+
     [HttpPost]
     [Route("api/classes-schedules/{scheduleId:int}/sessions/{sessionId:int}/attendances/sros")]
     [Authorize(Roles = "sro")]
-    public IActionResult SroTakeAttendance(int scheduleId, int sessionId, List<StudentAttendanceRequest> request)
+    public IActionResult SroTakeAttendance(int scheduleId, int sessionId,
+        [FromBody] List<StudentAttendanceRequest> request)
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
         var user = _context.Users.First(u => u.Id == userId);
@@ -191,7 +278,8 @@ public class AttendanceController : ControllerBase
     [HttpPost]
     [Route("api/classes-schedules/{scheduleId:int}/sessions/{sessionId:int}/attendances/teachers")]
     [Authorize(Roles = "teacher")]
-    public IActionResult TeacherTakeAttendance(int scheduleId, int sessionId, List<StudentAttendanceRequest> request)
+    public IActionResult TeacherTakeAttendance(int scheduleId, int sessionId,
+        [FromBody] List<StudentAttendanceRequest> request)
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
         var user = _context.Users.First(u => u.Id == userId);
