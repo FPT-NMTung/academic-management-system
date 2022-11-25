@@ -36,13 +36,13 @@ const navItem = [
     icon: <RiMedalFill size={30} color={'#fff'} />,
     role: 'teacher',
   },
-  {
-    name: 'Ý kiến về việc giảng dậy',
-    description: 'Đánh giá về việc giảng dậy của giáo viên',
-    path: '/student/feedback',
-    icon: <MdFeedback size={30} color={'#fff'} />,
-    role: 'student',
-  },
+  // {
+  //   name: 'Ý kiến về việc giảng dậy',
+  //   description: 'Đánh giá về việc giảng dậy của giáo viên',
+  //   path: '/student/feedback',
+  //   icon: <MdFeedback size={30} color={'#fff'} />,
+  //   role: 'student',
+  // },
 
 ];
 
