@@ -9,9 +9,12 @@ import FetchApi from '../../../apis/FetchApi';
 import { UserApis } from '../../../apis/ListApi';
 import { Fragment } from 'react';
 import { FaPowerOff, FaDoorOpen, FaCalendarDay } from 'react-icons/fa';
-import { MdManageAccounts } from 'react-icons/md';
+import { MdManageAccounts,MdFeedback } from 'react-icons/md';
 import { ImBooks, ImBook, ImLibrary } from 'react-icons/im';
 import {IoPeopleSharp} from 'react-icons/io5';
+import { HiUserCircle, HiCheckCircle, HiCalendar } from 'react-icons/hi';
+import { RiShutDownLine, RiMedalFill } from 'react-icons/ri';
+
 import {
   MdMeetingRoom,
   MdSupervisedUserCircle,
@@ -99,7 +102,33 @@ const menu = {
     },
   ],
   teacher: [],
-  student: [],
+  student: [
+    {
+      key: '12',
+      label:'Thời khóa biểu',
+      icon: <HiCalendar size={18}/>,
+      url: '/student/schedule',
+    },
+    {
+      key: '13',
+      label:'Điểm danh',
+      icon: <HiCheckCircle size={18}/>,
+      url: '/student/attendance',
+    },
+    {
+      key: '14',
+      label:'Điểm',
+      icon: <RiMedalFill size={18}/>,
+      url: '/student/grade',
+    },
+    {
+      key: '15',
+      label:'Ý kiến về việc giảng dậy',
+      icon: <MdFeedback size={18}/>,
+      url: '/student/feedback',
+    }
+    
+  ],
 };
 
 const ThirdLayout = ({children}) => {
