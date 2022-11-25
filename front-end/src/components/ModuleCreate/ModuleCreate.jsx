@@ -165,7 +165,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                 required: true,
                 validator: (_, value) => {
                   if (value === null || value === undefined) {
-                    return Promise.reject("Trường này không được để trống");
+                    return Promise.reject("Trường phải từ 1 đến 255 ký tự");
                   }
                   if (
                     Validater.isContaintSpecialCharacterForNameModule(
@@ -222,10 +222,23 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                 ))}
             </Select>
           </Form.Item>
+          <span style={{
+            color:"red",
+             display:"flex",
+             position:"fixed",
+             alignItems:"center",
+             top:"calc(50% - 90px)",
+             left:"calc(78px)",
+
+            }}>*</span>
           <Form.Item
+          
+          labelWrap="true"
             label="Mã khóa học"
             style={{
               marginBottom: 0,
+              position: "relative",
+              color:"red"
             }}
             rules={[
               {
@@ -233,6 +246,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               },
             ]}
           >
+         
             <Space></Space>
             <Form.Item
               name="course_code"
@@ -306,6 +320,15 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               </Select>
             </Form.Item>
           </Form.Item>
+          <span style={{
+            color:"red",
+             display:"flex",
+             position:"fixed",
+             alignItems:"center",
+             top:"calc(50% - 25px)",
+             left:"calc(64px)",
+
+            }}>*</span>
           <Form.Item
             label="Thời lượng học"
             style={{
@@ -325,7 +348,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                   required: true,
                   validator: (_, value) => {
                     if (value === null || value === undefined || value === "") {
-                      return Promise.reject("Trường này không được để trống");
+                      return Promise.reject("Phải là số từ 1 đến 200");
                     }
                     const hours = value.toString();
                     if (Validater.isNumber(hours) && hours > 0 && hours <= 200) {
@@ -351,7 +374,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                   required: true,
                   validator: (_, value) => {
                     if (value === null || value === undefined || value === "") {
-                      return Promise.reject("Trường này không được để trống");
+                      return Promise.reject("Phải là số từ 1 đến 50");
                     }
                     const days = value.toString();
                     if (Validater.isNumber(days) && days > 0 && days <= 50) {
@@ -372,7 +395,15 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               <Input placeholder="Số buổi" />
             </Form.Item>
           </Form.Item>
+          <span style={{
+            color:"red",
+             display:"flex",
+             position:"fixed",
+             alignItems:"center",
+             top:"calc(50% + 42px)",
+             left:"calc(34px)",
 
+            }}>*</span>
           <Form.Item
             label="Hình thức môn học"
             style={{
@@ -521,6 +552,15 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               />
             </Form.Item>
           </Form.Item>
+          <span style={{
+            color:"red",
+             display:"flex",
+             position:"fixed",
+             alignItems:"center",
+             top:"calc(100% - 135px)",
+             left:"calc(120px)",
+
+            }}>*</span>
           <Form.Item
             label="Ấn Độ"
             style={{
@@ -534,7 +574,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                   required: true,
                   validator: (_, value) => {
                     if (value === null || value === undefined) {
-                      return Promise.reject("Trường này không được để trống");
+                      return Promise.reject("Trường phải từ 1 đến 255 ký tự");
                     }
                     if (
                       Validater.isContaintSpecialCharacterForName(value.trim())
@@ -566,7 +606,7 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                   required: true,
                   validator: (_, value) => {
                     if (value === null || value === undefined) {
-                      return Promise.reject("Trường này không được để trống");
+                      return Promise.reject("Trường phải từ 1 đến 255 ký tự");
                     }
                     if (
                       Validater.isContaintSpecialCharacterForNameModule(

@@ -200,11 +200,11 @@ public class TeacherController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // if (!Regex.IsMatch(request.Email!, StringConstant.RegexEmail))
-        // {
-        //     var error = ErrorDescription.Error["E0043"];
-        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        // }
+        if (!Regex.IsMatch(request.Email, StringConstant.RegexEmailCopilot))
+        {
+            var error = ErrorDescription.Error["E0043"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         if (IsEmailOrganizationExists(request.EmailOrganization, false, 0))
         {
@@ -224,11 +224,11 @@ public class TeacherController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // if (!Regex.IsMatch(request.EmailOrganization!, StringConstant.RegexEmail))
-        // {
-        //     var error = ErrorDescription.Error["E0044"];
-        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        // }
+        if (!Regex.IsMatch(request.EmailOrganization, StringConstant.RegexEmailCopilot))
+        {
+            var error = ErrorDescription.Error["E0044"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         if (IsCitizenIdentityCardNoExists(request.CitizenIdentityCardNo, false, 0))
         {
@@ -396,11 +396,11 @@ public class TeacherController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // if (!Regex.IsMatch(request.Email!, StringConstant.RegexEmail))
-        // {
-        //     var error = ErrorDescription.Error["E0043"];
-        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        // }
+        if (Regex.IsMatch(request.Email, StringConstant.RegexEmailCopilot))
+        {
+            var error = ErrorDescription.Error["E0043"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         if (IsEmailOrganizationExists(request.EmailOrganization, true, id))
         {
@@ -420,11 +420,11 @@ public class TeacherController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // if (!Regex.IsMatch(request.EmailOrganization!, StringConstant.RegexEmail))
-        // {
-        //     var error = ErrorDescription.Error["E0044"];
-        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        // }
+        if (!Regex.IsMatch(request.EmailOrganization, StringConstant.RegexEmailCopilot))
+        {
+            var error = ErrorDescription.Error["E0044"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         if (IsCitizenIdentityCardNoExists(request.CitizenIdentityCardNo, true, id))
         {
