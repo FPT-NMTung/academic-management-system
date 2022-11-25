@@ -9,4 +9,7 @@ public class QuestionResponse
     
     [JsonPropertyName("content")]
     public string Content { get; set; }
+    
+    [JsonPropertyName("answer")]
+    public List<AnswerResponse> Answer { get; set; }
 }

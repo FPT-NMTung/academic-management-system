@@ -219,6 +219,11 @@ const ModuleGradeType = ({
       <Text p size={15} css={{ float: 'right', paddingRight: 10 }}>
         Tổng trọng số: <b>{total}%</b>
       </Text>
+      {total >= 100 && (
+        <Text p size={15} css={{ float: 'right', paddingRight: 10 }}>
+          <b style={{ color: 'red' }}>Tổng trọng số hợp lệ là 100%</b>
+        </Text>
+      )}
     </div>
   );
 };

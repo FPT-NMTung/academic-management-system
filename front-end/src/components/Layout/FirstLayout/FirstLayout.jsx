@@ -5,6 +5,7 @@ import { RiShutDownLine, RiMedalFill } from 'react-icons/ri';
 import { Link, useLocation, useMatches, useNavigate } from 'react-router-dom';
 import { Fragment } from 'react';
 import { PageHeader } from 'antd';
+import { MdManageAccounts,MdFeedback } from 'react-icons/md';
 
 const navItem = [
   {
@@ -35,6 +36,14 @@ const navItem = [
     icon: <RiMedalFill size={30} color={'#fff'} />,
     role: 'teacher',
   },
+  {
+    name: 'Ý kiến về việc giảng dậy',
+    description: 'Đánh giá về việc giảng dậy của giáo viên',
+    path: '/student/feedback',
+    icon: <MdFeedback size={30} color={'#fff'} />,
+    role: 'student',
+  },
+
 ];
 
 const FirstLayout = ({ children }) => {
