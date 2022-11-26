@@ -40,36 +40,76 @@ public class GradeCategoryModuleController : ControllerBase
         return Ok(CustomResponse.Ok("Get all grade category module successfully", response));
     }
 
+
+    /*
+     * Manage score of a module (can't change grade category type: theory exam)
+     */
     [HttpPost]
     [Route("api/modules/{moduleId:int}/grades")]
     [Authorize(Roles = "admin")]
-    public IActionResult CreateOrUpdateGradeCategoryModule(int moduleId, [FromBody] CreateGradeCategoryModuleRequest request)
+    public IActionResult CreateOrUpdateGradeCategoryModule(int moduleId,
+        [FromBody] CreateGradeCategoryModuleRequest request)
     {
-        RemoveDataGradeCategoryAndGradeItem(moduleId);
-        if (request.GradeCategoryDetails != null)
+        var module = _context.Modules.FirstOrDefault(m => m.Id == moduleId);
+        if (module == null)
         {
-            // calculate total each weight of grade category except theory exam and it's resit
-            var totalEachWeight = request.GradeCategoryDetails
-                .Where(gcd => gcd.GradeCategoryId != 6 && gcd.GradeCategoryId != 8).Sum(gcd => gcd.TotalWeight);
+            var error = ErrorDescription.Error["E0062"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
-            if (totalEachWeight != 100)
+        RemoveDataGradeCategoryAndGradeItem(moduleId);
+
+        // not null and count > 0
+        if (request.GradeCategoryDetails is { Count: > 0 })
+        {
+            // 1: only take theory exam -> can't add any grade category (because theory exam is default and auto add later)
+            // 4: not take exam -> can't add any grade category
+            if (module.ExamType is 1 or 4)
+            {
+                var error = ErrorDescription.Error["E0067_3"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+            
+            // check duplicate grade category id
+            var duplicateGradeCategoryId = request.GradeCategoryDetails
+                .GroupBy(g => g.GradeCategoryId)
+                .Where(g => g.Count() > 1)
+                .Select(g => g.Key)
+                .ToList();
+
+            if (duplicateGradeCategoryId.Any())
+            {
+                var error = ErrorDescription.Error["E0067_4"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+
+            // not manage theory exam, this grade category will auto add later
+            if (request.GradeCategoryDetails.Any(x => x.GradeCategoryId is TheoryExam))
+            {
+                var error = ErrorDescription.Error["E0067_2"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+
+            // not allow to create pe resit and te resit
+            if (request.GradeCategoryDetails.Any(x => x.GradeCategoryId is PracticeExamResit or TheoryExamResit))
+            {
+                var error = ErrorDescription.Error["E0066"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+
+            // calculate total weight of grade categories requested
+            var totalWeight = request.GradeCategoryDetails.Sum(gcd => gcd.TotalWeight);
+
+            if (totalWeight != 100)
             {
                 var error = ErrorDescription.Error["E0057"];
                 return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
             }
 
-            var module = _context.Modules.FirstOrDefault(m => m.Id == moduleId);
-            if (module == null)
-            {
-                var error = ErrorDescription.Error["E0062"];
-                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-            }
-
-            //check list request have practice exam and theory exam
-            var pe = request.GradeCategoryDetails.FirstOrDefault(gcd => gcd.GradeCategoryId == PracticeExam);
-            var te = request.GradeCategoryDetails.FirstOrDefault(gcd => gcd.GradeCategoryId == TheoryExam);
-            // both PE & TE are required
-            if (module.ExamType == 3 && (pe == null || te == null))
+            //check list request have practice exam
+            var isHavePeExam = request.GradeCategoryDetails.Any(gcd => gcd.GradeCategoryId == PracticeExam);
+            // practice exam or both exam but don't have practice exam 
+            if (module.ExamType is 2 or 3 && !isHavePeExam)
             {
                 var error = ErrorDescription.Error["E0067"];
                 return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -80,55 +120,14 @@ public class GradeCategoryModuleController : ControllerBase
                 // get grade category name in db
                 var gradeCategoryName = _context.GradeCategories.Find(gcd.GradeCategoryId)!.Name;
 
-                if (gcd.GradeCategoryId != TheoryExam && gcd.GradeCategoryId != TheoryExamResit
-                                                      && gcd.TotalWeight <= 0)
+                if (gcd.TotalWeight <= 0)
                 {
                     var error = ErrorDescription.Error["E0067_1"];
                     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
                 }
 
-                // not allow to create pe resit and te resit
-                if (gcd.GradeCategoryId is PracticeExamResit or TheoryExamResit)
-                {
-                    var error = ErrorDescription.Error["E0066"];
-                    return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-                }
-
-                // check if grade category in requested list isn't match with module exam type
-                switch (module.ExamType)
-                {
-                    // theory exam(final exam) -> can't have practice exam
-                    case 1:
-                        if (gcd.GradeCategoryId is PracticeExam or PracticeExamResit)
-                        {
-                            var error = ErrorDescription.Error["E0063"];
-                            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-                        }
-
-                        break;
-                    // practical exam -> can't have theory exam
-                    case 2:
-                        if (gcd.GradeCategoryId is TheoryExam or TheoryExamResit)
-                        {
-                            var error = ErrorDescription.Error["E0064"];
-                            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-                        }
-
-                        break;
-                    // not take exam -> can't have practice exam and theory exam
-                    case 4:
-                        if (gcd.GradeCategoryId is PracticeExam or PracticeExamResit or TheoryExam or TheoryExamResit)
-                        {
-                            var error = ErrorDescription.Error["E0065"];
-                            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-                        }
-
-                        break;
-                }
-
-                if (gcd.GradeCategoryId is PracticeExam or TheoryExam or PracticeExamResit or TheoryExamResit
-                        or FinalProject
-                    && gcd.QuantityGradeItem != 1)
+                // exams or final project must has only one item
+                if (gcd.GradeCategoryId is PracticeExam or FinalProject && gcd.QuantityGradeItem != 1)
                 {
                     var error = ErrorDescription.Error["E0060"];
                     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -149,12 +148,6 @@ public class GradeCategoryModuleController : ControllerBase
                     GradeItems = new List<GradeItem>()
                 };
 
-                // theory exam weight not managed in this system -> 0%
-                if (gcd.GradeCategoryId is TheoryExam or TheoryExamResit)
-                {
-                    gradeCategoryModule.TotalWeight = 0;
-                }
-
                 // auto create grade items
                 for (var i = 0; i < gcd.QuantityGradeItem; i++)
                 {
@@ -163,9 +156,7 @@ public class GradeCategoryModuleController : ControllerBase
                         GradeCategoryModuleId = gradeCategoryModule.Id,
                         Name = gradeCategoryName,
                     };
-                    // if (!gradeCategoryName.Contains("Exam") ||
-                    //     !gradeCategoryName.Contains("Final"))
-                    if (gradeCategoryModule.GradeCategoryId is not PracticeExam or TheoryExam or FinalProject)
+                    if (gcd.QuantityGradeItem > 1)
                     {
                         gradeItem.Name = gradeCategoryName + $" {i + 1}";
                     }
@@ -175,37 +166,43 @@ public class GradeCategoryModuleController : ControllerBase
 
                 _context.GradeCategoryModules.Add(gradeCategoryModule);
 
-                // auto create grade category module resit and its grade items
-                var gradeCategoryModuleResit = new GradeCategoryModule()
+                // auto create grade category module resit and its grade items for PE
+                if (gcd.GradeCategoryId == PracticeExam)
                 {
-                    ModuleId = moduleId,
-                    GradeCategoryId = gcd.GradeCategoryId,
-                    TotalWeight = gcd.TotalWeight,
-                    QuantityGradeItem = 1,
-                    GradeItems = new List<GradeItem>()
+                    var gradeCategoryModuleResit = new GradeCategoryModule()
                     {
-                        new GradeItem()
+                        ModuleId = moduleId,
+                        GradeCategoryId = PracticeExamResit,
+                        TotalWeight = gcd.TotalWeight,
+                        QuantityGradeItem = 1,
+                        GradeItems = new List<GradeItem>()
                         {
-                            Name = gradeCategoryName + " Resit"
+                            new GradeItem()
+                            {
+                                Name = gradeCategoryName + " Resit"
+                            }
                         }
-                    }
-                };
-
-                switch (gcd.GradeCategoryId)
-                {
-                    // practice exam
-                    case PracticeExam:
-                        gradeCategoryModuleResit.GradeCategoryId = PracticeExamResit;
-                        _context.GradeCategoryModules.Add(gradeCategoryModuleResit);
-                        break;
-                    // final exam
-                    case TheoryExam:
-                        gradeCategoryModuleResit.GradeCategoryId = TheoryExamResit;
-                        // theory exam weight not managed in this system -> 0%
-                        gradeCategoryModuleResit.TotalWeight = 0;
-                        _context.GradeCategoryModules.Add(gradeCategoryModuleResit);
-                        break;
+                    };
+                    _context.GradeCategoryModules.Add(gradeCategoryModuleResit);
                 }
+            }
+
+            // auto add theory exam type
+            if (module.ExamType == 3)
+            {
+                AutoAddTheoryExam(module);
+            }
+        }
+        /*
+         * case request null or count = 0
+         * module exam type is te or both pe & te -> auto add theory exam
+         */
+        else
+        {
+            // auto add theory exam and theory exam resit if module exam type is 1(theory exam) or 3(both)
+            if (module.ExamType is 1 or 3)
+            {
+                AutoAddTheoryExam(module);
             }
         }
 
@@ -262,5 +259,46 @@ public class GradeCategoryModuleController : ControllerBase
         var gradeCategoryModules =
             _context.GradeCategoryModules.Where(gcm => gcm.ModuleId == moduleId);
         _context.GradeCategoryModules.RemoveRange(gradeCategoryModules);
+    }
+
+    private void AutoAddTheoryExam(Module module)
+    {
+        var theoryExamName = _context.GradeCategories.Find(TheoryExam)!.Name;
+
+        // add theory exam
+        var te = new GradeCategoryModule()
+        {
+            ModuleId = module.Id,
+            GradeCategoryId = TheoryExam,
+            // theory exam weight not managed in this system -> 0%
+            TotalWeight = 0,
+            QuantityGradeItem = 1,
+            GradeItems = new List<GradeItem>()
+            {
+                new GradeItem()
+                {
+                    Name = theoryExamName
+                }
+            }
+        };
+
+        // add theory exam resit
+        var teResit = new GradeCategoryModule()
+        {
+            ModuleId = module.Id,
+            GradeCategoryId = TheoryExamResit,
+            TotalWeight = 0,
+            QuantityGradeItem = 1,
+            GradeItems = new List<GradeItem>()
+            {
+                new GradeItem()
+                {
+                    Name = theoryExamName + " Resit"
+                }
+            }
+        };
+
+        _context.GradeCategoryModules.Add(te);
+        _context.GradeCategoryModules.Add(teResit);
     }
 }
