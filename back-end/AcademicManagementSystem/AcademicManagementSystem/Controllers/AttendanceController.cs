@@ -102,7 +102,7 @@ public class AttendanceController : ControllerBase
     [HttpGet]
     [Route("api/classes/{classId:int}/modules/{moduleId:int}/attendances/student")]
     [Authorize(Roles = "student")]
-    public IActionResult GetAttendancesOfStudentByClassIdAndModuleId(int classId, int moduleId)
+    public IActionResult StudentGetAttendancesByClassIdAndModuleId(int classId, int moduleId)
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
 
