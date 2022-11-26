@@ -83,13 +83,51 @@ public class GpaController : ControllerBase
             .Where(a => a.Question.Forms.Any(f => f.Id == formId) && a.Question.Id == questionId)
             .Select(a => new AnswerResponse()
             {
-                Id = a.Id, QuestionId = a.QuestionId, AnswerNo = a.AnswerNo, Content = a.Content,
-                Question = new QuestionResponse()
-                {
-                    Id = a.Question.Id, Content = a.Question.Content
-                }
+                Id = a.Id, QuestionId = a.QuestionId, AnswerNo = a.AnswerNo, Content = a.Content
             })
             .ToList();
         return Ok(CustomResponse.Ok("Answers retrieved successfully", answers));
+    }
+
+    // get all question and answer by form id
+    [HttpGet]
+    [Route("api/gpa/forms/{formId:int}/questions/answers")]
+    [Authorize(Roles = "admin, sro, student")]
+    public IActionResult GetQuestionsAndAnswersByFormId(int formId)
+    {
+        // check if form exists
+        var form = _context.Forms.Find(formId);
+        if (form == null)
+        {
+            return NotFound(CustomResponse.NotFound("Form not found with id " + formId));
+        }
+
+        var questions = _context.Questions
+            .Include(q => q.Forms)
+            .Include(q => q.Answers)
+            .Where(q => q.Forms.Any(f => f.Id == formId))
+            .Select(q => new QuestionResponse()
+            {
+                Id = q.Id, Content = q.Content, Answer = q.Answers.Select(a => new AnswerResponse()
+                {
+                    Id = a.Id, QuestionId = a.QuestionId, AnswerNo = a.AnswerNo, Content = a.Content
+                }).ToList()
+            })
+            .ToList();
+        foreach (var question in questions)
+        {
+            var answers = _context.Answers
+                .Include(a => a.Question)
+                .Include(a => a.Question.Forms)
+                .Where(a => a.Question.Forms.Any(f => f.Id == formId) && a.Question.Id == question.Id)
+                .Select(a => new AnswerResponse()
+                {
+                    Id = a.Id, QuestionId = a.QuestionId, AnswerNo = a.AnswerNo, Content = a.Content
+                })
+                .ToList();
+            question.Answer = answers;
+        }
+
+        return Ok(CustomResponse.Ok("Questions and answers retrieved successfully", questions));
     }
 }
