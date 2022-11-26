@@ -175,7 +175,7 @@ public static class ErrorDescription
 
         //grade
         { "E0056", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0001" } },
-        { "E0057", new ErrorModel() { Message = "All TotalWeight of grade category must be 100 (Except totalWeight of TheoryExam)", Type = "grade-error-0002" } },
+        { "E0057", new ErrorModel() { Message = "All TotalWeight of grade category must be 100", Type = "grade-error-0002" } },
         { "E0058", new ErrorModel() { Message = "Invalid data for create grade category details", Type = "grade-error-0003" } },
         { "E0059", new ErrorModel() { Message = "Module Not found", Type = "grade-error-0004" } },
         { "E0060", new ErrorModel() { Message = "Exam or Final Project must have only 1 item", Type = "grade-error-0005" } },
@@ -185,8 +185,11 @@ public static class ErrorDescription
         { "E0064", new ErrorModel() { Message = "Can't add TE because Module Exam Type is PE", Type = "grade-error-0009" } },
         { "E0065", new ErrorModel() { Message = "This module not take exam", Type = "grade-error-0010" } },
         { "E0066", new ErrorModel() { Message = "Can't add Resit Exam", Type = "grade-error-0011" } },
-        { "E0067", new ErrorModel() { Message = "This module must have both PE and TE", Type = "grade-error-0012" } },
-        { "E0067_1", new ErrorModel() { Message = "TotalWeight of grade category must bigger than 0(Except TheoryExam)", Type = "grade-error-0013" } },
+        { "E0067", new ErrorModel() { Message = "This module must have PE exam", Type = "grade-error-0012" } },
+        { "E0067_1", new ErrorModel() { Message = "TotalWeight of grade category must bigger than 0", Type = "grade-error-0013" } },
+        { "E0067_2", new ErrorModel() { Message = "Theory exam will be auto add", Type = "grade-error-0014" } },
+        { "E0067_3", new ErrorModel() { Message = "Can't add any progress grade", Type = "grade-error-0015" } },
+        { "E0067_4", new ErrorModel() { Message = "Can't add duplicate grade category", Type = "grade-error-0016" } },
 
         //class
         { "E0068", new ErrorModel() { Message = "Class name can't be empty", Type = "class-error-0068" } },
