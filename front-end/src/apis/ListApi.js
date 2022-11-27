@@ -570,6 +570,13 @@ export const ManageGpa = {
     url: 'api/gpa/forms/{0}/questions/{1}/answers',
     method: 'GET',
     contextType: 'application/json',
-  },
- 
+  }, 
+}
+
+export const ManageAttendanceApis = {
+  getAttendanceBySlotId: {
+    url: 'api/classes-schedules/{0}/sessions/{1}/attendances',
+    method: 'GET',
+    contextType: 'application/json',
+  }
 }
