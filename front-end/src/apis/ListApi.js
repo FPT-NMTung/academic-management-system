@@ -218,11 +218,11 @@ export const RoomApis = {
     method: 'DELETE',
     contextType: 'application/json',
   },
-  getRoomsBySro : {
+  getRoomsBySro: {
     url: 'api/rooms/get-by-sro',
     method: 'GET',
     contextType: 'application/json',
-  }
+  },
 };
 
 export const RoomTypeApis = {
@@ -349,7 +349,7 @@ export const ManageTeacherApis = {
     url: 'api/teachers/get-by-sro',
     method: 'GET',
     contextType: 'application/json',
-  }
+  },
 };
 
 export const UserApis = {
@@ -463,8 +463,6 @@ export const ManageClassApis = {
     method: 'GET',
     contextType: 'application/json',
   },
-
-
 };
 
 export const ManageScheduleApis = {
@@ -487,7 +485,12 @@ export const ManageScheduleApis = {
     url: 'api/classes/{0}/schedules/{1}',
     method: 'DELETE',
     contextType: 'application/json',
-  }
+  },
+  progress: {
+    url: 'api/classes/progress',
+    method: 'GET',
+    contextType: 'application/json',
+  },
 };
 
 export const ManageStudentApis = {
@@ -549,7 +552,7 @@ export const ManageDayOffApis = {
     method: 'DELETE',
     contextType: 'application/json',
   },
-}
+};
 export const ManageGpa = {
   getForm: {
     url: 'api/gpa/forms',
@@ -571,5 +574,22 @@ export const ManageGpa = {
     method: 'GET',
     contextType: 'application/json',
   },
- 
-}
+};
+
+export const ManageAttendanceApis = {
+  getAttendanceByScheduleId: {
+    url: 'api/classes-schedules/{0}/attendances',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getAttendanceBySlotId: {
+    url: 'api/classes-schedules/{0}/sessions/{1}/attendances',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  submitAttendanceSro: {
+    url: 'api/classes-schedules/{0}/sessions/{1}/attendances/sros',
+    method: 'POST',
+    contextType: 'application/json',
+  },
+};

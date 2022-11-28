@@ -1,6 +1,14 @@
 .loading {
-    height         : 250px;
-    display        : flex;
-    justify-content: center;
-    align-items    : baseline;
-  }
+  height         : 250px;
+  display        : flex;
+  justify-content: center;
+  align-items    : baseline;
+}
+
+.buttonControl {
+  display        : flex;
+  justify-content: flex-end;
+  width          : 100%;
+
+  gap: 16px;
+}
