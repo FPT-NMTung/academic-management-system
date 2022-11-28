@@ -250,7 +250,8 @@ public class AttendanceController : ControllerBase
                 {
                     SessionId = sessionId,
                     StudentId = r.StudentId,
-                    AttendanceStatusId = r.AttendanceStatusId
+                    AttendanceStatusId = r.AttendanceStatusId,
+                    Note = r.Note
                 };
                 _context.Attendances.Add(attendance);
             }
@@ -349,7 +350,8 @@ public class AttendanceController : ControllerBase
                 {
                     SessionId = sessionId,
                     StudentId = r.StudentId,
-                    AttendanceStatusId = r.AttendanceStatusId
+                    AttendanceStatusId = r.AttendanceStatusId,
+                    Note = r.Note
                 };
                 _context.Attendances.Add(attendance);
             }
