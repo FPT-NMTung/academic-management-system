@@ -3,7 +3,7 @@
   height: 70px;
 
   border-radius: 10px;
-  border: 2px solid #e8e8e8;
+  border       : 2px solid #e8e8e8;
 
   transition: all 0.3s ease-in-out;
 }
@@ -11,4 +11,11 @@
 .imageStudent:hover {
   width : 170px;
   height: 170px;
+}
+
+.buttonChangeAttendance {
+  display        : flex;
+  justify-content: flex-end;
+  align-items    : center;
+  gap            : 10px;
 }

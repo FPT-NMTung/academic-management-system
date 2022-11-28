@@ -28,6 +28,7 @@ import { ManageScheduleApis, ModulesApis } from '../../../../apis/ListApi';
 import ScheduleCreate from '../../../../components/ScheduleCreate/ScheduleCreate';
 import ScheduleUpdate from '../../../../components/ScheduleUpdate/ScheduleUpdate';
 import TakeAttendance from '../Attendance/TakeAttendance/TakeAttendance';
+import ViewAllAttendance from '../Attendance/ViewAllAttendance/ViewAllAttendance';
 import classes from './ScheduleDetail.module.css';
 
 const ScheduleDetail = () => {
@@ -36,6 +37,7 @@ const ScheduleDetail = () => {
   const [dataModule, setDataModule] = useState(undefined);
   const [createMode, setCreateMode] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [viewAttendance, setViewAttendance] = useState(false);
 
   const [selectSession, setSelectSession] = useState(undefined);
 
@@ -110,13 +112,22 @@ const ScheduleDetail = () => {
 
   const handleCloseModalAttendance = () => {
     setSelectSession(undefined);
+  };
+
+  const handleCloseViewAttendance = () => {
+    setViewAttendance(false);
   }
 
   return (
     <Fragment>
       {selectSession && dataSchedule && (
-        <TakeAttendance session={selectSession} scheduleId={dataSchedule.id} onClose={handleCloseModalAttendance}/>
+        <TakeAttendance
+          session={selectSession}
+          scheduleId={dataSchedule.id}
+          onClose={handleCloseModalAttendance}
+        />
       )}
+      {viewAttendance && dataSchedule && <ViewAllAttendance open={viewAttendance} scheduleId={dataSchedule.id} onClose={handleCloseViewAttendance}/>}
       <Card variant={'bordered'}>
         <Card.Header>
           <Grid.Container justify="space-between">
@@ -253,6 +264,18 @@ const ScheduleDetail = () => {
                           <Button
                             auto
                             flat
+                            size={'sm'}
+                            color="warning"
+                            onPress={() => {
+                              setViewAttendance(true);
+                            }}
+                          >
+                            Xem điểm danh
+                          </Button>
+                          <Button
+                            auto
+                            flat
+                            size={'sm'}
                             color="primary"
                             onPress={() => {
                               setEditMode(true);
@@ -263,6 +286,7 @@ const ScheduleDetail = () => {
                           <Button
                             auto
                             flat
+                            size={'sm'}
                             color="error"
                             onPress={handleDeleteSchedule}
                           >
@@ -284,9 +308,13 @@ const ScheduleDetail = () => {
                         .map((data, index) => {
                           return (
                             <Grid key={index} xs={2}>
-                              <Card variant="bordered" isPressable onPress={() => {
-                                setSelectSession(data);
-                              }}>
+                              <Card
+                                variant="bordered"
+                                isPressable
+                                onPress={() => {
+                                  setSelectSession(data);
+                                }}
+                              >
                                 <Card.Body
                                   css={{
                                     padding: '6px 12px',
