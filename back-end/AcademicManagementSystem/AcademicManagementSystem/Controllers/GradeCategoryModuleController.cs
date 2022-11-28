@@ -47,7 +47,7 @@ public class GradeCategoryModuleController : ControllerBase
     [HttpPost]
     [Route("api/modules/{moduleId:int}/grades")]
     [Authorize(Roles = "admin")]
-    public IActionResult CreateOrUpdateGradeCategoryModule(int moduleId,
+    public IActionResult UpdateGradeCategoryModule(int moduleId,
         [FromBody] CreateGradeCategoryModuleRequest request)
     {
         var module = _context.Modules.FirstOrDefault(m => m.Id == moduleId);
@@ -56,7 +56,18 @@ public class GradeCategoryModuleController : ControllerBase
             var error = ErrorDescription.Error["E0062"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
+        
+        // check module is learning 
+        var isModuleLearned = _context.Modules
+            .Include(m => m.ClassSchedules)
+            .Any(m => m.ClassSchedules.Any(cs => cs.StartDate <= DateTime.Today));
 
+        if (isModuleLearned)
+        {
+            var error = ErrorDescription.Error["E0067_5"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
         RemoveDataGradeCategoryAndGradeItem(moduleId);
 
         // not null and count > 0
