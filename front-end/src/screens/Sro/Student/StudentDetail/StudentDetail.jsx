@@ -802,7 +802,38 @@ const StudentDetail = () => {
                     Thông tin học tập
                   </items>
                   <items tab="Thông tin khác " key="3">
-                    thông tin khác
+                  <Card variant="bordered" css={{ marginBottom: "20px" }}>
+                      <Card.Body>
+
+                        <Descriptions
+                          bordered
+                          title="Các lớp đã học"
+                          column={{ md: 2, lg: 2, xl: 2, xxl: 2 }}
+                          // extra={
+
+                          // }
+                        >
+                          {dataStudent.old_class.map((item, index) => {
+                            return (
+                              <Descriptions.Item
+                              label={dataStudent.course_code}
+                                // labelStyle={{ width: "100%" }}
+                                // style={{ width: "100%" }}
+                              >
+                                 {item.class_name}
+                               
+                              </Descriptions.Item>
+                            );
+                            
+                          }
+                          )}
+                          {/* // <Descriptions.Item >
+                          //   {dataStudent.old_class[0].class_name}
+                          // </Descriptions.Item> */}
+                          
+                        </Descriptions>
+                      </Card.Body>
+                    </Card>
                   </items>
                 </Tabs>
               </Grid>
