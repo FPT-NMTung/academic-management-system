@@ -102,7 +102,7 @@ public class AttendanceController : ControllerBase
     [HttpGet]
     [Route("api/classes/{classId:int}/modules/{moduleId:int}/attendances/student")]
     [Authorize(Roles = "student")]
-    public IActionResult GetAttendancesOfStudentByClassIdAndModuleId(int classId, int moduleId)
+    public IActionResult StudentGetAttendancesByClassIdAndModuleId(int classId, int moduleId)
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
 
@@ -250,7 +250,8 @@ public class AttendanceController : ControllerBase
                 {
                     SessionId = sessionId,
                     StudentId = r.StudentId,
-                    AttendanceStatusId = r.AttendanceStatusId
+                    AttendanceStatusId = r.AttendanceStatusId,
+                    Note = r.Note
                 };
                 _context.Attendances.Add(attendance);
             }
@@ -349,7 +350,8 @@ public class AttendanceController : ControllerBase
                 {
                     SessionId = sessionId,
                     StudentId = r.StudentId,
-                    AttendanceStatusId = r.AttendanceStatusId
+                    AttendanceStatusId = r.AttendanceStatusId,
+                    Note = r.Note
                 };
                 _context.Attendances.Add(attendance);
             }

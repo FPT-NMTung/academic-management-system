@@ -15,6 +15,7 @@ public class SessionAttendanceResponse
     [JsonPropertyName("learning_date")]
     public DateTime LearningDate { get; set; }
     
+    [JsonPropertyName("class_schedule")]
     public BasicClassScheduleResponse ClassSchedule { get; set; }
     
     [JsonPropertyName("attendances")]
