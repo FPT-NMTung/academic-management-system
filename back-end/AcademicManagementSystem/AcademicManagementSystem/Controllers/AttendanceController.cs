@@ -196,6 +196,7 @@ public class AttendanceController : ControllerBase
             .Include(cs => cs.Sessions)
             .Include(cs => cs.Class)
             .Include(cs => cs.Class.StudentsClasses)
+            .ThenInclude(sc => sc.Student)
             .FirstOrDefault(cs => cs.Id == scheduleId);
         if (schedule != null)
         {
@@ -227,7 +228,9 @@ public class AttendanceController : ControllerBase
             // remove request have duplicate studentId
             request = request.DistinctBy(r => r.StudentId).ToList();
 
-            var studentsIdInClass = schedule.Class.StudentsClasses.Select(sc => sc.StudentId).ToList();
+            // get student in class (student that is active in class or not is draft)) 
+            var studentsIdInClass = schedule.Class.StudentsClasses.Where(sc => sc.IsActive && !sc.Student.IsDraft)
+                .Select(sc => sc.StudentId).ToList();
 
             var requestStudentsId = request.Select(r => r.StudentId).ToList();
 
@@ -250,7 +253,8 @@ public class AttendanceController : ControllerBase
                 {
                     SessionId = sessionId,
                     StudentId = r.StudentId,
-                    AttendanceStatusId = r.AttendanceStatusId
+                    AttendanceStatusId = r.AttendanceStatusId,
+                    Note = r.Note
                 };
                 _context.Attendances.Add(attendance);
             }
@@ -288,6 +292,7 @@ public class AttendanceController : ControllerBase
             .Include(cs => cs.Sessions)
             .Include(cs => cs.Class)
             .Include(cs => cs.Class.StudentsClasses)
+            .ThenInclude(sc => sc.Student)
             .FirstOrDefault(cs => cs.Id == scheduleId);
         if (schedule != null)
         {
@@ -326,7 +331,9 @@ public class AttendanceController : ControllerBase
             // remove request have duplicate studentId
             request = request.DistinctBy(r => r.StudentId).ToList();
 
-            var studentsIdInClass = schedule.Class.StudentsClasses.Select(sc => sc.StudentId).ToList();
+            // get student in class (student that is active in class or not is draft)) 
+            var studentsIdInClass = schedule.Class.StudentsClasses.Where(sc => sc.IsActive && !sc.Student.IsDraft)
+                .Select(sc => sc.StudentId).ToList();
 
             var requestStudentsId = request.Select(r => r.StudentId).ToList();
 
@@ -349,7 +356,8 @@ public class AttendanceController : ControllerBase
                 {
                     SessionId = sessionId,
                     StudentId = r.StudentId,
-                    AttendanceStatusId = r.AttendanceStatusId
+                    AttendanceStatusId = r.AttendanceStatusId,
+                    Note = r.Note
                 };
                 _context.Attendances.Add(attendance);
             }
