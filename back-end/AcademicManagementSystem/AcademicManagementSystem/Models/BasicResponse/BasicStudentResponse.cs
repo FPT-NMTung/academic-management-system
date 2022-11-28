@@ -8,10 +8,10 @@ public class BasicStudentResponse
     public int UserId { get; set; }
     
     [JsonPropertyName("enroll_number")]
-    public string? EnrollNumber { get; set; }
+    public string EnrollNumber { get; set; }
     
     [JsonPropertyName("email_organization")]
-    public string? EmailOrganization { get; set; }
+    public string EmailOrganization { get; set; }
     
     [JsonPropertyName("first_name")]
     public string FirstName { get; set; }
@@ -19,5 +19,6 @@ public class BasicStudentResponse
     [JsonPropertyName("last_name")]
     public string LastName { get; set; }
     
+    [JsonPropertyName("avatar")]
     public string? Avatar { get; set; }
 }
