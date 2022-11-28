@@ -34,6 +34,7 @@ import ManageTeacher from './screens/Sro/Teacher/ManageTeacher';
 import TeacherInfo from './screens/Sro/Teacher/TeacherInfo/TeacherInfo';
 import FeedbackScreen from './screens/Student/Feedback/FeedbackScreen';
 import DoFeedback from './screens/Student/Feedback/Feedback/DoFeedback/DoFeedback';
+import ProgressLearn from './screens/Sro/Manage Class/ProgressLearn/ProgressLearn';
 
 const App = () => {
   return (
@@ -63,6 +64,7 @@ const App = () => {
         <Route path="/sro/manage-class" element={<ManageClass />} />
         <Route path="/sro/manage-class/:id" element={<DetailClass />} />
         <Route path="/sro/manage-class/create" element={<ClassCreate modeUpdate={false} />} />
+        <Route path="/sro/manage-class/progress" element={<ProgressLearn />} />
         <Route path="/sro/manage-class/:id/update" element={<ClassCreate modeUpdate={true} />} />
         <Route path="/sro/manage-class/:id/schedule" element={<ManageSchedule />} >
           <Route index element={<ScheduleEmpty />} />
