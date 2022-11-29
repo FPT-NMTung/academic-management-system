@@ -2,7 +2,7 @@
 
 namespace AcademicManagementSystemTest.MockData;
 
-public class AdminMockData
+public static class AdminMockData
 {
     public static List<Admin> Admins = new List<Admin>
     {
