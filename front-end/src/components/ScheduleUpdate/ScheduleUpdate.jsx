@@ -135,7 +135,7 @@ const ScheduleUpdate = ({ dataModule, dataSchedule, onSuccess }) => {
       exam_room_id: e.exam_room_id,
       duration: e.duration,
       practice_session: [...listSessionPractice],
-      start_date: moment(e.start_date).add(7, 'hours').toDate(),
+      start_date: moment.utc(e.start_date).local().format(),
       class_hour_start: moment(e.time[0]).format('HH:mm:ss'),
       class_hour_end: moment(e.time[1]).format('HH:mm:ss'),
       note: e.note,
