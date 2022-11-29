@@ -396,7 +396,7 @@ public class TeacherController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (Regex.IsMatch(request.Email, StringConstant.RegexEmailCopilot))
+        if (!Regex.IsMatch(request.Email, StringConstant.RegexEmailCopilot))
         {
             var error = ErrorDescription.Error["E0043"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
