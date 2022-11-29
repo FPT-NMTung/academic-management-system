@@ -62,9 +62,9 @@ const ClassCreate = ({ modeUpdate }) => {
       class_status_id: data.class_status_id,
       name: data.class_name.trim(),
       course_family_code: data.course_family_code,
-      start_date: data.start_date.add(7, 'hours').toDate(),
-      completion_date: data.completion_date.add(7, 'hours').toDate(),
-      graduation_date: data.graduation_date.add(7, 'hours').toDate(),
+      start_date: moment.utc(data.start_date).local().format(),
+      completion_date: moment.utc(data.completion_date).local().format(),
+      graduation_date: moment.utc(data.graduation_date).local().format(),
       class_hour_start: data.class_hour[0].format('HH:mm:ss'),
       class_hour_end: data.class_hour[1].format('HH:mm:ss'),
     };

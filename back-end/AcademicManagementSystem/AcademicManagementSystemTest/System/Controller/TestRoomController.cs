@@ -22,7 +22,7 @@ public class TestRoomController
             .Options;
 
         _context = new AmsContext(optionsInMemoryDb);
-        _userService = new UserService(new HttpContextAccessor()); 
+        _userService = new UserService(new HttpContextAccessor());
         _controller = new RoomController(_context, _userService);
         Init();
     }
