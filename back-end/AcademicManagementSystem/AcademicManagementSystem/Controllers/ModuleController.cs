@@ -434,6 +434,13 @@ public class ModuleController : ControllerBase
             return NotFound(CustomResponse.NotFound("Module not found"));
         }
 
+        var canUpdate = CanDeleteUpdate(id);
+        if (!canUpdate)
+        {
+            var error = ErrorDescription.Error["E1137"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         request.ModuleName = request.ModuleName.Trim();
         request.ModuleExamNamePortal = request.ModuleExamNamePortal.Trim();
         request.SemesterNamePortal = request.SemesterNamePortal.Trim();
@@ -705,7 +712,7 @@ public class ModuleController : ControllerBase
             return NotFound(CustomResponse.NotFound("Not Found Module"));
         }
 
-        var canDelete = CanDelete(id);
+        var canDelete = CanDeleteUpdate(id);
 
         return Ok(CustomResponse.Ok("Can delete module", new CheckModuleCanDeleteResponse()
         {
@@ -725,6 +732,13 @@ public class ModuleController : ControllerBase
         if (module == null)
         {
             return NotFound(CustomResponse.NotFound("Not Found Module"));
+        }
+
+        var canDelete = CanDeleteUpdate(id);
+        if (!canDelete)
+        {
+            var error = ErrorDescription.Error["E1138"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         // delete course module semester
@@ -747,7 +761,7 @@ public class ModuleController : ControllerBase
         return Ok(CustomResponse.Ok("Module deleted successfully", null!));
     }
 
-    private bool CanDelete(int id)
+    private bool CanDeleteUpdate(int id)
     {
         var selectModule = _context.Modules
             .Include(m => m.ClassSchedules)

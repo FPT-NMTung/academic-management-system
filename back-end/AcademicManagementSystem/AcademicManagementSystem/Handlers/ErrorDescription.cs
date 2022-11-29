@@ -131,6 +131,8 @@ public static class ErrorDescription
         { "E1059", new ErrorModel() { Message = "Max Theory Grade should not be empty due to ExamType", Type = "module-error-0029" } },
         { "E1060", new ErrorModel() { Message = "Max Practical Grade should not be empty due to ExamType", Type = "module-error-0030" } },
         { "E1061", new ErrorModel() { Message = "Max Theory Grade and Max Practical Grade should not be empty due to ExamType", Type = "module-error-0031" } },
+        { "E1137", new ErrorModel() { Message = "Can not update this module because this module has been learned", Type = "module-error-0032" } },
+        { "E1138", new ErrorModel() { Message = "Can not delete this module because this module has been learned", Type = "module-error-0033" } },
 
         // teacher
         { "E0039", new ErrorModel() { Message = "Please enter at least one search criteria", Type = "teacher-error-0002" } },
