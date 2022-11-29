@@ -309,7 +309,7 @@ public static class ErrorDescription
         // attendance
         { "E0200", new ErrorModel() { Message = "Invalid data", Type = "attendance-error-0000" } },
         { "E0201", new ErrorModel() { Message = "Attendance has been taken for this session", Type = "attendance-error-0001" } },
-        { "E0202", new ErrorModel() { Message = "All student must in class", Type = "attendance-error-0002" } },
+        { "E0202", new ErrorModel() { Message = "All student must in class or not draft", Type = "attendance-error-0002" } },
         { "E0203", new ErrorModel() { Message = "Session not found", Type = "attendance-error-0003" } },
         { "E0204", new ErrorModel() { Message = "Class schedule not found", Type = "attendance-error-0004" } },
         { "E0205", new ErrorModel() { Message = "Can't take attendance this time", Type = "attendance-error-0005" } },
