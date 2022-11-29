@@ -2,7 +2,7 @@
 
 namespace AcademicManagementSystemTest.MockData;
 
-public class ProvinceMockData
+public static class ProvinceMockData
 {
     public static readonly List<Province> Districts = new List<Province>
     {

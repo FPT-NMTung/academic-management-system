@@ -2,7 +2,7 @@
 
 namespace AcademicManagementSystemTest.MockData;
 
-public class WardMockData
+public static class WardMockData
 {
     public static readonly List<Ward> Districts = new List<Ward>
     {

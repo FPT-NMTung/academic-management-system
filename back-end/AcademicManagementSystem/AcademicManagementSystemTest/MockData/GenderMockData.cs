@@ -2,7 +2,7 @@
 
 namespace AcademicManagementSystemTest.MockData;
 
-public class GenderMockData
+public static class GenderMockData
 {
     public static List<Gender> Genders = new List<Gender>
     {
