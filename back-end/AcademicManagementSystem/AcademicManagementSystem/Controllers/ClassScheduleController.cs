@@ -4,8 +4,10 @@ using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.AttendanceController.AttendanceModel;
 using AcademicManagementSystem.Models.AttendanceStatusController.AttendanceStatusModel;
 using AcademicManagementSystem.Models.BasicResponse;
+using AcademicManagementSystem.Models.ClassController;
 using AcademicManagementSystem.Models.ClassDaysController;
 using AcademicManagementSystem.Models.ClassScheduleController.ClassScheduleModel;
+using AcademicManagementSystem.Models.ClassScheduleController.ProgressModel;
 using AcademicManagementSystem.Models.ClassStatusController;
 using AcademicManagementSystem.Models.RoomController.RoomModel;
 using AcademicManagementSystem.Models.RoomController.RoomTypeModel;
@@ -1044,6 +1046,42 @@ public class ClassScheduleController : ControllerBase
         }
 
         return Ok(CustomResponse.Ok("Delete class schedule successfully", null!));
+    }
+
+    [HttpGet]
+    [Route("api/classes/progress")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetAllProgressClass()
+    {
+        var userId = Int32.Parse(_userService.GetUserId());
+        var centerId = _context.Users.FirstOrDefault(u => u.Id == userId)!.CenterId;
+
+        var listClass = _context.Classes
+            .Include(c => c.ClassSchedules)
+            .ThenInclude(cs => cs.Module)
+            .Where(c => c.CenterId == centerId)
+            .OrderBy(c => c.CreatedAt);
+
+        var res = listClass.Select(c => new ProgressModelResponse
+        {
+            ClassResponse = new ClassResponse
+            {
+                Id = c.Id,
+                Name = c.Name,
+                CreatedAt = c.CreatedAt,
+                UpdatedAt = c.UpdatedAt,
+            },
+            ClassScheduleResponses = c.ClassSchedules.Select(cs => new ClassScheduleResponse()
+            {
+                Id = cs.Id,
+                ModuleId = cs.ModuleId,
+                ModuleName = cs.Module.ModuleName,
+                StartDate = cs.StartDate,
+                EndDate = cs.EndDate,
+            })
+        }).ToList();
+        
+        return Ok(CustomResponse.Ok("Get all progress class successfully", res));
     }
 
     /*

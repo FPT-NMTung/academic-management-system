@@ -251,7 +251,7 @@ export const ErrorCodeApi = {
   "class-schedule-error-0026": "Môn học này không dành cho lớp bạn chọn",
   "class-schedule-error-0027": "Lớp không tồn tại",
   "class-schedule-error-0028": "Lịch học không tồn tại",
-  "class-schedule-error-0029": "Lỗi khi xóa lịch học",
+  "class-schedule-error-0029": "Không thể xoá lịch học này",
   "class-schedule-error-0030": "Không thể bắt đầu lịch học mới khi lịch học trước đó chưa kết thúc",
 
   "class-error-0080": "Không có học viên nào trong Lớp hiện tại",
