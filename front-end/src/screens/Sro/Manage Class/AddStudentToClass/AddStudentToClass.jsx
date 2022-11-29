@@ -70,7 +70,6 @@ const AddStudentToClass = () => {
     useState(true);
   const [dataUser, setDataUser] = useState(undefined);
 
-
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const { id } = useParams();
@@ -155,17 +154,19 @@ const AddStudentToClass = () => {
       district_id: data.district_id,
       ward_id: data.ward_id,
       gender_id: data.gender_id,
-      birthday: data.birthday.add(7, 'hours').toDate(),
+      birthday: moment.utc(data.birthday).local().format(),
       citizen_identity_card_no: data.citizen_identity_card_no?.trim(),
-      citizen_identity_card_published_date:
-        data.citizen_identity_card_published_date.add(7, 'hours').toDate(),
+      citizen_identity_card_published_date: moment
+        .utc(data.citizen_identity_card_published_date)
+        .local()
+        .format(),
       citizen_identity_card_published_place:
         data.citizen_identity_card_published_place,
       status: data.status,
       contact_phone: data.mobile_phone,
       parental_phone: data.parental_phone,
       parental_name: data.parental_name,
-      application_date: data.application_date.add(7, 'hours').toDate(),
+      application_date: moment.utc(data.application_date).local().format(),
       fee_plan: data.fee_plan,
       promotion: data.promotion,
       contact_address: data.contact_address,
@@ -489,9 +490,7 @@ const AddStudentToClass = () => {
                           value === undefined ||
                           value.trim() === ''
                         ) {
-                          return Promise.reject(
-                            'Trường không được để trống'
-                          );
+                          return Promise.reject('Trường không được để trống');
                         }
                         if (
                           Validater.isContaintSpecialCharacterForAddress(
@@ -1191,7 +1190,7 @@ const AddStudentToClass = () => {
               <div className={classes.contantLogo}>
                 <div className={classes.logo}>
                   <Image
-                  preview={false}
+                    preview={false}
                     className={classes.avatarDefault}
                     width={250}
                     src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
@@ -1214,9 +1213,9 @@ const AddStudentToClass = () => {
                     )} */}
                 </div>
               </div>
-              <Upload disabled={true} >
+              <Upload disabled={true}>
                 <Button
-                    disabled={true}
+                  disabled={true}
                   css={{
                     fontSize: '12px',
                     height: '28px',
