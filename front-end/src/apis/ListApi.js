@@ -593,3 +593,11 @@ export const ManageAttendanceApis = {
     contextType: 'application/json',
   },
 };
+
+export const UserStudentApis = {
+  getScheduleStudent: {
+    url: 'api/schedules/students',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+};
