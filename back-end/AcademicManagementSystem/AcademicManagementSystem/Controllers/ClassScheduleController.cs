@@ -190,6 +190,8 @@ public class ClassScheduleController : ControllerBase
                 Duration = cs.Duration,
                 StartDate = cs.StartDate,
                 EndDate = cs.EndDate,
+                TheoryExamDate = cs.TheoryExamDate,
+                PracticalExamDate = cs.PracticalExamDate,
                 ClassName = cs.Class.Name,
                 Teacher = new BasicTeacherInformationResponse()
                 {
@@ -213,8 +215,11 @@ public class ClassScheduleController : ControllerBase
                 ClassHourStart = cs.ClassHourStart,
                 ClassHourEnd = cs.ClassHourEnd,
                 TheoryRoomId = cs.TheoryRoomId,
+                TheoryRoomName = cs.TheoryRoom!.Name,
                 LabRoomId = cs.LabRoomId,
+                LabRoomName = cs.LabRoom!.Name,
                 ExamRoomId = cs.ExamRoomId,
+                ExamRoomName = cs.ExamRoom!.Name,
                 WorkingTimeId = cs.WorkingTimeId,
                 Note = cs.Note,
                 Sessions = cs.Sessions.Select(s => new SessionWithAttendanceResponse()
@@ -293,6 +298,8 @@ public class ClassScheduleController : ControllerBase
                 Duration = cs.Duration,
                 StartDate = cs.StartDate,
                 EndDate = cs.EndDate,
+                TheoryExamDate = cs.TheoryExamDate,
+                PracticalExamDate = cs.PracticalExamDate,
                 ClassName = cs.Class.Name,
                 Teacher = new BasicTeacherInformationResponse()
                 {
@@ -316,8 +323,11 @@ public class ClassScheduleController : ControllerBase
                 ClassHourStart = cs.ClassHourStart,
                 ClassHourEnd = cs.ClassHourEnd,
                 TheoryRoomId = cs.TheoryRoomId,
+                TheoryRoomName = cs.TheoryRoom!.Name,
                 LabRoomId = cs.LabRoomId,
+                LabRoomName = cs.LabRoom!.Name,
                 ExamRoomId = cs.ExamRoomId,
+                ExamRoomName = cs.ExamRoom!.Name,
                 WorkingTimeId = cs.WorkingTimeId,
                 Note = cs.Note,
                 Sessions = cs.Sessions.Select(s => new SessionResponse()
@@ -1618,11 +1628,11 @@ public class ClassScheduleController : ControllerBase
                     Value = cs.ClassStatus.Value,
                 },
                 TheoryRoomId = cs.TheoryRoomId,
-                TheoryRoomName = cs.TheoryRoom.Name,
+                TheoryRoomName = cs.TheoryRoom!.Name,
                 LabRoomId = cs.LabRoomId,
-                LabRoomName = cs.LabRoom.Name,
+                LabRoomName = cs.LabRoom!.Name,
                 ExamRoomId = cs.ExamRoomId,
-                ExamRoomName = cs.ExamRoom.Name,
+                ExamRoomName = cs.ExamRoom!.Name,
                 Duration = cs.Duration,
                 StartDate = cs.StartDate,
                 EndDate = cs.EndDate,
