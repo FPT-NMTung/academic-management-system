@@ -114,7 +114,6 @@ const SroCreate = ({ modeUpdate }) => {
     setIsCreatingOrUpdating(true);
     setMessageFailed(undefined);
     const data = form.getFieldsValue();
-    console.log(data.birthday.add(7, 'hours'));
     const body = {
       first_name: data.first_name.trim(),
       last_name: data.last_name.trim(),
@@ -125,11 +124,13 @@ const SroCreate = ({ modeUpdate }) => {
       district_id: data.district_id,
       ward_id: data.ward_id,
       gender_id: data.gender_id,
-      birthday: data.birthday.add(7, 'hours').toDate(),
+      birthday: moment.utc(data.birthday).local().format(),
       center_id: data.center_id,
       citizen_identity_card_no: data.citizen_identity_card_no.trim(),
-      citizen_identity_card_published_date:
-        data.citizen_identity_card_published_date.add(7, 'hours').toDate(),
+      citizen_identity_card_published_date: moment
+        .utc(data.citizen_identity_card_published_date)
+        .local()
+        .format(),
       citizen_identity_card_published_place:
         data.citizen_identity_card_published_place.trim(),
     };
@@ -198,18 +199,16 @@ const SroCreate = ({ modeUpdate }) => {
     toast.promise(
       FetchApi(ManageSroApis.deleteSro, null, null, [String([`${id}`])]),
       {
-        loading: "Đang xóa",
+        loading: 'Đang xóa',
         success: (res) => {
-          navigate("/admin/account/sro");
-          return "Xóa thành công";
+          navigate('/admin/account/sro');
+          return 'Xóa thành công';
         },
         error: (err) => {
-          return "Xóa thất bại";
+          return 'Xóa thất bại';
         },
       }
     );
-
- 
   };
 
   const handleChangeActive = () => {
@@ -236,7 +235,6 @@ const SroCreate = ({ modeUpdate }) => {
         toast.error('Lỗi kiểm tra khả năng xóa');
       });
   };
-
 
   useEffect(() => {
     getListCenter();
@@ -675,8 +673,6 @@ const SroCreate = ({ modeUpdate }) => {
                   {!modeUpdate && 'Tạo mới'}
                   {modeUpdate && 'Cập nhật'}
                 </Button>
-
-                
               </div>
             </Card.Body>
           </Card>

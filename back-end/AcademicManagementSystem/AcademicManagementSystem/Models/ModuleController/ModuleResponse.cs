@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using AcademicManagementSystem.Models.CenterController;
 using AcademicManagementSystem.Models.CourseController;
 using AcademicManagementSystem.Models.CourseModuleSemester;
+using AcademicManagementSystem.Models.SemesterController;
 
 namespace AcademicManagementSystem.Models.ModuleController;
 
@@ -48,4 +49,10 @@ public class ModuleResponse
     
     [JsonPropertyName("center")]
     public CenterResponse? Center { get; set; }
+    
+    [JsonPropertyName("course_code")]
+    public List<string>? CourseCode { get; set; }
+    
+    [JsonPropertyName("semester")]
+    public SemesterResponse Semester { get; set; }
 }
