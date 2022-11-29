@@ -270,6 +270,7 @@ public static class ErrorDescription
         { "E1126", new ErrorModel() { Message = "Fail to SaveChange when change class student", Type = "student-error-0042" } },        
         { "E1127", new ErrorModel() { Message = "New class already had 100 students", Type = "student-error-0043" } },
         { "E1129", new ErrorModel() { Message = "Birthday must less than Now", Type = "student-error-0044" } },
+        { "E1136", new ErrorModel() { Message = "Identity card must less than Now", Type = "student-error-0045" } },
 
         // class schedule
         { "E0077", new ErrorModel() { Message = "Module Not For This Class", Type = "class-schedule-error-0001" } },
