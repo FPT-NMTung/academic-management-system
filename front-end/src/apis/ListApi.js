@@ -600,4 +600,14 @@ export const UserStudentApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  getAllSession: {
+    url: 'api/sessions/students',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getDetailSession: {
+    url: 'api/sessions/detail/students/get',
+    method: 'POST',
+    contextType: 'application/json',
+  },
 };
