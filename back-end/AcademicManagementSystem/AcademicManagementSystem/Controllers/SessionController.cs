@@ -104,7 +104,7 @@ public class SessionController : ControllerBase
         var userId = Convert.ToInt32(_userService.GetUserId());
 
         // get detail session by learning date of student
-        var sessions = _context.Sessions
+        var session = _context.Sessions
             .Include(s => s.ClassSchedule)
             .Include(s => s.ClassSchedule.Class)
             .Include(s => s.ClassSchedule.Module)
@@ -186,6 +186,6 @@ public class SessionController : ControllerBase
             });
 
 
-        return Ok(CustomResponse.Ok("Student get detail session successfully", sessions));
+        return Ok(CustomResponse.Ok("Student get detail session successfully", session.FirstOrDefault()!));
     }
 }
