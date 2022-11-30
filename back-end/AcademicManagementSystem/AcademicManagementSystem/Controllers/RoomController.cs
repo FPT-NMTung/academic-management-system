@@ -49,7 +49,7 @@ public class RoomController : ControllerBase
             Id = r.Id,
             CenterId = r.CenterId,
             CenterName = r.Center.Name,
-            Room = new RoomTypeResponse()
+            RoomType = new RoomTypeResponse()
             {
                 Id = r.RoomTypeId,
                 Value = r.RoomType.Value
@@ -82,7 +82,7 @@ public class RoomController : ControllerBase
             Id = r.Id,
             CenterId = r.CenterId,
             CenterName = r.Center.Name,
-            Room = new RoomTypeResponse()
+            RoomType = new RoomTypeResponse()
             {
                 Id = r.RoomTypeId,
                 Value = r.RoomType.Value
@@ -319,7 +319,7 @@ public class RoomController : ControllerBase
                 Id = r.Id,
                 CenterId = r.CenterId,
                 CenterName = r.Center.Name,
-                Room = new RoomTypeResponse()
+                RoomType = new RoomTypeResponse()
                 {
                     Id = r.RoomTypeId,
                     Value = r.RoomType.Value
