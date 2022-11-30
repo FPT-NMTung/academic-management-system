@@ -222,23 +222,25 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                 ))}
             </Select>
           </Form.Item>
-          <span style={{
-            color:"red",
-             display:"flex",
-             position:"fixed",
-             alignItems:"center",
-             top:"calc(50% - 90px)",
-             left:"calc(78px)",
-
-            }}>*</span>
+          <span
+            style={{
+              color: "red",
+              display: "flex",
+              position: "fixed",
+              alignItems: "center",
+              top: "calc(50% - 90px)",
+              left: "calc(78px)",
+            }}
+          >
+            *
+          </span>
           <Form.Item
-          
-          labelWrap="true"
+            labelWrap="true"
             label="Mã khóa học"
             style={{
               marginBottom: 0,
               position: "relative",
-              color:"red"
+              color: "red",
             }}
             rules={[
               {
@@ -246,7 +248,6 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               },
             ]}
           >
-         
             <Space></Space>
             <Form.Item
               name="course_code"
@@ -320,15 +321,18 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               </Select>
             </Form.Item>
           </Form.Item>
-          <span style={{
-            color:"red",
-             display:"flex",
-             position:"fixed",
-             alignItems:"center",
-             top:"calc(50% - 25px)",
-             left:"calc(64px)",
-
-            }}>*</span>
+          <span
+            style={{
+              color: "red",
+              display: "flex",
+              position: "fixed",
+              alignItems: "center",
+              top: "calc(50% - 25px)",
+              left: "calc(64px)",
+            }}
+          >
+            *
+          </span>
           <Form.Item
             label="Thời lượng học"
             style={{
@@ -351,7 +355,11 @@ const ModuleCreate = ({ onCreateSuccess }) => {
                       return Promise.reject("Phải là số từ 1 đến 200");
                     }
                     const hours = value.toString();
-                    if (Validater.isNumber(hours) && hours > 0 && hours <= 200) {
+                    if (
+                      Validater.isNumber(hours) &&
+                      hours > 0 &&
+                      hours <= 200
+                    ) {
                       return Promise.resolve();
                     }
                     return Promise.reject(new Error("Phải là số từ 1 đến 200"));
@@ -395,15 +403,18 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               <Input placeholder="Số buổi" />
             </Form.Item>
           </Form.Item>
-          <span style={{
-            color:"red",
-             display:"flex",
-             position:"fixed",
-             alignItems:"center",
-             top:"calc(50% + 42px)",
-             left:"calc(34px)",
-
-            }}>*</span>
+          <span
+            style={{
+              color: "red",
+              display: "flex",
+              position: "fixed",
+              alignItems: "center",
+              top: "calc(50% + 42px)",
+              left: "calc(34px)",
+            }}
+          >
+            *
+          </span>
           <Form.Item
             label="Hình thức môn học"
             style={{
@@ -476,6 +487,20 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               </Select>
             </Form.Item>
           </Form.Item>
+          {exam_type !== 4 && (
+            <span
+              style={{
+                color: "red",
+                display: "flex",
+                position: "fixed",
+                alignItems: "center",
+                top: "calc(50% + 105px)",
+                left: "calc(65px)",
+              }}
+            >
+              *
+            </span>
+          )}
           <Form.Item
             label="Điểm thi tối đa"
             style={{
@@ -552,15 +577,18 @@ const ModuleCreate = ({ onCreateSuccess }) => {
               />
             </Form.Item>
           </Form.Item>
-          <span style={{
-            color:"red",
-             display:"flex",
-             position:"fixed",
-             alignItems:"center",
-             top:"calc(100% - 135px)",
-             left:"calc(120px)",
-
-            }}>*</span>
+          <span
+            style={{
+              color: "red",
+              display: "flex",
+              position: "fixed",
+              alignItems: "center",
+              top: "calc(100% - 135px)",
+              left: "calc(120px)",
+            }}
+          >
+            *
+          </span>
           <Form.Item
             label="Ấn Độ"
             style={{

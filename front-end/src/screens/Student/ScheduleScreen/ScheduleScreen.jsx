@@ -38,7 +38,7 @@ const Schedule = () => {
   const [listForm, setListForm] = useState([]);
   const [value, setValue] = useState(moment());
   const [selectedValue, setSelectedValue] = useState(moment());
-  const [detailLearningDate, setDetailLearningDate] = useState(undefined);
+  const [detailLearningDate, setDetailLearningDate] = useState([]);
   const [isLoading, setisLoading] = useState(true);
   const getForm = () => {
     setisLoading(true);
@@ -56,17 +56,40 @@ const Schedule = () => {
     FetchApi(UserStudentApis.getScheduleStudent)
       .then((res) => {
         setDataUser(res.data);
-        // console.log("sssss" +dataUser[0].start_date);
         setListLearningDate(res.data[0].sessions);
-        setDetailLearningDate(res.data[0].sessions);
-        // console.log(dataUser[0]);
         setisLoading(false);
       })
       .catch((err) => {
         toast.error("Đã xảy ra lỗi");
       });
   };
+  const getDetail = () => {
 
+    const selectDate = moment.utc(selectedValue).format("DD/MM/YYYY");
+    console.log("Ngày đang chọn " + selectDate);
+    console.log("ssss"+ listLearningDate);
+    listLearningDate.map((item) => {
+      if (moment(item.learning_date).format("DD/MM/YYYY") === selectDate) {
+        setDetailLearningDate(item);
+      }
+    });
+    console.log("Chi tiết ngày chọn" + detailLearningDate);
+  };
+  const renderAttendanceStatus = (id) => {
+    if (id === 1) {
+      return <Badge color="default">Chưa điểm danh</Badge>;
+    } else if (id === 2) {
+      return <Badge color="error">Vắng mặt</Badge>;
+    } else if (id === 3) {
+      return <Badge color="success">Đã điểm danh</Badge>;
+    } else {
+      return <Badge color="default">Chưa điểm danh</Badge>;
+    }
+  };
+  useEffect(() => {
+    setDetailLearningDate("");
+    getDetail();
+  }, [selectedValue]);
   useEffect(() => {
     // getForm();
     getData();
@@ -248,27 +271,27 @@ const Schedule = () => {
                             value.format("DD/MM/YYYY") ===
                             selectedValue.format("DD/MM/YYYY")
                               ? "#CEE4FE"
+                              : value.format("DD/MM/YYYY") ===
+                                moment(dataUser[0].theory_exam_date).format(
+                                  "DD/MM/YYYY"
+                                )
+                              ? "#7828c8"
+                              : value.format("DD/MM/YYYY") ===
+                                moment(dataUser[0].practical_exam_date).format(
+                                  "DD/MM/YYYY"
+                                )
+                              ? "#7828c8"
                               : listLearningDate.find(
                                   (item) =>
                                     value.format("DD/MM/YYYY") ===
                                     moment(item.learning_date).format(
                                       "DD/MM/YYYY"
                                     )
-                                ) ||
-                                value.format("DD/MM/YYYY") ===
-                                  moment(dataUser[0].start_date).format(
-                                    "DD/MM/YYYY"
-                                  ) ||
-                                value.format("DD/MM/YYYY") ===
-                                  moment(dataUser[0].end_date).format(
-                                    "DD/MM/YYYY"
-                                  )
+                                )
                               ? "#fdd8e5"
                               : value.day() === 0
                               ? "#F1F1F1"
-                              : // : value.format('DD/MM/YYYY') === moment(dataUser[0].start_date).format('DD/MM/YYYY')
-                                // ? '#fdd8e5'
-                                // : value.format('DD/MM/YYYY') === moment(dataUser[0].end_date).format('DD/MM/YYYY')
+                              : // : value.format('DD/MM/YYYY') === moment(dataUser[0].end_date).format('DD/MM/YYYY')
                                 // ? '#fdd8e5'
                                 "#fff",
                           borderRadius: "10em",
@@ -286,26 +309,35 @@ const Schedule = () => {
                   }}
                 />
               </Card.Body>
-              <Grid.Container css={{padding:"12px 14px"}} gap={0.5}>
-                    <Grid xs={12} alignItems="center">
-                      <Badge css={{backgroundColor:"#cee4fe"}}  variant="default" />
-                      <Spacer x={0.5} />
-                      <Text css={{ ml: "$2" }}>Ngày đang chọn</Text>
-                    </Grid>
-                    <Grid xs={12} alignItems="center">
-                      <Badge css={{backgroundColor:"#fdd8e5"}}  variant="default" />
-                      <Spacer x={0.5} />
-                      <Text css={{ ml: "$2" }}>Ngày có lịch học</Text>
-                    </Grid>
-                    {/* <Grid xs={12} alignItems="center">
-                      <Badge color="warning" variant="default" />
-                      <Spacer x={0.5} />
-                      <Text css={{ ml: "$2" }}>Ngày có lịch thi</Text>
-                    </Grid> */}
-                  </Grid.Container>
+              <Grid.Container css={{ padding: "12px 14px" }} gap={0.5}>
+                <Grid xs={12} alignItems="center">
+                  <Badge
+                    css={{ backgroundColor: "#cee4fe" }}
+                    variant="default"
+                  />
+                  <Spacer x={0.5} />
+                  <Text css={{ ml: "$2" }}>Ngày đang chọn</Text>
+                </Grid>
+                <Grid xs={12} alignItems="center">
+                  <Badge
+                    css={{ backgroundColor: "#fdd8e5" }}
+                    variant="default"
+                  />
+                  <Spacer x={0.5} />
+                  <Text css={{ ml: "$2" }}>Ngày có lịch học</Text>
+                </Grid>
+                <Grid xs={12} alignItems="center">
+                  <Badge
+                    css={{ backgroundColor: "#7828c8" }}
+                    variant="default"
+                  />
+                  <Spacer x={0.5} />
+                  <Text css={{ ml: "$2" }}>Ngày có lịch thi</Text>
+                </Grid>
+              </Grid.Container>
             </Card>
           </Grid>
-          <Grid xs={5}>
+          <Grid xs={6}>
             <Card
               variant="bordered"
               css={{
@@ -334,92 +366,101 @@ const Schedule = () => {
                     }}
                   >
                     <Card.Header>
-                      <Text p b size={14}>
-                        Thời gian: <strong>8h30 - 10h30</strong>
-                      </Text>
+                      {detailLearningDate !== "" && (
+                        <Text p b size={14}>
+                          Thời gian: <strong>8h30 - 10h30</strong>
+                        </Text>
+                      )}
                     </Card.Header>
+
                     <Card.Body
                       css={{
                         padding: "5px 10px",
                       }}
                     >
-                      <Table
-                        aria-label=""
-                        css={{
-                          height: "auto",
-                          minWidth: "100%",
-                        }}
-                        lined
-                        headerLined
-                        shadow={false}
-                      >
-                        <Table.Header>
-                          <Table.Column>Môn học</Table.Column>
-                          <Table.Column width={100}>Phòng học</Table.Column>
-                          <Table.Column width={200}>Giảng viên</Table.Column>
-                          <Table.Column width={150}>Điểm danh</Table.Column>
-                        </Table.Header>
-                        <Table.Body>
-                          <Table.Row key="1">
-                            <Table.Cell>Phát triển ứng dụng web</Table.Cell>
-                            <Table.Cell>Phòng 1</Table.Cell>
-                            <Table.Cell>Nguyễn Văn A</Table.Cell>
-                            <Table.Cell>
-                              <Badge color="success">Đã điểm danh</Badge>
-                            </Table.Cell>
-                          </Table.Row>
-                        </Table.Body>
-                      </Table>
+                      {!detailLearningDate && (
+                        <Text
+                          p
+                          size={14}
+                          css={{
+                            textAlign: "center",
+                            marginTop: "20px",
+                          }}
+                          color={"lightGray"}
+                          i
+                        >
+                          Không có lịch
+                        </Text>
+                      )}
+
+                      {detailLearningDate && (
+                        <Table
+                          aria-label=""
+                          css={{
+                            height: "auto",
+                            minWidth: "100%",
+                          }}
+                          lined
+                          headerLined
+                          shadow={false}
+                        >
+                          <Table.Header>
+                            <Table.Column>Môn học</Table.Column>
+                            <Table.Column width={100}>Phòng học</Table.Column>
+                            <Table.Column width={150}>Giảng viên</Table.Column>
+                            <Table.Column width={150}>Điểm danh</Table.Column>
+                            <Table.Column width={150}>Ghi chú</Table.Column>
+                          </Table.Header>
+                          <Table.Body>
+                            <Table.Row key="1">
+                              <Table.Cell>Phát triển ứng dụng web</Table.Cell>
+                              <Table.Cell>s111</Table.Cell>
+                              <Table.Cell>Nguyễn Văn A</Table.Cell>
+                              <Table.Cell>
+                                {renderAttendanceStatus(1)}
+                              </Table.Cell>
+
+                              {/* <Table.Cell>{dataUser[0].module_name}</Table.Cell>
+
+                            <Table.Cell> {dataUser[0].teacher.first_name}{' '}
+                                      {dataUser[0].teacher.last_name}</Table.Cell>
+                            <Table.Cell>                           
+                            {renderAttendanceStatus(detailLearningDate.attendances[0].attendance_status.id)}
+                            </Table.Cell> */}
+                              <Table.Cell>ssss</Table.Cell>
+                            </Table.Row>
+                          </Table.Body>
+                        </Table>
+         
+                      )}
                     </Card.Body>
+
                   </Card>
+                  
                 </Grid>
               </Grid.Container>
-              {/* <Card.Body
-              // isPressable={true}
-              >
-                <Timeline mode="center">
-                  <Timeline.Item color="none">
-                    <Text p b size={14}>
-                      Thời gian: <strong> 8h30 - 10h30 </strong>
-                    </Text>
-                    <Card
-                      variant="bordered"
-                      css={{
-                        borderStyle: "dashed",
-                        margin: "0 20px",
-                      }}
-                    >
-                      <Table
-                        aria-label=""
-                        css={{
-                          height: "auto",
-                          minWidth: "100%",
-                        }}
-                        lined
-                        headerLined
-                        shadow={false}
-                      >
-                        <Table.Header>
-                          <Table.Column>Môn học</Table.Column>
-                          <Table.Column width={100}>Phòng học</Table.Column>
-                          <Table.Column width={200}>Giảng viên</Table.Column>
-                          <Table.Column width={150}>Điểm danh</Table.Column>
-                        </Table.Header>
-                        <Table.Body>
-                          <Table.Row key="1">
-                            <Table.Cell>Phát triển ứng dụng web</Table.Cell>
-                            <Table.Cell>Phòng 1</Table.Cell>
-                            <Table.Cell>Nguyễn Văn A</Table.Cell>
-                            <Table.Cell>
-                              <Badge color="success">Đã điểm danh</Badge>
-                            </Table.Cell>
-                          </Table.Row>
-                        </Table.Body>
-                      </Table>
-                    </Card>
-                  </Timeline.Item>
-                </Timeline>
-              </Card.Body> */}
+              {detailLearningDate && (
+                      <Grid sm={2} css={{marginTop:"24px", marginBottom:"12px"}}>
+                  <Button
+                    flat
+                    auto
+                    icon={<MdNoteAlt size={14} />}
+                    color={"error"}
+                    onPress={() => {
+                      navigate("/student/feedback/1");
+                    }}
+                    css={{
+                      width: "50px",
+                      position: "absolute",
+                      bottom: "12px",
+                      right: "10px",
+
+                    }}
+                  >
+                    Đánh giá việc giảng dậy
+                  </Button>
+                  </Grid>
+)}
             </Card>
           </Grid>
         </Grid.Container>

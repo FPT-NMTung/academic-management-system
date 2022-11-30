@@ -159,7 +159,7 @@ export const ErrorCodeApi = {
   "class-error-0069": "Tên lớp học chứa ký tự đặc biệt | Các ký tự cho phép: ( ) _ - ",
   "class-error-0070": "Lớp học đã tồn tại",
   "class-error-0071": "Thông tin lớp học không hợp lệ",
-  "class-error-0072": "Thời gian bắt đầu nhỏ hơn thời gian kết thúc và phải từ 1 - 4 tiếng",
+  "class-error-0072": "Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc và thời lượng học phải từ 1 - 4 tiếng",
   "class-error-0072-1":"Giờ học phải từ 8 giờ sáng đến 10 giờ tối",
   "class-error-0073": "Ngày nhập học không thể nhỏ hơn ngày hiện tại",
   "class-error-0074": "Ngày hoàn thành không thể bằng hoặc nhỏ hơn ngày nhập học",
@@ -219,6 +219,20 @@ export const ErrorCodeApi = {
   "student-error-00035": "Mức lương không đúng định dạng",
   "student-error-00036": "Tên phụ huynh không đúng định dạng",
   "student-error-00037": "Cập nhật thông tin học viên không thành công",
+  "student-error-00038": "Lớp học hiện tại không tồn tại trong cơ sở này",
+  "student-error-00039": "Lớp chuyển tới không tồn tại trong cơ sở này",
+  "student-error-00040": "Học viên không có trong lớp hiện tại",
+  "student-error-00041": "Học viên đã tồn tại trong lớp chuyển tới",
+  "student-error-00042": "Thất bại khi chuyển lớp",
+  "student-error-00043": "Lớp chuyển tới đã có hơn 100 học viên",
+  "student-error-00044": "Ngày sinh phải nhỏ hơn ngày hiện tại",
+  "student-error-00045": "Ngày cấp thẻ CMT/CCCD phải nhỏ hơn ngày hiện tại",
+
+
+
+
+
+
 
   "class-schedule-error-0001": "Môn học không dành cho lớp này",
   "class-schedule-error-0001_1": "Giáo viên không có tại cơ sở này",
