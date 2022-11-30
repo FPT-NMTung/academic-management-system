@@ -145,11 +145,13 @@ public class SessionController : ControllerBase
                         Avatar = s.ClassSchedule.Class.StudentsClasses
                             .FirstOrDefault(sc => sc.StudentId == userId)!.Student.User.Avatar,
                     },
-                    AttendanceStatus = new AttendanceStatusResponse()
+                    
+                    AttendanceStatus = s.Attendances.Select(a => new AttendanceStatusResponse()
                     {
-                        Id = s.Attendances.FirstOrDefault(a => a.StudentId == userId)!.AttendanceStatusId,
-                        Value = s.Attendances.FirstOrDefault(a => a.StudentId == userId)!.AttendanceStatus.Value
-                    },
+                        Id = a.AttendanceStatus.Id,
+                        Value = a.AttendanceStatus.Value
+                    }).FirstOrDefault(),
+                    
                     Note = s.Attendances.FirstOrDefault(a => a.StudentId == userId)!.Note
                 },
                 Class = new BasicClassResponse()
@@ -185,7 +187,6 @@ public class SessionController : ControllerBase
                 }
             });
 
-
-        return Ok(CustomResponse.Ok("Student get detail session successfully", session.FirstOrDefault()!));
+        return Ok(CustomResponse.Ok("Student get detail session successfully", session));
     }
 }
