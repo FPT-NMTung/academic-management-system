@@ -53,6 +53,8 @@ export const ErrorCodeApi = {
   "sro-error-0021-1": "Email cá nhân đã được sử dụng",
   "sro-error-0022-1": "Email tổ chức đã được sử dụng",
   "sro-error-0022-2": "Email cá nhân và email tổ chức không được trùng nhau",
+  "sro-error-0022-3": "Ngày sinh phải nhỏ hơn ngày hiện tại",
+  "sro-error-0022-4": "Ngày cấp thẻ phải nhỏ hơn ngày hiện tại",
   "sro-error-2057": "Thay đổi trạng thái không thành công",
 
   "address-error-0001": "Không tìm thấy địa chỉ",
@@ -128,6 +130,8 @@ export const ErrorCodeApi = {
   "teacher-error-0051-1": "Email cá nhân đã được sử dụng",
   "teacher-error-0052-1": "Email tổ chức đã được sử dụng",
   "teacher-error-0052-2": "Email cá nhân và email tổ chức không được trùng nhau",
+  "teacher-error-0052-3": "Ngày sinh phải nhỏ hơn ngày hiện tại",
+  "teacher-error-0052-5": "Ngày cấp thẻ phải nhỏ hơn ngày hiện tại",
   "teacher-error-2056": "Thay đổi trạng thái không thành công",
 
   "skill-error-0001": "Tên kỹ năng không hợp lệ",

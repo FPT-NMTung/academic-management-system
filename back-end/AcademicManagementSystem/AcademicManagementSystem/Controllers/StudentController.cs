@@ -421,10 +421,16 @@ public class StudentController : ControllerBase
             var error = ErrorDescription.Error["E1110"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
-        if(request.Birthday.Date > DateTime.Now.Date)
+
+        if (request.Birthday.Date.Year > DateTime.Now.Date.Year)
         {
             var error = ErrorDescription.Error["E1129"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.CitizenIdentityCardPublishedDate.Date > DateTime.Now.Date)
+        {
+            var error = ErrorDescription.Error["E1136"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 

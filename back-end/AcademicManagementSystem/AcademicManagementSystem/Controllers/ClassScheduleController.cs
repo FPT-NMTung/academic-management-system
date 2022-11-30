@@ -190,6 +190,8 @@ public class ClassScheduleController : ControllerBase
                 Duration = cs.Duration,
                 StartDate = cs.StartDate,
                 EndDate = cs.EndDate,
+                TheoryExamDate = cs.TheoryExamDate,
+                PracticalExamDate = cs.PracticalExamDate,
                 ClassName = cs.Class.Name,
                 Teacher = new BasicTeacherInformationResponse()
                 {
@@ -213,8 +215,11 @@ public class ClassScheduleController : ControllerBase
                 ClassHourStart = cs.ClassHourStart,
                 ClassHourEnd = cs.ClassHourEnd,
                 TheoryRoomId = cs.TheoryRoomId,
+                TheoryRoomName = cs.TheoryRoom!.Name,
                 LabRoomId = cs.LabRoomId,
+                LabRoomName = cs.LabRoom!.Name,
                 ExamRoomId = cs.ExamRoomId,
+                ExamRoomName = cs.ExamRoom!.Name,
                 WorkingTimeId = cs.WorkingTimeId,
                 Note = cs.Note,
                 Sessions = cs.Sessions.Select(s => new SessionWithAttendanceResponse()
@@ -264,7 +269,7 @@ public class ClassScheduleController : ControllerBase
         return Ok(CustomResponse.Ok("Get schedules for student successfully", classSchedule));
     }
 
-    // get class schedules for teacher, include all session and attendances information of students
+    // get class schedules for teacher, include all session
     [HttpGet]
     [Route("api/schedules/teachers")]
     [Authorize(Roles = "teacher")]
@@ -293,6 +298,8 @@ public class ClassScheduleController : ControllerBase
                 Duration = cs.Duration,
                 StartDate = cs.StartDate,
                 EndDate = cs.EndDate,
+                TheoryExamDate = cs.TheoryExamDate,
+                PracticalExamDate = cs.PracticalExamDate,
                 ClassName = cs.Class.Name,
                 Teacher = new BasicTeacherInformationResponse()
                 {
@@ -316,8 +323,11 @@ public class ClassScheduleController : ControllerBase
                 ClassHourStart = cs.ClassHourStart,
                 ClassHourEnd = cs.ClassHourEnd,
                 TheoryRoomId = cs.TheoryRoomId,
+                TheoryRoomName = cs.TheoryRoom!.Name,
                 LabRoomId = cs.LabRoomId,
+                LabRoomName = cs.LabRoom!.Name,
                 ExamRoomId = cs.ExamRoomId,
+                ExamRoomName = cs.ExamRoom!.Name,
                 WorkingTimeId = cs.WorkingTimeId,
                 Note = cs.Note,
                 Sessions = cs.Sessions.Select(s => new SessionResponse()
@@ -345,6 +355,124 @@ public class ClassScheduleController : ControllerBase
             });
 
         return Ok(CustomResponse.Ok("Get schedules for teacher successfully", classSchedule));
+    }
+    
+    // get teaching schedules for teacher, include all session
+    [HttpGet]
+    [Route("api/teaching-schedules/teachers")]
+    [Authorize(Roles = "teacher")]
+    public IActionResult GetTeachingSchedulesOfTeacher()
+    {
+        var userId = Convert.ToInt32(_userService.GetUserId());
+
+        var classSchedule = _context.ClassSchedules
+            .Include(cs => cs.Class)
+            .Include(cs => cs.Class.StudentsClasses)
+            .Include(cs => cs.Teacher)
+            .ThenInclude(t => t.User)
+            .Include(cs => cs.ClassStatus)
+            .Include(cs => cs.ClassDays)
+            .Include(cs => cs.Module)
+            .Include(cs => cs.Sessions)
+            .ThenInclude(cs => cs.SessionType)
+            .Include(s => s.Sessions)
+            .ThenInclude(r => r.Room)
+            .ThenInclude(r => r.RoomType)
+            .Where(cs => cs.TeacherId == userId && cs.EndDate >= DateTime.Today)
+            .Select(cs => new ClassScheduleResponse()
+            {
+                Id = cs.Id,
+                ClassId = cs.ClassId,
+                Duration = cs.Duration,
+                StartDate = cs.StartDate,
+                EndDate = cs.EndDate,
+                TheoryExamDate = cs.TheoryExamDate,
+                PracticalExamDate = cs.PracticalExamDate,
+                ClassName = cs.Class.Name,
+                Teacher = new BasicTeacherInformationResponse()
+                {
+                    Id = cs.Teacher.UserId,
+                    LastName = cs.Teacher.User.LastName,
+                    FirstName = cs.Teacher.User.FirstName,
+                    EmailOrganization = cs.Teacher.User.EmailOrganization,
+                },
+                ClassStatus = new ClassStatusResponse()
+                {
+                    Id = cs.ClassStatus.Id,
+                    Value = cs.ClassStatus.Value,
+                },
+                ModuleId = cs.Module.Id,
+                ModuleName = cs.Module.ModuleName,
+                ClassDays = new ClassDaysResponse()
+                {
+                    Id = cs.ClassDays.Id,
+                    Value = cs.ClassDays.Value,
+                },
+                ClassHourStart = cs.ClassHourStart,
+                ClassHourEnd = cs.ClassHourEnd,
+                TheoryRoomId = cs.TheoryRoomId,
+                TheoryRoomName = cs.TheoryRoom!.Name,
+                LabRoomId = cs.LabRoomId,
+                LabRoomName = cs.LabRoom!.Name,
+                ExamRoomId = cs.ExamRoomId,
+                ExamRoomName = cs.ExamRoom!.Name,
+                WorkingTimeId = cs.WorkingTimeId,
+                Note = cs.Note,
+                Sessions = cs.Sessions.Select(s => new SessionResponse()
+                {
+                    Id = s.Id,
+                    Title = s.Title,
+                    LearningDate = s.LearningDate,
+                    StartTime = s.StartTime,
+                    EndTime = s.EndTime,
+                    Room = new RoomResponse()
+                    {
+                        Id = s.Room.Id,
+                        Name = s.Room.Name,
+                        Capacity = s.Room.Capacity,
+                        Room = new RoomTypeResponse()
+                        {
+                            Id = s.Room.RoomType.Id,
+                            Value = s.Room.RoomType.Value,
+                        }
+                    },
+                    SessionType = s.SessionType.Id,
+                }).ToList(),
+                CreatedAt = cs.CreatedAt,
+                UpdatedAt = cs.UpdatedAt,
+            });
+
+        return Ok(CustomResponse.Ok("Get teaching schedules for teacher successfully", classSchedule));
+    }
+    
+        // get teaching schedules for teacher, include all session
+    [HttpGet]
+    [Route("api/teaching-classes/teachers")]
+    [Authorize(Roles = "teacher")]
+    public IActionResult TeacherGetClassAndModuleTeaching()
+    {
+        var userId = Convert.ToInt32(_userService.GetUserId());
+
+        var classSchedules = _context.ClassSchedules
+            .Include(cs => cs.Class)
+            .Include(cs => cs.Module)
+            .Where(cs => cs.TeacherId == userId && cs.EndDate >= DateTime.Today)
+            .Select(cs => new ClassScheduleForTeacherResponse()
+            {
+                ScheduleId = cs.Id,
+                Class = new BasicClassResponse()
+                {  
+                    Id = cs.Class.Id, 
+                    Name = cs.Class.Name,
+                },
+                Module = new BasicModuleResponse()
+                {
+                    Id = cs.Module.Id,
+                    Name = cs.Module.ModuleName,
+                },
+            });
+
+        return Ok(CustomResponse.Ok("Teacher get teaching schedules successfully", classSchedules));
     }
 
     [HttpPost]
@@ -1618,11 +1746,11 @@ public class ClassScheduleController : ControllerBase
                     Value = cs.ClassStatus.Value,
                 },
                 TheoryRoomId = cs.TheoryRoomId,
-                TheoryRoomName = cs.TheoryRoom.Name,
+                TheoryRoomName = cs.TheoryRoom!.Name,
                 LabRoomId = cs.LabRoomId,
-                LabRoomName = cs.LabRoom.Name,
+                LabRoomName = cs.LabRoom!.Name,
                 ExamRoomId = cs.ExamRoomId,
-                ExamRoomName = cs.ExamRoom.Name,
+                ExamRoomName = cs.ExamRoom!.Name,
                 Duration = cs.Duration,
                 StartDate = cs.StartDate,
                 EndDate = cs.EndDate,

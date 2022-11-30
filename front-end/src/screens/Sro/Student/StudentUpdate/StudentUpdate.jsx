@@ -216,18 +216,20 @@ const StudentUpdate = () => {
       district_id: data.district_id,
       ward_id: data.ward_id,
       gender_id: data.gender_id,
-      birthday: data.birthday.add(7, 'hours').toDate(),
+      birthday: moment.utc(data.birthday).local().format(),
       center_id: data.center_id,
       citizen_identity_card_no: data.citizen_identity_card_no?.trim(),
-      citizen_identity_card_published_date:
-        data.citizen_identity_card_published_date.add(7, 'hours').toDate(),
+      citizen_identity_card_published_date: moment
+        .utc(data.citizen_identity_card_published_date)
+        .local()
+        .format(),
       citizen_identity_card_published_place:
         data.citizen_identity_card_published_place,
       status: data.status,
       contact_phone: data.mobile_phone,
       parental_phone: data.parental_phone,
       parental_name: data.parental_name,
-      application_date: data.application_date.add(7, 'hours').toDate(),
+      application_date: moment.utc(data.application_date).local().format(),
       fee_plan: data.fee_plan,
       promotion: data.promotion,
       contact_address: data.contact_address,
@@ -1238,16 +1240,18 @@ const StudentUpdate = () => {
                   Upload
                 </Button>
               </div>
-              {openChangeAvatar && <ChangeAvatar
-                open={openChangeAvatar}
-                userId={id}
-                onSuccess={({ reload }) => {
-                  setOpenChangeAvatar(false);
-                  if (reload) {
-                    getInformationStudent();
-                  }
-                }}
-              />}
+              {openChangeAvatar && (
+                <ChangeAvatar
+                  open={openChangeAvatar}
+                  userId={id}
+                  onSuccess={({ reload }) => {
+                    setOpenChangeAvatar(false);
+                    if (reload) {
+                      getInformationStudent();
+                    }
+                  }}
+                />
+              )}
             </Card.Body>
           </Card>
           <Card variant="bordered">
