@@ -11,7 +11,7 @@ using AcademicManagementSystem.Models.ClassScheduleController.ProgressModel;
 using AcademicManagementSystem.Models.ClassStatusController;
 using AcademicManagementSystem.Models.RoomController.RoomModel;
 using AcademicManagementSystem.Models.RoomController.RoomTypeModel;
-using AcademicManagementSystem.Models.Sessions;
+using AcademicManagementSystem.Models.SessionController;
 using AcademicManagementSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -146,7 +146,7 @@ public class ClassScheduleController : ControllerBase
                     Id = s.Room.Id,
                     Name = s.Room.Name,
                     Capacity = s.Room.Capacity,
-                    Room = new RoomTypeResponse()
+                    RoomType = new RoomTypeResponse()
                     {
                         Id = s.Room.RoomType.Id,
                         Value = s.Room.RoomType.Value,
@@ -234,7 +234,7 @@ public class ClassScheduleController : ControllerBase
                         Id = s.Room.Id,
                         Name = s.Room.Name,
                         Capacity = s.Room.Capacity,
-                        Room = new RoomTypeResponse()
+                        RoomType = new RoomTypeResponse()
                         {
                             Id = s.Room.RoomType.Id,
                             Value = s.Room.RoomType.Value,
@@ -342,7 +342,7 @@ public class ClassScheduleController : ControllerBase
                         Id = s.Room.Id,
                         Name = s.Room.Name,
                         Capacity = s.Room.Capacity,
-                        Room = new RoomTypeResponse()
+                        RoomType = new RoomTypeResponse()
                         {
                             Id = s.Room.RoomType.Id,
                             Value = s.Room.RoomType.Value,
@@ -430,7 +430,7 @@ public class ClassScheduleController : ControllerBase
                         Id = s.Room.Id,
                         Name = s.Room.Name,
                         Capacity = s.Room.Capacity,
-                        Room = new RoomTypeResponse()
+                        RoomType = new RoomTypeResponse()
                         {
                             Id = s.Room.RoomType.Id,
                             Value = s.Room.RoomType.Value,
@@ -1291,7 +1291,7 @@ public class ClassScheduleController : ControllerBase
                     Id = g.First().Room.Id,
                     Name = g.First().Room.Name,
                     Capacity = g.First().Room.Capacity,
-                    Room = new RoomTypeResponse()
+                    RoomType = new RoomTypeResponse()
                     {
                         Id = g.First().Room.RoomType.Id,
                         Value = g.First().Room.RoomType.Value,

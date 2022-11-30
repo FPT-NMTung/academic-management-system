@@ -3,7 +3,6 @@ using AcademicManagementSystem.Models.BasicResponse;
 using AcademicManagementSystem.Models.ClassDaysController;
 using AcademicManagementSystem.Models.ClassStatusController;
 using AcademicManagementSystem.Models.ModuleController;
-using AcademicManagementSystem.Models.Sessions;
 
 namespace AcademicManagementSystem.Models.ClassScheduleController.ClassScheduleModel;
 

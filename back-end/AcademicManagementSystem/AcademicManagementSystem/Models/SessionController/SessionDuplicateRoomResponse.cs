@@ -2,9 +2,9 @@
 using AcademicManagementSystem.Models.BasicResponse;
 using AcademicManagementSystem.Models.RoomController.RoomModel;
 
-namespace AcademicManagementSystem.Models.Sessions;
+namespace AcademicManagementSystem.Models.SessionController;
 
-public class SessionDuplicateTeacherResponse
+public class SessionDuplicateRoomResponse
 {
     [JsonPropertyName("learning_date")]
     public DateTime LearningDate { get; set; }
@@ -12,10 +12,9 @@ public class SessionDuplicateTeacherResponse
     [JsonPropertyName("working_time_id")]
     public int WorkingTimeId { get; set; }
     
-    [JsonPropertyName("teacher")]
-    public BasicTeacherInformationResponse Teacher { get; set; }
+    [JsonPropertyName("room")]
+    public RoomResponse Room { get; set; }
     
     [JsonPropertyName("sessions")]
     public List<BasicSessionDuplicateResponse> Sessions { get; set; }
-    
 }
