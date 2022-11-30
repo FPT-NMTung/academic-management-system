@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using AcademicManagementSystem.Models.RoomController.RoomModel;
 
-namespace AcademicManagementSystem.Models.Sessions;
+namespace AcademicManagementSystem.Models.SessionController;
 
 public class SessionResponse
 {
