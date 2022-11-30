@@ -55,7 +55,6 @@ const DoFeedback = () => {
   useEffect(() => {
     getForm();
     getQandA();
-
   }, []);
   return (
     <Fragment>
@@ -70,7 +69,6 @@ const DoFeedback = () => {
           labelAlign="center"
           // onFinish={handleSubmitForm}
           form={form}
-
         >
           <Grid.Container gap={1} justify="center">
             <Grid sm={8} direction={"column"}>
@@ -132,9 +130,11 @@ const DoFeedback = () => {
                   <Fragment>
                     <div style={{ dispay: "flex", flex: "1", width: "100%" }}>
                       <Text
+                        b
                         size={16}
                         css={{
                           textAlign: "start",
+                          // fontStyle: "italic",
                         }}
                       >
                         {item.content}
@@ -142,8 +142,7 @@ const DoFeedback = () => {
                       </Text>
                     </div>
                     <Spacer y={1} />
-         
-                      
+
                     <Form.Item
                       name="class_name"
                       style={{
@@ -157,25 +156,25 @@ const DoFeedback = () => {
                         },
                       ]}
                     >
-                  
-            
-
-
                       <Radio.Group label="" defaultValue="0" size="xs">
                         <Radio value="1">Always punctual (Luôn đúng giờ)</Radio>
-                        <Radio value="2">Mostly punctual (Phần lớn đúng giờ)</Radio>
-                        <Radio value="3">Rarely all punctual (Ít khi đúng giờ)</Radio>
-                        <Radio value="4">Not at all punctual (Không bao giờ đúng giờ)</Radio>
-
+                        <Radio value="2">
+                          Mostly punctual (Phần lớn đúng giờ)
+                        </Radio>
+                        <Radio value="3">
+                          Rarely all punctual (Ít khi đúng giờ)
+                        </Radio>
+                        <Radio value="4">
+                          Not at all punctual (Không bao giờ đúng giờ)
+                        </Radio>
                       </Radio.Group>
-            
+
                       <Spacer y={0.5} />
                       <Card.Divider />
                     </Form.Item>
-                 
                   </Fragment>
                 </Card>
-       ))}
+              ))}
               <Spacer y={0.5} />
               <Form.Item>
                 <Button

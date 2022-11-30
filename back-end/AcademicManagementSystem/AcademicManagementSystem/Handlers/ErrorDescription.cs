@@ -131,6 +131,8 @@ public static class ErrorDescription
         { "E1059", new ErrorModel() { Message = "Max Theory Grade should not be empty due to ExamType", Type = "module-error-0029" } },
         { "E1060", new ErrorModel() { Message = "Max Practical Grade should not be empty due to ExamType", Type = "module-error-0030" } },
         { "E1061", new ErrorModel() { Message = "Max Theory Grade and Max Practical Grade should not be empty due to ExamType", Type = "module-error-0031" } },
+        { "E1137", new ErrorModel() { Message = "Can not update this module because this module has been learned", Type = "module-error-0032" } },
+        { "E1138", new ErrorModel() { Message = "Can not delete this module because this module has been learned", Type = "module-error-0033" } },
 
         // teacher
         { "E0039", new ErrorModel() { Message = "Please enter at least one search criteria", Type = "teacher-error-0002" } },
@@ -270,6 +272,7 @@ public static class ErrorDescription
         { "E1126", new ErrorModel() { Message = "Fail to SaveChange when change class student", Type = "student-error-0042" } },        
         { "E1127", new ErrorModel() { Message = "New class already had 100 students", Type = "student-error-0043" } },
         { "E1129", new ErrorModel() { Message = "Birthday must less than Now", Type = "student-error-0044" } },
+        { "E1136", new ErrorModel() { Message = "Identity card must less than Now", Type = "student-error-0045" } },
 
         // class schedule
         { "E0077", new ErrorModel() { Message = "Module Not For This Class", Type = "class-schedule-error-0001" } },
@@ -309,7 +312,7 @@ public static class ErrorDescription
         // attendance
         { "E0200", new ErrorModel() { Message = "Invalid data", Type = "attendance-error-0000" } },
         { "E0201", new ErrorModel() { Message = "Attendance has been taken for this session", Type = "attendance-error-0001" } },
-        { "E0202", new ErrorModel() { Message = "All student must in class", Type = "attendance-error-0002" } },
+        { "E0202", new ErrorModel() { Message = "All student must in class or not draft", Type = "attendance-error-0002" } },
         { "E0203", new ErrorModel() { Message = "Session not found", Type = "attendance-error-0003" } },
         { "E0204", new ErrorModel() { Message = "Class schedule not found", Type = "attendance-error-0004" } },
         { "E0205", new ErrorModel() { Message = "Can't take attendance this time", Type = "attendance-error-0005" } },

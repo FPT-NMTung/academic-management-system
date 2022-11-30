@@ -2,7 +2,7 @@
 using AcademicManagementSystem.Models.AttendanceController.AttendanceModel;
 using AcademicManagementSystem.Models.RoomController.RoomModel;
 
-namespace AcademicManagementSystem.Models.Sessions;
+namespace AcademicManagementSystem.Models.SessionController;
 
 public class SessionWithAttendanceResponse
 {

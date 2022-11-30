@@ -60,7 +60,7 @@ public class GradeCategoryModuleController : ControllerBase
         // check module is learning 
         var isModuleLearned = _context.Modules
             .Include(m => m.ClassSchedules)
-            .Any(m => m.ClassSchedules.Any(cs => cs.StartDate <= DateTime.Today));
+            .Any(m => m.Id == moduleId && m.ClassSchedules.Any(cs => cs.StartDate <= DateTime.Today));
 
         if (isModuleLearned)
         {
