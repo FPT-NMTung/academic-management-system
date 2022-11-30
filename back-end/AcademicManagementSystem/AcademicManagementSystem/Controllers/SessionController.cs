@@ -96,15 +96,15 @@ public class SessionController : ControllerBase
         return Ok(CustomResponse.Ok("Student get session with learning date successfully", sessions));
     }
 
-    [HttpGet]
-    [Route("api/sessions/detail/students")]
+    [HttpPost]
+    [Route("api/sessions/detail/students/get")]
     [Authorize(Roles = "student")]
     public IActionResult GetDetailSessionByLearningDate([FromBody] DetailSessionForStudentRequest request)
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
 
         // get detail session by learning date of student
-        var sessions = _context.Sessions
+        var session = _context.Sessions
             .Include(s => s.ClassSchedule)
             .Include(s => s.ClassSchedule.Class)
             .Include(s => s.ClassSchedule.Module)
@@ -115,7 +115,7 @@ public class SessionController : ControllerBase
             .Include(s => s.Attendances)
             .ThenInclude(a => a.AttendanceStatus)
             .Where(s => s.ClassSchedule.Class.StudentsClasses.Any(sc => sc.StudentId == userId && sc.IsActive)
-                        && s.LearningDate == request.LearningDate)
+                        && s.LearningDate.Date == request.LearningDate.Date)
             .Select(s => new DetailSessionForStudentResponse()
             {
                 Id = s.Id,
@@ -186,6 +186,6 @@ public class SessionController : ControllerBase
             });
 
 
-        return Ok(CustomResponse.Ok("Student get detail session successfully", sessions));
+        return Ok(CustomResponse.Ok("Student get detail session successfully", session.FirstOrDefault()!));
     }
 }
