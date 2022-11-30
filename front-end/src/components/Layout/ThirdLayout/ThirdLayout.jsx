@@ -96,7 +96,7 @@ const menu = {
     },
     {
       key: '11',
-      label: 'Quản lý giáo viên',
+      label: 'Danh sách giáo viên',
       icon: <MdManageAccounts size={16}/>,
       url: '/sro/manage/teacher',
     },

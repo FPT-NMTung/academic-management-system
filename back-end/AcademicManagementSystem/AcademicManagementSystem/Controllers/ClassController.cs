@@ -1480,6 +1480,24 @@ public class ClassController : ControllerBase
         return Ok(CustomResponse.Ok("Get students in class successfully", students));
     }
 
+    // get undraft students in class
+    [HttpGet]
+    [Route("api/classes/{id:int}/un-draft-students")]
+    [Authorize(Roles = "admin, teacher")]
+    public IActionResult GetUnDraftStudentsInClass(int id)
+    {
+        // is class exist
+        var existedClass = _context.Classes.Any(c => c.Id == id);
+        if (!existedClass)
+        {
+            var error = ErrorDescription.Error["E1073"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var students = GetUnDraftStudentsByClassId(id);
+        return Ok(CustomResponse.Ok("Get students in class successfully", students));
+    }
+
     // get status list module of class
     [HttpGet]
     [Route("api/classes/{id:int}/modules")]
@@ -2007,6 +2025,84 @@ public class ClassController : ControllerBase
             .ToList();
         return students;
     }
+
+    private List<StudentResponse> GetUnDraftStudentsByClassId(int id)
+
+    {
+        var students = _context.Users.Include(u => u.Student)
+            .Include(u => u.Student.StudentsClasses)
+            .Include(u => u.Student.Course)
+            .Include(u => u.Student.Course.CourseFamily)
+            .Include(u => u.Province)
+            .Include(u => u.District)
+            .Include(u => u.Ward)
+            .Include(u => u.Center)
+            .Include(u => u.Role)
+            .Include(u => u.Gender)
+            .Where(u => u.RoleId == RoleIdStudent && !u.Student.IsDraft &&
+                        u.Student.StudentsClasses.Any(sc => sc.ClassId == id && sc.IsActive))
+            .Select(u => new StudentResponse()
+            {
+                UserId = u.Student.UserId, Promotion = u.Student.Promotion, Status = u.Student.Status,
+                University = u.Student.University, ApplicationDate = u.Student.ApplicationDate,
+                ApplicationDocument = u.Student.ApplicationDocument, CompanyAddress = u.Student.CompanyAddress,
+                CompanyPosition = u.Student.CompanyPosition, CompanySalary = u.Student.CompanySalary,
+                ContactAddress = u.Student.ContactAddress, ContactPhone = u.Student.ContactPhone,
+                CourseCode = u.Student.CourseCode, EnrollNumber = u.Student.EnrollNumber,
+                FacebookUrl = u.Student.FacebookUrl, FeePlan = u.Student.FeePlan, HighSchool = u.Student.HighSchool,
+                HomePhone = u.Student.HomePhone, ParentalName = u.Student.ParentalName,
+                ParentalRelationship = u.Student.ParentalRelationship, ParentalPhone = u.Student.ParentalPhone,
+                PortfolioUrl = u.Student.PortfolioUrl, StatusDate = u.Student.StatusDate,
+                WorkingCompany = u.Student.WorkingCompany, IsDraft = u.Student.IsDraft, Avatar = u.Avatar,
+
+                FirstName = u.FirstName, LastName = u.LastName, Birthday = u.Birthday, Email = u.Email,
+                MobilePhone = u.MobilePhone, CenterId = u.CenterId, EmailOrganization = u.EmailOrganization,
+                CenterName = u.Center.Name, CreatedAt = u.CreatedAt, UpdatedAt = u.UpdatedAt,
+                CitizenIdentityCardNo = u.CitizenIdentityCardNo,
+                CitizenIdentityCardPublishedDate = u.CitizenIdentityCardPublishedDate,
+                CitizenIdentityCardPublishedPlace = u.CitizenIdentityCardPublishedPlace,
+
+                Course = new CourseResponse()
+                {
+                    Code = u.Student.Course.Code, Name = u.Student.Course.Name,
+                    SemesterCount = u.Student.Course.SemesterCount,
+                    CourseFamilyCode = u.Student.Course.CourseFamilyCode, IsActive = u.Student.Course.IsActive,
+                    CreatedAt = u.Student.Course.CreatedAt,
+                    UpdatedAt = u.Student.Course.UpdatedAt, CourseFamily = new CourseFamilyResponse()
+                    {
+                        Code = u.Student.Course.CourseFamily.Code, Name = u.Student.Course.CourseFamily.Name,
+                        IsActive = u.Student.Course.CourseFamily.IsActive,
+                        PublishedYear = u.Student.Course.CourseFamily.PublishedYear,
+                        CreatedAt = u.Student.Course.CourseFamily.CreatedAt,
+                        UpdatedAt = u.Student.Course.CourseFamily.UpdatedAt
+                    }
+                },
+                Province = new ProvinceResponse()
+                {
+                    Id = u.Province.Id, Name = u.Province.Name, Code = u.Province.Code
+                },
+                District = new DistrictResponse()
+                {
+                    Id = u.District.Id, Name = u.District.Name, Prefix = u.District.Prefix
+                },
+                Ward = new WardResponse()
+                {
+                    Id = u.Ward.Id, Name = u.Ward.Name, Prefix = u.Ward.Prefix
+                },
+                Gender = new GenderResponse()
+                {
+                    Id = u.Gender.Id, Value = u.Gender.Value
+                },
+                Role = new RoleResponse()
+                {
+                    Id = u.Role.Id, Value = u.Role.Value
+                }
+            })
+            .Where(s => s.CenterId == _user.CenterId)
+            .ToList();
+        return students;
+    }
+
 
     // download template
     [HttpGet]
