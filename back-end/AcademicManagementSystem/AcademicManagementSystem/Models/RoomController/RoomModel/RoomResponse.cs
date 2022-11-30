@@ -15,7 +15,7 @@ public class RoomResponse
     public string? CenterName { get; set; }
     
     [JsonPropertyName("room_type")]
-    public RoomTypeResponse? Room { get; set; }
+    public RoomTypeResponse? RoomType { get; set; }
 
     [JsonPropertyName("name")]
     public string? Name { get; set; }
