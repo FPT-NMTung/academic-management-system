@@ -223,14 +223,14 @@ export const ErrorCodeApi = {
   "student-error-00035": "Mức lương không đúng định dạng",
   "student-error-00036": "Tên phụ huynh không đúng định dạng",
   "student-error-00037": "Cập nhật thông tin học viên không thành công",
-  "student-error-00038": "Lớp học hiện tại không tồn tại trong cơ sở này",
-  "student-error-00039": "Lớp chuyển tới không tồn tại trong cơ sở này",
-  "student-error-00040": "Học viên không có trong lớp hiện tại",
-  "student-error-00041": "Học viên đã tồn tại trong lớp chuyển tới",
-  "student-error-00042": "Thất bại khi chuyển lớp",
-  "student-error-00043": "Lớp chuyển tới đã có hơn 100 học viên",
-  "student-error-00044": "Ngày sinh phải nhỏ hơn ngày hiện tại",
-  "student-error-00045": "Ngày cấp thẻ CMT/CCCD phải nhỏ hơn ngày hiện tại",
+  "student-error-0038": "Lớp học hiện tại không tồn tại trong cơ sở này",
+  "student-error-0039": "Lớp chuyển tới không tồn tại trong cơ sở này",
+  "student-error-0040": "Học viên không có trong lớp hiện tại",
+  "student-error-0041": "Học viên đã tồn tại trong lớp chuyển tới",
+  "student-error-0042": "Thất bại khi chuyển lớp",
+  "student-error-0043": "Lớp chuyển tới đã có hơn 100 học viên",
+  "student-error-0044": "Ngày sinh phải nhỏ hơn ngày hiện tại",
+  "student-error-0045": "Ngày cấp thẻ CMT/CCCD phải nhỏ hơn ngày hiện tại",
 
 
 

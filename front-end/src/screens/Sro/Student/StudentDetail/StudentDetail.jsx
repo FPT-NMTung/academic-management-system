@@ -318,7 +318,7 @@ const StudentDetail = () => {
                       </Text>
                       {dataStudent.current_class === null && (
                         <Text p size={14}>
-                        Hiện  Không học lớp nào
+                        Hiện Không học lớp nào
                         </Text>
                       )}
                       {dataStudent.current_class !== null && (
