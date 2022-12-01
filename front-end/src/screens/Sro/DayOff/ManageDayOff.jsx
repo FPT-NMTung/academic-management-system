@@ -81,7 +81,6 @@ const ManageDayOff = () => {
             dayOff.evening.push(item);
           }
         });
-
         setDetailDayOff(dayOff);
       })
       .catch((err) => {

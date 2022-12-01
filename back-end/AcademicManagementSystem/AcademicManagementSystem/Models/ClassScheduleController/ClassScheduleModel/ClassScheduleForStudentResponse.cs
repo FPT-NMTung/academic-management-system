@@ -2,7 +2,7 @@
 using AcademicManagementSystem.Models.BasicResponse;
 using AcademicManagementSystem.Models.ClassDaysController;
 using AcademicManagementSystem.Models.ClassStatusController;
-using AcademicManagementSystem.Models.Sessions;
+using AcademicManagementSystem.Models.SessionController;
 
 namespace AcademicManagementSystem.Models.ClassScheduleController.ClassScheduleModel;
 
