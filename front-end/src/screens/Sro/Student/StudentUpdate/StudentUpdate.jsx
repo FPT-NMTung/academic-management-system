@@ -1237,7 +1237,7 @@ const StudentUpdate = () => {
                     setOpenChangeAvatar(true);
                   }}
                 >
-                  Upload
+                  Tải lên
                 </Button>
               </div>
               {openChangeAvatar && (

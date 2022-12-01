@@ -14,7 +14,6 @@ public class TestTestController
 {
     private readonly TestController _controller;
     private readonly AmsContext _context;
-    private readonly IUserService _userService;
 
     public TestTestController()
     {
@@ -22,7 +21,7 @@ public class TestTestController
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
         
-        _userService = new UserService(new HttpContextAccessor()
+        IUserService userService = new UserService(new HttpContextAccessor()
         {
             HttpContext = new DefaultHttpContext()
             {
@@ -36,7 +35,7 @@ public class TestTestController
         });
 
         _context = new AmsContext(options);
-        _controller = new TestController(_userService);
+        _controller = new TestController(userService);
         Init();
     }
 

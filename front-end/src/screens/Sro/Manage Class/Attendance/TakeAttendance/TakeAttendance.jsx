@@ -99,10 +99,12 @@ const TakeAttendance = ({ session, scheduleId, onClose }) => {
         attendance_status_id: item.status ? 3 : 2,
         note: find === '' ? null : find,
       };
-    });
+    });    
+
+    var api = localStorage.getItem('role') === 'teacher' ? ManageAttendanceApis.submitAttendanceTeacher : ManageAttendanceApis.submitAttendanceSro;
 
     toast.promise(
-      FetchApi(ManageAttendanceApis.submitAttendanceSro, dataSubmit, null, [
+      FetchApi(api, dataSubmit, null, [
         String(scheduleId),
         String(session.id),
       ]),
