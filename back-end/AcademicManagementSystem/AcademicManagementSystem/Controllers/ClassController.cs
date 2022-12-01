@@ -884,14 +884,14 @@ public class ClassController : ControllerBase
                                 error.Type));
                         }
 
-                        if (newBirthday.Date.Year > DateTime.Now.Date.Year)
+                        if (newBirthday.Date >= DateTime.Now.Date)
                         {
                             var error = ErrorDescription.Error["E1128"];
                             return BadRequest(CustomResponse.BadRequest(error.Message + " at student no " + studentNo,
                                 error.Type));
                         }
 
-                        if (newIdentityCardPublishedDate.Date > DateTime.Now.Date)
+                        if (newIdentityCardPublishedDate.Date >= DateTime.Now.Date)
                         {
                             var error = ErrorDescription.Error["E1136"];
                             return BadRequest(CustomResponse.BadRequest(error.Message + " at student no " + studentNo,
@@ -1295,13 +1295,13 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (request.Birthday.Date.Year > DateTime.Now.Date.Year)
+        if (request.Birthday.Date >= DateTime.Now.Date)
         {
             var error = ErrorDescription.Error["E1128"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (request.CitizenIdentityCardPublishedDate.Date > DateTime.Now.Date)
+        if (request.CitizenIdentityCardPublishedDate.Date >= DateTime.Now.Date)
         {
             var error = ErrorDescription.Error["E1136"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
