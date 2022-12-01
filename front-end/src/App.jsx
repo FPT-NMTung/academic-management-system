@@ -35,6 +35,9 @@ import TeacherInfo from './screens/Sro/Teacher/TeacherInfo/TeacherInfo';
 import FeedbackScreen from './screens/Student/Feedback/FeedbackScreen';
 import DoFeedback from './screens/Student/Feedback/Feedback/DoFeedback/DoFeedback';
 import ProgressLearn from './screens/Sro/Manage Class/ProgressLearn/ProgressLearn';
+import Attendance from './screens/Teacher/Attendance/Attendance';
+import AttendanceDetail from './components/AttendanceDetail/AttendanceDetail';
+import AttendanceDetailEmpty from './components/AttendanceDetailEmpty/AttendanceDetailEmpty';
 
 const App = () => {
   return (
@@ -54,8 +57,12 @@ const App = () => {
 
 
       {/* Routers for role teacher */}
-      <Route path={'/teacher'}>
-        <Route index element={<ThirdLayout><RequireAuth role={'teacher'}><Text p>Teacher</Text></RequireAuth></ThirdLayout>}/>
+      <Route path={'/teacher'} element={<ThirdLayout><RequireAuth role={'teacher'} /></ThirdLayout>}>
+        <Route index element={<Navigate to="/teacher/attendance" />} />
+        <Route path="/teacher/attendance" element={<Attendance />} >
+          <Route index element={<AttendanceDetailEmpty />} />
+          <Route path="/teacher/attendance/:id" element={<AttendanceDetail />} />
+        </Route>
       </Route>
 
       {/* Routers for role sro */}
