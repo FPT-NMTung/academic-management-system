@@ -189,8 +189,8 @@ const ClassCreate = ({ modeUpdate }) => {
                       textAlign: 'center',
                     }}
                   >
-                    {!modeUpdate && 'Tạo Lớp Học'}
-                    {modeUpdate && 'Cập Nhật Thông Tin Lớp Học'}
+                    {!modeUpdate && 'Tạo lớp học'}
+                    {modeUpdate && 'Cập nhật thông tin lớp học'}
                   </Text>
                 </Card.Header>
                 <Card.Body>
@@ -274,7 +274,7 @@ const ClassCreate = ({ modeUpdate }) => {
                     ]}
                   >
                     <Form.Item
-                      label="Ngày Nhập Học"
+                      label="Ngày nhập học"
                       name="start_date"
                       rules={[
                         {
@@ -344,7 +344,7 @@ const ClassCreate = ({ modeUpdate }) => {
                     ]}
                   >
                     <Form.Item
-                      label="Ngày Hoàn Thành"
+                      label="Ngày hoàn thành"
                       name="completion_date"
                       rules={[
                         {
@@ -366,7 +366,7 @@ const ClassCreate = ({ modeUpdate }) => {
                       />
                     </Form.Item>
                     <Form.Item
-                      label="Ngày Tốt Nghiệp"
+                      label="Ngày tốt nghiệp"
                       name="graduation_date"
                       rules={[
                         {
@@ -446,7 +446,7 @@ const ClassCreate = ({ modeUpdate }) => {
                       </Select>
                     </Form.Item>
                     <Form.Item
-                      label="Ngày Học"
+                      label="Ngày học"
                       name="class_days_id"
                       rules={[
                         {

@@ -38,6 +38,7 @@ import ProgressLearn from './screens/Sro/Manage Class/ProgressLearn/ProgressLear
 import Attendance from './screens/Teacher/Attendance/Attendance';
 import AttendanceDetail from './components/AttendanceDetail/AttendanceDetail';
 import AttendanceDetailEmpty from './components/AttendanceDetailEmpty/AttendanceDetailEmpty';
+import GradeScreen from './screens/Student/GradeScreen/GradeScreen';
 
 const App = () => {
   return (
@@ -50,7 +51,7 @@ const App = () => {
         <Route index element={<Navigate to="/student/schedule" replace />} />
         <Route path="/student/schedule" element={<Schedule />} />
         <Route path="/student/attendance" element={<p>attendance</p>} />
-        <Route path="/student/grade" element={<p>grade</p>} />
+        <Route path="/student/grade" element={<GradeScreen/>} />
         <Route path="/student/feedback" element={<FeedbackScreen />} />
         <Route path="/student/feedback/:id" element={<DoFeedback/> } />
       </Route>

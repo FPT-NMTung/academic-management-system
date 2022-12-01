@@ -114,7 +114,8 @@ public class AttendanceController : ControllerBase
             .ThenInclude(cf => cf.Courses)
             .ThenInclude(c => c.CoursesModulesSemesters)
             .ThenInclude(cms => cms.Module)
-            .FirstOrDefault(c => c.Id == classId && c.StudentsClasses.Any(sc => sc.StudentId == userId && sc.IsActive));
+            .FirstOrDefault(c => c.Id == classId
+                                 && c.StudentsClasses.Any(sc => sc.StudentId == userId && sc.IsActive));
 
         if (classContext == null)
         {
@@ -389,6 +390,7 @@ public class AttendanceController : ControllerBase
             .Include(s => s.ClassSchedule)
             .Include(s => s.ClassSchedule.Class)
             .Include(s => s.ClassSchedule.Class.StudentsClasses)
+            .ThenInclude(sc => sc.Student)
             .Include(s => s.ClassSchedule.Module)
             .Include(s => s.Attendances)
             .Where(s => s.ClassSchedule.Class.CenterId == centerId && s.ClassSchedule.Id == scheduleId)
@@ -413,26 +415,29 @@ public class AttendanceController : ControllerBase
                     }
                 },
 
-                StudentAttendances = s.ClassSchedule.Class.StudentsClasses.Select(sc => new StudentAttendanceResponse()
-                {
-                    Student = new BasicStudentResponse()
+                // all student in class and isActive,also can get draft student 
+                StudentAttendances = s.ClassSchedule.Class.StudentsClasses
+                    .Where(sc => sc.IsActive)
+                    .Select(sc => new StudentAttendanceResponse()
                     {
-                        UserId = sc.StudentId,
-                        EnrollNumber = sc.Student.EnrollNumber,
-                        EmailOrganization = sc.Student.User.EmailOrganization,
-                        FirstName = sc.Student.User.FirstName,
-                        LastName = sc.Student.User.LastName,
-                        Avatar = sc.Student.User.Avatar
-                    },
-                    AttendanceStatus = s.Attendances.Where(a => a.StudentId == sc.StudentId)
-                        .Select(a => new AttendanceStatusResponse()
+                        Student = new BasicStudentResponse()
                         {
-                            Id = a.AttendanceStatus.Id,
-                            Value = a.AttendanceStatus.Value
-                        }).FirstOrDefault(),
-                    Note = s.Attendances.Where(a => a.StudentId == sc.StudentId)
-                        .Select(a => a.Note).FirstOrDefault()
-                }).ToList()
+                            UserId = sc.StudentId,
+                            EnrollNumber = sc.Student.EnrollNumber,
+                            EmailOrganization = sc.Student.User.EmailOrganization,
+                            FirstName = sc.Student.User.FirstName,
+                            LastName = sc.Student.User.LastName,
+                            Avatar = sc.Student.User.Avatar
+                        },
+                        AttendanceStatus = s.Attendances.Where(a => a.StudentId == sc.StudentId)
+                            .Select(a => new AttendanceStatusResponse()
+                            {
+                                Id = a.AttendanceStatus.Id,
+                                Value = a.AttendanceStatus.Value
+                            }).FirstOrDefault(),
+                        Note = s.Attendances.Where(a => a.StudentId == sc.StudentId)
+                            .Select(a => a.Note).FirstOrDefault()
+                    }).ToList()
             });
         return attendances;
     }

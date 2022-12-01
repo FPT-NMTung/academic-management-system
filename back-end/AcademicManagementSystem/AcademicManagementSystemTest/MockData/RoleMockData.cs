@@ -2,7 +2,7 @@
 
 namespace AcademicManagementSystemTest.MockData;
 
-public class RoleMockData
+public static class RoleMockData
 {
     public static List<Role> Roles = new List<Role>
     {
