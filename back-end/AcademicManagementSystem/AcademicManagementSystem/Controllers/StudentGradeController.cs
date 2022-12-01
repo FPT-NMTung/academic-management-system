@@ -2,6 +2,7 @@
 using AcademicManagementSystem.Context.AmsModels;
 using AcademicManagementSystem.Models.BasicResponse;
 using AcademicManagementSystem.Models.GradeCategoryController;
+using AcademicManagementSystem.Models.StudentGradeController;
 using AcademicManagementSystem.Models.StudentGradeController.StudentGradeModel;
 using AcademicManagementSystem.Models.StudentGradeController.StudentGradeModel.GradeItem;
 using AcademicManagementSystem.Services;
@@ -45,21 +46,21 @@ public class GradeStudentController : ControllerBase
         var module = clazz.ClassSchedules.FirstOrDefault(cs => cs.ModuleId == moduleId);
         if (module == null)
         {
-            return NotFound(CustomResponse.NotFound("Module not found in this class schedule"));
+            return NotFound(CustomResponse.NotFound("Module not scheduled for this class"));
         }
 
         var isStudentInClass = clazz.StudentsClasses.Any(sc => sc.StudentId == userId);
 
         if (!isStudentInClass)
         {
-            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
+            return Unauthorized(CustomResponse.Unauthorized("You are not in this class"));
         }
 
         var moduleProgressScores = GetGradesOfSpecificStudent(clazz, moduleId, student);
 
         return Ok(CustomResponse.Ok("Student get progress scores successfully", moduleProgressScores));
     }
-    
+
     // student get their grades by class and module
     [HttpGet]
     [Route("api/classes/{classId:int}/modules/{moduleId:int}/students/{studentId:int}/grades")]
@@ -81,8 +82,8 @@ public class GradeStudentController : ControllerBase
         {
             return NotFound(CustomResponse.NotFound("Class not found"));
         }
-        
-        if(sro.User.Center.Id != clazz.Center.Id)
+
+        if (sro.User.Center.Id != clazz.Center.Id)
         {
             return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
         }
@@ -90,14 +91,14 @@ public class GradeStudentController : ControllerBase
         var module = clazz.ClassSchedules.FirstOrDefault(cs => cs.ModuleId == moduleId);
         if (module == null)
         {
-            return NotFound(CustomResponse.NotFound("Module not found in this class schedule"));
+            return NotFound(CustomResponse.NotFound("Module not scheduled for this class"));
         }
 
         var student = clazz.StudentsClasses.Select(sc => sc.Student).FirstOrDefault(s => s.UserId == studentId);
 
         // null or isDraft = true
         if (student is not { IsDraft: false })
-        { 
+        {
             return NotFound(CustomResponse.NotFound("Student not found in class"));
         }
 
@@ -105,7 +106,7 @@ public class GradeStudentController : ControllerBase
 
         return Ok(CustomResponse.Ok("Student get progress scores successfully", moduleProgressScores));
     }
-    
+
     // SRO get all grade of students in class 
     [HttpGet]
     [Route("api/classes/{classId:int}/modules/{moduleId:int}/grades-students/sros")]
@@ -113,7 +114,7 @@ public class GradeStudentController : ControllerBase
     public IActionResult SroGetListStudentGrades(int classId, int moduleId)
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
-        
+
         var sro = _context.Sros.Include(s => s.User.Center).First(s => s.UserId == userId);
 
         var clazz = _context.Classes
@@ -124,13 +125,13 @@ public class GradeStudentController : ControllerBase
             .Include(c => c.ClassSchedules)
             .ThenInclude(cs => cs.Module)
             .FirstOrDefault(c => c.Id == classId);
-        
+
         if (clazz == null)
         {
             return NotFound(CustomResponse.NotFound("Class not found"));
         }
-        
-        if(sro.User.Center.Id != clazz.Center.Id)
+
+        if (sro.User.Center.Id != clazz.Center.Id)
         {
             return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
         }
@@ -178,6 +179,57 @@ public class GradeStudentController : ControllerBase
 
         var moduleProgressScores = GetGradesOfStudentsInClass(clazz, moduleId);
         return Ok(CustomResponse.Ok("Teacher get progress scores of students successfully", moduleProgressScores));
+    }
+
+    [HttpGet]
+    [Route("api/students/semesters/modules")]
+    [Authorize(Roles = "student")]
+    public IActionResult GetStudentModulesLearningInSemesters()
+    {
+        var userId = Convert.ToInt32(_userService.GetUserId());
+        // var student = _context.Students.First(s => s.UserId == userId);
+
+        var classSchedule = _context.ClassSchedules
+            .Include(cs => cs.Class)
+            .Include(cs => cs.Class.StudentsClasses)
+            .Include(cs => cs.Module)
+            .Include(cs => cs.Module.CoursesModulesSemesters)
+            .ThenInclude(cms => cms.Course)
+            .Include(cs => cs.Module.CoursesModulesSemesters)
+            .ThenInclude(cms => cms.Semester)
+            .Where(cs => cs.StartDate.Date <= DateTime.Today &&
+                         cs.Class.StudentsClasses.Any(sc => sc.StudentId == userId));
+
+        var semesters = classSchedule.Select(cs => cs.Module.CoursesModulesSemesters)
+            .SelectMany(cms => cms)
+            // .Where(cms => cms.CourseCode == student.CourseCode)
+            .Select(cms => cms.Semester)
+            .Select(s => new SemesterWithModuleResponse()
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Modules = classSchedule.Where(cs => cs.Module.CoursesModulesSemesters.Any(cms =>
+                        // cms.CourseCode == student.CourseCode &&
+                        cms.SemesterId == s.Id))
+                    .Select(cs => new ModuleWithClassResponse()
+                    {
+                        Id = cs.Module.Id,
+                        Name = cs.Module.ModuleName,
+
+                        Class = new BasicClassResponse()
+                        {
+                            Id = cs.Class.Id,
+                            Name = cs.Class.Name,
+                        },
+                    }).ToList()
+            });
+
+        // distinct semester
+        var distinctSemesters = semesters.GroupBy(s => s.Id)
+            .Select(s => s.First())
+            .ToList();
+
+        return Ok(CustomResponse.Ok("Student get semesters and modules successfully", distinctSemesters));
     }
 
     private IQueryable<ListStudentGradeResponse> GetGradesOfStudentsInClass(Class clazz, int moduleId)
