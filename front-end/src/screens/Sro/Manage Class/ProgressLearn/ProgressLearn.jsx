@@ -32,12 +32,19 @@ const ProgressLearn = () => {
         });
         const sc = data.map((item) => {
           return item.schedule.map((s) => {
+            const da = s.sessions.sort((a, b) => {
+              return new Date(a.learning_date) - new Date(b.learning_date);
+            })
+
+            const f = da[0];
+            const l = da[da.length - 1];
+
             return {
               id: s.id,
               group: item.class.id,
               title: s.module_name,
-              start_time: moment(s.start_date),
-              end_time: moment(s.end_date),
+              start_time: moment(f.learning_date),
+              end_time: moment(l.learning_date).add(1, 'days'),
             };
           });
         }).flat()
