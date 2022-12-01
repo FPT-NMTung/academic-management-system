@@ -116,7 +116,7 @@ const ScheduleDetail = () => {
 
   const handleCloseViewAttendance = () => {
     setViewAttendance(false);
-  }
+  };
 
   return (
     <Fragment>
@@ -127,7 +127,13 @@ const ScheduleDetail = () => {
           onClose={handleCloseModalAttendance}
         />
       )}
-      {viewAttendance && dataSchedule && <ViewAllAttendance open={viewAttendance} scheduleId={dataSchedule.id} onClose={handleCloseViewAttendance}/>}
+      {viewAttendance && dataSchedule && (
+        <ViewAllAttendance
+          open={viewAttendance}
+          scheduleId={dataSchedule.id}
+          onClose={handleCloseViewAttendance}
+        />
+      )}
       <Card variant={'bordered'}>
         <Card.Header>
           <Grid.Container justify="space-between">
@@ -313,6 +319,16 @@ const ScheduleDetail = () => {
                                 isPressable
                                 onPress={() => {
                                   setSelectSession(data);
+                                }}
+                                css={{
+                                  height: 'fit-content',
+                                  border:
+                                    new Date(
+                                      data.learning_date
+                                    ).toLocaleDateString('vi-VN') ===
+                                      new Date(Date.now()).toLocaleDateString(
+                                        'vi-VN'
+                                      ) && '2px solid red',
                                 }}
                               >
                                 <Card.Body
