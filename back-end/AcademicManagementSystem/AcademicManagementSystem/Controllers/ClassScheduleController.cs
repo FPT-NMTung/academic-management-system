@@ -1198,6 +1198,10 @@ public class ClassScheduleController : ControllerBase
                 ModuleName = cs.Module.ModuleName,
                 StartDate = cs.StartDate,
                 EndDate = cs.EndDate,
+                Sessions = cs.Sessions.Select(item => new SessionResponse()
+                {
+                    LearningDate = item.LearningDate,
+                }).ToList()
             })
         }).ToList();
 
