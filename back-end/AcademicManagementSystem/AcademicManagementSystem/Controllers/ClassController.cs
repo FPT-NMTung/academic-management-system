@@ -2027,7 +2027,6 @@ public class ClassController : ControllerBase
     }
 
     private List<StudentResponse> GetUnDraftStudentsByClassId(int id)
-
     {
         var students = _context.Users.Include(u => u.Student)
             .Include(u => u.Student.StudentsClasses)
