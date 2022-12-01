@@ -33,8 +33,8 @@ import toast from "react-hot-toast";
 
 const Schedule = () => {
   const navigate = useNavigate();
-  const [listLearningDate, setListLearningDate] = useState([]);
-  const [dataUser, setDataUser] = useState({});
+  const [listSession, setListSession] = useState([]);
+  const [listExamDate, setListExamDate] = useState([]);
   const [listForm, setListForm] = useState([]);
   const [value, setValue] = useState(moment());
   const [selectedValue, setSelectedValue] = useState(moment());
@@ -53,11 +53,16 @@ const Schedule = () => {
   };
   const getData = () => {
     setisLoading(true);
-    FetchApi(UserStudentApis.getScheduleStudent)
+    FetchApi(UserStudentApis.getAllSession)
       .then((res) => {
-        setDataUser(res.data);
-        setListLearningDate(res.data[0].sessions);
+        setListSession(res.data);
+        setListExamDate(
+          res.data.filter(
+            (item) => item.session_type === 3 || item.session_type === 4
+          )
+        );
         setisLoading(false);
+
       })
       .catch((err) => {
         toast.error("Đã xảy ra lỗi");
@@ -65,15 +70,25 @@ const Schedule = () => {
   };
   const getDetail = () => {
 
-    const selectDate = moment.utc(selectedValue).format("DD/MM/YYYY");
-    console.log("Ngày đang chọn " + selectDate);
-    console.log("ssss"+ listLearningDate);
-    listLearningDate.map((item) => {
-      if (moment(item.learning_date).format("DD/MM/YYYY") === selectDate) {
-        setDetailLearningDate(item);
-      }
-    });
-    console.log("Chi tiết ngày chọn" + detailLearningDate);
+    // setDetailLearningDate("");
+    // console.log(listSession);
+    // console.log(listExamDate.map((item) => item.learning_date));
+   
+    const body = {
+      learning_date: moment.utc(selectedValue).local().format(),
+    };
+    console.log(body);
+    FetchApi(UserStudentApis.getDetailSession, body, null, null)
+      .then((res) => {
+        res.data.map((item) => {
+          setDetailLearningDate(item);
+        });
+      })
+      .catch((err) => {
+        toast.error('Lỗi lấy chi tiết ngày học');
+      });
+      console.log( "sss" + detailLearningDate.title);
+
   };
   const renderAttendanceStatus = (id) => {
     if (id === 1) {
@@ -89,6 +104,7 @@ const Schedule = () => {
   useEffect(() => {
     setDetailLearningDate("");
     getDetail();
+    
   }, [selectedValue]);
   useEffect(() => {
     // getForm();
@@ -103,42 +119,6 @@ const Schedule = () => {
         </div>
       ) : (
         <Grid.Container gap={2} justify={"center"}>
-          {/* <Grid xs={12} md={4}>
-          <Card
-            css={{
-              width: "100%",
-              height: "fit-content",
-            }}
-          >
-            <Card.Body>
-              <div className={classes.calendar}>
-                <CalendarStudent />
-                <Divider>
-                  <Text p={true}>Chú thích</Text>
-                </Divider>
-                <div className={classes.content}>
-                  <Grid.Container gap={0.5}>
-                    <Grid xs={12} alignItems="center">
-                      <Badge color="primary" variant="default" />
-                      <Spacer x={0.5} />
-                      <Text css={{ ml: "$2" }}>Ngày đang chọn</Text>
-                    </Grid>
-                    <Grid xs={12} alignItems="center">
-                      <Badge color="success" variant="default" />
-                      <Spacer x={0.5} />
-                      <Text css={{ ml: "$2" }}>Ngày có lịch học</Text>
-                    </Grid>
-                    <Grid xs={12} alignItems="center">
-                      <Badge color="warning" variant="default" />
-                      <Spacer x={0.5} />
-                      <Text css={{ ml: "$2" }}>Ngày có lịch thi</Text>
-                    </Grid>
-                  </Grid.Container>
-                </div>
-              </div>
-            </Card.Body>
-          </Card>
-        </Grid> */}
           <Grid xs={3}>
             <Card
               variant="bordered"
@@ -271,17 +251,15 @@ const Schedule = () => {
                             value.format("DD/MM/YYYY") ===
                             selectedValue.format("DD/MM/YYYY")
                               ? "#CEE4FE"
-                              : value.format("DD/MM/YYYY") ===
-                                moment(dataUser[0].theory_exam_date).format(
-                                  "DD/MM/YYYY"
+                              : listExamDate.find(
+                                  (item) =>
+                                    value.format("DD/MM/YYYY") ===
+                                    moment(item.learning_date).format(
+                                      "DD/MM/YYYY"
+                                    )
                                 )
                               ? "#7828c8"
-                              : value.format("DD/MM/YYYY") ===
-                                moment(dataUser[0].practical_exam_date).format(
-                                  "DD/MM/YYYY"
-                                )
-                              ? "#7828c8"
-                              : listLearningDate.find(
+                              : listSession.find(
                                   (item) =>
                                     value.format("DD/MM/YYYY") ===
                                     moment(item.learning_date).format(
@@ -365,11 +343,22 @@ const Schedule = () => {
                       borderStyle: "dashed",
                     }}
                   >
-                    <Card.Header>
-                      {detailLearningDate !== "" && (
-                        <Text p b size={14}>
-                          Thời gian: <strong>8h30 - 10h30</strong>
+                    <Card.Header css={{display:"flex",justifyContent:"space-around"}}>
+                      {detailLearningDate !== ""  && (
+                        <div style={{display:"block",textAlign:"center"}}>
+                          <Text p b size={14} css={{display:"block",width:"100%"}}>
+                          {detailLearningDate.title}
+                      </Text>
+
+                        <Text p b size={14} css={{display:"block",width:"100%"}}>
+                        Thời gian: <strong> {moment(detailLearningDate?.start_time, "HH:mm:ss").format( "HH:mm")}
+                        - {moment(detailLearningDate?.end_time, "HH:mm:ss").format( "HH:mm")}  </strong> 
+                       
                         </Text>
+                        
+                        
+                      </div>
+
                       )}
                     </Card.Header>
 
@@ -378,7 +367,7 @@ const Schedule = () => {
                         padding: "5px 10px",
                       }}
                     >
-                      {!detailLearningDate && (
+                      {detailLearningDate === "" && (
                         <Text
                           p
                           size={14}
@@ -393,7 +382,7 @@ const Schedule = () => {
                         </Text>
                       )}
 
-                      {detailLearningDate && (
+                      {detailLearningDate !== "" && (
                         <Table
                           aria-label=""
                           css={{
@@ -413,34 +402,35 @@ const Schedule = () => {
                           </Table.Header>
                           <Table.Body>
                             <Table.Row key="1">
-                              <Table.Cell>Phát triển ứng dụng web</Table.Cell>
-                              <Table.Cell>s111</Table.Cell>
-                              <Table.Cell>Nguyễn Văn A</Table.Cell>
-                              <Table.Cell>
-                                {renderAttendanceStatus(1)}
-                              </Table.Cell>
+                            <Table.Cell>{detailLearningDate.module.name}</Table.Cell>
+                            <Table.Cell>{detailLearningDate.room.name}</Table.Cell>
+                            <Table.Cell> {detailLearningDate.teacher.first_name}{' '}
+                                      {detailLearningDate.teacher.last_name}</Table.Cell>
+                          
+                                      <Table.Cell>                           
+                            {renderAttendanceStatus(detailLearningDate.attendance.attendance_status?.id ? detailLearningDate.attendance.attendance_status.id : 0)}
+                            </Table.Cell>
+                          <Table.Cell>{detailLearningDate.attendance.note}</Table.Cell>
 
-                              {/* <Table.Cell>{dataUser[0].module_name}</Table.Cell>
+                              {/* <Table.Cell>{detailLearningDate.module.name}</Table.Cell>
+                              <Table.Cell>{detailLearningDate.room.name}</Table.Cell>
 
-                            <Table.Cell> {dataUser[0].teacher.first_name}{' '}
-                                      {dataUser[0].teacher.last_name}</Table.Cell>
+                            <Table.Cell> {detailLearningDate.teacher.first_name}{' '}
+                                      {detailLearningDate.teacher.last_name}</Table.Cell>
                             <Table.Cell>                           
-                            {renderAttendanceStatus(detailLearningDate.attendances[0].attendance_status.id)}
-                            </Table.Cell> */}
-                              <Table.Cell>ssss</Table.Cell>
+                            {renderAttendanceStatus(detailLearningDate.attendance.attendance_status?.id ? detailLearningDate.attendance.attendance_status.id : 0)}
+                            </Table.Cell>
+                              <Table.Cell>{detailLearningDate.teacher.last_name}</Table.Cell> */}
                             </Table.Row>
                           </Table.Body>
                         </Table>
-         
                       )}
                     </Card.Body>
-
                   </Card>
-                  
                 </Grid>
               </Grid.Container>
-              {detailLearningDate && (
-                      <Grid sm={2} css={{marginTop:"24px", marginBottom:"12px"}}>
+              {detailLearningDate !== "" && (
+                <Grid sm={2} css={{ marginTop: "24px", marginBottom: "12px" }}>
                   <Button
                     flat
                     auto
@@ -454,13 +444,12 @@ const Schedule = () => {
                       position: "absolute",
                       bottom: "12px",
                       right: "10px",
-
                     }}
                   >
                     Đánh giá việc giảng dậy
                   </Button>
-                  </Grid>
-)}
+                </Grid>
+              )}
             </Card>
           </Grid>
         </Grid.Container>
