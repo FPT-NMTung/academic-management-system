@@ -1213,7 +1213,7 @@ const AddStudentToClass = () => {
                     )} */}
                 </div>
               </div>
-              <Upload disabled={true}>
+              {/* <Upload disabled={true}>
                 <Button
                   disabled={true}
                   css={{
@@ -1225,9 +1225,9 @@ const AddStudentToClass = () => {
                   flat
                   icon={<UploadOutlined />}
                 >
-                  Upload
+                  Tải lên
                 </Button>
-              </Upload>
+              </Upload> */}
 
               {/* </div> */}
             </Card.Body>
