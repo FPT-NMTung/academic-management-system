@@ -1656,13 +1656,13 @@ public class ClassController : ControllerBase
         // get list student in first class
         var listStudentsInFirstClass = _context.StudentsClasses
             .Include(sc => sc.Student)
-            .Where(sc => sc.ClassId == id && sc.IsActive && !sc.Student.IsDraft)
+            .Where(sc => sc.ClassId == id && sc.IsActive)
             .ToList();
 
         // get list student in second class
         var listStudentsInSecondClass = _context.StudentsClasses
             .Include(sc => sc.Student)
-            .Where(sc => sc.ClassId == request.ClassId && sc.IsActive && !sc.Student.IsDraft)
+            .Where(sc => sc.ClassId == request.ClassId && sc.IsActive)
             .ToList();
 
         if (listStudentsInFirstClass.Count == 0)
@@ -1671,11 +1671,11 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // if (listStudentsInSecondClass.Count == 0)
-        // {
-        //     var error = ErrorDescription.Error["E1135"];
-        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        // }
+        if (listStudentsInSecondClass.Count == 0)
+        {
+            var error = ErrorDescription.Error["E1135"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         if (listStudentsInFirstClass.Count + listStudentsInSecondClass.Count > MaxNumberStudentInClass)
         {
@@ -1776,13 +1776,13 @@ public class ClassController : ControllerBase
         // get list student in first class
         var listStudentsInFirstClass = _context.StudentsClasses
             .Include(sc => sc.Student)
-            .Where(sc => sc.ClassId == request.FirstClassId && sc.IsActive && !sc.Student.IsDraft)
+            .Where(sc => sc.ClassId == request.FirstClassId && sc.IsActive)
             .ToList();
 
         // get list student in second class
         var listStudentsInSecondClass = _context.StudentsClasses
             .Include(sc => sc.Student)
-            .Where(sc => sc.ClassId == request.SecondClassId && sc.IsActive && !sc.Student.IsDraft)
+            .Where(sc => sc.ClassId == request.SecondClassId && sc.IsActive)
             .ToList();
 
         if (listStudentsInFirstClass.Count == 0)
@@ -1791,11 +1791,11 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // if (listStudentsInSecondClass.Count == 0)
-        // {
-        //     var error = ErrorDescription.Error["E1135"];
-        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        // }
+        if (listStudentsInSecondClass.Count == 0)
+        {
+            var error = ErrorDescription.Error["E1135"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         if (listStudentsInFirstClass.Count + listStudentsInSecondClass.Count > MaxNumberStudentInClass)
         {
@@ -2027,7 +2027,6 @@ public class ClassController : ControllerBase
     }
 
     private List<StudentResponse> GetUnDraftStudentsByClassId(int id)
-
     {
         var students = _context.Users.Include(u => u.Student)
             .Include(u => u.Student.StudentsClasses)
