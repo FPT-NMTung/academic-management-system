@@ -6,8 +6,11 @@ namespace AcademicManagementSystem.Models.StudentGradeController.StudentGradeMod
 
 public class GradeCategoryWithItemsResponse
 {
-    [JsonPropertyName("grade_category")]
-    public GradeCategoryResponse GradeCategory { get; set; }
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
+    
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
     
     [JsonPropertyName("total_weight")]
     public int TotalWeight { get; set; }
