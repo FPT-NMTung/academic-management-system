@@ -2,7 +2,6 @@
 using AcademicManagementSystem.Context.AmsModels;
 using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.BasicResponse;
-using AcademicManagementSystem.Models.GradeCategoryController;
 using AcademicManagementSystem.Models.StudentGradeController;
 using AcademicManagementSystem.Models.StudentGradeController.StudentGradeModel;
 using AcademicManagementSystem.Models.StudentGradeController.StudentGradeModel.GradeItem;
@@ -36,22 +35,19 @@ public class GradeStudentController : ControllerBase
     public IActionResult GetStudentGrades(int classId, int moduleId)
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
-        var student = _context.Students.Include(s => s.User).First(s => s.UserId == userId);
 
         var clazz = _context.Classes
+            .Include(c => c.CourseFamily)
+            .Include(c => c.CourseFamily.Courses)
+            .ThenInclude(c => c.CoursesModulesSemesters)
             .Include(c => c.StudentsClasses)
             .Include(c => c.ClassSchedules)
             .ThenInclude(cs => cs.Module)
             .FirstOrDefault(c => c.Id == classId);
+
         if (clazz == null)
         {
             return NotFound(CustomResponse.NotFound("Class not found"));
-        }
-
-        var module = clazz.ClassSchedules.FirstOrDefault(cs => cs.ModuleId == moduleId);
-        if (module == null)
-        {
-            return NotFound(CustomResponse.NotFound("Module not scheduled for this class"));
         }
 
         var isStudentInClass = clazz.StudentsClasses.Any(sc => sc.StudentId == userId);
@@ -61,7 +57,41 @@ public class GradeStudentController : ControllerBase
             return Unauthorized(CustomResponse.Unauthorized("You are not in this class"));
         }
 
-        var moduleProgressScores = GetGradesOfSpecificStudent(clazz, moduleId, student);
+        var module = clazz.CourseFamily.Courses
+            .Select(c => c.CoursesModulesSemesters)
+            .SelectMany(cms => cms)
+            .Select(cms => cms.Module)
+            .FirstOrDefault(m => m.Id == moduleId);
+
+        if (module == null)
+        {
+            return NotFound(CustomResponse.NotFound("Module not for this class"));
+        }
+
+        var moduleProgressScores = _context.GradeCategoryModules
+            .Include(gcm => gcm.Module)
+            .Include(gcm => gcm.GradeCategory)
+            .Include(gcm => gcm.GradeItems)
+            .ThenInclude(gi => gi.StudentGrades)
+            .ThenInclude(sg => sg.Class)
+            .Where(gcm => gcm.ModuleId == moduleId)
+            .Select(gcm => new GradeCategoryWithItemsResponse()
+            {
+                Id = gcm.GradeCategory.Id,
+                Name = gcm.GradeCategory.Name,
+                TotalWeight = gcm.TotalWeight,
+                QuantityGradeItem = gcm.QuantityGradeItem,
+                GradeItems = gcm.GradeItems
+                    .Select(gi => new GradeItemWithStudentScoreResponse()
+                    {
+                        Id = gi.Id,
+                        Name = gi.Name,
+                        Grade = gi.StudentGrades.FirstOrDefault(sg =>
+                            sg.StudentId == userId && sg.ClassId == classId)!.Grade,
+                        Comment = gi.StudentGrades.FirstOrDefault(sg =>
+                            sg.StudentId == userId && sg.ClassId == classId)!.Comment
+                    }).ToList()
+            });
 
         return Ok(CustomResponse.Ok("Student get progress scores successfully", moduleProgressScores));
     }
@@ -76,6 +106,9 @@ public class GradeStudentController : ControllerBase
         var sro = _context.Sros.Include(s => s.User.Center).First(s => s.UserId == userId);
 
         var clazz = _context.Classes
+            .Include(c => c.CourseFamily)
+            .Include(c => c.CourseFamily.Courses)
+            .ThenInclude(c => c.CoursesModulesSemesters)
             .Include(c => c.Center)
             .Include(c => c.StudentsClasses)
             .ThenInclude(sc => sc.Student)
@@ -83,6 +116,7 @@ public class GradeStudentController : ControllerBase
             .Include(c => c.ClassSchedules)
             .ThenInclude(cs => cs.Module)
             .FirstOrDefault(c => c.Id == classId);
+
         if (clazz == null)
         {
             return NotFound(CustomResponse.NotFound("Class not found"));
@@ -93,11 +127,11 @@ public class GradeStudentController : ControllerBase
             return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
         }
 
-        var module = clazz.ClassSchedules.FirstOrDefault(cs => cs.ModuleId == moduleId);
-        if (module == null)
-        {
-            return NotFound(CustomResponse.NotFound("Module not scheduled for this class"));
-        }
+        var module = clazz.CourseFamily.Courses
+            .Select(c => c.CoursesModulesSemesters)
+            .SelectMany(cms => cms)
+            .Select(cms => cms.Module)
+            .FirstOrDefault(m => m.Id == moduleId);
 
         var student = clazz.StudentsClasses.Select(sc => sc.Student).FirstOrDefault(s => s.UserId == studentId);
 
@@ -105,6 +139,11 @@ public class GradeStudentController : ControllerBase
         if (student is not { IsDraft: false })
         {
             return NotFound(CustomResponse.NotFound("Student not found in class"));
+        }
+
+        if (module == null)
+        {
+            return NotFound(CustomResponse.NotFound("Module not for this class"));
         }
 
         var moduleProgressScores = GetGradesOfSpecificStudent(clazz, moduleId, student);
@@ -123,6 +162,9 @@ public class GradeStudentController : ControllerBase
         var sro = _context.Sros.Include(s => s.User.Center).First(s => s.UserId == userId);
 
         var clazz = _context.Classes
+            .Include(c => c.CourseFamily)
+            .Include(c => c.CourseFamily.Courses)
+            .ThenInclude(c => c.CoursesModulesSemesters)
             .Include(c => c.Center)
             .Include(c => c.StudentsClasses)
             .ThenInclude(sc => sc.Student)
@@ -141,10 +183,15 @@ public class GradeStudentController : ControllerBase
             return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
         }
 
-        var module = clazz.ClassSchedules.FirstOrDefault(cs => cs.ModuleId == moduleId);
+        var module = clazz.CourseFamily.Courses
+            .Select(c => c.CoursesModulesSemesters)
+            .SelectMany(cms => cms)
+            .Select(cms => cms.Module)
+            .FirstOrDefault(m => m.Id == moduleId);
+
         if (module == null)
         {
-            return NotFound(CustomResponse.NotFound("Module not found in this class schedule"));
+            return NotFound(CustomResponse.NotFound("Module not for this class"));
         }
 
         var moduleProgressScores = GetGradesOfStudentsInClass(clazz, moduleId);
@@ -160,6 +207,9 @@ public class GradeStudentController : ControllerBase
         var userId = Convert.ToInt32(_userService.GetUserId());
 
         var clazz = _context.Classes
+            .Include(c => c.CourseFamily)
+            .Include(c => c.CourseFamily.Courses)
+            .ThenInclude(c => c.CoursesModulesSemesters)
             .Include(c => c.ClassSchedules)
             .ThenInclude(cs => cs.Module)
             .FirstOrDefault(c => c.Id == classId);
@@ -168,18 +218,23 @@ public class GradeStudentController : ControllerBase
             return NotFound(CustomResponse.NotFound("Class not found"));
         }
 
-        var module = clazz.ClassSchedules.FirstOrDefault(cs => cs.ModuleId == moduleId);
-        if (module == null)
-        {
-            return NotFound(CustomResponse.NotFound("Module not found in this class schedule"));
-        }
-
         var isTeacherTeachThisClass = clazz.ClassSchedules.Any(cs =>
             cs.ClassId == classId && cs.ModuleId == moduleId && cs.TeacherId == userId);
         // check teacher is teach this schedule (class and module)
         if (!isTeacherTeachThisClass)
         {
             return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
+        }
+
+        var module = clazz.CourseFamily.Courses
+            .Select(c => c.CoursesModulesSemesters)
+            .SelectMany(cms => cms)
+            .Select(cms => cms.Module)
+            .FirstOrDefault(m => m.Id == moduleId);
+
+        if (module == null)
+        {
+            return NotFound(CustomResponse.NotFound("Module not for this class"));
         }
 
         var moduleProgressScores = GetGradesOfStudentsInClass(clazz, moduleId);
@@ -192,7 +247,6 @@ public class GradeStudentController : ControllerBase
     public IActionResult GetLearningModulesInSemestersOfStudent()
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
-        // var student = _context.Students.First(s => s.UserId == userId);
 
         var classSchedule = _context.ClassSchedules
             .Include(cs => cs.Class)
@@ -612,14 +666,11 @@ public class GradeStudentController : ControllerBase
                         FirstName = sc.Student.User.FirstName,
                         LastName = sc.Student.User.LastName,
                         Avatar = sc.Student.User.Avatar,
-                        ProgressScores = m.GradeCategoryModule
+                        GradeCategories = m.GradeCategoryModule
                             .Select(gcm => new GradeCategoryWithItemsResponse()
                             {
-                                GradeCategory = new GradeCategoryResponse()
-                                {
-                                    Id = gcm.GradeCategory.Id,
-                                    Name = gcm.GradeCategory.Name,
-                                },
+                                Id = gcm.GradeCategory.Id,
+                                Name = gcm.GradeCategory.Name,
                                 TotalWeight = gcm.TotalWeight,
                                 QuantityGradeItem = gcm.QuantityGradeItem,
                                 GradeItems = gcm.GradeItems
@@ -670,14 +721,11 @@ public class GradeStudentController : ControllerBase
                     FirstName = student.User.FirstName,
                     LastName = student.User.LastName,
                     Avatar = student.User.Avatar,
-                    ProgressScores = m.GradeCategoryModule
+                    GradeCategories = m.GradeCategoryModule
                         .Select(gcm => new GradeCategoryWithItemsResponse()
                         {
-                            GradeCategory = new GradeCategoryResponse()
-                            {
-                                Id = gcm.GradeCategory.Id,
-                                Name = gcm.GradeCategory.Name,
-                            },
+                            Id = gcm.GradeCategory.Id,
+                            Name = gcm.GradeCategory.Name,
                             TotalWeight = gcm.TotalWeight,
                             QuantityGradeItem = gcm.QuantityGradeItem,
                             GradeItems = gcm.GradeItems
