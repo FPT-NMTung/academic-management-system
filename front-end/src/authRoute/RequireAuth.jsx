@@ -8,6 +8,7 @@ function RequireAuth({ children, role }) {
     !localStorage.getItem('refresh_token') ||
     !localStorage.getItem('role')
   ) {
+    console.log('not login');
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('role');

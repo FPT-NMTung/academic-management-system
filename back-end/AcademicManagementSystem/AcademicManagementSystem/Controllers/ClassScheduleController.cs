@@ -356,7 +356,7 @@ public class ClassScheduleController : ControllerBase
 
         return Ok(CustomResponse.Ok("Get schedules for teacher successfully", classSchedule));
     }
-    
+
     // get teaching schedules for teacher, include all session
     [HttpGet]
     [Route("api/teaching-schedules/teachers")]
@@ -378,7 +378,8 @@ public class ClassScheduleController : ControllerBase
             .Include(s => s.Sessions)
             .ThenInclude(r => r.Room)
             .ThenInclude(r => r.RoomType)
-            .Where(cs => cs.TeacherId == userId && cs.EndDate >= DateTime.Today)
+            .Where(cs => cs.TeacherId == userId &&
+                         cs.StartDate <= DateTime.Today && DateTime.Today <= cs.EndDate) // teaching schedules
             .Select(cs => new ClassScheduleResponse()
             {
                 Id = cs.Id,
@@ -444,25 +445,26 @@ public class ClassScheduleController : ControllerBase
 
         return Ok(CustomResponse.Ok("Get teaching schedules for teacher successfully", classSchedule));
     }
-    
-        // get teaching schedules for teacher, include all session
+
+    // get teaching schedules for teacher to take attendance, include all session
     [HttpGet]
     [Route("api/teaching-classes/teachers")]
     [Authorize(Roles = "teacher")]
-    public IActionResult TeacherGetClassAndModuleTeaching()
+    public IActionResult TeacherGetClassAndModuleTeachingToTakeAttendance()
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
 
         var classSchedules = _context.ClassSchedules
             .Include(cs => cs.Class)
             .Include(cs => cs.Module)
-            .Where(cs => cs.TeacherId == userId && cs.EndDate >= DateTime.Today)
+            .Where(cs => cs.TeacherId == userId &&
+                         cs.StartDate <= DateTime.Today && DateTime.Today <= cs.EndDate) // teaching schedules
             .Select(cs => new ClassScheduleForTeacherResponse()
             {
                 ScheduleId = cs.Id,
                 Class = new BasicClassResponse()
-                {  
-                    Id = cs.Class.Id, 
+                {
+                    Id = cs.Class.Id,
                     Name = cs.Class.Name,
                 },
                 Module = new BasicModuleResponse()
@@ -1196,9 +1198,13 @@ public class ClassScheduleController : ControllerBase
                 ModuleName = cs.Module.ModuleName,
                 StartDate = cs.StartDate,
                 EndDate = cs.EndDate,
+                Sessions = cs.Sessions.Select(item => new SessionResponse()
+                {
+                    LearningDate = item.LearningDate,
+                }).ToList()
             })
         }).ToList();
-        
+
         return Ok(CustomResponse.Ok("Get all progress class successfully", res));
     }
 

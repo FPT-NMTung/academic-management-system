@@ -1,5 +1,6 @@
 ﻿using AcademicManagementSystem.Context;
 using AcademicManagementSystem.Context.AmsModels;
+using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.BasicResponse;
 using AcademicManagementSystem.Models.GradeCategoryController;
 using AcademicManagementSystem.Models.StudentGradeController;
@@ -17,6 +18,10 @@ public class GradeStudentController : ControllerBase
 {
     private readonly AmsContext _context;
     private readonly IUserService _userService;
+    private const int TheoryExam = 6;
+    private const int TheoryExamResit = 8;
+    private const int ExamTypeTheory = 1;
+    private const int ExamTypeNoTakeExam = 4;
 
     public GradeStudentController(AmsContext context, IUserService userService)
     {
@@ -184,7 +189,7 @@ public class GradeStudentController : ControllerBase
     [HttpGet]
     [Route("api/students/semesters/modules")]
     [Authorize(Roles = "student")]
-    public IActionResult GetStudentModulesLearningInSemesters()
+    public IActionResult GetLearningModulesInSemestersOfStudent()
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
         // var student = _context.Students.First(s => s.UserId == userId);
@@ -232,6 +237,345 @@ public class GradeStudentController : ControllerBase
         return Ok(CustomResponse.Ok("Student get semesters and modules successfully", distinctSemesters));
     }
 
+    [HttpPost]
+    [Route("api/classes/{classId:int}/modules/{moduleId:int}/grades/sros")]
+    [Authorize(Roles = "sro")]
+    public IActionResult SroUpdateGradeStudentsInClass(int classId, int moduleId,
+        [FromBody] List<StudentGradeRequest> request)
+    {
+        var userId = Convert.ToInt32(_userService.GetUserId());
+        var user = _context.Users.Include(u => u.Sro).First(u => u.Id == userId);
+
+        // get class that have logged in student in this class and modules for this class
+        var classContext = _context.Classes
+            .Include(c => c.ClassSchedules)
+            .ThenInclude(cs => cs.Module)
+            .Include(c => c.ClassSchedules)
+            .ThenInclude(cs => cs.Sessions)
+            .Include(c => c.Center)
+            .Include(c => c.StudentsClasses)
+            .ThenInclude(sc => sc.Student)
+            .FirstOrDefault(c => c.Id == classId);
+
+        if (classContext == null)
+        {
+            return NotFound(CustomResponse.NotFound("Class not found"));
+        }
+
+        var isModuleInClass = classContext.ClassSchedules.Any(cs => cs.ModuleId == moduleId);
+
+        if (!isModuleInClass)
+        {
+            return NotFound(CustomResponse.NotFound("Module not found in this class schedule"));
+        }
+
+        // check user center is same center of class
+        if (classContext.CenterId != user.CenterId)
+        {
+            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
+        }
+
+        // can't update grades if module exam type is don't take exam
+        var module = classContext.ClassSchedules.First(cs => cs.ModuleId == moduleId).Module;
+        if (module.ExamType is ExamTypeNoTakeExam)
+        {
+            var error = ErrorDescription.Error["E0307"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // first session in class schedule
+        var firstSession = classContext.ClassSchedules
+            .First(cs => cs.ModuleId == moduleId)
+            .Sessions.OrderBy(s => s.LearningDate).First();
+
+        // last session in class schedule
+        var lastSession = classContext.ClassSchedules
+            .First(cs => cs.ModuleId == moduleId)
+            .Sessions.OrderBy(s => s.LearningDate).Last();
+
+        // check module is start learning and no more than 5 days after last session
+        var canUpdateModule = classContext.ClassSchedules
+            .Any(cs => cs.ModuleId == moduleId &&
+                       firstSession.LearningDate.Date <= DateTime.Today &&
+                       DateTime.Today <= lastSession.LearningDate.AddDays(5));
+
+        if (!canUpdateModule)
+        {
+            var error = ErrorDescription.Error["E0301"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // remove duplicate if have any studentId and gradeItemId
+        var distinctRequest = request.GroupBy(r => new { r.StudentId, r.GradeItemId })
+            .Select(r => r.First())
+            .ToList();
+
+        // get student in class (student that is active in class and not is draft)) 
+        var studentsIdInClass = classContext.StudentsClasses.Where(sc => sc.IsActive && !sc.Student.IsDraft)
+            .Select(sc => sc.StudentId).ToList();
+
+        var requestStudentsId = distinctRequest.Select(r => r.StudentId).ToList();
+
+        // students from request that not in this class
+        var requestStudentIdNotInClass = requestStudentsId.Except(studentsIdInClass).ToList();
+
+        if (requestStudentIdNotInClass.Any())
+        {
+            var error = ErrorDescription.Error["E0302"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // get grade items of module
+        var gradeItemsOfModule = _context.GradeItems
+            .Include(gi => gi.GradeCategoryModule)
+            .Where(gi => gi.GradeCategoryModule.ModuleId == moduleId);
+
+        // get gradeItemsId of module
+        var gradeItemsIdOfModule = gradeItemsOfModule.Select(gi => gi.Id).ToList();
+
+        // get gradeItemsId from request
+        var requestGradeItemsId = distinctRequest.Select(r => r.GradeItemId).ToList();
+
+        // gradeItems from request that not in this module
+        var requestGradeItemsIdNotInModule = requestGradeItemsId.Except(gradeItemsIdOfModule).ToList();
+
+        if (requestGradeItemsIdNotInModule.Any())
+        {
+            var error = ErrorDescription.Error["E0303"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var gradesOfAllStudentInThisClass = _context.StudentGrades
+            .Where(sg => sg.ClassId == classId);
+
+        foreach (var r in distinctRequest)
+        {
+            if (r.Grade is < 0 or > 10)
+            {
+                var error = ErrorDescription.Error["E0304"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+
+            var studentGrade = new StudentGrade()
+            {
+                ClassId = classId,
+                StudentId = r.StudentId,
+                GradeItemId = r.GradeItemId,
+                Grade = r.Grade,
+                Comment = r.Comment,
+            };
+
+            // if have any record in student grade of this student by classId, studentId, gradeItemId then update else add
+            var isExist = gradesOfAllStudentInThisClass.Any(sg => sg.StudentId == r.StudentId
+                                                                  && sg.GradeItemId == r.GradeItemId);
+            if (!isExist)
+            {
+                _context.StudentGrades.Add(studentGrade);
+            }
+            else
+            {
+                _context.StudentGrades.Update(studentGrade);
+            }
+        }
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (DbUpdateException)
+        {
+            var error = ErrorDescription.Error["E0305"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var response = GetGradesOfStudentsInClass(classContext, moduleId);
+
+        return Ok(CustomResponse.Ok("Sro update progress scores successfully", response));
+    }
+
+    [HttpPost]
+    [Route("api/classes/{classId:int}/modules/{moduleId:int}/grades/teachers")]
+    [Authorize(Roles = "teacher")]
+    public IActionResult TeacherUpdateGradeStudentsInClass(int classId, int moduleId,
+        [FromBody] List<StudentGradeRequest> request)
+    {
+        var userId = Convert.ToInt32(_userService.GetUserId());
+        var user = _context.Users.Include(u => u.Teacher).First(u => u.Id == userId);
+
+        // get class that have logged in student in this class and modules for this class
+        var classContext = _context.Classes
+            .Include(c => c.ClassSchedules)
+            .ThenInclude(cs => cs.Module)
+            .Include(c => c.ClassSchedules)
+            .ThenInclude(cs => cs.Sessions)
+            .Include(c => c.Center)
+            .Include(c => c.StudentsClasses)
+            .ThenInclude(sc => sc.Student)
+            .FirstOrDefault(c => c.Id == classId);
+
+        if (classContext == null)
+        {
+            return NotFound(CustomResponse.NotFound("Class not found"));
+        }
+
+        var isModuleInClass = classContext.ClassSchedules.Any(cs => cs.ModuleId == moduleId);
+
+        if (!isModuleInClass)
+        {
+            return NotFound(CustomResponse.NotFound("Module not found int this class schedule"));
+        }
+
+        var module = classContext.ClassSchedules.First(cs => cs.ModuleId == moduleId).Module;
+
+        switch (module.ExamType)
+        {
+            // teacher can't update grades if module exam type is theory (just sro)
+            case ExamTypeTheory:
+                return Unauthorized(CustomResponse.Unauthorized("You are not able to update grades for this module"));
+
+            // can't update grades if module exam type is don't take exam
+            case ExamTypeNoTakeExam:
+            {
+                var error = ErrorDescription.Error["E0307"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+        }
+
+        // check user center is same center of class
+        if (classContext.CenterId != user.CenterId)
+        {
+            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
+        }
+
+        var isTeacherTeachThisClass = classContext.ClassSchedules.Any(cs =>
+            cs.ClassId == classId && cs.ModuleId == moduleId && cs.TeacherId == user.Id);
+
+        // check teacher is teach this schedule (class and module)
+        if (!isTeacherTeachThisClass)
+        {
+            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
+        }
+
+        // first session in class schedule
+        var firstSession = classContext.ClassSchedules
+            .First(cs => cs.ModuleId == moduleId)
+            .Sessions.OrderBy(s => s.LearningDate).First();
+
+        // last session in class schedule
+        var lastSession = classContext.ClassSchedules
+            .First(cs => cs.ModuleId == moduleId)
+            .Sessions.OrderBy(s => s.LearningDate).Last();
+
+        // check module is start learning and no more than 3 days after last session
+        var canUpdateModule = classContext.ClassSchedules
+            .Any(cs => cs.ModuleId == moduleId &&
+                       firstSession.LearningDate.Date <= DateTime.Today &&
+                       DateTime.Today <= lastSession.LearningDate.AddDays(3));
+
+        if (!canUpdateModule)
+        {
+            var error = ErrorDescription.Error["E0300"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // remove duplicate if have any studentId and gradeItemId
+        var distinctRequest = request.GroupBy(r => new { r.StudentId, r.GradeItemId })
+            .Select(r => r.First())
+            .ToList();
+
+        // get student in class (student that is active in class and not is draft)) 
+        var studentsIdInClass = classContext.StudentsClasses.Where(sc => sc.IsActive && !sc.Student.IsDraft)
+            .Select(sc => sc.StudentId).ToList();
+
+        var requestStudentsId = distinctRequest.Select(r => r.StudentId).ToList();
+
+        // students from request that not in this class
+        var requestStudentIdNotInClass = requestStudentsId.Except(studentsIdInClass).ToList();
+
+        if (requestStudentIdNotInClass.Any())
+        {
+            var error = ErrorDescription.Error["E0302"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // get grade items of module
+        var gradeItemsOfModule = _context.GradeItems
+            .Include(gi => gi.GradeCategoryModule)
+            .Where(gi => gi.GradeCategoryModule.ModuleId == moduleId);
+
+        // get gradeItemsId of module
+        var gradeItemsIdOfModule = gradeItemsOfModule.Select(gi => gi.Id).ToList();
+
+        // get gradeItemsId from request
+        var requestGradeItemsId = distinctRequest.Select(r => r.GradeItemId).ToList();
+
+        // gradeItems from request that not in this module
+        var requestGradeItemsIdNotInModule = requestGradeItemsId.Except(gradeItemsIdOfModule).ToList();
+
+        if (requestGradeItemsIdNotInModule.Any())
+        {
+            var error = ErrorDescription.Error["E0303"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // get all grades of all student in this class
+        var gradesOfAllStudentInThisClass = _context.StudentGrades
+            .Where(sg => sg.ClassId == classId);
+
+        foreach (var r in distinctRequest)
+        {
+            if (r.Grade is < 0 or > 10)
+            {
+                var error = ErrorDescription.Error["E0304"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+
+            var studentGrade = new StudentGrade()
+            {
+                ClassId = classId,
+                StudentId = r.StudentId,
+                GradeItemId = r.GradeItemId,
+                Grade = r.Grade,
+                Comment = r.Comment,
+            };
+
+            // if have any record in student grade of this student by classId, studentId, gradeItemId then update else add
+            var isExist = gradesOfAllStudentInThisClass.Any(sg => sg.StudentId == r.StudentId
+                                                                  && sg.GradeItemId == r.GradeItemId);
+            if (!isExist)
+            {
+                _context.StudentGrades.Add(studentGrade);
+            }
+            else
+            {
+                _context.StudentGrades.Update(studentGrade);
+            }
+
+            // if grade item is TheoryExam or TheoryExamResit -> error (teacher can't update these grade items)
+            var gradeItem = gradeItemsOfModule.First(gi => gi.Id == r.GradeItemId);
+            if (gradeItem.GradeCategoryModule.GradeCategoryId is TheoryExam or TheoryExamResit)
+            {
+                var error = ErrorDescription.Error["E0306"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+        }
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (DbUpdateException)
+        {
+            var error = ErrorDescription.Error["E0305"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var response = GetGradesOfStudentsInClass(classContext, moduleId);
+
+        return Ok(CustomResponse.Ok("Teacher update progress scores successfully", response));
+    }
+
+    // get grades of all students in class
     private IQueryable<ListStudentGradeResponse> GetGradesOfStudentsInClass(Class clazz, int moduleId)
     {
         return _context.Modules

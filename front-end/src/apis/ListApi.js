@@ -592,6 +592,21 @@ export const ManageAttendanceApis = {
     method: 'POST',
     contextType: 'application/json',
   },
+  submitAttendanceTeacher: {
+    url: 'api/classes-schedules/{0}/sessions/{1}/attendances/teachers',
+    method: 'POST',
+    contextType: 'application/json',
+  },
+  getTeachingClass: {
+    url: '/api/teaching-classes/teachers',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  teacherGetListSessions: {
+    url: '/api/classes-schedules/{0}/sessions',
+    method: 'GET',
+    contextType: 'application/json',
+  },
 };
 
 export const UserStudentApis = {
