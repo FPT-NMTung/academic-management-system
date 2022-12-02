@@ -93,7 +93,7 @@ public class GradeStudentController : ControllerBase
                     }).ToList()
             });
 
-        return Ok(CustomResponse.Ok("Student get progress scores successfully", moduleProgressScores));
+        return Ok(CustomResponse.Ok("Student get grades successfully", moduleProgressScores));
     }
 
     // student get their grades by class and module
@@ -148,7 +148,7 @@ public class GradeStudentController : ControllerBase
 
         var moduleProgressScores = GetGradesOfSpecificStudent(clazz, moduleId, student);
 
-        return Ok(CustomResponse.Ok("Student get progress scores successfully", moduleProgressScores));
+        return Ok(CustomResponse.Ok("SRO get grades of specific student successfully", moduleProgressScores));
     }
 
     // SRO get all grade of students in class 
@@ -195,7 +195,7 @@ public class GradeStudentController : ControllerBase
         }
 
         var moduleProgressScores = GetGradesOfStudentsInClass(clazz, moduleId);
-        return Ok(CustomResponse.Ok("SRO get progress scores of students successfully", moduleProgressScores));
+        return Ok(CustomResponse.Ok("SRO get grade of all students in class successfully", moduleProgressScores));
     }
 
     // teacher get all grade of students in class 
