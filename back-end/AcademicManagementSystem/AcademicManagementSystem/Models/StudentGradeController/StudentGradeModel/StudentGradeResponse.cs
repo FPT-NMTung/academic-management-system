@@ -35,6 +35,6 @@ public class StudentInfoAndGradeResponse
     [JsonPropertyName("avatar")]
     public string? Avatar { get; set; }
     
-    [JsonPropertyName("progress_scores")]
-    public List<GradeCategoryWithItemsResponse> ProgressScores { get; set; }
+    [JsonPropertyName("grade_categories")]
+    public List<GradeCategoryWithItemsResponse> GradeCategories { get; set; }
 }
