@@ -625,4 +625,9 @@ export const UserStudentApis = {
     method: 'POST',
     contextType: 'application/json',
   },
+  getModuleSemester: {
+    url: 'api/students/semesters/modules',
+    method: 'GET',
+    contextType: 'application/json',
+  },
 };
