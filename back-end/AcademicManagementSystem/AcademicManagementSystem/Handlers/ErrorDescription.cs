@@ -332,7 +332,7 @@ public static class ErrorDescription
         { "E0303", new ErrorModel() { Message = "GradeItem in request must belong to this module", Type = "student-grade-error-0003" } },
         { "E0304", new ErrorModel() { Message = "Grade must in range [0-10]", Type = "student-grade-error-0004" } },
         { "E0305", new ErrorModel() { Message = "Update fail", Type = "student-grade-error-0005" } },
-        { "E0306", new ErrorModel() { Message = "Te and TeResit will be update by importing by SRO", Type = "student-grade-error-0006" } },
+        { "E0306", new ErrorModel() { Message = "Exams will be update by SRO", Type = "student-grade-error-0006" } },
         { "E0307", new ErrorModel() { Message = "Can't update, this module don't take exam", Type = "student-grade-error-0007" } },
     };
 }

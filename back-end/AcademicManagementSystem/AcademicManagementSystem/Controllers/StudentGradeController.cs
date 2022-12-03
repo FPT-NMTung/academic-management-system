@@ -17,7 +17,9 @@ public class GradeStudentController : ControllerBase
 {
     private readonly AmsContext _context;
     private readonly IUserService _userService;
+    private const int PracticeExam = 5;
     private const int TheoryExam = 6;
+    private const int PracticeExamResit = 7;
     private const int TheoryExamResit = 8;
     private const int ExamTypeTheory = 1;
     private const int ExamTypeNoTakeExam = 4;
@@ -605,9 +607,10 @@ public class GradeStudentController : ControllerBase
                 _context.StudentGrades.Update(studentGrade);
             }
 
-            // if grade item is TheoryExam or TheoryExamResit -> error (teacher can't update these grade items)
+            // if grade item is exams -> error (teacher can't update these grade items)
             var gradeItem = gradeItemsOfModule.First(gi => gi.Id == r.GradeItemId);
-            if (gradeItem.GradeCategoryModule.GradeCategoryId is TheoryExam or TheoryExamResit)
+            if (gradeItem.GradeCategoryModule.GradeCategoryId
+                is PracticeExam or TheoryExam or PracticeExamResit or TheoryExamResit)
             {
                 var error = ErrorDescription.Error["E0306"];
                 return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
