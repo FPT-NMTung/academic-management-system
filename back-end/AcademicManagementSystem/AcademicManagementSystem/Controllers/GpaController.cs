@@ -199,6 +199,38 @@ public class GpaController : ControllerBase
 
         return Ok(CustomResponse.Ok("Request has been sent successfully", emailResult));
     }
+    
+    // student take gpa teacher
+    [HttpPost]
+    [Route("api/gpa/forms/{formId:int}")]
+    [Authorize("student")]
+    public IActionResult TakeGpaTeacher(int formId, [FromBody] TakeGpaRequest request)
+    {
+        // check if form exists or not
+        var form = _context.Forms.Find(formId);
+        if (form == null)
+        {
+            return NotFound(CustomResponse.NotFound("Form not found with id " + formId));
+        }
+
+        // check if student has taken gpa teacher or not
+        var gpa = _context.GpaRecords
+            .Include(g => g.Student)
+            .Include(g => g.Teacher)
+            .Include(g => g.Form)
+            .Include(g => g.Class)
+            .Include(g => g.Module)
+            .Include(g => g.Session)
+            .Include(g => g.Answers)
+            .ThenInclude(a => a.Question)
+            .FirstOrDefault(g => g.StudentId == _user.Id && g.FormId == formId);
+        if (gpa != null)
+        {
+            return BadRequest(CustomResponse.BadRequest("You have already taken gpa teacher", ""));
+        }
+
+        return Ok(CustomResponse.Ok("You have already taken gpa teacher", gpa));
+    }
 
     private List<StudentResponse> GetAllStudentsByClassId(int id)
     {
