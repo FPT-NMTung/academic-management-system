@@ -15,16 +15,10 @@ public class TakeGpaRequest
     
     [JsonPropertyName("session_id")]
     public int SessionId { get; set; }
-    
-    [JsonPropertyName("student_id")]
-    public int StudentId { get; set; }
-    
-    [JsonPropertyName("form_id")]
-    public int FormId { get; set; }
-    
+
     [JsonPropertyName("comment")]
     public string? Comment { get; set; }
     
     [JsonPropertyName("answer_id")]
-    public int AnswerId { get; set; }
+    public List<int> AnswerIds { get; set; }
 }

@@ -199,11 +199,11 @@ public class GpaController : ControllerBase
 
         return Ok(CustomResponse.Ok("Request has been sent successfully", emailResult));
     }
-    
+
     // student take gpa teacher
     [HttpPost]
     [Route("api/gpa/forms/{formId:int}")]
-    [Authorize("student")]
+    [Authorize(Roles = "student")]
     public IActionResult TakeGpaTeacher(int formId, [FromBody] TakeGpaRequest request)
     {
         // check if form exists or not
@@ -213,23 +213,80 @@ public class GpaController : ControllerBase
             return NotFound(CustomResponse.NotFound("Form not found with id " + formId));
         }
 
-        // check if student has taken gpa teacher or not
-        var gpa = _context.GpaRecords
+        // check if class exists or not
+        // check if student exists or not
+        // check if teacher exists or not
+        // check if module exists or not
+        // check if session exists or not
+        // check if student is in class or not
+        // check if teacher is in class or not
+
+        // check if student has taken gpa teacher in this session or not
+        var existedGpa = _context.GpaRecords
             .Include(g => g.Student)
             .Include(g => g.Teacher)
             .Include(g => g.Form)
             .Include(g => g.Class)
             .Include(g => g.Module)
             .Include(g => g.Session)
-            .Include(g => g.Answers)
+            .Include(g => g.GpaRecordsAnswers)
+            .ThenInclude(gra => gra.Answer)
             .ThenInclude(a => a.Question)
-            .FirstOrDefault(g => g.StudentId == _user.Id && g.FormId == formId);
-        if (gpa != null)
+            .FirstOrDefault(g =>
+                g.StudentId == _user.Id && g.FormId == formId && g.ClassId == request.ClassId &&
+                g.ModuleId == request.ModuleId && g.SessionId == request.SessionId && g.TeacherId == request.TeacherId);
+        if (existedGpa != null)
         {
-            return BadRequest(CustomResponse.BadRequest("You have already taken gpa teacher", ""));
+            return BadRequest(CustomResponse.BadRequest("You have already taken GPA teacher in this session", "a"));
         }
+        
 
-        return Ok(CustomResponse.Ok("You have already taken gpa teacher", gpa));
+        var gpaRecord = new GpaRecord()
+        {
+            StudentId = _user.Id,
+            TeacherId = request.TeacherId,
+            FormId = formId,
+            ClassId = request.ClassId,
+            ModuleId = request.ModuleId,
+            SessionId = request.SessionId,
+            Comment = request.Comment,
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now
+        };
+        _context.GpaRecords.Add(gpaRecord);
+        
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch
+            (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest("Fail to Save Changes when add GpaRecord", "b"));
+        }
+        
+        // // add data to gpa record answer
+        // foreach (var answerId in request.AnswerIds)
+        // {
+        //     var gpaRecordAnswer = new GpaRecordAnswer()
+        //     {
+        //         GpaRecordId = gpaRecord.Id,
+        //         AnswerId = answerId
+        //     };
+        //     _context.GpaRecordsAnswers.Add(gpaRecordAnswer);
+        // }
+        //
+        // try
+        // {
+        //     _context.SaveChanges();
+        // }
+        // catch
+        //     (Exception e)
+        // {
+        //     return BadRequest(CustomResponse.BadRequest("Fail to Save Changes when add GpaRecord Answer", "c"));
+        // }
+
+        return Ok(CustomResponse.Ok("GPA has taken successfully", null!));
     }
 
     private List<StudentResponse> GetAllStudentsByClassId(int id)
