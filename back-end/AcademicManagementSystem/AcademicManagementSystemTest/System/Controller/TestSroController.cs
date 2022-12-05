@@ -4,6 +4,8 @@ using AcademicManagementSystem.Models.UserController.SroController;
 using AcademicManagementSystemTest.MockData;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol;
+using Xunit.Abstractions;
 using UpdateSroRequest = AcademicManagementSystem.Models.UserController.SroController.UpdateSroRequest;
 
 namespace AcademicManagementSystemTest.System.Controller;
@@ -15,9 +17,12 @@ public class TestSroController
 {
     private readonly AmsContext _context;
     private readonly SroController _controller;
+    private readonly ITestOutputHelper _testOutputHelper;
 
-    public TestSroController()
+    public TestSroController(ITestOutputHelper testOutputHelper)
     {
+        _testOutputHelper = testOutputHelper;
+
         var optionsInMemoryDb = new DbContextOptionsBuilder<AmsContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
@@ -30,11 +35,18 @@ public class TestSroController
 
     private void Init()
     {
+        _context.Provinces.AddRange(ProvinceMockData.Provinces);
+        _context.Districts.AddRange(DistrictMockData.Districts);
+        _context.Wards.AddRange(WardMockData.Wards);
+        _context.Roles.AddRange(RoleMockData.Roles);
+        _context.Genders.AddRange(GenderMockData.Genders);
+        _context.Centers.AddRange(CenterMockData.Centers);
         _context.Users.AddRange(UserMockData.Users);
+        _context.Sros.AddRange(SroMockData.Sros);
 
         _context.SaveChanges();
     }
-    
+
     [Fact]
     public void CreateSRO_FirstNameEmpty_ReturnBadRequest()
     {
@@ -52,14 +64,24 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
+            Birthday = DateTime.Today.AddDays(-2),
             CitizenIdentityCardNo = "001122334455",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(-1),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        // act 
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
+
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -82,14 +104,22 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
+            Birthday = DateTime.Today.AddDays(-2),
             CitizenIdentityCardNo = "001122334455",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(-1),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -112,14 +142,23 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
+            Birthday = DateTime.Today.AddDays(-2),
             CitizenIdentityCardNo = "001122334455",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(-1),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        // act 
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -142,14 +181,22 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
+            Birthday = DateTime.Today.AddDays(-2),
             CitizenIdentityCardNo = "001122334455",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(-1),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -172,14 +219,22 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
+            Birthday = DateTime.Today.AddDays(-2),
             CitizenIdentityCardNo = "001122334455",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(-1),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -202,14 +257,22 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
+            Birthday = DateTime.Today.AddDays(-2),
             CitizenIdentityCardNo = "001122334455",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(-1),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -239,7 +302,15 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -269,7 +340,15 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -292,14 +371,22 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
+            Birthday = DateTime.Today.AddDays(-2),
             CitizenIdentityCardNo = "001122334455",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(-1),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -322,14 +409,22 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
+            Birthday = DateTime.Today.AddDays(-2),
             CitizenIdentityCardNo = "001122334455",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(-1),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -352,14 +447,22 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
+            Birthday = DateTime.Today.AddDays(-2),
             CitizenIdentityCardNo = "001122334455",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(-1),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -382,14 +485,22 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
+            Birthday = DateTime.Today.AddDays(-2),
             CitizenIdentityCardNo = "001122334455",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(-1),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -412,14 +523,22 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
+            Birthday = DateTime.Today.AddDays(-2),
             CitizenIdentityCardNo = "001122334455",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(-1),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -434,7 +553,7 @@ public class TestSroController
             FirstName = "Tommy",
             LastName = "Nguyen",
             MobilePhone = "0886547231",
-            Email = "thanhnm_student@fpt.personal.edu.vn", // belong to user id 5
+            Email = "thanhnm_student@fpt.personal.edu.vn", // belong to another user
             EmailOrganization = "tommy@email.org.com",
             Avatar = null,
             CenterId = 1,
@@ -442,14 +561,22 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
+            Birthday = DateTime.Today.AddDays(-2),
             CitizenIdentityCardNo = "001122334455",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(-1),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -465,21 +592,29 @@ public class TestSroController
             LastName = "Nguyen",
             MobilePhone = "0886547231",
             Email = "tommy@email.com",
-            EmailOrganization = "thanhnmhe141011@fpt.personal.edu.vn", // belong to user id 4
+            EmailOrganization = "thanhnmhe141011@fpt.personal.edu.vn", // belong to another user
             Avatar = null,
             CenterId = 1,
             ProvinceId = 1,
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
+            Birthday = DateTime.Today.AddDays(-2),
             CitizenIdentityCardNo = "001122334455",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(-1),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -502,14 +637,22 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
+            Birthday = DateTime.Today.AddDays(-2),
             CitizenIdentityCardNo = "001122334455",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(-1),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -532,14 +675,22 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
+            Birthday = DateTime.Today.AddDays(-2),
             CitizenIdentityCardNo = "001122334455",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(-1),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -562,14 +713,22 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
+            Birthday = DateTime.Today.AddDays(-2),
             CitizenIdentityCardNo = "001122334455",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(-1),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -584,7 +743,7 @@ public class TestSroController
             FirstName = "Tommy",
             LastName = "Nguyen",
             MobilePhone = "0886547231",
-            Email = "tommy@email.org.com",
+            Email = "tommy@email.personal.com",
             EmailOrganization = "tommy@email.org.com",
             Avatar = null,
             CenterId = 1,
@@ -592,14 +751,22 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
+            Birthday = DateTime.Today.AddDays(-2),
             CitizenIdentityCardNo = "123456780",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(-1),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -614,7 +781,7 @@ public class TestSroController
             FirstName = "Tommy",
             LastName = "Nguyen",
             MobilePhone = "0886547231",
-            Email = "tommy@email.org.com",
+            Email = "tommy@email.personal.com",
             EmailOrganization = "tommy@email.org.com",
             Avatar = null,
             CenterId = 1,
@@ -622,14 +789,22 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
-            CitizenIdentityCardNo = "123456",
+            Birthday = DateTime.Today.AddDays(-2),
+            CitizenIdentityCardNo = "00155",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(-1),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -644,7 +819,7 @@ public class TestSroController
             FirstName = "Tommy",
             LastName = "Nguyen",
             MobilePhone = "0886547231",
-            Email = "tommy@email.org.com",
+            Email = "tommy@email.personal.com",
             EmailOrganization = "tommy@email.org.com",
             Avatar = null,
             CenterId = 1,
@@ -652,14 +827,22 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
+            Birthday = DateTime.Today.AddDays(-2),
             CitizenIdentityCardNo = "12345678910",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(-1),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -674,7 +857,7 @@ public class TestSroController
             FirstName = "Tommy",
             LastName = "Nguyen",
             MobilePhone = "0886547231",
-            Email = "tommy@email.org.com",
+            Email = "tommy@email.personal.com",
             EmailOrganization = "tommy@email.org.com",
             Avatar = null,
             CenterId = 1,
@@ -682,14 +865,22 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
-            CitizenIdentityCardNo = "12345678910123165",
+            Birthday = DateTime.Today.AddDays(-2),
+            CitizenIdentityCardNo = "12345678910111213",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(-1),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -704,7 +895,7 @@ public class TestSroController
             FirstName = "Tommy",
             LastName = "Nguyen",
             MobilePhone = "0886547231",
-            Email = "tommy@email.org.com",
+            Email = "tommy@email.personal.com",
             EmailOrganization = "tommy@email.org.com",
             Avatar = null,
             CenterId = 1,
@@ -712,14 +903,22 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
+            Birthday = DateTime.Today.AddDays(-2),
             CitizenIdentityCardNo = "001122334455",
             CitizenIdentityCardPublishedDate = DateTime.Today,
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -734,7 +933,7 @@ public class TestSroController
             FirstName = "Tommy",
             LastName = "Nguyen",
             MobilePhone = "0886547231",
-            Email = "tommy@email.org.com",
+            Email = "tommy@email.personal.com",
             EmailOrganization = "tommy@email.org.com",
             Avatar = null,
             CenterId = 1,
@@ -742,14 +941,22 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            Birthday = DateTime.Today.AddDays(-1),
+            Birthday = DateTime.Today.AddDays(-2),
             CitizenIdentityCardNo = "001122334455",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(9),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -763,9 +970,9 @@ public class TestSroController
         {
             FirstName = "Tommy",
             LastName = "Nguyen",
-            MobilePhone = "0987410258",
-            Email = "tommy@email.com",
-            EmailOrganization = "tommy@email.org.com",
+            MobilePhone = "0987458924",
+            Email = "tommy-new@email.com",
+            EmailOrganization = "tommy-new@email.org.com",
             Avatar = null,
             CenterId = 1,
             ProvinceId = 1,
@@ -773,13 +980,21 @@ public class TestSroController
             WardId = 1,
             GenderId = 1,
             Birthday = DateTime.Today.AddDays(-1),
-            CitizenIdentityCardNo = "001122334455",
+            CitizenIdentityCardNo = "001122334466",
             CitizenIdentityCardPublishedDate = DateTime.Today.AddDays(-1),
             CitizenIdentityCardPublishedPlace = "Ha Noi"
         };
 
         // act 
-        var result = _controller.CreateSro(request);
+        var result = _controller.CreateSro(request) as OkObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustom;
+            var message = value?.Message;
+            var data = value?.Data;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(data.ToJson());
+        }
 
         // assert
         Assert.IsType<OkObjectResult>(result);
@@ -809,7 +1024,15 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -839,7 +1062,15 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -870,7 +1101,15 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -900,7 +1139,15 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -930,7 +1177,15 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -960,7 +1215,15 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -990,7 +1253,15 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1020,7 +1291,15 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1043,14 +1322,22 @@ public class TestSroController
             MobilePhone = "0985563540", // belong to user id 2
             Email = "thanhnm136@gmail.personal.com",
             EmailOrganization = "thanhnm136@gmail.org.com",
-            Birthday = DateTime.Today.AddDays(2),
+            Birthday = new DateTime(2000, 01, 01),
             CitizenIdentityCardNo = "123456781",
             CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1073,14 +1360,22 @@ public class TestSroController
             MobilePhone = "985563541",
             Email = "thanhnm136@gmail.personal.com",
             EmailOrganization = "thanhnm136@gmail.org.com",
-            Birthday = DateTime.Today.AddDays(2),
+            Birthday = new DateTime(2000, 01, 01),
             CitizenIdentityCardNo = "123456781",
             CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1103,14 +1398,22 @@ public class TestSroController
             MobilePhone = "09854682",
             Email = "thanhnm136@gmail.personal.com",
             EmailOrganization = "thanhnm136@gmail.org.com",
-            Birthday = DateTime.Today.AddDays(2),
+            Birthday = new DateTime(2000, 01, 01),
             CitizenIdentityCardNo = "123456781",
             CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1133,14 +1436,22 @@ public class TestSroController
             MobilePhone = "02131654562165",
             Email = "thanhnm136@gmail.personal.com",
             EmailOrganization = "thanhnm136@gmail.org.com",
-            Birthday = DateTime.Today.AddDays(2),
+            Birthday = new DateTime(2000, 01, 01),
             CitizenIdentityCardNo = "123456781",
             CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1163,14 +1474,22 @@ public class TestSroController
             MobilePhone = "098556354a",
             Email = "thanhnm136@gmail.personal.com",
             EmailOrganization = "thanhnm136@gmail.org.com",
-            Birthday = DateTime.Today.AddDays(2),
+            Birthday = new DateTime(2000, 01, 01),
             CitizenIdentityCardNo = "123456781",
             CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1193,14 +1512,22 @@ public class TestSroController
             MobilePhone = "0985563541",
             Email = "thanhnmhe141011@fpt.personal.edu.vn", // belong user id 4
             EmailOrganization = "thanhnm136@gmail.org.com",
-            Birthday = DateTime.Today.AddDays(2),
+            Birthday = new DateTime(2000, 01, 01),
             CitizenIdentityCardNo = "123456781",
             CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1221,16 +1548,24 @@ public class TestSroController
             WardId = 1,
             GenderId = 1,
             MobilePhone = "0985563541",
-            Email = "thanhnm136@gmail.personal.com", 
+            Email = "thanhnm136@gmail.personal.com",
             EmailOrganization = "nmthanh1306@gmail.personal.com", // belong user id 2
-            Birthday = DateTime.Today.AddDays(2),
+            Birthday = new DateTime(2000, 01, 01),
             CitizenIdentityCardNo = "123456781",
             CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1253,14 +1588,22 @@ public class TestSroController
             MobilePhone = "0985563541",
             Email = "thanhnm136@gmail",
             EmailOrganization = "thanhnm136@gmail.org.com",
-            Birthday = DateTime.Today.AddDays(2),
+            Birthday = new DateTime(2000, 01, 01),
             CitizenIdentityCardNo = "123456781",
             CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1283,14 +1626,22 @@ public class TestSroController
             MobilePhone = "0985563541",
             Email = "thanhnm136@gmail.personal.com",
             EmailOrganization = "thanhnm136@gmail",
-            Birthday = DateTime.Today.AddDays(2),
+            Birthday = new DateTime(2000, 01, 01),
             CitizenIdentityCardNo = "123456781",
             CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1320,7 +1671,15 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1350,7 +1709,15 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1380,7 +1747,15 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1410,7 +1785,15 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1440,7 +1823,15 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1470,7 +1861,15 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1500,8 +1899,16 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
-
+        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var message = value?.Message;
+            var type = value?.TypeError;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
+        
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
@@ -1530,9 +1937,17 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request);
+        var result = _controller.UpdateSro(sroId, request) as OkObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustom;
+            var message = value?.Message;
+            var data = value?.Data;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(data.ToJson());
+        }
 
         // assert
-        Assert.IsType<BadRequestObjectResult>(result);
+        Assert.IsType<OkObjectResult>(result);
     }
 }
