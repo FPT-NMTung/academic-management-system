@@ -165,8 +165,13 @@ public class GpaController : ControllerBase
         {
             return NotFound(CustomResponse.NotFound("No student found in class with id " + classId));
         }
+
         // get email of students
         var emailsStudent = students.Select(s => s.EmailOrganization).ToList();
+
+        // get today date and format
+        var today = DateTime.Now;
+        var todayString = today.ToString("dd/MM/yyyy");
 
         var configuration = new ConfigurationBuilder()
             .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
@@ -177,15 +182,17 @@ public class GpaController : ControllerBase
         var emailContent =
             new EmailContent("[QUAN TRỌNG] Yêu cầu lấy đánh giá về việc giảng dạy của giảng viên.") // subject
             {
-                PlainText = "Học viên hãy vào lịch học và đánh giá giảng viên trong buổi học ngày hôm nay.\n" +
+                PlainText = "Học viên hãy vào lịch học và đánh giá giảng viên trong buổi học ngày hôm nay (" +
+                            todayString + ").\n" +
                             "Những ai đã thực hiện đánh giá có thể bỏ qua Email này." // content
             };
-        
+
         var listEmail = new List<EmailAddress>();
         foreach (var email in emailsStudent)
         {
             listEmail.Add(new EmailAddress(email));
         }
+
         var emailRecipients = new EmailRecipients(listEmail);
         var emailMessage = new EmailMessage("ams-no-reply@nmtung.dev", emailContent, emailRecipients);
         SendEmailResult emailResult = emailClient.Send(emailMessage, CancellationToken.None);
