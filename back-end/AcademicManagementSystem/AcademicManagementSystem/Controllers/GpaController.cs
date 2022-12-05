@@ -239,7 +239,6 @@ public class GpaController : ControllerBase
         {
             return BadRequest(CustomResponse.BadRequest("You have already taken GPA teacher in this session", "a"));
         }
-        
 
         var gpaRecord = new GpaRecord()
         {
@@ -254,7 +253,7 @@ public class GpaController : ControllerBase
             UpdatedAt = DateTime.Now
         };
         _context.GpaRecords.Add(gpaRecord);
-        
+
         try
         {
             _context.SaveChanges();
@@ -264,27 +263,27 @@ public class GpaController : ControllerBase
         {
             return BadRequest(CustomResponse.BadRequest("Fail to Save Changes when add GpaRecord", "b"));
         }
-        
-        // // add data to gpa record answer
-        // foreach (var answerId in request.AnswerIds)
-        // {
-        //     var gpaRecordAnswer = new GpaRecordAnswer()
-        //     {
-        //         GpaRecordId = gpaRecord.Id,
-        //         AnswerId = answerId
-        //     };
-        //     _context.GpaRecordsAnswers.Add(gpaRecordAnswer);
-        // }
-        //
-        // try
-        // {
-        //     _context.SaveChanges();
-        // }
-        // catch
-        //     (Exception e)
-        // {
-        //     return BadRequest(CustomResponse.BadRequest("Fail to Save Changes when add GpaRecord Answer", "c"));
-        // }
+
+        // add data to gpa record answer
+        foreach (var answerId in request.AnswerIds)
+        {
+            var gpaRecordAnswer = new GpaRecordAnswer()
+            {
+                GpaRecordId = gpaRecord.Id,
+                AnswerId = answerId
+            };
+            _context.GpaRecordsAnswers.Add(gpaRecordAnswer);
+        }
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch
+            (Exception e)
+        {
+            return BadRequest(CustomResponse.BadRequest("Fail to Save Changes when add GpaRecord Answer", "c"));
+        }
 
         return Ok(CustomResponse.Ok("GPA has taken successfully", null!));
     }
