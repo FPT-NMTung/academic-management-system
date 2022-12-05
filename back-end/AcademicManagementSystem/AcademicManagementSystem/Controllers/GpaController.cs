@@ -1,5 +1,6 @@
 using AcademicManagementSystem.Context;
 using AcademicManagementSystem.Context.AmsModels;
+using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.AddressController.DistrictModel;
 using AcademicManagementSystem.Models.AddressController.ProvinceModel;
 using AcademicManagementSystem.Models.AddressController.WardModel;
@@ -214,12 +215,67 @@ public class GpaController : ControllerBase
         }
 
         // check if class exists or not
-        // check if student exists or not
+        if (!IsClassExisted(request.ClassId))
+        {
+            var error = ErrorDescription.Error["E1139"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         // check if teacher exists or not
+        if (!IsTeacherExisted(request.TeacherId))
+        {
+            var error = ErrorDescription.Error["E1140"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         // check if module exists or not
+        if (!IsModuleExisted(request.ModuleId))
+        {
+            var error = ErrorDescription.Error["E1141"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         // check if session exists or not
+        if (!IsSessionExisted(request.SessionId))
+        {
+            var error = ErrorDescription.Error["E1142"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         // check if student is in class or not
-        // check if teacher is in class or not
+        if (!IsStudentInClass(request.ClassId))
+        {
+            var error = ErrorDescription.Error["E1143"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check if teacher is teaching in class or not
+        if (!IsTeacherInClass(request.ClassId, request.TeacherId))
+        {
+            var error = ErrorDescription.Error["E1144"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check if is module in class or not
+        if (!IsModuleInClass(request.ClassId, request.ModuleId))
+        {
+            var error = ErrorDescription.Error["E1148"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check if is session in class or not
+        if (!IsSessionInClass(request.ClassId, request.SessionId, request.ModuleId))
+        {
+            var error = ErrorDescription.Error["E1149"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check if teacher is teaching this module in class or not
+        if (!IsTeacherTeachingModuleSession(request.TeacherId, request.ModuleId, request.SessionId, request.ClassId))
+        {
+            var error = ErrorDescription.Error["E1150"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         // check if student has taken gpa teacher in this session or not
         var existedGpa = _context.GpaRecords
@@ -237,9 +293,9 @@ public class GpaController : ControllerBase
                 g.ModuleId == request.ModuleId && g.SessionId == request.SessionId && g.TeacherId == request.TeacherId);
         if (existedGpa != null)
         {
-            return BadRequest(CustomResponse.BadRequest("You have already taken GPA teacher in this session", "a"));
+            var error = ErrorDescription.Error["E1145"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
 
         var gpaRecord = new GpaRecord()
         {
@@ -254,7 +310,7 @@ public class GpaController : ControllerBase
             UpdatedAt = DateTime.Now
         };
         _context.GpaRecords.Add(gpaRecord);
-        
+
         try
         {
             _context.SaveChanges();
@@ -262,31 +318,134 @@ public class GpaController : ControllerBase
         catch
             (Exception e)
         {
-            return BadRequest(CustomResponse.BadRequest("Fail to Save Changes when add GpaRecord", "b"));
+            var error = ErrorDescription.Error["E1146"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
-        // // add data to gpa record answer
-        // foreach (var answerId in request.AnswerIds)
-        // {
-        //     var gpaRecordAnswer = new GpaRecordAnswer()
-        //     {
-        //         GpaRecordId = gpaRecord.Id,
-        //         AnswerId = answerId
-        //     };
-        //     _context.GpaRecordsAnswers.Add(gpaRecordAnswer);
-        // }
-        //
-        // try
-        // {
-        //     _context.SaveChanges();
-        // }
-        // catch
-        //     (Exception e)
-        // {
-        //     return BadRequest(CustomResponse.BadRequest("Fail to Save Changes when add GpaRecord Answer", "c"));
-        // }
+
+        // add data to gpa record answer
+        foreach (var answerId in request.AnswerIds)
+        {
+            var gpaRecordAnswer = new GpaRecordAnswer()
+            {
+                GpaRecordId = gpaRecord.Id,
+                AnswerId = answerId
+            };
+            _context.GpaRecordsAnswers.Add(gpaRecordAnswer);
+        }
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch
+            (Exception e)
+        {
+            var error = ErrorDescription.Error["E1147"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         return Ok(CustomResponse.Ok("GPA has taken successfully", null!));
+    }
+
+    // sro view gpa teacher by teacherId
+    [HttpGet]
+    [Route("api/gpa/teachers/{teacherId:int}")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult ViewGpaTeacherByTeacherId(int teacherId)
+    {
+        // check if teacher exists or not
+        if (!IsTeacherExisted(teacherId))
+        {
+            var error = ErrorDescription.Error["E1140"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var gpaRecords = _context.GpaRecords
+            .Include(g => g.Student)
+            .Include(g => g.Teacher)
+            // .Include(g => g.Form)
+            // .Include(g => g.Class)
+            // .Include(g => g.Module)
+            // .Include(g => g.Session)
+            // .Include(g => g.GpaRecordsAnswers)
+            // .ThenInclude(gra => gra.Answer)
+            // .ThenInclude(a => a.Question)
+            .Where(g => g.TeacherId == teacherId)
+            .ToList();
+
+        return Ok(CustomResponse.Ok("GPA records has been retrieved successfully", gpaRecords));
+    }
+
+    // is class existed
+    private bool IsClassExisted(int classId)
+    {
+        return _context.Classes.Any(c => c.Id == classId && c.CenterId == _user.CenterId);
+    }
+
+    // is teacher existed
+    private bool IsTeacherExisted(int teacherId)
+    {
+        return _context.Teachers
+            .Include(t => t.User)
+            .Any(t => t.UserId == teacherId && t.User.CenterId == _user.CenterId);
+    }
+
+    // is module existed
+    private bool IsModuleExisted(int moduleId)
+    {
+        return _context.Modules.Any(m => m.Id == moduleId && m.CenterId == _user.CenterId);
+    }
+
+    // is session existed
+    private bool IsSessionExisted(int sessionId)
+    {
+        return _context.Sessions.Any(s => s.Id == sessionId);
+    }
+
+    // is student in class
+    private bool IsStudentInClass(int classId)
+    {
+        return _context.StudentsClasses
+            .Any(sc => sc.ClassId == classId && sc.StudentId == _user.Id && sc.IsActive);
+    }
+
+    // is teacher is teaching this class
+    private bool IsTeacherInClass(int classId, int teacherId)
+    {
+        return _context.ClassSchedules
+            .Include(cs => cs.Teacher)
+            .Include(cs => cs.Class)
+            .Any(cs => cs.ClassId == classId && cs.TeacherId == teacherId &&
+                       cs.StartDate <= DateTime.Now && cs.EndDate >= DateTime.Now);
+    }
+
+    // is module is teaching in this class
+    private bool IsModuleInClass(int classId, int moduleId)
+    {
+        return _context.ClassSchedules
+            .Include(cs => cs.Class)
+            .Include(cs => cs.Module)
+            .Any(cs => cs.ClassId == classId && cs.ModuleId == moduleId &&
+                       cs.StartDate <= DateTime.Now && cs.EndDate >= DateTime.Now);
+    }
+
+    // is session is teaching in this class
+    private bool IsSessionInClass(int classId, int sessionId, int moduleId)
+    {
+        return _context.Sessions
+            .Include(s => s.ClassSchedule)
+            .Any(s => s.ClassSchedule.ClassId == classId && s.Id == sessionId && s.ClassSchedule.ModuleId == moduleId &&
+                      s.ClassSchedule.StartDate <= DateTime.Now && s.ClassSchedule.EndDate >= DateTime.Now);
+    }
+
+    // is teacher teaching this module session in class
+    private bool IsTeacherTeachingModuleSession(int teacherId, int moduleId, int sessionId, int classId)
+    {
+        return _context.Sessions
+            .Include(s => s.ClassSchedule)
+            .Any(s => s.ClassSchedule.TeacherId == teacherId && s.Id == sessionId &&
+                      s.ClassSchedule.ModuleId == moduleId && s.ClassSchedule.ClassId == classId &&
+                      s.ClassSchedule.StartDate <= DateTime.Now && s.ClassSchedule.EndDate >= DateTime.Now);
     }
 
     private List<StudentResponse> GetAllStudentsByClassId(int id)
