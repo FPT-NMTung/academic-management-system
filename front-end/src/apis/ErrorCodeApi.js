@@ -14,6 +14,11 @@ export const ErrorCodeApi = {
   "room-error-0013": "Loại phòng không tồn tại",
   "room-error-0014": "Số lượng phải từ 20 đến 100",
   "room-error-0015": "Phòng đã tồn tại trong hệ thống",
+  "room-error-0016": "Phòng không tìm thấy",
+  "room-error-0017": "Xóa phòng không thành công",
+  "room-error-0018": "Thay đổi trạng thái không thành công",
+  "room-error-0019": "Không thể xóa phòng",
+
 
   "center-error-0001": "Cơ sở không tồn tại",
   "center-error-0002": "Tên cơ sở không được để trống",
@@ -56,6 +61,7 @@ export const ErrorCodeApi = {
   "sro-error-0022-3": "Ngày sinh phải nhỏ hơn ngày hiện tại",
   "sro-error-0022-4": "Ngày cấp thẻ phải nhỏ hơn ngày hiện tại",
   "sro-error-2057": "Thay đổi trạng thái không thành công",
+  "sro-error-1001": "Xóa sro không thành công",
 
   "address-error-0001": "Không tìm thấy địa chỉ",
 
@@ -68,6 +74,9 @@ export const ErrorCodeApi = {
   "course-family-error-0008": "Mã course family đã tồn tại",
   "course-family-error-0009": "Tên course family đã tồn tại",
   "course-family-error-0010": "Tên hoặc mã course family đã tồn tại",
+  "course-family-error-0011": "Không thể xóa course family này",
+  "course-family-error-0012": "Thay đổi trạng thái không thành công",
+  "course-family-error-0013": "Xóa course family không thành công",
 
   "course-error-0001": "Mã khóa học đã tồn tại",
   "course-error-0002": "Mã chương trình học đã không tồn tại",
@@ -78,6 +87,8 @@ export const ErrorCodeApi = {
   "course-error-0007": "Số lượng kỳ học không hợp lệ",
   "course-error-0008": "Tên khoá học đã tồn tại",
   "course-error-0009": "Mã khóa học đã tồn tại",
+  "course-error-0010": "Thay đổi trạng thái không thành công",
+  "course-error-0011": "Xóa khóa học không thành công",
 
   "module-error-0001": "Hệ thống đã xảy ra lỗi, vui lòng thử lại",
   "module-error-0002": "Hệ thống đã xảy ra lỗi, vui lòng thử lại",
@@ -109,6 +120,8 @@ export const ErrorCodeApi = {
   "module-error-0029": "Điểm thi lý thuyết không được để trống",
   "module-error-0030": "Điểm thi thực hành không được để trống",
   "module-error-0031": "Điểm thi lý thuyết và thực hành không được để trống",
+  "module-error-0032": "Không thể cập nhật môn học vì môn học đã được bắt đầu",
+  "module-error-0033": "Không thể xóa môn học vì môn học đã được bắt đầu",
 
   "teacher-error-0002": "Phải nhập it nhất 1 trường",
   "teacher-error-0003": "Thông tin giáo viên không hợp lệ",
@@ -133,6 +146,7 @@ export const ErrorCodeApi = {
   "teacher-error-0052-3": "Ngày sinh phải nhỏ hơn ngày hiện tại",
   "teacher-error-0052-5": "Ngày cấp thẻ phải nhỏ hơn ngày hiện tại",
   "teacher-error-2056": "Thay đổi trạng thái không thành công",
+  "teacher-error-1001": "Xóa giáo viên không thành công",
 
   "skill-error-0001": "Tên kỹ năng không hợp lệ",
   "skill-error-0002": "Tên kỹ năng phải có độ dài từ 1 đến 255 ký tự",
@@ -158,6 +172,12 @@ export const ErrorCodeApi = {
   "grade-error-0010": "Module này không thi",
   "grade-error-0011": "Không thêm được điểm thi lại",
   "grade-error-0012": "Module này cần có cả điểm PE và TE",
+  "grade-error-0013": "Tổng trọng số phải lớn hơn 0",
+  "grade-error-0014": "Thi lý thuyết sẽ được thêm tự động",
+  "grade-error-0015": "Không thể thêm điểm ",
+  "grade-error-0016": "Không thể thêm cùng lúc 2 loại điểm giống nhau",
+  "grade-error-0017": "Không thể cập nhật loại điểm, môn học đã được học viên đăng ký",
+
 
   "class-error-0068": "Không thể thêm lớp học",
   "class-error-0069": "Tên lớp học chứa ký tự đặc biệt | Các ký tự cho phép: ( ) _ - ",
@@ -169,6 +189,11 @@ export const ErrorCodeApi = {
   "class-error-0074": "Ngày hoàn thành không thể bằng hoặc nhỏ hơn ngày nhập học",
   "class-error-0075": "Ngày tốt nghiệp không thể nhỏ hơn ngày hoàn thành",
   "class-error-0076": "Ngày nhập học không thể nhỏ hơn ngày nhập học đã tạo",
+  "class-error-0077": "Ngày sinh phải nhỏ hơn ngày hiện tại",
+  "class-error-0078": "Thất bại khi ghép lớp",
+  "class-error-0079": "Tổng số học viên 2 lớp vượt quá 100",
+  "class-error-0080": "Không có học viên nào trong Lớp hiện tại",
+  "class-error-0081": "Không có học viên nào trong Lớp cần ghép",
 
   "student-class-error-0001": "Hệ thống đã xảy ra lỗi, vui lòng thử lại",
   "student-class-error-0002": "Mã số sinh viên đã tồn tại",
@@ -181,6 +206,10 @@ export const ErrorCodeApi = {
   "student-class-error-0009": "Mã số sinh viên đã tồn tại",
   "student-class-error-0010": "Thêm học viên không thành công",
   "student-class-error-0011": "Mã số sinh viên đã tồn tại",
+  "student-class-error-0012": "Không thể thêm học viên vào lớp vì lớp đã có 100 học viên",
+  "student-class-error-0013": "Lớp hiện tại không có trong cơ sở",
+  "student-class-error-0014": "Lớp ghép không có trong cơ sở",
+
 
 
 
@@ -272,8 +301,13 @@ export const ErrorCodeApi = {
   "class-schedule-error-0029": "Không thể xoá lịch học này",
   "class-schedule-error-0030": "Không thể bắt đầu lịch học mới khi lịch học trước đó chưa kết thúc",
 
-  "class-error-0080": "Không có học viên nào trong Lớp hiện tại",
-  "class-error-0081": "Không có học viên nào trong Lớp cần ghép",
+  "attendance-error-0000":"Lỗi dữ liệu",
+  "attendance-error-0001":"Điểm danh đã được thực hiện trong tiết này",
+  "attendance-error-0002":"Tất cả học viện phải trong lớp hoặc không phải draft",
+  "attendance-error-0003":"Không tìm thấy tiết học",
+  "attendance-error-0004":"Không tìm thấy lịch học của lớp",
+  "attendance-error-0005":"Không thể đánh điểm danh vào lúc này",
+
 
   "day-off-error-0001": "Ngày nghỉ đã có trong hệ thống",
   "day-off-error-0002": "Ngày nghỉ phải từ ngày hiện tại trở đi",
@@ -281,4 +315,15 @@ export const ErrorCodeApi = {
   "day-off-error-0004": "Thời gian nghỉ không đúng định dạng",
   "day-off-error-0005": "Lỗi khi xoá ngày nghỉ",
   "day-off-error-0006": "Ngày nghỉ đã có trong hệ thống",  
+
+  "student-grade-error-0000": "Không thể cập nhật trước khi môn học bắt đầu và sau 3 ngày của tiết học cuối cùng",
+  "student-grade-error-0001": "Không thể cập nhật trước khi môn học bắt đầu và sau 5 ngày của tiết học cuối cùng",
+  "student-grade-error-0002": "Học viên phải trong lớp học (không phải draft)",
+  "student-grade-error-0003": "Loại điểm phải trong môn học",
+  "student-grade-error-0004": "Điểm phải từ 0 đến 10",
+  "student-grade-error-0005": "Cập nhật thất bại",
+  "student-grade-error-0006": "Điểm TE và TEResit sẽ được cập nhật bởi SRO import",
+  "student-grade-error-0007": "Không thể cập nhật, môn học không có bài thi",
+
+
 };
