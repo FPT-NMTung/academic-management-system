@@ -99,7 +99,7 @@ const AttendanceDetail = () => {
                       <Card
                         variant="bordered"
                         isPressable={
-                          moment(data.learning_date).add(1, 'days').toDate() -
+                          moment(data.learning_date).toDate() -
                             moment().toDate() <
                           0
                         }
