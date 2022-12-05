@@ -8,7 +8,7 @@ public class Answer
 {
     public Answer()
     {
-        GpaRecords = new HashSet<GpaRecord>();
+        GpaRecordsAnswers = new HashSet<GpaRecordAnswer>();
     }
     [Key]
     [Column("id")]
@@ -26,5 +26,5 @@ public class Answer
     
     // relationships
     public virtual Question Question { get; set; }
-    public virtual ICollection<GpaRecord> GpaRecords { get; set; }
+    public virtual ICollection<GpaRecordAnswer> GpaRecordsAnswers { get; set; }
 }
