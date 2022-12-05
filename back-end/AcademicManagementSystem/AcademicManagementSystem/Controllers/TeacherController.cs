@@ -218,7 +218,7 @@ public class TeacherController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (request.Email == request.EmailOrganization)
+        if (request.Email.ToLower() == request.EmailOrganization.ToLower())
         {
             var error = ErrorDescription.Error["E0052_2"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -286,6 +286,7 @@ public class TeacherController : ControllerBase
             CitizenIdentityCardPublishedPlace = request.CitizenIdentityCardPublishedPlace,
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
+            IsActive = true,
             Teacher = new Teacher()
             {
                 TeacherTypeId = request.TeacherTypeId,
@@ -414,7 +415,7 @@ public class TeacherController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (request.Email == request.EmailOrganization)
+        if (request.Email.ToLower() == request.EmailOrganization.ToLower())
         {
             var error = ErrorDescription.Error["E0052_2"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
