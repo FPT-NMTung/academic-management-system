@@ -332,8 +332,22 @@ public static class ErrorDescription
         { "E0303", new ErrorModel() { Message = "GradeItem in request must belong to this module", Type = "student-grade-error-0003" } },
         { "E0304", new ErrorModel() { Message = "Grade must in range [0-10]", Type = "student-grade-error-0004" } },
         { "E0305", new ErrorModel() { Message = "Update fail", Type = "student-grade-error-0005" } },
-        { "E0306", new ErrorModel() { Message = "Te and TeResit will be update by importing by SRO", Type = "student-grade-error-0006" } },
+        { "E0306", new ErrorModel() { Message = "Exams will be update by SRO", Type = "student-grade-error-0006" } },
         { "E0307", new ErrorModel() { Message = "Can't update, this module don't take exam", Type = "student-grade-error-0007" } },
+        
+        //gpa
+        { "E1139", new ErrorModel() { Message = "Class is not exists in center", Type = "gpa-error-1" } },
+        { "E1140", new ErrorModel() { Message = "Teacher is not exists in center", Type = "gpa-error-2" } },
+        { "E1141", new ErrorModel() { Message = "Module is not exists in center", Type = "gpa-error-3" } },
+        { "E1142", new ErrorModel() { Message = "Session is not exists", Type = "gpa-error-4" } },
+        { "E1143", new ErrorModel() { Message = "Student is not in this class", Type = "gpa-error-5" } },
+        { "E1144", new ErrorModel() { Message = "Teacher is not teaching this class", Type = "gpa-error-6" } },
+        { "E1145", new ErrorModel() { Message = "You have already taken GPA teacher in this session", Type = "gpa-error-7" } },
+        { "E1146", new ErrorModel() { Message = "Fail to Save Changes when add GpaRecord", Type = "gpa-error-8" } },
+        { "E1147", new ErrorModel() { Message = "Fail to Save Changes when add GpaRecord Answer", Type = "gpa-error-9" } },
+        { "E1148", new ErrorModel() { Message = "This class is not learning this module", Type = "gpa-error-10" } },
+        { "E1149", new ErrorModel() { Message = "This class is not learning this module session", Type = "gpa-error-11" } },
+        { "E1150", new ErrorModel() { Message = "Teacher is not teaching this module session in class", Type = "gpa-error-12" } },
     };
 }
 

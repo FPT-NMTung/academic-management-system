@@ -17,7 +17,9 @@ public class GradeStudentController : ControllerBase
 {
     private readonly AmsContext _context;
     private readonly IUserService _userService;
+    private const int PracticeExam = 5;
     private const int TheoryExam = 6;
+    private const int PracticeExamResit = 7;
     private const int TheoryExamResit = 8;
     private const int ExamTypeTheory = 1;
     private const int ExamTypeNoTakeExam = 4;
@@ -93,7 +95,7 @@ public class GradeStudentController : ControllerBase
                     }).ToList()
             });
 
-        return Ok(CustomResponse.Ok("Student get progress scores successfully", moduleProgressScores));
+        return Ok(CustomResponse.Ok("Student get grades successfully", moduleProgressScores));
     }
 
     // student get their grades by class and module
@@ -148,7 +150,7 @@ public class GradeStudentController : ControllerBase
 
         var moduleProgressScores = GetGradesOfSpecificStudent(clazz, moduleId, student);
 
-        return Ok(CustomResponse.Ok("Student get progress scores successfully", moduleProgressScores));
+        return Ok(CustomResponse.Ok("SRO get grades of specific student successfully", moduleProgressScores));
     }
 
     // SRO get all grade of students in class 
@@ -195,7 +197,7 @@ public class GradeStudentController : ControllerBase
         }
 
         var moduleProgressScores = GetGradesOfStudentsInClass(clazz, moduleId);
-        return Ok(CustomResponse.Ok("SRO get progress scores of students successfully", moduleProgressScores));
+        return Ok(CustomResponse.Ok("SRO get grade of all students in class successfully", moduleProgressScores));
     }
 
     // teacher get all grade of students in class 
@@ -605,9 +607,10 @@ public class GradeStudentController : ControllerBase
                 _context.StudentGrades.Update(studentGrade);
             }
 
-            // if grade item is TheoryExam or TheoryExamResit -> error (teacher can't update these grade items)
+            // if grade item is exams -> error (teacher can't update these grade items)
             var gradeItem = gradeItemsOfModule.First(gi => gi.Id == r.GradeItemId);
-            if (gradeItem.GradeCategoryModule.GradeCategoryId is TheoryExam or TheoryExamResit)
+            if (gradeItem.GradeCategoryModule.GradeCategoryId
+                is PracticeExam or TheoryExam or PracticeExamResit or TheoryExamResit)
             {
                 var error = ErrorDescription.Error["E0306"];
                 return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));

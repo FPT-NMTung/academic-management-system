@@ -29,7 +29,7 @@ public static class UserMockData
             UpdatedAt = DateTime.Now,
             IsActive = true
         },
-        new User
+        new User // ADMIN
         {
             Id = 2,
             ProvinceId = 1,
@@ -42,17 +42,17 @@ public static class UserMockData
             LastName = "Thành Admin",
             Avatar = null,
             MobilePhone = "0985563540",
-            Email = "nmthanh1306@gmail.com",
-            EmailOrganization = "nmthanh1306@gmail.com",
+            Email = "nmthanh1306@gmail.personal.com",
+            EmailOrganization = "nmthanh1306@gmail.org.com",
             Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "1234567890",
+            CitizenIdentityCardNo = "123456780",
             CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             IsActive = true
         },
-        new User
+        new User // SRO
         {
             Id = 3,
             ProvinceId = 1,
@@ -65,17 +65,17 @@ public static class UserMockData
             LastName = "Thành SRO",
             Avatar = null,
             MobilePhone = "0985563541",
-            Email = "thanhnm136@gmail.com",
-            EmailOrganization = "thanhnm136@gmail.com",
+            Email = "thanhnm136@gmail.personal.com",
+            EmailOrganization = "thanhnm136@gmail.org.com",
             Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "1234567891",
+            CitizenIdentityCardNo = "123456781",
             CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             IsActive = true
         },
-        new User
+        new User  // TEACHER
         {
             Id = 4,
             ProvinceId = 1,
@@ -88,17 +88,17 @@ public static class UserMockData
             LastName = "Thành Teacher",
             Avatar = null,
             MobilePhone = "0985563542",
-            Email = "thanhnmhe141011@fpt.edu.vn",
-            EmailOrganization = "thanhnmhe141011@fpt.edu.vn",
+            Email = "thanhnmhe141011@fpt.personal.edu.vn",
+            EmailOrganization = "thanhnmhe141011@fpt.org.edu.vn",
             Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "1234567892",
+            CitizenIdentityCardNo = "123456782",
             CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
-            IsActive = true
+            IsActive = true,
         },
-        new User
+        new User // TEACHER
         {
             Id = 5,
             ProvinceId = 1,
@@ -106,15 +106,15 @@ public static class UserMockData
             WardId = 1,
             CenterId = 1,
             GenderId = 1,
-            RoleId = 4,
+            RoleId = 3,
             FirstName = "Minh",
-            LastName = "Thành Student",
+            LastName = "Another Teacher",
             Avatar = null,
             MobilePhone = "0985563543",
-            Email = "thanhnm_student@fpt.edu.vn",
-            EmailOrganization = "thanhnm_student@fpt.edu.vn",
+            Email = "thanhnm_student@fpt.personal.edu.vn",
+            EmailOrganization = "thanhnm_student@fpt.org.edu.vn",
             Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "1234567893",
+            CitizenIdentityCardNo = "123456783",
             CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
             CreatedAt = DateTime.Now,
