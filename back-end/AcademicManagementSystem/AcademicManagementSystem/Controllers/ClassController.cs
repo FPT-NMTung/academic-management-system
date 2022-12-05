@@ -917,6 +917,7 @@ public class ClassController : ControllerBase
                             GenderId = genderId,
                             CreatedAt = DateTime.Now,
                             UpdatedAt = DateTime.Now,
+                            IsActive = true,
                             Student = new Student()
                             {
                                 EnrollNumber = enrollNumber!.Trim(),
@@ -1327,6 +1328,7 @@ public class ClassController : ControllerBase
             GenderId = request.GenderId,
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
+            IsActive = true,
             Student = new Student()
             {
                 EnrollNumber = request.EnrollNumber,

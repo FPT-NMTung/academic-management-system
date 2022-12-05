@@ -171,7 +171,8 @@ public class SroController : ControllerBase
             CitizenIdentityCardPublishedDate = request.CitizenIdentityCardPublishedDate,
             CitizenIdentityCardPublishedPlace = request.CitizenIdentityCardPublishedPlace,
             CreatedAt = DateTime.Now,
-            UpdatedAt = DateTime.Now
+            UpdatedAt = DateTime.Now,
+            IsActive = true
         };
 
         /*

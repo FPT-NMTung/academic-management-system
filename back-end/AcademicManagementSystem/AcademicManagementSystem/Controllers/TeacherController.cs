@@ -286,6 +286,7 @@ public class TeacherController : ControllerBase
             CitizenIdentityCardPublishedPlace = request.CitizenIdentityCardPublishedPlace,
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
+            IsActive = true,
             Teacher = new Teacher()
             {
                 TeacherTypeId = request.TeacherTypeId,
