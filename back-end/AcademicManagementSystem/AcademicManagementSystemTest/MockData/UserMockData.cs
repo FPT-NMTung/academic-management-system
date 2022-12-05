@@ -96,7 +96,17 @@ public static class UserMockData
             CitizenIdentityCardPublishedPlace = "Hà Nội",
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
-            IsActive = true
+            IsActive = true,
+            Teacher = new Teacher()
+            {
+                TeacherTypeId = 1,
+                WorkingTimeId = 2,
+                Nickname = null,
+                CompanyAddress = null,
+                StartWorkingDate = DateTime.Today,
+                Salary = 1000,
+                TaxCode = "0000000001"
+            }
         },
         new User
         {
