@@ -29,7 +29,7 @@ public static class UserMockData
             UpdatedAt = DateTime.Now,
             IsActive = true
         },
-        new User
+        new User // ADMIN
         {
             Id = 2,
             ProvinceId = 1,
@@ -52,7 +52,7 @@ public static class UserMockData
             UpdatedAt = DateTime.Now,
             IsActive = true
         },
-        new User
+        new User // SRO
         {
             Id = 3,
             ProvinceId = 1,
@@ -75,7 +75,7 @@ public static class UserMockData
             UpdatedAt = DateTime.Now,
             IsActive = true
         },
-        new User
+        new User  // TEACHER
         {
             Id = 4,
             ProvinceId = 1,
@@ -97,18 +97,8 @@ public static class UserMockData
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             IsActive = true,
-            Teacher = new Teacher()
-            {
-                TeacherTypeId = 1,
-                WorkingTimeId = 2,
-                Nickname = null,
-                CompanyAddress = null,
-                StartWorkingDate = DateTime.Today,
-                Salary = 1000,
-                TaxCode = "0000000001"
-            }
         },
-        new User
+        new User // TEACHER
         {
             Id = 5,
             ProvinceId = 1,
@@ -116,9 +106,9 @@ public static class UserMockData
             WardId = 1,
             CenterId = 1,
             GenderId = 1,
-            RoleId = 4,
+            RoleId = 3,
             FirstName = "Minh",
-            LastName = "Thành Student",
+            LastName = "Another Teacher",
             Avatar = null,
             MobilePhone = "0985563543",
             Email = "thanhnm_student@fpt.personal.edu.vn",
