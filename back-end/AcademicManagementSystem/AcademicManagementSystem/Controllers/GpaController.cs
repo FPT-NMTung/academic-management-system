@@ -347,6 +347,35 @@ public class GpaController : ControllerBase
         return Ok(CustomResponse.Ok("GPA has taken successfully", null!));
     }
 
+    // sro view gpa teacher by teacherId
+    [HttpGet]
+    [Route("api/gpa/teachers/{teacherId:int}")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult ViewGpaTeacherByTeacherId(int teacherId)
+    {
+        // check if teacher exists or not
+        if (!IsTeacherExisted(teacherId))
+        {
+            var error = ErrorDescription.Error["E1140"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var gpaRecords = _context.GpaRecords
+            .Include(g => g.Student)
+            .Include(g => g.Teacher)
+            // .Include(g => g.Form)
+            // .Include(g => g.Class)
+            // .Include(g => g.Module)
+            // .Include(g => g.Session)
+            // .Include(g => g.GpaRecordsAnswers)
+            // .ThenInclude(gra => gra.Answer)
+            // .ThenInclude(a => a.Question)
+            .Where(g => g.TeacherId == teacherId)
+            .ToList();
+
+        return Ok(CustomResponse.Ok("GPA records has been retrieved successfully", gpaRecords));
+    }
+
     // is class existed
     private bool IsClassExisted(int classId)
     {
