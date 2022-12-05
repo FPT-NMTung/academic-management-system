@@ -625,4 +625,14 @@ export const UserStudentApis = {
     method: 'POST',
     contextType: 'application/json',
   },
+  getModuleSemester: {
+    url: 'api/students/semesters/modules',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getGradesbyclass: {
+    url: 'api/classes/{0}/modules/{1}/grades-students/students',
+    method: 'GET',
+    contextType: 'application/json',
+  },
 };
