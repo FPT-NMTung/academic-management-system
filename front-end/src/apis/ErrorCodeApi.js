@@ -169,6 +169,11 @@ export const ErrorCodeApi = {
   "class-error-0074": "Ngày hoàn thành không thể bằng hoặc nhỏ hơn ngày nhập học",
   "class-error-0075": "Ngày tốt nghiệp không thể nhỏ hơn ngày hoàn thành",
   "class-error-0076": "Ngày nhập học không thể nhỏ hơn ngày nhập học đã tạo",
+  "class-error-0077": "Ngày sinh phải nhỏ hơn ngày hiện tại",
+  "class-error-0078": "Thất bại khi ghép lớp",
+  "class-error-0079": "Tổng số học viên 2 lớp vượt quá 100",
+  "class-error-0080": "Lớp hiện tại không có học viên",
+  "class-error-0081": "Lớp ghép tới không có học viên",
 
   "student-class-error-0001": "Hệ thống đã xảy ra lỗi, vui lòng thử lại",
   "student-class-error-0002": "Mã số sinh viên đã tồn tại",
@@ -181,6 +186,10 @@ export const ErrorCodeApi = {
   "student-class-error-0009": "Mã số sinh viên đã tồn tại",
   "student-class-error-0010": "Thêm học viên không thành công",
   "student-class-error-0011": "Mã số sinh viên đã tồn tại",
+  "student-class-error-0012": "Không thể thêm học viên vào lớp vì lớp đã có 100 học viên",
+  "student-class-error-0013": "Lớp hiện tại không có trong cơ sở",
+  "student-class-error-0014": "Lớp ghép không có trong cơ sở",
+
 
 
 
