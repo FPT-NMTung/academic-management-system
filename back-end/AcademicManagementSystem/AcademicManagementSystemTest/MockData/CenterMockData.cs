@@ -8,6 +8,7 @@ public static class CenterMockData
     {
         new Center()
         {
+            Id = 1,
             ProvinceId = 1,
             DistrictId = 1,
             WardId = 1,
@@ -18,6 +19,7 @@ public static class CenterMockData
         },
         new Center()
         {
+            Id = 2,
             ProvinceId = 1,
             DistrictId = 1,
             WardId = 1,
@@ -28,6 +30,7 @@ public static class CenterMockData
         },
         new Center()
         {
+            Id = 3,
             ProvinceId = 2,
             DistrictId = 2,
             WardId = 2,
