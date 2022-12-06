@@ -348,6 +348,7 @@ const TeacherCreate = ({ modeUpdate }) => {
                       message: 'Hãy chọn cơ sở',
                     },
                   ]}
+                  hidden={modeUpdate }
                 >
                   <Select
                     showSearch
@@ -357,11 +358,13 @@ const TeacherCreate = ({ modeUpdate }) => {
                         .toLowerCase()
                         .includes(input.toLowerCase())
                     }
+                    disabled={modeUpdate }
+                    
                   >
                     {listCenter
                       .filter((e) => e.is_active)
                       .map((item, index) => (
-                        <Select.Option key={index} value={item.id}>
+                        <Select.Option key={index} value={item.id} >
                           {item.name}
                         </Select.Option>
                       ))}

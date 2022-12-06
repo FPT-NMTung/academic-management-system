@@ -292,7 +292,7 @@ export const ErrorCodeApi = {
   "class-schedule-error-0020": "Lịch học không tồn tại",
   "class-schedule-error-0021": "Lịch học không tồn tại với cơ sở này",
   "class-schedule-error-0022": "Không thể cập nhật cho lịch học đã bắt đầu",
-  "class-schedule-error-0023": "class-schedule-error-0023",
+  "class-schedule-error-0023": "Không thể cập nhật, thời điểm này đã có lịch học của môn khác",
   "class-schedule-error-0024": "Giáo viên đã có lịch dạy",
   "class-schedule-error-0025": "Phòng học đã được sử dụng",
   "class-schedule-error-0026": "Môn học này không dành cho lớp bạn chọn",

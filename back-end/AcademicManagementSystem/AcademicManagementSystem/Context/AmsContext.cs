@@ -60,6 +60,9 @@ public class AmsContext : DbContext
         
         modelBuilder.Entity<StudentGrade>()
             .HasKey(sg => new { sg.ClassId, sg.StudentId, sg.GradeItemId });
+        
+        modelBuilder.Entity<GpaRecordAnswer>()
+            .HasKey(gra => new { gra.AnswerId, gra.GpaRecordId });
     }
 
     public DbSet<Province> Provinces { get; set; }
@@ -103,5 +106,5 @@ public class AmsContext : DbContext
     public DbSet<Answer> Answers { get; set; }
     public DbSet<Form> Forms { get; set; }
     public DbSet<GpaRecord> GpaRecords { get; set; }
-
+    public DbSet<GpaRecordAnswer> GpaRecordsAnswers { get; set; }
 }

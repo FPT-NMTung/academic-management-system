@@ -511,11 +511,18 @@ public class ClassScheduleController : ControllerBase
         }
 
         var teacher =
-            _context.Teachers.FirstOrDefault(t => t.UserId == request.TeacherId && t.User.CenterId == centerId);
+            _context.Teachers.Include(t => t.User)
+                .FirstOrDefault(t => t.UserId == request.TeacherId && t.User.CenterId == centerId);
 
         if (teacher == null)
         {
             var error = ErrorDescription.Error["E0077_1"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!teacher.User.IsActive)
+        {
+            var error = ErrorDescription.Error["E0077_2"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -754,7 +761,22 @@ public class ClassScheduleController : ControllerBase
 
         var module = _context.Modules.First(m => m.Id == classScheduleContext.ModuleId);
 
+        var teacher =
+            _context.Teachers.Include(t => t.User)
+                .FirstOrDefault(t => t.UserId == request.TeacherId && t.User.CenterId == centerId);
 
+        if (teacher == null)
+        {
+            var error = ErrorDescription.Error["E0077_1"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!teacher.User.IsActive)
+        {
+            var error = ErrorDescription.Error["E0077_2"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
         /*
         * Check input data like: durations in range, startDate must < today,
         * LearningTime must match with workingTime(1,2,3), room type must correct, range of learningTime...
