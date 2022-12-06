@@ -87,11 +87,11 @@ public class GradeStudentController : ControllerBase
                     Id = gi.Id,
                     Name = gi.Name,
                     Grade = gi.StudentGrades
-                        .Where(sg => sg.StudentId == userId)
+                        .Where(sg => sg.StudentId == userId && sg.ClassId == classId)
                         .Select(sg => sg.Grade)
                         .FirstOrDefault(),
                     Comment = gi.StudentGrades
-                        .Where(sg => sg.StudentId == userId)
+                        .Where(sg => sg.StudentId == userId && sg.ClassId == classId)
                         .Select(sg => sg.Comment)
                         .FirstOrDefault()
                 }
