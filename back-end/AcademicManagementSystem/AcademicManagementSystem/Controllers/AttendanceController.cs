@@ -4,6 +4,7 @@ using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.AttendanceController.AttendanceModel;
 using AcademicManagementSystem.Models.AttendanceStatusController.AttendanceStatusModel;
 using AcademicManagementSystem.Models.BasicResponse;
+using AcademicManagementSystem.Models.SessionTypeController.SessionTypeModel;
 using AcademicManagementSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -115,7 +116,7 @@ public class AttendanceController : ControllerBase
             .ThenInclude(c => c.CoursesModulesSemesters)
             .ThenInclude(cms => cms.Module)
             .FirstOrDefault(c => c.Id == classId
-                                 && c.StudentsClasses.Any(sc => sc.StudentId == userId && sc.IsActive));
+                                 && c.StudentsClasses.Any(sc => sc.StudentId == userId));
 
         if (classContext == null)
         {
@@ -132,56 +133,66 @@ public class AttendanceController : ControllerBase
         }
 
         var attendances = _context.Sessions
+            .Include(s => s.Room)
+            .Include(s => s.SessionType)
             .Include(s => s.ClassSchedule)
+            .Include(s => s.ClassSchedule.Teacher.User)
             .Include(s => s.ClassSchedule.Class)
             .Include(s => s.ClassSchedule.Class.StudentsClasses)
             .Include(s => s.ClassSchedule.Module)
             .Include(s => s.Attendances)
             .Where(s => s.ClassSchedule.Class.Id == classId && s.ClassSchedule.ModuleId == moduleId)
-            .Select(s => new SessionAttendanceResponse()
+            .Select(s => new SessionAttendanceForStudentResponse()
             {
-                SessionId = s.Id,
+                Id = s.Id,
                 Title = s.Title,
                 LearningDate = s.LearningDate,
+                StartTime = s.StartTime,
+                EndTime = s.EndTime,
 
-                ClassSchedule = new BasicClassScheduleResponse()
+                AttendanceStatus = s.Attendances.Where(a => a.StudentId == userId)
+                    .Select(a => new AttendanceStatusResponse()
+                    {
+                        Id = a.AttendanceStatus.Id,
+                        Value = a.AttendanceStatus.Value
+                    }).FirstOrDefault(),
+                SessionType = new SessionTypeResponse()
                 {
-                    Id = s.ClassScheduleId,
-                    Class = new BasicClassResponse()
-                    {
-                        Id = s.ClassSchedule.Class.Id,
-                        Name = s.ClassSchedule.Class.Name
-                    },
-                    Module = new BasicModuleResponse()
-                    {
-                        Id = s.ClassSchedule.Module.Id,
-                        Name = s.ClassSchedule.Module.ModuleName
-                    }
+                    Id = s.SessionType.Id,
+                    Value = s.SessionType.Value
                 },
 
-                StudentAttendances = s.ClassSchedule.Class.StudentsClasses.Select(sc => new StudentAttendanceResponse()
+                Note = s.Attendances.Where(a => a.StudentId == userId)
+                    .Select(a => a.Note).FirstOrDefault(),
+
+                Room = new BasicRoomResponse()
                 {
-                    Student = new BasicStudentResponse()
-                    {
-                        UserId = sc.StudentId,
-                        EnrollNumber = sc.Student.EnrollNumber,
-                        EmailOrganization = sc.Student.User.EmailOrganization,
-                        FirstName = sc.Student.User.FirstName,
-                        LastName = sc.Student.User.LastName,
-                        Avatar = sc.Student.User.Avatar
-                    },
-                    AttendanceStatus = s.Attendances.Where(a => a.StudentId == sc.StudentId)
-                        .Select(a => new AttendanceStatusResponse()
-                        {
-                            Id = a.AttendanceStatus.Id,
-                            Value = a.AttendanceStatus.Value
-                        }).FirstOrDefault(),
-                    Note = s.Attendances.Where(a => a.StudentId == sc.StudentId)
-                        .Select(a => a.Note).FirstOrDefault()
-                }).Where(sa => sa.Student.UserId == userId).ToList() // get only this student attendance
+                    Id = s.Room.Id,
+                    Name = s.Room.Name
+                },
+
+                Class = new BasicClassResponse()
+                {
+                    Id = s.ClassSchedule.Class.Id,
+                    Name = s.ClassSchedule.Class.Name
+                },
+
+                Module = new BasicModuleResponse()
+                {
+                    Id = s.ClassSchedule.Module.Id,
+                    Name = s.ClassSchedule.Module.ModuleName
+                },
+
+                Teacher = new BasicTeacherInformationResponse()
+                {
+                    Id = s.ClassSchedule.Teacher.User.Id,
+                    EmailOrganization = s.ClassSchedule.Teacher.User.EmailOrganization,
+                    FirstName = s.ClassSchedule.Teacher.User.FirstName,
+                    LastName = s.ClassSchedule.Teacher.User.LastName,
+                }
             });
 
-        return Ok(CustomResponse.Ok("Get attendance for student successfully", attendances));
+        return Ok(CustomResponse.Ok("Get attendances for student successfully", attendances));
     }
 
     [HttpPost]
