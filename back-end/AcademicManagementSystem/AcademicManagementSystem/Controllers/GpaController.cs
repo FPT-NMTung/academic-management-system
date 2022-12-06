@@ -363,17 +363,42 @@ public class GpaController : ControllerBase
         var gpaRecords = _context.GpaRecords
             .Include(g => g.Student)
             .Include(g => g.Teacher)
-            // .Include(g => g.Form)
-            // .Include(g => g.Class)
-            // .Include(g => g.Module)
-            // .Include(g => g.Session)
-            // .Include(g => g.GpaRecordsAnswers)
-            // .ThenInclude(gra => gra.Answer)
-            // .ThenInclude(a => a.Question)
+            .Include(g => g.Form)
+            .Include(g => g.Class)
+            .Include(g => g.Module)
+            .Include(g => g.Session)
+            .Include(g => g.GpaRecordsAnswers)
+            .ThenInclude(gra => gra.Answer)
+            .ThenInclude(a => a.Question)
             .Where(g => g.TeacherId == teacherId)
             .ToList();
 
-        return Ok(CustomResponse.Ok("GPA records has been retrieved successfully", gpaRecords));
+        var gpaRecordAnswer = gpaRecords.Select(g => g.GpaRecordsAnswers).ToList();
+        
+        // get list comment
+        var comments = gpaRecords.Select(g => g.Comment).ToList();
+        
+        // get answerNo by answerId
+        var answerNo = new List<int>();
+        foreach (var gpaRecordAnswers in gpaRecordAnswer)
+        {
+            foreach (var gpaRecordAnswer1 in gpaRecordAnswers)
+            {
+                answerNo.Add(gpaRecordAnswer1.Answer.AnswerNo);
+            }
+        }
+
+        var sum = 0;
+        foreach (var answer in answerNo)
+        {
+            sum += answer;
+        }
+        var average = (double) sum / answerNo.Count;
+        var gpaResponse = new GpaResponse()
+        {
+            AverageGpa = average, Comments = comments
+        };
+        return Ok(CustomResponse.Ok("GPA records has been retrieved successfully", gpaResponse));
     }
 
     // is class existed
