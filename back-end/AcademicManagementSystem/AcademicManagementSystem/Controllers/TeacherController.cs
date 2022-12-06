@@ -253,13 +253,13 @@ public class TeacherController : ControllerBase
             var error = ErrorDescription.Error["E0054"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         if (request.CitizenIdentityCardPublishedDate >= DateTime.Now.Date)
         {
             var error = ErrorDescription.Error["E0052_5"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         if (request.Salary < 0)
         {
             var error = ErrorDescription.Error["E0052_4"];
@@ -450,13 +450,13 @@ public class TeacherController : ControllerBase
             var error = ErrorDescription.Error["E0054"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         if (request.CitizenIdentityCardPublishedDate >= DateTime.Now.Date)
         {
             var error = ErrorDescription.Error["E0052_5"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         if (request.Salary < 0)
         {
             var error = ErrorDescription.Error["E0052_4"];
@@ -592,7 +592,7 @@ public class TeacherController : ControllerBase
         var userId = Int32.Parse(_userService.GetUserId());
         var user = _context.Users.FirstOrDefault(u => u.Id == userId)!;
 
-        var teachers = GetAllUserRoleTeacher().Where(t => t.CenterId == user.CenterId);
+        var teachers = GetAllUserRoleTeacher().Where(t => t.CenterId == user.CenterId && t.IsActive).ToList();
         return Ok(CustomResponse.Ok("Get teachers by sro successfully", teachers));
     }
 

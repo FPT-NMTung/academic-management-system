@@ -277,6 +277,7 @@ public static class ErrorDescription
         // class schedule
         { "E0077", new ErrorModel() { Message = "Module Not For This Class", Type = "class-schedule-error-0001" } },
         { "E0077_1", new ErrorModel() { Message = "Teacher Not For This Center", Type = "class-schedule-error-0001_1" } },
+        { "E0077_2", new ErrorModel() { Message = "Teacher is not active", Type = "class-schedule-error-0001_1" } },
         { "E0078", new ErrorModel() { Message = "Invalid Data", Type = "class-schedule-error-0002" } },
         { "E0079", new ErrorModel() { Message = "This module for this class already in schedule", Type = "class-schedule-error-0003" } },
         { "E0080", new ErrorModel() { Message = "Duration must from 0 to 50", Type = "class-schedule-error-0004" } },
