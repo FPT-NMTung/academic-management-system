@@ -5,7 +5,7 @@ namespace AcademicManagementSystem.Models.StudentGradeController.StudentGradeMod
 
 public class GradeItemWithStudentScoreResponse
 {
-[JsonPropertyName("id")]
+    [JsonPropertyName("id")]
     public int Id { get; set; }
     
     [JsonPropertyName("name")]
