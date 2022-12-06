@@ -72,29 +72,29 @@ public class GradeStudentController : ControllerBase
             return NotFound(CustomResponse.NotFound("Module not for this class"));
         }
 
-        var moduleProgressScores = _context.GradeCategoryModules
-            .Include(gcm => gcm.Module)
-            .Include(gcm => gcm.GradeCategory)
-            .Include(gcm => gcm.GradeItems)
-            .ThenInclude(gi => gi.StudentGrades)
-            .ThenInclude(sg => sg.Class)
-            .Where(gcm => gcm.ModuleId == moduleId)
-            .Select(gcm => new GradeCategoryWithItemsResponse()
+        var moduleProgressScores = _context.GradeItems
+            .Include(gi => gi.GradeCategoryModule)
+            .Include(gi => gi.GradeCategoryModule.GradeCategory)
+            .Where(gi => gi.GradeCategoryModule.ModuleId == moduleId)
+            .Select(gi => new StudentGradeForStudentResponse()
             {
-                Id = gcm.GradeCategory.Id,
-                Name = gcm.GradeCategory.Name,
-                TotalWeight = gcm.TotalWeight,
-                QuantityGradeItem = gcm.QuantityGradeItem,
-                GradeItems = gcm.GradeItems
-                    .Select(gi => new GradeItemWithStudentScoreResponse()
-                    {
-                        Id = gi.Id,
-                        Name = gi.Name,
-                        Grade = gi.StudentGrades.FirstOrDefault(sg =>
-                            sg.StudentId == userId && sg.ClassId == classId)!.Grade,
-                        Comment = gi.StudentGrades.FirstOrDefault(sg =>
-                            sg.StudentId == userId && sg.ClassId == classId)!.Comment
-                    }).ToList()
+                GradeCategoryId = gi.GradeCategoryModule.GradeCategory.Id,
+                GradeCategoryName = gi.GradeCategoryModule.GradeCategory.Name,
+                TotalWeight = gi.GradeCategoryModule.TotalWeight,
+                QuantityGradeItem = gi.GradeCategoryModule.QuantityGradeItem,
+                GradeItem = new GradeItemWithStudentScoreResponse()
+                {
+                    Id = gi.Id,
+                    Name = gi.Name,
+                    Grade = gi.StudentGrades
+                        .Where(sg => sg.StudentId == userId)
+                        .Select(sg => sg.Grade)
+                        .FirstOrDefault(),
+                    Comment = gi.StudentGrades
+                        .Where(sg => sg.StudentId == userId)
+                        .Select(sg => sg.Comment)
+                        .FirstOrDefault()
+                }
             });
 
         return Ok(CustomResponse.Ok("Student get grades successfully", moduleProgressScores));
