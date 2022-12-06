@@ -56,7 +56,7 @@ public class ResponseCustom
     public object? Data { get; set; }
 }
 
-class ResponseCustomBadRequest : ResponseCustom
+public class ResponseCustomBadRequest : ResponseCustom
 {
     [JsonPropertyName("type_error")] 
     public string TypeError { get; set; }

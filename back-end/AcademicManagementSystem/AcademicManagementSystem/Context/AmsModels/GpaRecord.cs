@@ -8,7 +8,7 @@ public class GpaRecord
 {
     public GpaRecord()
     {
-        Answers = new HashSet<Answer>();
+        GpaRecordsAnswers = new HashSet<GpaRecordAnswer>();
     }
     
     [Key]
@@ -50,5 +50,5 @@ public class GpaRecord
     public virtual Session Session { get; set; }
     public virtual Student Student { get; set; }
     public virtual Form Form { get; set; }
-    public virtual ICollection<Answer> Answers { get; set; }
+    public virtual ICollection<GpaRecordAnswer> GpaRecordsAnswers { get; set; }
 }
