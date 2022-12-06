@@ -635,4 +635,10 @@ export const UserStudentApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  getAttendance: {
+    url: 'api/classes/{0}/modules/{1}/attendances/student',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+
 };
