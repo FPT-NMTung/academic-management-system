@@ -42,7 +42,6 @@ public class GradeStudentController : ControllerBase
             .Include(c => c.CourseFamily)
             .Include(c => c.CourseFamily.Courses)
             .ThenInclude(c => c.CoursesModulesSemesters)
-            .Include(c => c.StudentsClasses)
             .Include(c => c.ClassSchedules)
             .ThenInclude(cs => cs.Module)
             .FirstOrDefault(c => c.Id == classId);
@@ -52,20 +51,23 @@ public class GradeStudentController : ControllerBase
             return NotFound(CustomResponse.NotFound("Class not found"));
         }
 
-        var isStudentInClass = clazz.StudentsClasses.Any(sc => sc.StudentId == userId);
+        var student = _context.Students
+            .Include(s => s.StudentsClasses)
+            .Include(s => s.User)
+            .Where(s => s.UserId == userId)
+            .FirstOrDefault(s => s.StudentsClasses.Any(sc => sc.ClassId == classId));
 
-        if (!isStudentInClass)
+        if (student is not { IsDraft: false })
         {
-            return Unauthorized(CustomResponse.Unauthorized("You are not in this class"));
+            return NotFound(CustomResponse.NotFound("Student not found in class"));
         }
 
-        var module = clazz.CourseFamily.Courses
+        var isModuleForThisClass = clazz.CourseFamily.Courses
             .Select(c => c.CoursesModulesSemesters)
-            .SelectMany(cms => cms)
-            .Select(cms => cms.Module)
-            .FirstOrDefault(m => m.Id == moduleId);
+            .Any(listCms => listCms
+                .Any(cms => cms.ModuleId == moduleId));
 
-        if (module == null)
+        if (!isModuleForThisClass)
         {
             return NotFound(CustomResponse.NotFound("Module not for this class"));
         }
@@ -112,9 +114,6 @@ public class GradeStudentController : ControllerBase
             .Include(c => c.CourseFamily.Courses)
             .ThenInclude(c => c.CoursesModulesSemesters)
             .Include(c => c.Center)
-            .Include(c => c.StudentsClasses)
-            .ThenInclude(sc => sc.Student)
-            .ThenInclude(s => s.User)
             .Include(c => c.ClassSchedules)
             .ThenInclude(cs => cs.Module)
             .FirstOrDefault(c => c.Id == classId);
@@ -129,23 +128,25 @@ public class GradeStudentController : ControllerBase
             return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
         }
 
-        var module = clazz.CourseFamily.Courses
+        var isModuleForThisClass = clazz.CourseFamily.Courses
             .Select(c => c.CoursesModulesSemesters)
-            .SelectMany(cms => cms)
-            .Select(cms => cms.Module)
-            .FirstOrDefault(m => m.Id == moduleId);
+            .Any(listCms => listCms
+                .Any(cms => cms.ModuleId == moduleId));
 
-        var student = clazz.StudentsClasses.Select(sc => sc.Student).FirstOrDefault(s => s.UserId == studentId);
+        if (!isModuleForThisClass)
+        {
+            return NotFound(CustomResponse.NotFound("Module not for this class"));
+        }
 
-        // null or isDraft = true
+        var student = _context.Students
+            .Include(s => s.StudentsClasses)
+            .Include(s => s.User)
+            .Where(s => s.UserId == studentId)
+            .FirstOrDefault(s => s.StudentsClasses.Any(sc => sc.ClassId == classId));
+
         if (student is not { IsDraft: false })
         {
             return NotFound(CustomResponse.NotFound("Student not found in class"));
-        }
-
-        if (module == null)
-        {
-            return NotFound(CustomResponse.NotFound("Module not for this class"));
         }
 
         var moduleProgressScores = GetGradesOfSpecificStudent(clazz, moduleId, student);
@@ -168,9 +169,6 @@ public class GradeStudentController : ControllerBase
             .Include(c => c.CourseFamily.Courses)
             .ThenInclude(c => c.CoursesModulesSemesters)
             .Include(c => c.Center)
-            .Include(c => c.StudentsClasses)
-            .ThenInclude(sc => sc.Student)
-            .ThenInclude(s => s.User)
             .Include(c => c.ClassSchedules)
             .ThenInclude(cs => cs.Module)
             .FirstOrDefault(c => c.Id == classId);
@@ -185,13 +183,12 @@ public class GradeStudentController : ControllerBase
             return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
         }
 
-        var module = clazz.CourseFamily.Courses
+        var isModuleForThisClass = clazz.CourseFamily.Courses
             .Select(c => c.CoursesModulesSemesters)
-            .SelectMany(cms => cms)
-            .Select(cms => cms.Module)
-            .FirstOrDefault(m => m.Id == moduleId);
+            .Any(listCms => listCms
+                .Any(cms => cms.ModuleId == moduleId));
 
-        if (module == null)
+        if (!isModuleForThisClass)
         {
             return NotFound(CustomResponse.NotFound("Module not for this class"));
         }
@@ -215,6 +212,7 @@ public class GradeStudentController : ControllerBase
             .Include(c => c.ClassSchedules)
             .ThenInclude(cs => cs.Module)
             .FirstOrDefault(c => c.Id == classId);
+
         if (clazz == null)
         {
             return NotFound(CustomResponse.NotFound("Class not found"));
@@ -222,19 +220,19 @@ public class GradeStudentController : ControllerBase
 
         var isTeacherTeachThisClass = clazz.ClassSchedules.Any(cs =>
             cs.ClassId == classId && cs.ModuleId == moduleId && cs.TeacherId == userId);
+
         // check teacher is teach this schedule (class and module)
         if (!isTeacherTeachThisClass)
         {
             return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
         }
 
-        var module = clazz.CourseFamily.Courses
+        var isModuleForThisClass = clazz.CourseFamily.Courses
             .Select(c => c.CoursesModulesSemesters)
-            .SelectMany(cms => cms)
-            .Select(cms => cms.Module)
-            .FirstOrDefault(m => m.Id == moduleId);
+            .Any(listCms => listCms
+                .Any(cms => cms.ModuleId == moduleId));
 
-        if (module == null)
+        if (!isModuleForThisClass)
         {
             return NotFound(CustomResponse.NotFound("Module not for this class"));
         }
