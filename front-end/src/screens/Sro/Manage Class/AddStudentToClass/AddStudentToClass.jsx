@@ -252,7 +252,7 @@ const AddStudentToClass = () => {
               <div className={classes.layout}>
                 {/* Thông tin cá nhân */}
                 <Form.Item
-                  label="Họ & tên đệm"
+                  label="Họ & tên"
                   name="first_name"
                   rules={[
                     {
@@ -285,7 +285,7 @@ const AddStudentToClass = () => {
                     },
                   ]}
                 >
-                  <Input placeholder="Họ và tên đệm" />
+                  <Input placeholder="Họ và tên" />
                 </Form.Item>
                 <Form.Item
                   label="Tên"
@@ -657,7 +657,7 @@ const AddStudentToClass = () => {
                     },
                   ]}
                 >
-                  <Input placeholder="Họ và tên đệm" />
+                  <Input placeholder="Họ và tên" />
                 </Form.Item>
 
                 <Form.Item
