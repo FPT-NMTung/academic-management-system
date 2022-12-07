@@ -396,6 +396,11 @@ export const GradeStudentApis = {
     url: 'api/classes/{0}/modules/{1}/grades-students/sros',
     method: 'GET',
     contextType: 'application/json',
+  },
+  updateGradeStudentBySro: {
+    url: 'api/classes/{0}/modules/{1}/grades/sros',
+    method: 'POST',
+    contextType: 'application/json',
   }
 }
 

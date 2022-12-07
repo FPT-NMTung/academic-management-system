@@ -191,7 +191,7 @@ export const ErrorCodeApi = {
   "class-error-0076": "Ngày nhập học không thể nhỏ hơn ngày nhập học đã tạo",
   "class-error-0077": "Ngày sinh phải nhỏ hơn ngày hiện tại",
   "class-error-0078": "Thất bại khi ghép lớp",
-  "class-error-0079": "Tổng số học viên 2 lớp vượt quá 100",
+  "class-error-0079": "Tổng số học viên 2 lớp không được vượt quá 100",
   "class-error-0080": "Không có học viên nào trong Lớp hiện tại",
   "class-error-0081": "Không có học viên nào trong Lớp cần ghép",
 
