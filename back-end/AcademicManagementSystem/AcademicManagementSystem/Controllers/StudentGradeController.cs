@@ -658,7 +658,7 @@ public class GradeStudentController : ControllerBase
                 },
 
                 Students = m.ClassSchedules.SelectMany(cs => cs.Class.StudentsClasses)
-                    .Where(cs => cs.ClassId == clazz.Id)
+                    .Where(cs => cs.ClassId == clazz.Id && cs.IsActive && !cs.Student.IsDraft)
                     .Select(sc => new StudentInfoAndGradeResponse()
                     {
                         UserId = sc.Student.UserId,
