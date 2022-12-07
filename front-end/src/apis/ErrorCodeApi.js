@@ -194,6 +194,9 @@ export const ErrorCodeApi = {
   "class-error-0079": "Tổng số học viên 2 lớp vượt quá 100",
   "class-error-0080": "Không có học viên nào trong Lớp hiện tại",
   "class-error-0081": "Không có học viên nào trong Lớp cần ghép",
+  "class-error-0082": "Không tìm thấy chương trình học",
+  "class-error-0083": "Chương trình học chưa được kích hoạt vào thời điểm lớp học bắt đầu",
+  "class-error-0084": "Chương trình học chưa được kích hoạt",
 
   "student-class-error-0001": "Hệ thống đã xảy ra lỗi, vui lòng thử lại",
   "student-class-error-0002": "Mã số sinh viên đã tồn tại",
@@ -237,7 +240,7 @@ export const ErrorCodeApi = {
   "student-error-00020": "Tình trạng phải từ 1-7",
   "student-error-00021": "Hệ thống trả về không thành công",
   "student-error-00022": "Email cá nhân không đúng định dạng",
-  "student-error-00023": "Email tổ chức không được trùng với email cá nhân",
+  "student-error-00023": "Email tổ chức không đúng định dạng",
   "student-error-00024": "Mã khóa học không tồn tại hoặc chưa được kích hoạt",
   "student-error-00025": "Quan hệ với học viên không tồn tại",
   "student-error-00026": "Địa chỉ liên lạc không đúng định dạng",

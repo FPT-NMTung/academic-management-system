@@ -207,11 +207,18 @@ const GradeScreen = () => {
                   <Table.Row key={index}>
                     <Table.Cell>{item.grade_item.name}</Table.Cell>
                     <Table.Cell>
-                      <Badge color = "warning">
-                      {Math.round((item.total_weight) / (item.quantity_grade_item) * 10) / 10} %
-                      </Badge>
+                    
+                        
+                      {item.total_weight ? 
+                        <Badge color = "warning">
+                     { Math.round((item.total_weight) / (item.quantity_grade_item) * 10) / 10 }
+                     % 
+                      </Badge> : ""} 
+                   
                       </Table.Cell>
-                    <Table.Cell b>{Math.round((item.grade_item?.grade) * 10) / 10}</Table.Cell>
+                    {/* <Table.Cell b>{Math.round((item.grade_item?.grade) * 10) / 10}</Table.Cell> */}
+                    <Table.Cell b>{item.grade_item.grade ? Math.round((item.grade_item?.grade) * 10) / 10 : " "}</Table.Cell>
+
 
                     <Table.Cell css={{ color: "#f31260" }}>
                     {item.grade_item?.comment}

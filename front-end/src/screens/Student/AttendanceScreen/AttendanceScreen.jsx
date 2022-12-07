@@ -118,7 +118,7 @@ const AttendanceScreen = () => {
               <div style={{ color: "black !important" }}>
                 <Menu
                   mode="inline"
-                  defaultOpenKeys={["1"]}
+                  // defaultOpenKeys={["1"]}
                   style={{ width: "100%" }}
                 >
                   {listModuleSemester.map((item, index) => (

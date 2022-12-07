@@ -30,6 +30,7 @@ import { Fragment } from "react";
 import moment from "moment";
 import "moment/locale/vi";
 import toast from "react-hot-toast";
+import DoFeedback from "../Feedback/Feedback/DoFeedback/DoFeedback";
 
 const Schedule = () => {
   const navigate = useNavigate();
@@ -68,9 +69,12 @@ const Schedule = () => {
         toast.error("Đã xảy ra lỗi");
       });
   };
+  const FeedbackTeacher = () => {
+    navigate(`/student/feedback/${detailLearningDate.id}`);
+  };
   const getDetail = () => {
 
-    // setDetailLearningDate("");
+    setDetailLearningDate("");
     // console.log(listSession);
     // console.log(listExamDate.map((item) => item.learning_date));
    
@@ -82,12 +86,13 @@ const Schedule = () => {
       .then((res) => {
         res.data.map((item) => {
           setDetailLearningDate(item);
+
         });
       })
       .catch((err) => {
         toast.error('Lỗi lấy chi tiết ngày học');
       });
-      console.log( "sss" + detailLearningDate.title);
+      // console.log( "sss" + detailLearningDate.title);
 
   };
   const renderAttendanceStatus = (id) => {
@@ -102,7 +107,7 @@ const Schedule = () => {
     }
   };
   useEffect(() => {
-    setDetailLearningDate("");
+   
     getDetail();
     
   }, [selectedValue]);
@@ -437,7 +442,7 @@ const Schedule = () => {
                     icon={<MdNoteAlt size={14} />}
                     color={"error"}
                     onPress={() => {
-                      navigate("/student/feedback/1");
+                     FeedbackTeacher();
                     }}
                     css={{
                       width: "50px",

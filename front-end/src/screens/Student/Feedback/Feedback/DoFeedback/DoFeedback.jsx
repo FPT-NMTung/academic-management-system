@@ -1,6 +1,5 @@
 import classes from "../../../../../components/ModuleCreate/ModuleCreate.module.css";
 import {
-  Radio,
   Card,
   Grid,
   Text,
@@ -17,9 +16,20 @@ import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Fragment } from "react";
-import { Descriptions, Skeleton, Form, Select, Upload, Input } from "antd";
+import {
+  Descriptions,
+  Skeleton,
+  Form,
+  Select,
+  Upload,
+  Input,
+  Radio,
+  Space,
+} from "antd";
 import { ManageGpa } from "../../../../../apis/ListApi";
 import FetchApi from "../../../../../apis/FetchApi";
+import React from "react";
+import { ErrorCodeApi } from "../../../../../apis/ErrorCodeApi";
 
 const DoFeedback = () => {
   const [form] = Form.useForm();
@@ -29,6 +39,9 @@ const DoFeedback = () => {
   const navigate = useNavigate();
   const [isLoading, setisLoading] = useState(true);
   const { id } = useParams();
+  const [checked, setChecked] = React.useState("");
+  const [messageFailed, setMessageFailed] = useState(undefined);
+  const [scheduleInformation, setScheduleInformation] = useState([]);
   const getForm = () => {
     setisLoading(true);
     FetchApi(ManageGpa.getForm)
@@ -37,24 +50,74 @@ const DoFeedback = () => {
         setisLoading(false);
       })
       .catch((err) => {
-        navigate("/404");
+        toast.error("Lỗi lấy dữ liệu");
       });
   };
   const getQandA = () => {
     setisLoading(true);
-    FetchApi(ManageGpa.getQandA, null, null, [String(id)])
+    FetchApi(ManageGpa.getQandA, null, null, ["1"])
       .then((res) => {
         setListQnA(res.data);
+        console.log(res.data);
         setisLoading(false);
       })
       .catch((err) => {
-        navigate("/404");
+        toast.error("Lỗi lấy dữ liệu");
       });
+  };
+  const getScheduleInformationBySessionId = () => {
+    setisLoading(true);
+    FetchApi(ManageGpa.getScheduleInformationBySessionId, null, null, [
+      String(id),
+    ])
+      .then((res) => {
+        setScheduleInformation(res.data);
+        // console.log(res.data);
+        setisLoading(false);
+      })
+      .catch((err) => {
+        toast.error("Lỗi lấy thông tin lịch học");
+      });
+  };
+  const handleSubmitForm = () => {
+    const data = form.getFieldsValue();
+    console.log(data);
+    // const body = {
+    //   class_id: scheduleInformation.class.id,
+    //   teacher_id : scheduleInformation.teacher.id,
+    //   module_id : scheduleInformation.module.id,
+    //   session_id : id,
+    //   comment: data.comment,
+    //   answer_id: data.map((item,index) => item.question + (index+1)),
+    // };
+    const api = ManageGpa.studentTakeGPA;
+    // const params = [`${id}`];
+    // console.log(params);
+
+    // toast.promise(FetchApi(api, body, null, ["1"]), {
+    //   loading: 'Đang xử lý',
+    //   success: (res) => {
+    //     // setIsCreatingOrUpdating(false);
+    //     navigate(`/student/schedule`);
+    //     return 'Thành công';
+    //   },
+    //   error: (err) => {
+    //     setMessageFailed(ErrorCodeApi[err.type_error]);
+    //     // setIsCreatingOrUpdating(false);
+    //     if (err?.type_error) {
+    //       return ErrorCodeApi[err.type_error];
+    //     }
+
+    //     return 'Thất bại';
+    //   },
+    // })
   };
 
   useEffect(() => {
     getForm();
     getQandA();
+    getScheduleInformationBySessionId();
+    // console.log("Sessionid " +id);
   }, []);
   return (
     <Fragment>
@@ -67,7 +130,7 @@ const DoFeedback = () => {
         <Form
           layout="Vertical"
           labelAlign="center"
-          // onFinish={handleSubmitForm}
+          onFinish={handleSubmitForm}
           form={form}
         >
           <Grid.Container gap={1} justify="center">
@@ -144,29 +207,54 @@ const DoFeedback = () => {
                     <Spacer y={1} />
 
                     <Form.Item
-                      name="class_name"
+                      name={"question" + (index + 1)} //QUESTION+INDEX
                       style={{
                         width: "100%",
                         display: "block",
                       }}
-                      rules={[
-                        {
-                          required: true,
-                          message: "Vui lòng chọn đáp án",
-                        },
-                      ]}
+                      key={"question" + (index + 1)}
+                      // rules={[
+                      //   {
+                      //     required: true,
+                      //     message: "Vui lòng chọn đáp án",
+                      //   },
+                      // ]}
                     >
-                      <Radio.Group label="" defaultValue="0" size="xs">
-                        <Radio value="1">Always punctual (Luôn đúng giờ)</Radio>
-                        <Radio value="2">
-                          Mostly punctual (Phần lớn đúng giờ)
-                        </Radio>
-                        <Radio value="3">
-                          Rarely all punctual (Ít khi đúng giờ)
-                        </Radio>
-                        <Radio value="4">
-                          Not at all punctual (Không bao giờ đúng giờ)
-                        </Radio>
+                      {/* <Radio.Group  size="xs">
+                      <Space direction="vertical">
+                        {item.answer.map((answer, index) => (
+                          <Radio
+                          
+                            color="error"
+                            css={{ marginBottom: "12px" }}
+                            value={answer.id}
+                            key={answer.id}
+                          >
+                            {answer.content}
+                          </Radio>
+                        ))}
+                      </Space>
+                      </Radio.Group> */}
+                      {/* <Text>You've checked: {checked}</Text> */}
+                      <Radio.Group size="xs">
+                        <Space direction="vertical">
+                          <Radio
+                            color="error"
+                            css={{ marginBottom: "12px" }}
+                            value={2}
+                            key={121212}
+                          >
+                            đannád
+                          </Radio>
+                          <Radio
+                            color="error"
+                            css={{ marginBottom: "12px" }}
+                            value={1}
+                            key={122222}
+                          >
+                            sdsdsđsd
+                          </Radio>
+                        </Space>
                       </Radio.Group>
 
                       <Spacer y={0.5} />
@@ -175,6 +263,49 @@ const DoFeedback = () => {
                   </Fragment>
                 </Card>
               ))}
+              <Card
+                variant="bordered"
+                css={{
+                  padding: "10px 20px",
+                  marginBottom: "12px",
+                }}
+              >
+                <div style={{ dispay: "flex", flex: "1", width: "100%" }}>
+                  <Text
+                    b
+                    size={16}
+                    css={{
+                      textAlign: "start",
+                      // fontStyle: "italic",
+                    }}
+                  >
+                    Các ý kiến khác:
+                    {/* <span style={{ color: "red" }}> *</span> */}
+                  </Text>
+                </div>
+                <Spacer y={1} />
+
+                <Form.Item
+                  name="comment" //QUESTION+INDEX
+                  style={{
+                    width: "100%",
+                    display: "block",
+                    height: "180px",
+                  }}
+                >
+                  <Input.TextArea
+                    style={{
+                      width: "100%",
+                      display: "block",
+                      height: "180px",
+                    }}
+                    placeholder="Các góp ý khác của bạn về việc giảng dậy của giáo viên..."
+                  ></Input.TextArea>
+
+                  <Spacer y={0.5} />
+                  <Card.Divider />
+                </Form.Item>
+              </Card>
               <Spacer y={0.5} />
               <Form.Item>
                 <Button

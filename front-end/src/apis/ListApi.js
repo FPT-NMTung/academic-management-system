@@ -574,6 +574,18 @@ export const ManageGpa = {
     method: 'GET',
     contextType: 'application/json',
   },
+  studentTakeGPA: {
+    url: 'api/gpa/forms/{0}',
+    method: 'POST',
+    contextType: 'application/json',
+  },
+  getScheduleInformationBySessionId: {
+    url: '/api/gpa/sessions/{0}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+
+
 };
 
 export const ManageAttendanceApis = {
