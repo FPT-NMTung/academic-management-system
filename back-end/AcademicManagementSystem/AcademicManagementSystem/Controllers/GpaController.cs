@@ -374,10 +374,10 @@ public class GpaController : ControllerBase
             .ToList();
 
         var gpaRecordAnswer = gpaRecords.Select(g => g.GpaRecordsAnswers).ToList();
-        
+
         // get list comment
         var comments = gpaRecords.Select(g => g.Comment).ToList();
-        
+
         // get answerNo by answerId
         var answerNo = new List<int>();
         foreach (var gpaRecordAnswers in gpaRecordAnswer)
@@ -393,7 +393,70 @@ public class GpaController : ControllerBase
         {
             sum += answer;
         }
-        var average = (double) sum / answerNo.Count;
+
+        var average = (double)sum / answerNo.Count;
+        var gpaResponse = new GpaResponse()
+        {
+            AverageGpa = average, Comments = comments
+        };
+        return Ok(CustomResponse.Ok("GPA records has been retrieved successfully", gpaResponse));
+    }
+
+    // sro view gpa teacher by teacherId and classId
+    [HttpGet]
+    [Route("api/gpa/teachers/{teacherId:int}/classes/{classId:int}")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult ViewGpaTeacherByTeacherIdAndClassId(int teacherId, int classId)
+    {
+        // check if teacher exists or not
+        if (!IsTeacherExisted(teacherId))
+        {
+            var error = ErrorDescription.Error["E1140"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check if class exists or not
+        if (!IsClassExisted(classId))
+        {
+            var error = ErrorDescription.Error["E1139"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var gpaRecords = _context.GpaRecords
+            .Include(g => g.Student)
+            .Include(g => g.Teacher)
+            .Include(g => g.Form)
+            .Include(g => g.Class)
+            .Include(g => g.Module)
+            .Include(g => g.Session)
+            .Include(g => g.GpaRecordsAnswers)
+            .ThenInclude(gra => gra.Answer)
+            .ThenInclude(a => a.Question)
+            .Where(g => g.TeacherId == teacherId && g.ClassId == classId)
+            .ToList();
+
+        var gpaRecordAnswer = gpaRecords.Select(g => g.GpaRecordsAnswers).ToList();
+
+        // get list comment
+        var comments = gpaRecords.Select(g => g.Comment).ToList();
+
+        // get answerNo by answerId
+        var answerNo = new List<int>();
+        foreach (var gpaRecordAnswers in gpaRecordAnswer)
+        {
+            foreach (var gpaRecordAnswer1 in gpaRecordAnswers)
+            {
+                answerNo.Add(gpaRecordAnswer1.Answer.AnswerNo);
+            }
+        }
+
+        var sum = 0;
+        foreach (var answer in answerNo)
+        {
+            sum += answer;
+        }
+
+        var average = (double)sum / answerNo.Count;
         var gpaResponse = new GpaResponse()
         {
             AverageGpa = average, Comments = comments
