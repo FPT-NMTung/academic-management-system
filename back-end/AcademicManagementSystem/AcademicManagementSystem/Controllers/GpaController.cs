@@ -382,9 +382,9 @@ public class GpaController : ControllerBase
         var answerNo = new List<int>();
         foreach (var gpaRecordAnswers in gpaRecordAnswer)
         {
-            foreach (var gpaRecordAnswer1 in gpaRecordAnswers)
+            foreach (var record in gpaRecordAnswers)
             {
-                answerNo.Add(gpaRecordAnswer1.Answer.AnswerNo);
+                answerNo.Add(record.Answer.AnswerNo);
             }
         }
 
@@ -444,9 +444,71 @@ public class GpaController : ControllerBase
         var answerNo = new List<int>();
         foreach (var gpaRecordAnswers in gpaRecordAnswer)
         {
-            foreach (var gpaRecordAnswer1 in gpaRecordAnswers)
+            foreach (var record in gpaRecordAnswers)
             {
-                answerNo.Add(gpaRecordAnswer1.Answer.AnswerNo);
+                answerNo.Add(record.Answer.AnswerNo);
+            }
+        }
+
+        var sum = 0;
+        foreach (var answer in answerNo)
+        {
+            sum += answer;
+        }
+
+        var average = (double)sum / answerNo.Count;
+        var gpaResponse = new GpaResponse()
+        {
+            AverageGpa = average, Comments = comments
+        };
+        return Ok(CustomResponse.Ok("GPA records has been retrieved successfully", gpaResponse));
+    }
+    
+    // sro view gpa teacher by teacherId and moduleId
+    [HttpGet]
+    [Route("api/gpa/teachers/{teacherId:int}/modules/{moduleId:int}")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult ViewGpaTeacherByTeacherIdAndModuleId(int teacherId, int moduleId)
+    {
+        // check if teacher exists or not
+        if (!IsTeacherExisted(teacherId))
+        {
+            var error = ErrorDescription.Error["E1140"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check if module exists or not
+        if (!IsModuleExisted(moduleId))
+        {
+            var error = ErrorDescription.Error["E1141"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var gpaRecords = _context.GpaRecords
+            .Include(g => g.Student)
+            .Include(g => g.Teacher)
+            .Include(g => g.Form)
+            .Include(g => g.Class)
+            .Include(g => g.Module)
+            .Include(g => g.Session)
+            .Include(g => g.GpaRecordsAnswers)
+            .ThenInclude(gra => gra.Answer)
+            .ThenInclude(a => a.Question)
+            .Where(g => g.TeacherId == teacherId && g.ModuleId == moduleId)
+            .ToList();
+
+        var gpaRecordAnswer = gpaRecords.Select(g => g.GpaRecordsAnswers).ToList();
+
+        // get list comment
+        var comments = gpaRecords.Select(g => g.Comment).ToList();
+
+        // get answerNo by answerId
+        var answerNo = new List<int>();
+        foreach (var gpaRecordAnswers in gpaRecordAnswer)
+        {
+            foreach (var record in gpaRecordAnswers)
+            {
+                answerNo.Add(record.Answer.AnswerNo);
             }
         }
 
