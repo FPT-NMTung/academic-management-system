@@ -698,8 +698,7 @@ public class GpaController : ControllerBase
         return _context.ClassSchedules
             .Include(cs => cs.Teacher)
             .Include(cs => cs.Class)
-            .Any(cs => cs.ClassId == classId && cs.TeacherId == teacherId &&
-                       cs.StartDate <= DateTime.Now && cs.EndDate >= DateTime.Now);
+            .Any(cs => cs.ClassId == classId && cs.TeacherId == teacherId);
     }
 
     // is module is teaching in this class
@@ -708,8 +707,7 @@ public class GpaController : ControllerBase
         return _context.ClassSchedules
             .Include(cs => cs.Class)
             .Include(cs => cs.Module)
-            .Any(cs => cs.ClassId == classId && cs.ModuleId == moduleId &&
-                       cs.StartDate <= DateTime.Now && cs.EndDate >= DateTime.Now);
+            .Any(cs => cs.ClassId == classId && cs.ModuleId == moduleId);
     }
 
     // is session is teaching in this class
@@ -717,8 +715,7 @@ public class GpaController : ControllerBase
     {
         return _context.Sessions
             .Include(s => s.ClassSchedule)
-            .Any(s => s.ClassSchedule.ClassId == classId && s.Id == sessionId && s.ClassSchedule.ModuleId == moduleId &&
-                      s.ClassSchedule.StartDate <= DateTime.Now && s.ClassSchedule.EndDate >= DateTime.Now);
+            .Any(s => s.ClassSchedule.ClassId == classId && s.Id == sessionId && s.ClassSchedule.ModuleId == moduleId);
     }
 
     // is teacher teaching this module session in class
@@ -727,8 +724,7 @@ public class GpaController : ControllerBase
         return _context.Sessions
             .Include(s => s.ClassSchedule)
             .Any(s => s.ClassSchedule.TeacherId == teacherId && s.Id == sessionId &&
-                      s.ClassSchedule.ModuleId == moduleId && s.ClassSchedule.ClassId == classId &&
-                      s.ClassSchedule.StartDate <= DateTime.Now && s.ClassSchedule.EndDate >= DateTime.Now);
+                      s.ClassSchedule.ModuleId == moduleId && s.ClassSchedule.ClassId == classId);
     }
 
     private List<StudentResponse> GetAllStudentsByClassId(int id)
