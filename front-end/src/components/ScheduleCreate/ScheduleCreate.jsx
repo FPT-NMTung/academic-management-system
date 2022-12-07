@@ -1,4 +1,11 @@
-import { Button, Checkbox, Divider, Spacer } from '@nextui-org/react';
+import {
+  Button,
+  Card,
+  Checkbox,
+  Divider,
+  Spacer,
+  Text,
+} from '@nextui-org/react';
 import {
   DatePicker,
   Descriptions,
@@ -123,7 +130,7 @@ const ScheduleCreate = ({ dataModule, onSuccess }) => {
       lab_room_id: e.lab_room_id,
       exam_room_id: e.exam_room_id,
       duration: e.duration,
-      practice_session: [...listSessionPractice],
+      practice_session: [...listSessionPractice].splice(0, e.duration),
       start_date: moment.utc(e.start_date).local().format(),
       class_hour_start: moment(e.time[0]).format('HH:mm:ss'),
       class_hour_end: moment(e.time[1]).format('HH:mm:ss'),
@@ -182,8 +189,8 @@ const ScheduleCreate = ({ dataModule, onSuccess }) => {
             label="Giáo viên"
           >
             <Select placeholder="Chọn giáo viên">
-              {listTeacher.map((item) => (
-                <Select.Option value={item.user_id}>
+              {listTeacher.filter(item => item.is_active).map((item) => (
+                <Select.Option value={item.user_id} key={item.user_id}>
                   {`${item.first_name} ${item.last_name}`}
                 </Select.Option>
               ))}
@@ -246,7 +253,7 @@ const ScheduleCreate = ({ dataModule, onSuccess }) => {
                           (item) => item.is_active && item.room_type.id === 1
                         )
                         .map((item) => (
-                          <Select.Option value={item.id}>
+                          <Select.Option value={item.id} key={item.id}>
                             {item.name}
                           </Select.Option>
                         ))}
@@ -270,7 +277,7 @@ const ScheduleCreate = ({ dataModule, onSuccess }) => {
                           (item) => item.is_active && item.room_type.id === 2
                         )
                         .map((item) => (
-                          <Select.Option value={item.id}>
+                          <Select.Option value={item.id} key={item.id}>
                             {item.name}
                           </Select.Option>
                         ))}
@@ -293,23 +300,52 @@ const ScheduleCreate = ({ dataModule, onSuccess }) => {
                 {listRoom
                   .filter((item) => item.is_active)
                   .map((item) => (
-                    <Select.Option value={item.id}>{item.name}</Select.Option>
+                    <Select.Option value={item.id} key={item.id}>
+                      {item.name}
+                    </Select.Option>
                   ))}
               </Select>
             </Form.Item>
           )}
           {dataModuleDetail?.module_type === 3 && (
-            <div className={classes.sessions}>
-              {renderSession().map((value) => (
-                <Checkbox
-                  size="xs"
-                  value={value}
-                  isSelected={listSessionPractice.includes(value)}
-                  onChange={(status) => handleChangeSession(status, value)}
+            <div className={classes.containSessions}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
+              >
+                <Text
+                  p
+                  b
+                  size={14}
+                  css={{
+                    margin: '0 auto',
+                  }}
                 >
-                  {value}
-                </Checkbox>
-              ))}
+                  Chọn buổi học thực hành
+                </Text>
+              </div>
+              <Spacer y={0.5} />
+              <Card variant="bordered">
+                <Card.Body>
+                  <div className={classes.sessions}>
+                    {renderSession().map((value, index) => (
+                      <Checkbox
+                        key={index}
+                        size="xs"
+                        value={value}
+                        isSelected={listSessionPractice.includes(value)}
+                        onChange={(status) =>
+                          handleChangeSession(status, value)
+                        }
+                      >
+                        {value}
+                      </Checkbox>
+                    ))}
+                  </div>
+                </Card.Body>
+              </Card>
             </div>
           )}
         </div>

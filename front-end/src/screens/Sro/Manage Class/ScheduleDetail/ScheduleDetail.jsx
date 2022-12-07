@@ -8,6 +8,7 @@ import {
   Modal,
   Spacer,
   Text,
+  Dropdown,
 } from '@nextui-org/react';
 import {
   DatePicker,
@@ -29,7 +30,13 @@ import ScheduleCreate from '../../../../components/ScheduleCreate/ScheduleCreate
 import ScheduleUpdate from '../../../../components/ScheduleUpdate/ScheduleUpdate';
 import TakeAttendance from '../Attendance/TakeAttendance/TakeAttendance';
 import ViewAllAttendance from '../Attendance/ViewAllAttendance/ViewAllAttendance';
+import ViewGrade from '../ViewGrade/ViewGrade';
 import classes from './ScheduleDetail.module.css';
+
+import { MdDelete } from 'react-icons/md';
+import { BsFillPersonCheckFill } from 'react-icons/bs';
+import { MdEditCalendar } from 'react-icons/md';
+import { RiBookmark3Fill } from 'react-icons/ri';
 
 const ScheduleDetail = () => {
   const [dataSchedule, setDataSchedule] = useState(undefined);
@@ -37,6 +44,7 @@ const ScheduleDetail = () => {
   const [dataModule, setDataModule] = useState(undefined);
   const [createMode, setCreateMode] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [viewGrade, setViewGrade] = useState(false);
   const [viewAttendance, setViewAttendance] = useState(false);
 
   const [selectSession, setSelectSession] = useState(undefined);
@@ -108,6 +116,7 @@ const ScheduleDetail = () => {
     getData();
     setCreateMode(false);
     setEditMode(false);
+    setViewGrade(false);
   }, [id, moduleId]);
 
   const handleCloseModalAttendance = () => {
@@ -117,6 +126,29 @@ const ScheduleDetail = () => {
   const handleCloseViewAttendance = () => {
     setViewAttendance(false);
   };
+
+  const handleSelectOption = (key) => {
+    switch (key) {
+      case 'attendance':
+        setViewAttendance(true);
+        break;
+      case 'edit':
+        setEditMode(true);
+        break;
+      case 'delete':
+        handleDeleteSchedule();
+        break;
+      case 'grade':
+        setViewGrade(true);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const canViewGrade = () => {
+    return new Date(Date.now()) >= new Date(dataSchedule?.start_date);
+  }
 
   return (
     <Fragment>
@@ -138,7 +170,7 @@ const ScheduleDetail = () => {
         <Card.Header>
           <Grid.Container justify="space-between">
             <Grid xs={4}>
-              {editMode && (
+              {(editMode || viewGrade) && (
                 <Button
                   flat
                   auto
@@ -146,6 +178,7 @@ const ScheduleDetail = () => {
                   size={'sm'}
                   onPress={() => {
                     setEditMode(false);
+                    setViewGrade(false);
                   }}
                 >
                   Trở về
@@ -166,6 +199,8 @@ const ScheduleDetail = () => {
                   ? 'Tạo lịch học'
                   : editMode
                   ? 'Chỉnh sửa lịch học'
+                  : viewGrade
+                  ? 'Xem điểm'
                   : 'Thông tin lịch học'}
               </Text>
             </Grid>
@@ -173,7 +208,7 @@ const ScheduleDetail = () => {
           </Grid.Container>
         </Card.Header>
         <Card.Body>
-          {!createMode && !editMode && (
+          {!createMode && !editMode && !viewGrade && (
             <Fragment>
               {(gettingData || dataModule === undefined) && (
                 <div className={classes.loading}>
@@ -208,99 +243,122 @@ const ScheduleDetail = () => {
                 dataSchedule !== undefined &&
                 dataModule !== undefined && (
                   <div>
-                    <Descriptions>
-                      <Descriptions.Item span={3} label="Môn học">
-                        <b>{dataSchedule.module_name}</b>
-                      </Descriptions.Item>
-                      <Descriptions.Item label="Thời gian học trong tuần">
-                        <b>
-                          {dataSchedule.class_days.id === 1
-                            ? 'Thứ 2, 4, 6'
-                            : 'Thứ 3, 5, 7'}
-                        </b>
-                      </Descriptions.Item>
-                      <Descriptions.Item label="Giáo viên">
-                        <b>{`${dataSchedule.teacher.first_name} ${dataSchedule.teacher.last_name}`}</b>
-                      </Descriptions.Item>
-                      <Descriptions.Item label="Email giáo viên">
-                        <b>{`${dataSchedule.teacher.email_organization}`}</b>
-                      </Descriptions.Item>
-                      <Descriptions.Item label="Ngày bắt đầu">
-                        <b>
-                          {new Date(dataSchedule.start_date).toLocaleDateString(
-                            'vi-VN'
-                          )}
-                        </b>
-                      </Descriptions.Item>
-                      <Descriptions.Item span={2} label="Giờ học bắt đầu">
-                        <b>{dataSchedule.class_hour_start}</b>
-                      </Descriptions.Item>
-                      <Descriptions.Item label="Ngày kết thúc">
-                        <b>
-                          {new Date(dataSchedule.end_date).toLocaleDateString(
-                            'vi-VN'
-                          )}
-                        </b>
-                      </Descriptions.Item>
-                      <Descriptions.Item span={2} label="Giờ học kết thúc">
-                        <b>{dataSchedule.class_hour_end}</b>
-                      </Descriptions.Item>
-                      <Descriptions.Item span={3} label="Số lượng buổi học">
-                        <b>{dataSchedule.duration}</b>
-                      </Descriptions.Item>
-                      <Descriptions.Item label="Ngày tạo lịch">
-                        <b>
-                          {new Date(dataSchedule.created_at).toLocaleDateString(
-                            'vi-VN'
-                          )}
-                        </b>
-                      </Descriptions.Item>
-                      <Descriptions.Item span={2} label="Ngày cập nhật">
-                        <b>
-                          {new Date(dataSchedule.updated_at).toLocaleDateString(
-                            'vi-VN'
-                          )}
-                        </b>
-                      </Descriptions.Item>
-                      <Descriptions.Item span={2} label="Ghi chú">
-                        <i>{dataSchedule.note}</i>
-                      </Descriptions.Item>
-                      <Descriptions.Item>
-                        <div className={classes.buttonGroupEdit}>
-                          <Button
-                            auto
-                            flat
-                            size={'sm'}
-                            color="warning"
-                            onPress={() => {
-                              setViewAttendance(true);
-                            }}
-                          >
-                            Xem điểm danh
-                          </Button>
-                          <Button
-                            auto
-                            flat
-                            size={'sm'}
-                            color="primary"
-                            onPress={() => {
-                              setEditMode(true);
-                            }}
-                          >
-                            Chỉnh sửa
-                          </Button>
-                          <Button
-                            auto
-                            flat
-                            size={'sm'}
-                            color="error"
-                            onPress={handleDeleteSchedule}
-                          >
-                            Xoá
-                          </Button>
-                        </div>
-                      </Descriptions.Item>
-                    </Descriptions>
+                    <div
+                      style={{
+                        padding: 10,
+                      }}
+                    >
+                      <Descriptions>
+                        <Descriptions.Item span={3} label="Môn học">
+                          <b>{dataSchedule.module_name}</b>
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Thời gian học trong tuần">
+                          <b>
+                            {dataSchedule.class_days.id === 1
+                              ? 'Thứ 2, 4, 6'
+                              : 'Thứ 3, 5, 7'}
+                          </b>
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Giáo viên">
+                          <b>{`${dataSchedule.teacher.first_name} ${dataSchedule.teacher.last_name}`}</b>
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Email giáo viên">
+                          <b>{`${dataSchedule.teacher.email_organization}`}</b>
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Ngày bắt đầu">
+                          <b>
+                            {new Date(
+                              dataSchedule.start_date
+                            ).toLocaleDateString('vi-VN')}
+                          </b>
+                        </Descriptions.Item>
+                        <Descriptions.Item span={2} label="Giờ học bắt đầu">
+                          <b>{dataSchedule.class_hour_start}</b>
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Ngày kết thúc">
+                          <b>
+                            {new Date(dataSchedule.end_date).toLocaleDateString(
+                              'vi-VN'
+                            )}
+                          </b>
+                        </Descriptions.Item>
+                        <Descriptions.Item span={2} label="Giờ học kết thúc">
+                          <b>{dataSchedule.class_hour_end}</b>
+                        </Descriptions.Item>
+                        <Descriptions.Item span={3} label="Số lượng buổi học">
+                          <b>{dataSchedule.duration}</b>
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Ngày tạo lịch">
+                          <b>
+                            {new Date(
+                              dataSchedule.created_at
+                            ).toLocaleDateString('vi-VN')}
+                          </b>
+                        </Descriptions.Item>
+                        <Descriptions.Item span={2} label="Ngày cập nhật">
+                          <b>
+                            {new Date(
+                              dataSchedule.updated_at
+                            ).toLocaleDateString('vi-VN')}
+                          </b>
+                        </Descriptions.Item>
+                        <Descriptions.Item span={2} label="Ghi chú">
+                          <i>{dataSchedule.note}</i>
+                        </Descriptions.Item>
+                        <Descriptions.Item>
+                          <div className={classes.buttonGroupEdit}>
+                            <Dropdown>
+                              <Dropdown.Button flat color="secondary">
+                                Chức năng
+                              </Dropdown.Button>
+                              <Dropdown.Menu
+                                onAction={handleSelectOption}
+                                color="secondary"
+                                aria-label="Actions"
+                                css={{ $$dropdownMenuWidth: '340px' }}
+                              >
+                                <Dropdown.Section title="Cơ bản">
+                                  <Dropdown.Item
+                                    key="attendance"
+                                    description="Xem danh sách điểm danh"
+                                    color={'success'}
+                                    icon={<BsFillPersonCheckFill />}
+                                  >
+                                    Điểm danh
+                                  </Dropdown.Item>
+                                  <Dropdown.Item
+                                    key="edit"
+                                    description="Chỉnh sửa lịch học"
+                                    color={'secondary'}
+                                    icon={<MdEditCalendar />}
+                                  >
+                                    Chỉnh sửa
+                                  </Dropdown.Item>
+                                  {canViewGrade() && <Dropdown.Item
+                                    key="grade"
+                                    description="Xem điểm của học sinh"
+                                    color={'warning'}
+                                    icon={<RiBookmark3Fill />}
+                                  >
+                                    Xem điểm
+                                  </Dropdown.Item>}
+                                </Dropdown.Section>
+                                <Dropdown.Section title="Nguy hiểm">
+                                  <Dropdown.Item
+                                    key="delete"
+                                    description="Xóa lịch học"
+                                    color={'error'}
+                                    icon={<MdDelete />}
+                                  >
+                                    Xóa lịch học
+                                  </Dropdown.Item>
+                                </Dropdown.Section>
+                              </Dropdown.Menu>
+                            </Dropdown>
+                          </div>
+                        </Descriptions.Item>
+                      </Descriptions>
+                    </div>
                     <Spacer y={1} />
                     <Divider />
                     <Spacer y={1} />
@@ -397,6 +455,13 @@ const ScheduleDetail = () => {
           )}
           {editMode && dataModule !== undefined && (
             <ScheduleUpdate
+              dataModule={dataModule}
+              dataSchedule={dataSchedule}
+              onSuccess={handleSuccess}
+            />
+          )}
+          {viewGrade && dataModule !== undefined && (
+            <ViewGrade
               dataModule={dataModule}
               dataSchedule={dataSchedule}
               onSuccess={handleSuccess}
