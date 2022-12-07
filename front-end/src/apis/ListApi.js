@@ -391,6 +391,14 @@ export const GradeModuleSemesterApis = {
   },
 };
 
+export const GradeStudentApis = {
+  getListGradeByClassIdAndModuleId: {
+    url: 'api/classes/{0}/modules/{1}/grades-students/sros',
+    method: 'GET',
+    contextType: 'application/json',
+  }
+}
+
 export const ManageClassApis = {
   searchClass: {
     url: 'api/classes/search',

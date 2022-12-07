@@ -641,6 +641,16 @@ const DetailClass = () => {
                             Gộp lớp học
                           </Dropdown.Item>
                         )}
+                        {hasAcitveStudent() && (
+                          <Dropdown.Item
+                            key="grade"
+                            description="Xem điểm của lớp học"
+                            icon={<AiFillSchedule />}
+                            color={'warning'}
+                          >
+                            Xem điểm
+                          </Dropdown.Item>
+                        )}
                       </Dropdown.Section>
                       {listStudent?.length > 0 && isDraft() && (
                         <Dropdown.Section title="Nguy hiểm">
