@@ -4,6 +4,8 @@ using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.AddressController.DistrictModel;
 using AcademicManagementSystem.Models.AddressController.ProvinceModel;
 using AcademicManagementSystem.Models.AddressController.WardModel;
+using AcademicManagementSystem.Models.ClassController;
+using AcademicManagementSystem.Models.BasicResponse;
 using AcademicManagementSystem.Models.CourseController;
 using AcademicManagementSystem.Models.CourseFamilyController;
 using AcademicManagementSystem.Models.GenderController;
@@ -25,12 +27,14 @@ public class GpaController : ControllerBase
     private readonly AmsContext _context;
     private readonly User _user;
     private const int RoleIdStudent = 4;
+    private readonly IUserService _userService;
 
     public GpaController(AmsContext context, IUserService userService)
     {
         _context = context;
         var userId = Convert.ToInt32(userService.GetUserId());
         _user = _context.Users.FirstOrDefault(u => u.Id == userId)!;
+        _userService = userService;
     }
 
     // get all form
@@ -363,17 +367,346 @@ public class GpaController : ControllerBase
         var gpaRecords = _context.GpaRecords
             .Include(g => g.Student)
             .Include(g => g.Teacher)
-            // .Include(g => g.Form)
-            // .Include(g => g.Class)
-            // .Include(g => g.Module)
-            // .Include(g => g.Session)
-            // .Include(g => g.GpaRecordsAnswers)
-            // .ThenInclude(gra => gra.Answer)
-            // .ThenInclude(a => a.Question)
+            .Include(g => g.Form)
+            .Include(g => g.Class)
+            .Include(g => g.Module)
+            .Include(g => g.Session)
+            .Include(g => g.GpaRecordsAnswers)
+            .ThenInclude(gra => gra.Answer)
+            .ThenInclude(a => a.Question)
             .Where(g => g.TeacherId == teacherId)
             .ToList();
 
-        return Ok(CustomResponse.Ok("GPA records has been retrieved successfully", gpaRecords));
+        var gpaRecordAnswer = gpaRecords.Select(g => g.GpaRecordsAnswers).ToList();
+
+        // get list comment
+        var comments = gpaRecords.Select(g => g.Comment).ToList();
+
+        // get answerNo by answerId
+        var answerNo = new List<int>();
+        foreach (var gpaRecordAnswers in gpaRecordAnswer)
+        {
+            foreach (var record in gpaRecordAnswers)
+            {
+                answerNo.Add(record.Answer.AnswerNo);
+            }
+        }
+
+        var sum = 0;
+        foreach (var answer in answerNo)
+        {
+            sum += answer;
+        }
+
+        var average = (double)sum / answerNo.Count;
+        var gpaResponse = new GpaResponse()
+        {
+            AverageGpa = average, Comments = comments
+        };
+        return Ok(CustomResponse.Ok("GPA records has been retrieved successfully", gpaResponse));
+    }
+
+    // sro view gpa teacher by teacherId and classId
+    [HttpGet]
+    [Route("api/gpa/teachers/{teacherId:int}/classes/{classId:int}")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult ViewGpaTeacherByTeacherIdAndClassId(int teacherId, int classId)
+    {
+        // check if teacher exists or not
+        if (!IsTeacherExisted(teacherId))
+        {
+            var error = ErrorDescription.Error["E1140"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check if class exists or not
+        if (!IsClassExisted(classId))
+        {
+            var error = ErrorDescription.Error["E1139"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var gpaRecords = _context.GpaRecords
+            .Include(g => g.Student)
+            .Include(g => g.Teacher)
+            .Include(g => g.Form)
+            .Include(g => g.Class)
+            .Include(g => g.Module)
+            .Include(g => g.Session)
+            .Include(g => g.GpaRecordsAnswers)
+            .ThenInclude(gra => gra.Answer)
+            .ThenInclude(a => a.Question)
+            .Where(g => g.TeacherId == teacherId && g.ClassId == classId)
+            .ToList();
+
+        var gpaRecordAnswer = gpaRecords.Select(g => g.GpaRecordsAnswers).ToList();
+
+        // get list comment
+        var comments = gpaRecords.Select(g => g.Comment).ToList();
+
+        // get answerNo by answerId
+        var answerNo = new List<int>();
+        foreach (var gpaRecordAnswers in gpaRecordAnswer)
+        {
+            foreach (var record in gpaRecordAnswers)
+            {
+                answerNo.Add(record.Answer.AnswerNo);
+            }
+        }
+
+        var sum = 0;
+        foreach (var answer in answerNo)
+        {
+            sum += answer;
+        }
+
+        var average = (double)sum / answerNo.Count;
+        var gpaResponse = new GpaResponse()
+        {
+            AverageGpa = average, Comments = comments
+        };
+        return Ok(CustomResponse.Ok("GPA records has been retrieved successfully", gpaResponse));
+    }
+
+    // sro view gpa teacher by teacherId and moduleId
+    [HttpGet]
+    [Route("api/gpa/teachers/{teacherId:int}/modules/{moduleId:int}")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult ViewGpaTeacherByTeacherIdAndModuleId(int teacherId, int moduleId)
+    {
+        // check if teacher exists or not
+        if (!IsTeacherExisted(teacherId))
+        {
+            var error = ErrorDescription.Error["E1140"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check if module exists or not
+        if (!IsModuleExisted(moduleId))
+        {
+            var error = ErrorDescription.Error["E1141"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var gpaRecords = _context.GpaRecords
+            .Include(g => g.Student)
+            .Include(g => g.Teacher)
+            .Include(g => g.Form)
+            .Include(g => g.Class)
+            .Include(g => g.Module)
+            .Include(g => g.Session)
+            .Include(g => g.GpaRecordsAnswers)
+            .ThenInclude(gra => gra.Answer)
+            .ThenInclude(a => a.Question)
+            .Where(g => g.TeacherId == teacherId && g.ModuleId == moduleId)
+            .ToList();
+
+        var gpaRecordAnswer = gpaRecords.Select(g => g.GpaRecordsAnswers).ToList();
+
+        // get list comment
+        var comments = gpaRecords.Select(g => g.Comment).ToList();
+
+        // get answerNo by answerId
+        var answerNo = new List<int>();
+        foreach (var gpaRecordAnswers in gpaRecordAnswer)
+        {
+            foreach (var record in gpaRecordAnswers)
+            {
+                answerNo.Add(record.Answer.AnswerNo);
+            }
+        }
+
+        var sum = 0;
+        foreach (var answer in answerNo)
+        {
+            sum += answer;
+        }
+
+        var average = (double)sum / answerNo.Count;
+        var gpaResponse = new GpaResponse()
+        {
+            AverageGpa = average, Comments = comments
+        };
+        return Ok(CustomResponse.Ok("GPA records has been retrieved successfully", gpaResponse));
+    }
+
+    // sro view gpa teacher by teacherId, classId, moduleId and sessionId
+    [HttpGet]
+    [Route("api/gpa/teachers/{teacherId:int}/classes/{classId:int}/modules/{moduleId:int}/sessions/{sessionId:int}")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult ViewGpaTeacherByTeacherIdAndClassIdAndModuleIdAndSessionId(int teacherId, int classId,
+        int moduleId, int sessionId)
+    {
+        // check if teacher exists or not
+        if (!IsTeacherExisted(teacherId))
+        {
+            var error = ErrorDescription.Error["E1140"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check if class exists or not
+        if (!IsClassExisted(classId))
+        {
+            var error = ErrorDescription.Error["E1139"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check if module exists or not
+        if (!IsModuleExisted(moduleId))
+        {
+            var error = ErrorDescription.Error["E1141"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check if session exists or not
+        if (!IsSessionExisted(sessionId))
+        {
+            var error = ErrorDescription.Error["E1142"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var gpaRecords = _context.GpaRecords
+            .Include(g => g.Student)
+            .Include(g => g.Teacher)
+            .Include(g => g.Form)
+            .Include(g => g.Class)
+            .Include(g => g.Module)
+            .Include(g => g.Session)
+            .Include(g => g.GpaRecordsAnswers)
+            .ThenInclude(gra => gra.Answer)
+            .ThenInclude(a => a.Question)
+            .Where(g => g.TeacherId == teacherId && g.ClassId == classId && g.ModuleId == moduleId &&
+                        g.SessionId == sessionId)
+            .ToList();
+
+        var gpaRecordAnswer = gpaRecords.Select(g => g.GpaRecordsAnswers).ToList();
+
+        // get list comment
+        var comments = gpaRecords.Select(g => g.Comment).ToList();
+
+        // get answerNo by answerId
+        var answerNo = new List<int>();
+        foreach (var gpaRecordAnswers in gpaRecordAnswer)
+        {
+            foreach (var record in gpaRecordAnswers)
+            {
+                answerNo.Add(record.Answer.AnswerNo);
+            }
+        }
+
+        var sum = 0;
+        foreach (var answer in answerNo)
+        {
+            sum += answer;
+        }
+
+        var average = (double)sum / answerNo.Count;
+        var gpaResponse = new GpaResponse()
+        {
+            AverageGpa = average, Comments = comments
+        };
+        return Ok(CustomResponse.Ok("GPA records has been retrieved successfully", gpaResponse));
+    }
+
+    // get list class of teacher
+    [HttpGet]
+    [Route("api/gpa/teachers/{teacherId:int}/classes")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult GetListClassOfTeacher(int teacherId)
+    {
+        // check if teacher exists or not
+        if (!IsTeacherExisted(teacherId))
+        {
+            var error = ErrorDescription.Error["E1140"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var classes = _context.Classes
+            .Include(c => c.GpaRecords)
+            .ThenInclude(gr => gr.Teacher)
+            .Where(c => c.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId))
+            .Select(c => new ClassGpaResponse()
+            {
+                Id = c.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId) ? c.Id : 0,
+                Name = c.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId) ? c.Name : null
+            })
+            .ToList();
+
+        return Ok(CustomResponse.Ok("List classes of teacher has been retrieved successfully", classes));
+    }
+
+    // get list module of teacher
+    [HttpGet]
+    [Route("api/gpa/teachers/{teacherId:int}/modules")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult GetListModuleOfTeacher(int teacherId)
+    {
+        // check if teacher exists or not
+        if (!IsTeacherExisted(teacherId))
+        {
+            var error = ErrorDescription.Error["E1140"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var modules = _context.Modules
+            .Include(m => m.GpaRecords)
+            .ThenInclude(gr => gr.Teacher)
+            .Where(m => m.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId))
+            .Select(m => new ModuleGpaResponse()
+            {
+                Id = m.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId) ? m.Id : 0,
+                ModuleName = m.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId) ? m.ModuleName : null
+            })
+            .ToList();
+
+        return Ok(CustomResponse.Ok("List modules of teacher has been retrieved successfully", modules));
+    }
+
+    [HttpGet]
+    [Route("api/gpa/sessions/{sessionId:int}")]
+    [Authorize(Roles = "student")]
+    public IActionResult GetScheduleInfoBySessionId(int sessionId)
+    {
+        var userId = Convert.ToInt32(_userService.GetUserId());
+
+        var result = _context.Sessions
+            .Include(s => s.ClassSchedule)
+            .Include(s => s.ClassSchedule.Class)
+            .Include(s => s.ClassSchedule.Module)
+            .Include(s => s.ClassSchedule.Teacher)
+            .Include(s => s.ClassSchedule.Teacher.User)
+            .Where(s => s.Id == sessionId && s.ClassSchedule.Class.StudentsClasses
+                .Any(sc => sc.StudentId == userId && sc.IsActive && !sc.Student.IsDraft))
+            .Select(s => new SessionBasicInfoResponse()
+            {
+                SessionId = s.Id,
+                SessionTitle = s.Title,
+                LearningDate = s.LearningDate,
+                Class = new BasicClassResponse()
+                {
+                    Id = s.ClassSchedule.Class.Id,
+                    Name = s.ClassSchedule.Class.Name,
+                },
+                Module = new BasicModuleResponse()
+                {
+                    Id = s.ClassSchedule.Module.Id,
+                    Name = s.ClassSchedule.Module.ModuleName,
+                },
+                Teacher = new BasicTeacherInformationResponse()
+                {
+                    Id = s.ClassSchedule.Teacher.User.Id,
+                    EmailOrganization = s.ClassSchedule.Teacher.User.EmailOrganization,
+                    FirstName = s.ClassSchedule.Teacher.User.FirstName,
+                    LastName = s.ClassSchedule.Teacher.User.LastName,
+                }
+            }).FirstOrDefault();
+
+        if (result == null)
+        {
+            return NotFound(CustomResponse.NotFound("Session not found for you"));
+        }
+
+        return Ok(CustomResponse.Ok("Get schedule info by session successfully", result));
     }
 
     // is class existed
@@ -415,8 +748,7 @@ public class GpaController : ControllerBase
         return _context.ClassSchedules
             .Include(cs => cs.Teacher)
             .Include(cs => cs.Class)
-            .Any(cs => cs.ClassId == classId && cs.TeacherId == teacherId &&
-                       cs.StartDate <= DateTime.Now && cs.EndDate >= DateTime.Now);
+            .Any(cs => cs.ClassId == classId && cs.TeacherId == teacherId);
     }
 
     // is module is teaching in this class
@@ -425,8 +757,7 @@ public class GpaController : ControllerBase
         return _context.ClassSchedules
             .Include(cs => cs.Class)
             .Include(cs => cs.Module)
-            .Any(cs => cs.ClassId == classId && cs.ModuleId == moduleId &&
-                       cs.StartDate <= DateTime.Now && cs.EndDate >= DateTime.Now);
+            .Any(cs => cs.ClassId == classId && cs.ModuleId == moduleId);
     }
 
     // is session is teaching in this class
@@ -434,8 +765,7 @@ public class GpaController : ControllerBase
     {
         return _context.Sessions
             .Include(s => s.ClassSchedule)
-            .Any(s => s.ClassSchedule.ClassId == classId && s.Id == sessionId && s.ClassSchedule.ModuleId == moduleId &&
-                      s.ClassSchedule.StartDate <= DateTime.Now && s.ClassSchedule.EndDate >= DateTime.Now);
+            .Any(s => s.ClassSchedule.ClassId == classId && s.Id == sessionId && s.ClassSchedule.ModuleId == moduleId);
     }
 
     // is teacher teaching this module session in class
@@ -444,8 +774,7 @@ public class GpaController : ControllerBase
         return _context.Sessions
             .Include(s => s.ClassSchedule)
             .Any(s => s.ClassSchedule.TeacherId == teacherId && s.Id == sessionId &&
-                      s.ClassSchedule.ModuleId == moduleId && s.ClassSchedule.ClassId == classId &&
-                      s.ClassSchedule.StartDate <= DateTime.Now && s.ClassSchedule.EndDate >= DateTime.Now);
+                      s.ClassSchedule.ModuleId == moduleId && s.ClassSchedule.ClassId == classId);
     }
 
     private List<StudentResponse> GetAllStudentsByClassId(int id)
