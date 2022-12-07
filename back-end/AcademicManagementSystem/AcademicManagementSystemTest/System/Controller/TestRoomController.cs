@@ -7,16 +7,19 @@ using AcademicManagementSystemTest.MockData;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Xunit.Abstractions;
 
 namespace AcademicManagementSystemTest.System.Controller;
 
 public class TestRoomController
 {
+    private readonly ITestOutputHelper _testOutputHelper;
     private readonly AmsContext _context;
     private readonly RoomController _controller;
 
-    public TestRoomController()
+    public TestRoomController(ITestOutputHelper testOutputHelper)
     {
+        _testOutputHelper = testOutputHelper;
         var optionsInMemoryDb = new DbContextOptionsBuilder<AmsContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
@@ -41,12 +44,12 @@ public class TestRoomController
 
     private void Init()
     {
-        _context.Centers.AddRange(CenterMockData.Centers);
-        _context.RoomTypes.AddRange(RoomTypeMockData.RoomTypes);
-        _context.Rooms.AddRange(RoomMockData.Rooms);
-        _context.Users.AddRange(UserMockData.Users);
+        _context.Centers.AddRangeAsync(CenterMockData.Centers);
+        _context.RoomTypes.AddRangeAsync(RoomTypeMockData.RoomTypes);
+        _context.Rooms.AddRangeAsync(RoomMockData.Rooms);
+        _context.Users.AddRangeAsync(UserMockData.Users);
 
-        _context.SaveChanges();
+        _context.SaveChangesAsync();
     }
     
     [Fact]
@@ -66,8 +69,16 @@ public class TestRoomController
         const int centerId = -1;
 
         // act
-        var result = _controller.GetRoomsByCenterId(centerId);
-
+        var result = _controller.GetRoomsByCenterId(centerId) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
+        
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
@@ -98,7 +109,15 @@ public class TestRoomController
         };
 
         // act
-        var result = _controller.CreateRoom(request);
+        var result = _controller.CreateRoom(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -117,7 +136,15 @@ public class TestRoomController
         };
 
         // act
-        var result = _controller.CreateRoom(request);
+        var result = _controller.CreateRoom(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -131,12 +158,20 @@ public class TestRoomController
         {
             CenterId = 1,
             RoomTypeId = 1,
-            Name = "Room 1",
+            Name = "New Room",
             Capacity = 101
         };
 
         // act
-        var result = _controller.CreateRoom(request);
+        var result = _controller.CreateRoom(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -150,12 +185,20 @@ public class TestRoomController
         {
             CenterId = 1,
             RoomTypeId = 1,
-            Name = "Room 1",
+            Name = "New Room",
             Capacity = 19
         };
 
         // act
-        var result = _controller.CreateRoom(request);
+        var result = _controller.CreateRoom(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -174,7 +217,15 @@ public class TestRoomController
         };
 
         // act
-        var result = _controller.CreateRoom(request);
+        var result = _controller.CreateRoom(request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -188,9 +239,10 @@ public class TestRoomController
         {
             CenterId = 1,
             RoomTypeId = 1,
-            Name = "New Room",
+            Name = "New Room OK",
             Capacity = 30
         };
+        
         // act
         var result = _controller.CreateRoom(request);
 
@@ -212,7 +264,15 @@ public class TestRoomController
         };
 
         // act
-        var result = _controller.UpdateRoom(roomId, request);
+        var result = _controller.UpdateRoom(roomId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -232,7 +292,15 @@ public class TestRoomController
         };
 
         // act
-        var result = _controller.UpdateRoom(roomId, request);
+        var result = _controller.UpdateRoom(roomId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -253,7 +321,15 @@ public class TestRoomController
         };
 
         // act
-        var result = _controller.UpdateRoom(roomId, request);
+        var result = _controller.UpdateRoom(roomId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -273,7 +349,15 @@ public class TestRoomController
         };
 
         // act
-        var result = _controller.UpdateRoom(roomId, request);
+        var result = _controller.UpdateRoom(roomId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -293,7 +377,15 @@ public class TestRoomController
         };
 
         // act
-        var result = _controller.UpdateRoom(roomId, request);
+        var result = _controller.UpdateRoom(roomId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -313,14 +405,22 @@ public class TestRoomController
         };
 
         // act
-        var result = _controller.UpdateRoom(roomId, request);
-
+        var result = _controller.UpdateRoom(roomId, request) as BadRequestObjectResult;
+        if (result != null)
+        {
+            var value = result.Value as ResponseCustomBadRequest;
+            var type = value?.TypeError;
+            var message = value?.Message;
+            _testOutputHelper.WriteLine(message);
+            _testOutputHelper.WriteLine(type);
+        }
+        
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
 
     [Fact]
-    public void UpdateRoom_RoomUpdateValid_ReturnBadRequest()
+    public void UpdateRoom_RoomUpdateValid_ReturnOK()
     {
         // arrange
         const int roomId = 1;
@@ -333,7 +433,7 @@ public class TestRoomController
         };
 
         // act
-        var result = _controller.UpdateRoom(roomId, request);
+        var result = _controller.UpdateRoom(roomId, request) as OkObjectResult;
 
         // assert
         Assert.IsType<OkObjectResult>(result);

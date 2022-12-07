@@ -29,7 +29,7 @@ public static class UserMockData
             UpdatedAt = DateTime.Now,
             IsActive = true
         },
-        new User
+        new User // ADMIN
         {
             Id = 2,
             ProvinceId = 1,
@@ -52,7 +52,7 @@ public static class UserMockData
             UpdatedAt = DateTime.Now,
             IsActive = true
         },
-        new User
+        new User // SRO
         {
             Id = 3,
             ProvinceId = 1,
@@ -75,7 +75,7 @@ public static class UserMockData
             UpdatedAt = DateTime.Now,
             IsActive = true
         },
-        new User
+        new User  // TEACHER
         {
             Id = 4,
             ProvinceId = 1,
@@ -96,9 +96,9 @@ public static class UserMockData
             CitizenIdentityCardPublishedPlace = "Hà Nội",
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
-            IsActive = true
+            IsActive = true,
         },
-        new User
+        new User // TEACHER
         {
             Id = 5,
             ProvinceId = 1,
@@ -106,15 +106,84 @@ public static class UserMockData
             WardId = 1,
             CenterId = 1,
             GenderId = 1,
-            RoleId = 4,
+            RoleId = 3,
             FirstName = "Minh",
-            LastName = "Thành Student",
+            LastName = "Another Teacher",
             Avatar = null,
             MobilePhone = "0985563543",
+            Email = "thanhnm_teacher@fpt.personal.edu.vn",
+            EmailOrganization = "thanhnm_teacher@fpt.org.edu.vn",
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "123456783",
+            CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+            IsActive = false
+        },
+        new User // STUDENT ACTIVE
+        {
+            Id = 6,
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            CenterId = 1,
+            GenderId = 1,
+            RoleId = 4,
+            FirstName = "Minh",
+            LastName = "Thanh Student",
+            Avatar = null,
+            MobilePhone = "0985563544",
             Email = "thanhnm_student@fpt.personal.edu.vn",
             EmailOrganization = "thanhnm_student@fpt.org.edu.vn",
             Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "123456783",
+            CitizenIdentityCardNo = "123456784",
+            CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+            IsActive = true
+        },
+        new User // STUDENT NOT ACTIVE
+        {
+            Id = 7,
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            CenterId = 1,
+            GenderId = 1,
+            RoleId = 4,
+            FirstName = "Minh",
+            LastName = "Thinh Student ",
+            Avatar = null,
+            MobilePhone = "0985563545",
+            Email = "thanhnm_student001@fpt.personal.edu.vn",
+            EmailOrganization = "thanhnm_student001@fpt.org.edu.vn",
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "123456785",
+            CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+            IsActive = false
+        },
+        new User // STUDENT
+        {
+            Id = 8,
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            CenterId = 1,
+            GenderId = 1,
+            RoleId = 4,
+            FirstName = "Minh",
+            LastName = "Another Student",
+            Avatar = null,
+            MobilePhone = "0985563546",
+            Email = "thanhnm_student001@fpt.personal.edu.vn",
+            EmailOrganization = "thanhnm_student002@fpt.org.edu.vn",
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "123456786",
             CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
             CreatedAt = DateTime.Now,

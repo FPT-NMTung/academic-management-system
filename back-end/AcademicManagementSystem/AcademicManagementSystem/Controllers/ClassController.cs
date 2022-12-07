@@ -34,10 +34,12 @@ public class ClassController : ControllerBase
     private const int NotScheduleYet = 5;
     private const int MaxNumberStudentInClass = 100;
     private const int StatusMerged = 6;
+    private readonly IUserService _userService;
 
     public ClassController(AmsContext context, IUserService userService)
     {
         _context = context;
+        _userService = userService;
         var userId = Convert.ToInt32(userService.GetUserId());
         _user = _context.Users.FirstOrDefault(u => u.Id == userId)!;
     }
@@ -120,7 +122,31 @@ public class ClassController : ControllerBase
     [Authorize(Roles = "sro")]
     public IActionResult CreateClass([FromBody] CreateClassRequest request)
     {
+        var userId = Convert.ToInt32(_userService.GetUserId());
+        var user = _context.Users.FirstOrDefault(u => u.Id == userId)!;
+
         request.Name = Regex.Replace(request.Name, StringConstant.RegexWhiteSpaces, " ").Trim();
+
+        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf =>
+            cf.Code.Trim().ToLower() == request.CourseFamilyCode.Trim().ToLower());
+
+        if (courseFamily == null)
+        {
+            var error = ErrorDescription.Error["E0076_1"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (courseFamily.PublishedYear > request.StartDate.Year)
+        {
+            var error = ErrorDescription.Error["E0076_2"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+        
+        if (!courseFamily.IsActive)
+        {
+            var error = ErrorDescription.Error["E0076_3"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         var errorCode = GetCodeIfOccuredErrorWhenCreate(request);
 
@@ -132,11 +158,11 @@ public class ClassController : ControllerBase
 
         var newClass = new Class()
         {
-            CenterId = _user.CenterId,
-            CourseFamilyCode = request.CourseFamilyCode,
+            CenterId = user.CenterId,
+            CourseFamilyCode = request.CourseFamilyCode.Trim().ToUpper(),
             ClassDaysId = request.ClassDaysId,
             ClassStatusId = NotScheduleYet,
-            SroId = _user.Id,
+            SroId = user.Id,
             Name = request.Name,
             StartDate = request.StartDate,
             CompletionDate = request.CompletionDate,
@@ -188,6 +214,27 @@ public class ClassController : ControllerBase
             return NotFound(CustomResponse.NotFound("Class not found in this center"));
         }
 
+        var courseFamily = _context.CourseFamilies.FirstOrDefault(cf =>
+            cf.Code.Trim().ToLower() == request.CourseFamilyCode.Trim().ToLower());
+
+        if (courseFamily == null)
+        {
+            var error = ErrorDescription.Error["E0076_1"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (courseFamily.PublishedYear > request.StartDate.Year)
+        {
+            var error = ErrorDescription.Error["E0076_2"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!courseFamily.IsActive)
+        {
+            var error = ErrorDescription.Error["E0076_3"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         var errorCode = GetCodeIfOccuredErrorWhenUpdate(classId, request, classToUpdate.StartDate);
 
         if (errorCode != null)
@@ -196,7 +243,7 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        classToUpdate.CourseFamilyCode = request.CourseFamilyCode;
+        classToUpdate.CourseFamilyCode = request.CourseFamilyCode.Trim().ToUpper();
         classToUpdate.ClassDaysId = request.ClassDaysId;
         classToUpdate.ClassStatusId = request.ClassStatusId;
         classToUpdate.Name = request.Name;
@@ -917,6 +964,7 @@ public class ClassController : ControllerBase
                             GenderId = genderId,
                             CreatedAt = DateTime.Now,
                             UpdatedAt = DateTime.Now,
+                            IsActive = true,
                             Student = new Student()
                             {
                                 EnrollNumber = enrollNumber!.Trim(),
@@ -1327,6 +1375,7 @@ public class ClassController : ControllerBase
             GenderId = request.GenderId,
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
+            IsActive = true,
             Student = new Student()
             {
                 EnrollNumber = request.EnrollNumber,

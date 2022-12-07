@@ -1,12 +1,11 @@
 ﻿using System.Text.Json.Serialization;
-using AcademicManagementSystem.Models.AttendanceController.AttendanceModel;
+using AcademicManagementSystem.Models.AttendanceStatusController.AttendanceStatusModel;
 using AcademicManagementSystem.Models.BasicResponse;
-using AcademicManagementSystem.Models.RoomController.RoomModel;
 using AcademicManagementSystem.Models.SessionTypeController.SessionTypeModel;
 
-namespace AcademicManagementSystem.Models.SessionController;
+namespace AcademicManagementSystem.Models.AttendanceController.AttendanceModel;
 
-public class DetailSessionForStudentResponse
+public class SessionAttendanceForStudentResponse
 {
     [JsonPropertyName("id")]
     public int Id { get; set; }
@@ -22,17 +21,20 @@ public class DetailSessionForStudentResponse
     
     [JsonPropertyName("end_time")]
     public TimeSpan EndTime { get; set; }
+
+    [JsonPropertyName("attendance_status")]
+    public AttendanceStatusResponse? AttendanceStatus { get; set; }
     
-    [JsonPropertyName("is_taken_gpa")]
-    public bool IsTakenGpa { get; set; }
+    [JsonPropertyName("note")]
+    public string? Note { get; set; }
     
     [JsonPropertyName("session_type")]
     public SessionTypeResponse SessionType { get; set; }
     
-    [JsonPropertyName("attendance")]
-    public StudentAttendanceResponse Attendance { get; set; }
-    
-    [JsonPropertyName("class")]
+    [JsonPropertyName("room")]
+    public BasicRoomResponse Room { get; set; }
+
+    [JsonPropertyName("class")] 
     public BasicClassResponse Class { get; set; }
     
     [JsonPropertyName("module")]
@@ -40,7 +42,4 @@ public class DetailSessionForStudentResponse
     
     [JsonPropertyName("teacher")]
     public BasicTeacherInformationResponse Teacher { get; set; }
-
-    [JsonPropertyName("room")]
-    public RoomResponse Room { get; set; }
 }

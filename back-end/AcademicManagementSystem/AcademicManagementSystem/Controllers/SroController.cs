@@ -171,7 +171,8 @@ public class SroController : ControllerBase
             CitizenIdentityCardPublishedDate = request.CitizenIdentityCardPublishedDate,
             CitizenIdentityCardPublishedPlace = request.CitizenIdentityCardPublishedPlace,
             CreatedAt = DateTime.Now,
-            UpdatedAt = DateTime.Now
+            UpdatedAt = DateTime.Now,
+            IsActive = true
         };
 
         /*
@@ -530,7 +531,7 @@ public class SroController : ControllerBase
             return true;
         }
 
-        if (request.Email == request.EmailOrganization)
+        if (request.Email.ToLower() == request.EmailOrganization.ToLower())
         {
             var error = ErrorDescription.Error["E0022_2"];
             actionResult1 = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -643,7 +644,7 @@ public class SroController : ControllerBase
             return true;
         }
 
-        if (request.Email == request.EmailOrganization)
+        if (request.Email.ToLower() == request.EmailOrganization.ToLower())
         {
             var error = ErrorDescription.Error["E0022_2"];
             badRequestObjectResult = BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
