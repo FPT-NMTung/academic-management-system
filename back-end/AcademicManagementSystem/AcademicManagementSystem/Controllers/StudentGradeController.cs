@@ -337,23 +337,27 @@ public class GradeStudentController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        // first session in class schedule
-        var firstSession = classContext.ClassSchedules
-            .First(cs => cs.ModuleId == moduleId)
-            .Sessions.OrderBy(s => s.LearningDate).First();
+        // // first session in class schedule
+        // var firstSession = classContext.ClassSchedules
+        //     .First(cs => cs.ModuleId == moduleId)
+        //     .Sessions.OrderBy(s => s.LearningDate).First();
+        //
+        // // last session in class schedule
+        // var lastSession = classContext.ClassSchedules
+        //     .First(cs => cs.ModuleId == moduleId)
+        //     .Sessions.OrderBy(s => s.LearningDate).Last();
+        //
+        // // check module is start learning and no more than 5 days after last session
+        // var canUpdateModule = classContext.ClassSchedules
+        //     .Any(cs => cs.ModuleId == moduleId &&
+        //                firstSession.LearningDate.Date <= DateTime.Today &&
+        //                DateTime.Today <= lastSession.LearningDate.AddDays(5));
+        //
+        var canUpdateGrade =
+            classContext.ClassSchedules.Any(cs =>
+                cs.StartDate <= DateTime.Today && cs.ModuleId == moduleId);
 
-        // last session in class schedule
-        var lastSession = classContext.ClassSchedules
-            .First(cs => cs.ModuleId == moduleId)
-            .Sessions.OrderBy(s => s.LearningDate).Last();
-
-        // check module is start learning and no more than 5 days after last session
-        var canUpdateModule = classContext.ClassSchedules
-            .Any(cs => cs.ModuleId == moduleId &&
-                       firstSession.LearningDate.Date <= DateTime.Today &&
-                       DateTime.Today <= lastSession.LearningDate.AddDays(5));
-
-        if (!canUpdateModule)
+        if (!canUpdateGrade)
         {
             var error = ErrorDescription.Error["E0301"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -524,7 +528,7 @@ public class GradeStudentController : ControllerBase
         var canUpdateModule = classContext.ClassSchedules
             .Any(cs => cs.ModuleId == moduleId &&
                        firstSession.LearningDate.Date <= DateTime.Today &&
-                       DateTime.Today <= lastSession.LearningDate.AddDays(3));
+                       DateTime.Today <= lastSession.LearningDate.Date);
 
         if (!canUpdateModule)
         {
