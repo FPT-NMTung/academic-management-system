@@ -44,12 +44,12 @@ public class TestRoomController
 
     private void Init()
     {
-        _context.Centers.AddRange(CenterMockData.Centers);
-        _context.RoomTypes.AddRange(RoomTypeMockData.RoomTypes);
-        _context.Rooms.AddRange(RoomMockData.Rooms);
-        _context.Users.AddRange(UserMockData.Users);
+        _context.Centers.AddRangeAsync(CenterMockData.Centers);
+        _context.RoomTypes.AddRangeAsync(RoomTypeMockData.RoomTypes);
+        _context.Rooms.AddRangeAsync(RoomMockData.Rooms);
+        _context.Users.AddRangeAsync(UserMockData.Users);
 
-        _context.SaveChanges();
+        _context.SaveChangesAsync();
     }
     
     [Fact]
