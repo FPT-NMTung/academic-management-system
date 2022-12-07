@@ -33,6 +33,11 @@ import ViewAllAttendance from '../Attendance/ViewAllAttendance/ViewAllAttendance
 import ViewGrade from '../ViewGrade/ViewGrade';
 import classes from './ScheduleDetail.module.css';
 
+import { MdDelete } from 'react-icons/md';
+import { BsFillPersonCheckFill } from 'react-icons/bs';
+import { MdEditCalendar } from 'react-icons/md';
+import { RiBookmark3Fill } from 'react-icons/ri';
+
 const ScheduleDetail = () => {
   const [dataSchedule, setDataSchedule] = useState(undefined);
   const [gettingData, setGettingData] = useState(true);
@@ -141,6 +146,10 @@ const ScheduleDetail = () => {
     }
   };
 
+  const canViewGrade = () => {
+    return new Date(Date.now()) >= new Date(dataSchedule?.start_date);
+  }
+
   return (
     <Fragment>
       {selectSession && dataSchedule && (
@@ -161,7 +170,7 @@ const ScheduleDetail = () => {
         <Card.Header>
           <Grid.Container justify="space-between">
             <Grid xs={4}>
-              {editMode && (
+              {(editMode || viewGrade) && (
                 <Button
                   flat
                   auto
@@ -169,6 +178,7 @@ const ScheduleDetail = () => {
                   size={'sm'}
                   onPress={() => {
                     setEditMode(false);
+                    setViewGrade(false);
                   }}
                 >
                   Trở về
@@ -312,6 +322,7 @@ const ScheduleDetail = () => {
                                     key="attendance"
                                     description="Xem danh sách điểm danh"
                                     color={'success'}
+                                    icon={<BsFillPersonCheckFill />}
                                   >
                                     Điểm danh
                                   </Dropdown.Item>
@@ -319,22 +330,25 @@ const ScheduleDetail = () => {
                                     key="edit"
                                     description="Chỉnh sửa lịch học"
                                     color={'secondary'}
+                                    icon={<MdEditCalendar />}
                                   >
                                     Chỉnh sửa
                                   </Dropdown.Item>
-                                  <Dropdown.Item
+                                  {canViewGrade() && <Dropdown.Item
                                     key="grade"
                                     description="Xem điểm của học sinh"
-                                    color={'secondary'}
+                                    color={'warning'}
+                                    icon={<RiBookmark3Fill />}
                                   >
                                     Xem điểm
-                                  </Dropdown.Item>
+                                  </Dropdown.Item>}
                                 </Dropdown.Section>
                                 <Dropdown.Section title="Nguy hiểm">
                                   <Dropdown.Item
                                     key="delete"
                                     description="Xóa lịch học"
                                     color={'error'}
+                                    icon={<MdDelete />}
                                   >
                                     Xóa lịch học
                                   </Dropdown.Item>

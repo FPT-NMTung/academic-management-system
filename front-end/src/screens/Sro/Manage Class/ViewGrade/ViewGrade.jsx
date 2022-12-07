@@ -17,6 +17,11 @@ const ViewGrade = ({ dataModule, dataSchedule, onSuccess }) => {
   const { id, moduleId } = useParams();
 
   useEffect(() => {
+    setData([]);
+    setColumns([]);
+  }, [id, moduleId])
+
+  useEffect(() => {
     setLoading(true);
     FetchApi(GradeStudentApis.getListGradeByClassIdAndModuleId, null, null, [
       String(id),
@@ -33,6 +38,7 @@ const ViewGrade = ({ dataModule, dataSchedule, onSuccess }) => {
               align: 'center',
               editable: true,
               render: (source, t) => {
+                console.log(t);
                 return <CustomInput data={t} defaultValue={source} />;
               },
             };
@@ -55,6 +61,7 @@ const ViewGrade = ({ dataModule, dataSchedule, onSuccess }) => {
             }),
           };
         });
+        console.log(temp);
         setColumns([
           ...[
             {
@@ -125,7 +132,6 @@ const ViewGrade = ({ dataModule, dataSchedule, onSuccess }) => {
       dataSource={data}
       loading={loading}
     />
-    // <Temp/>
   );
 };
 

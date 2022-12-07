@@ -11,10 +11,20 @@ const CustomInput = ({ defaultValue: defaultGrade, data }) => {
   const { id, moduleId } = useParams();
 
   const handleBlur = () => {
+    const regex = new RegExp(/^[0-9]+(\.[0-9]{1,5})?$/);
+
+    if (!regex.test(form.getFieldValue('grade'))) {
+      return;
+    }
+
+    toast.success('Cập nhật');
+
+    console.log(data);
+
     const body = [
       {
-        student_id: 489,
-        grade_item_id: 1303,
+        student_id: defaultGrade.user_id,
+        grade_item_id: defaultGrade.grade_item_id,
         grade: Number.parseFloat(form.getFieldValue('grade')),
         comment: null,
       },
@@ -23,10 +33,8 @@ const CustomInput = ({ defaultValue: defaultGrade, data }) => {
       String(id),
       String(moduleId),
     ])
-      .then((res) => {
-      })
-      .catch((err) => {
-      });
+      .then((res) => {})
+      .catch((err) => {});
   };
 
   return (
@@ -35,8 +43,24 @@ const CustomInput = ({ defaultValue: defaultGrade, data }) => {
         name="grade"
         rules={[
           {
-            pattern: new RegExp(/^[0-9]+(\.[0-9]{1,4})?$/),
-            message: 'Không hợp lệ',
+            // check max min
+            validator: (rule, value) => {
+              const re = new RegExp(/^[0-9]+(\.[0-9]{1,5})?$/);
+              if (!re.test(value)) {
+                return Promise.reject('Không hợp lệ');
+              }
+
+              const number = Number.parseFloat(value);
+              if (number > 100) {
+                return Promise.reject('Không hợp lệ');
+              }
+
+              if (number < 0) {
+                return Promise.reject('Không hợp lệ');
+              }
+
+              return Promise.resolve();
+            },
           },
         ]}
       >
