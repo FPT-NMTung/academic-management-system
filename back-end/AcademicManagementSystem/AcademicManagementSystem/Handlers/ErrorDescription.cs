@@ -210,6 +210,9 @@ public static class ErrorDescription
         { "E1133", new ErrorModel() { Message = "Total number of students in both class is more than 100", Type = "class-error-0079" } },
         { "E1134", new ErrorModel() { Message = "There is no student in first class", Type = "class-error-0080" } },
         { "E1135", new ErrorModel() { Message = "There is no student in second class", Type = "class-error-0081" } },
+        { "E0076_1", new ErrorModel() { Message = "Not found course family", Type = "class-error-0082" } },
+        { "E0076_2", new ErrorModel() { Message = "At year of start date of this class, course family is not published yet", Type = "class-error-0083" } },
+        { "E0076_3", new ErrorModel() { Message = "Course family is not active", Type = "class-error-0084" } },
 
         // student class
         { "E1069", new ErrorModel() { Message = "Fail to SaveChange when import Students to class by excel", Type = "student-class-error-0001" } },

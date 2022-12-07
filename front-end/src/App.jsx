@@ -39,6 +39,7 @@ import Attendance from './screens/Teacher/Attendance/Attendance';
 import AttendanceDetail from './components/AttendanceDetail/AttendanceDetail';
 import AttendanceDetailEmpty from './components/AttendanceDetailEmpty/AttendanceDetailEmpty';
 import GradeScreen from './screens/Student/GradeScreen/GradeScreen';
+import AttendanceScreen from './screens/Student/AttendanceScreen/AttendanceScreen';
 
 const App = () => {
   return (
@@ -50,7 +51,7 @@ const App = () => {
       <Route path={'/student'} element={<ThirdLayout><RequireAuth role={'student'} /></ThirdLayout>}>
         <Route index element={<Navigate to="/student/schedule" replace />} />
         <Route path="/student/schedule" element={<Schedule />} />
-        <Route path="/student/attendance" element={<p>attendance</p>} />
+        <Route path="/student/attendance" element={<AttendanceScreen/>} />
         <Route path="/student/grade" element={<GradeScreen/>} />
         <Route path="/student/feedback" element={<FeedbackScreen />} />
         <Route path="/student/feedback/:id" element={<DoFeedback/> } />
