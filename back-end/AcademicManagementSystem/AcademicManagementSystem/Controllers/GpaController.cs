@@ -618,18 +618,45 @@ public class GpaController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var classes = _context.ClassSchedules
-            .Include(cs => cs.Teacher)
-            .Include(cs => cs.Class)
-            .Where(cs => cs.TeacherId == teacherId)
-            .Select(cs => new ClassGpaResponse()
+        var classes = _context.Classes
+            .Include(c => c.GpaRecords)
+            .ThenInclude(gr => gr.Teacher)
+            .Where(c => c.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId))
+            .Select(c => new ClassGpaResponse()
             {
-                Id = cs.Class.Id,
-                Name = cs.Class.Name
+                Id = c.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId) ? c.Id : 0,
+                Name = c.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId) ? c.Name : null
             })
             .ToList();
 
-        return Ok(CustomResponse.Ok("List class of teacher has been retrieved successfully", classes));
+        return Ok(CustomResponse.Ok("List classes of teacher has been retrieved successfully", classes));
+    }
+
+    // get list module of teacher
+    [HttpGet]
+    [Route("api/gpa/teachers/{teacherId:int}/modules")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult GetListModuleOfTeacher(int teacherId)
+    {
+        // check if teacher exists or not
+        if (!IsTeacherExisted(teacherId))
+        {
+            var error = ErrorDescription.Error["E1140"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var modules = _context.Modules
+            .Include(m => m.GpaRecords)
+            .ThenInclude(gr => gr.Teacher)
+            .Where(m => m.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId))
+            .Select(m => new ModuleGpaResponse()
+            {
+                Id = m.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId) ? m.Id : 0,
+                ModuleName = m.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId) ? m.ModuleName : null
+            })
+            .ToList();
+
+        return Ok(CustomResponse.Ok("List modules of teacher has been retrieved successfully", modules));
     }
 
     // is class existed
