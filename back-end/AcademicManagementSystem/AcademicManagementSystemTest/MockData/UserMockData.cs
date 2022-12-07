@@ -189,6 +189,29 @@ public static class UserMockData
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             IsActive = true
-        }
+        },
+        new User  // TEACHER
+        {
+            Id = 9,
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            CenterId = 1,
+            GenderId = 1,
+            RoleId = 3,
+            FirstName = "Minh",
+            LastName = "Thành Teacher",
+            Avatar = null,
+            MobilePhone = "0985563547",
+            Email = "teacher9@fpt.personal.edu.vn",
+            EmailOrganization = "teacher9@fpt.org.edu.vn",
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "123456787",
+            CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+            IsActive = true,
+        },
     };
 }
