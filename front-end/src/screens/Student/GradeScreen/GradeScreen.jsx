@@ -229,6 +229,8 @@ const GradeScreen = () => {
                
               </Table.Body>
             </Table>
+         
+            
           </Card.Body>
         </Card>
       </Grid>

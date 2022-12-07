@@ -82,35 +82,44 @@ const DoFeedback = () => {
   const handleSubmitForm = () => {
     const data = form.getFieldsValue();
     console.log(data);
-    // const body = {
-    //   class_id: scheduleInformation.class.id,
-    //   teacher_id : scheduleInformation.teacher.id,
-    //   module_id : scheduleInformation.module.id,
-    //   session_id : id,
-    //   comment: data.comment,
-    //   answer_id: data.map((item,index) => item.question + (index+1)),
-    // };
+    const listanswer = [];
+    for (const key in data) {
+      if (Object.hasOwnProperty.call(data, key) && key.includes("question")) {
+        const element = data[key];
+        listanswer.push(element);
+      }
+    }
+   
+    const body = {
+      class_id: scheduleInformation.class.id,
+      teacher_id : scheduleInformation.teacher.id,
+      module_id : scheduleInformation.module.id,
+      session_id : id,
+      comment: data.comment,
+      answer_id: listanswer,
+    };
+    console.log(body);
     const api = ManageGpa.studentTakeGPA;
     // const params = [`${id}`];
     // console.log(params);
 
-    // toast.promise(FetchApi(api, body, null, ["1"]), {
-    //   loading: 'Đang xử lý',
-    //   success: (res) => {
-    //     // setIsCreatingOrUpdating(false);
-    //     navigate(`/student/schedule`);
-    //     return 'Thành công';
-    //   },
-    //   error: (err) => {
-    //     setMessageFailed(ErrorCodeApi[err.type_error]);
-    //     // setIsCreatingOrUpdating(false);
-    //     if (err?.type_error) {
-    //       return ErrorCodeApi[err.type_error];
-    //     }
+    toast.promise(FetchApi(api, body, null, ["1"]), {
+      loading: 'Đang xử lý',
+      success: (res) => {
+        // setIsCreatingOrUpdating(false);
+        navigate(`/student/schedule`);
+        return 'Thành công';
+      },
+      error: (err) => {
+        setMessageFailed(ErrorCodeApi[err.type_error]);
+        // setIsCreatingOrUpdating(false);
+        if (err?.type_error) {
+          return ErrorCodeApi[err.type_error];
+        }
 
-    //     return 'Thất bại';
-    //   },
-    // })
+        return 'Thất bại';
+      },
+    })
   };
 
   useEffect(() => {
@@ -144,7 +153,7 @@ const DoFeedback = () => {
                 }}
               >
                 {listForm.map((item, index) => (
-                  <Fragment>
+                  <Fragment key={index}>
                     <Text
                       b
                       size={24}
@@ -188,6 +197,7 @@ const DoFeedback = () => {
               {listQnA.map((item, index) => (
                 <Card
                   variant="bordered"
+                  key={index}
                   css={{ padding: "20px 20px", marginBottom: "12px" }}
                 >
                   <Fragment>
@@ -213,52 +223,30 @@ const DoFeedback = () => {
                         display: "block",
                       }}
                       key={"question" + (index + 1)}
-                      // rules={[
-                      //   {
-                      //     required: true,
-                      //     message: "Vui lòng chọn đáp án",
-                      //   },
-                      // ]}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng chọn đáp án",
+                        },
+                      ]}
                     >
-                      {/* <Radio.Group  size="xs">
-                      <Space direction="vertical">
-                        {item.answer.map((answer, index) => (
-                          <Radio
-                          
-                            color="error"
-                            css={{ marginBottom: "12px" }}
-                            value={answer.id}
-                            key={answer.id}
-                          >
-                            {answer.content}
-                          </Radio>
-                        ))}
-                      </Space>
-                      </Radio.Group> */}
-                      {/* <Text>You've checked: {checked}</Text> */}
-                      <Radio.Group size="xs">
+                      <Radio.Group size="xs" >
                         <Space direction="vertical">
-                          <Radio
-                            color="error"
-                            css={{ marginBottom: "12px" }}
-                            value={2}
-                            key={121212}
-                          >
-                            đannád
-                          </Radio>
-                          <Radio
-                            color="error"
-                            css={{ marginBottom: "12px" }}
-                            value={1}
-                            key={122222}
-                          >
-                            sdsdsđsd
-                          </Radio>
+                          {item.answer.map((answer, index) => (
+                            <Radio
+                              color="error"
+                              css={{ marginBottom: "12px" }}
+                              value={answer.id}
+                              key={answer.id}
+                            >
+                              {answer.content}
+                            </Radio>
+                          ))}
                         </Space>
                       </Radio.Group>
-
-                      <Spacer y={0.5} />
-                      <Card.Divider />
+                      {/* <Text>You've checked: {checked}</Text> */}
+                      {/* <Spacer y={0.5} /> */}
+                      {/* <Card.Divider css={{ marginTop: "20px" }} /> */}
                     </Form.Item>
                   </Fragment>
                 </Card>
@@ -302,8 +290,7 @@ const DoFeedback = () => {
                     placeholder="Các góp ý khác của bạn về việc giảng dậy của giáo viên..."
                   ></Input.TextArea>
 
-                  <Spacer y={0.5} />
-                  <Card.Divider />
+                  {/* <Card.Divider css={{ marginTop: "20px" }} /> */}
                 </Form.Item>
               </Card>
               <Spacer y={0.5} />

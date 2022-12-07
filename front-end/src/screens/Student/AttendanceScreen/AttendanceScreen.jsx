@@ -187,8 +187,8 @@ const AttendanceScreen = () => {
                 <Table.Column css={{ textAlign: "center" }} width={130}>
                   Ngày
                 </Table.Column>
-                <Table.Column css={{ textAlign: "center" }} width={30}>
-                  Slot
+                <Table.Column css={{ textAlign: "center" }} width={80}>
+                  Nội dung
                 </Table.Column>
                 <Table.Column width={100}>Phòng</Table.Column>
                 <Table.Column width={100}>Giáo viên</Table.Column>
@@ -209,8 +209,9 @@ const AttendanceScreen = () => {
                     </Table.Cell>
                     <Table.Cell>
                       <Badge color="secondary">
-                        {moment(item?.start_time, "HH:mm:ss").format("H:mm")}-{" "}
-                        {moment(item?.end_time, "HH:mm:ss").format("H:mm")}
+                        {/* {moment(item?.start_time, "HH:mm:ss").format("H:mm")}-{" "}
+                        {moment(item?.end_time, "HH:mm:ss").format("H:mm")} */}
+                        {item.title}
                       </Badge>
                     </Table.Cell>
                     <Table.Cell>{item.room.name}</Table.Cell>

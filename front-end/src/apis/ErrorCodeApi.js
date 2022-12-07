@@ -328,5 +328,19 @@ export const ErrorCodeApi = {
   "student-grade-error-0006": "Điểm TE và TEResit sẽ được cập nhật bởi SRO import",
   "student-grade-error-0007": "Không thể cập nhật, môn học không có bài thi",
 
+  "gpa-error-1": "Lớp học không có trong cơ sở",
+  "gpa-error-2": "Giáo viên không có trong cơ sở",
+  "gpa-error-3": "Môn học không có trong cơ sở",
+  "gpa-error-4": "Tiết học không tồn tại",
+  "gpa-error-5": "Học viên không có trong lớp học này",
+  "gpa-error-6": "Giáo viên đang không dạy lớp này",
+  "gpa-error-7": "Bạn đã đánh giá giáo viên trong tiết học này",
+  "gpa-error-8": "Thêm đánh giá thất bại",
+  "gpa-error-9": "Thêm câu trả lời đánh giá thất bại",
+  "gpa-error-10": "Lớp học đang không học môn học này",
+  "gpa-error-11": "Lớp học đang không học tiết học này",
+  "gpa-error-12": "Giáo viên đang không dạy tiết này trong lớp",
+
+
 
 };
