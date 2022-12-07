@@ -492,10 +492,9 @@ public class ClassScheduleController : ControllerBase
             return NotFound(CustomResponse.NotFound("Class not found"));
         }
 
-        var isDraftStudent =
-            _context.StudentsClasses.Any(sc => sc.ClassId == classContext.Id && sc.Student.IsDraft);
-
-        if (isDraftStudent)
+        // check class have any active student
+        var isActiveStudent = _context.StudentsClasses.Any(sc => sc.ClassId == classContext.Id && sc.IsActive);
+        if (!isActiveStudent)
         {
             var error = ErrorDescription.Error["E0094"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
