@@ -4,6 +4,7 @@ using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.AddressController.DistrictModel;
 using AcademicManagementSystem.Models.AddressController.ProvinceModel;
 using AcademicManagementSystem.Models.AddressController.WardModel;
+using AcademicManagementSystem.Models.ClassController;
 using AcademicManagementSystem.Models.CourseController;
 using AcademicManagementSystem.Models.CourseFamilyController;
 using AcademicManagementSystem.Models.GenderController;
@@ -604,6 +605,32 @@ public class GpaController : ControllerBase
         return Ok(CustomResponse.Ok("GPA records has been retrieved successfully", gpaResponse));
     }
 
+    // get list class of teacher
+    [HttpGet]
+    [Route("api/gpa/teachers/{teacherId:int}/classes")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult GetListClassOfTeacher(int teacherId)
+    {
+        // check if teacher exists or not
+        if (!IsTeacherExisted(teacherId))
+        {
+            var error = ErrorDescription.Error["E1140"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var classes = _context.ClassSchedules
+            .Include(cs => cs.Teacher)
+            .Include(cs => cs.Class)
+            .Where(cs => cs.TeacherId == teacherId)
+            .Select(cs => new ClassGpaResponse()
+            {
+                Id = cs.Class.Id,
+                Name = cs.Class.Name
+            })
+            .ToList();
+
+        return Ok(CustomResponse.Ok("List class of teacher has been retrieved successfully", classes));
+    }
 
     // is class existed
     private bool IsClassExisted(int classId)
