@@ -39,7 +39,7 @@ public static class UserMockData
             GenderId = 1,
             RoleId = 1,
             FirstName = "Minh",
-            LastName = "Thành Admin",
+            LastName = " Admin",
             Avatar = null,
             MobilePhone = "0985563540",
             Email = "nmthanh1306@gmail.personal.com",
@@ -62,7 +62,7 @@ public static class UserMockData
             GenderId = 1,
             RoleId = 2,
             FirstName = "Minh",
-            LastName = "Thành SRO",
+            LastName = " SRO",
             Avatar = null,
             MobilePhone = "0985563541",
             Email = "thanhnm136@gmail.personal.com",
@@ -75,7 +75,7 @@ public static class UserMockData
             UpdatedAt = DateTime.Now,
             IsActive = true
         },
-        new User  // TEACHER
+        new User // TEACHER
         {
             Id = 4,
             ProvinceId = 1,
@@ -85,7 +85,7 @@ public static class UserMockData
             GenderId = 1,
             RoleId = 3,
             FirstName = "Minh",
-            LastName = "Thành Teacher",
+            LastName = " Teacher",
             Avatar = null,
             MobilePhone = "0985563542",
             Email = "thanhnmhe141011@fpt.personal.edu.vn",
@@ -154,7 +154,7 @@ public static class UserMockData
             GenderId = 1,
             RoleId = 4,
             FirstName = "Minh",
-            LastName = "Thinh Student ",
+            LastName = " Student ",
             Avatar = null,
             MobilePhone = "0985563545",
             Email = "thanhnm_student001@fpt.personal.edu.vn",
@@ -190,7 +190,7 @@ public static class UserMockData
             UpdatedAt = DateTime.Now,
             IsActive = true
         },
-        new User  // TEACHER
+        new User // TEACHER
         {
             Id = 9,
             ProvinceId = 1,
@@ -200,7 +200,7 @@ public static class UserMockData
             GenderId = 1,
             RoleId = 3,
             FirstName = "Minh",
-            LastName = "Thành Teacher",
+            LastName = " Teacher",
             Avatar = null,
             MobilePhone = "0985563547",
             Email = "teacher9@fpt.personal.edu.vn",
@@ -212,6 +212,52 @@ public static class UserMockData
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             IsActive = true,
+        },
+        new User // SRO center 2
+        {
+            Id = 10,
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            CenterId = 2,
+            GenderId = 1,
+            RoleId = 2,
+            FirstName = "Minh",
+            LastName = " SRO",
+            Avatar = null,
+            MobilePhone = "0985563548",
+            Email = "sro2@gmail.personal.com",
+            EmailOrganization = "sro2@gmail.org.com",
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "123456788",
+            CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+            IsActive = true
+        },
+        new User // Teacher center 2
+        {
+            Id = 11,
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            CenterId = 2,
+            GenderId = 1,
+            RoleId = 3,
+            FirstName = "Minh",
+            LastName = " Teacher",
+            Avatar = null,
+            MobilePhone = "0985563549",
+            Email = "teacher2@gmail.personal.com",
+            EmailOrganization = "teacher@gmail.org.com",
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "123456789",
+            CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+            IsActive = true
         },
     };
 }

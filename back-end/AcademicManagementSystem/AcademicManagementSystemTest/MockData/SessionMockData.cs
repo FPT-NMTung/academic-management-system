@@ -61,60 +61,115 @@ public static class SessionMockData
             StartTime = new TimeSpan(8,0,0),
             EndTime = new TimeSpan(12,0,0)
         },
-        // new Session()
-        // {
-        //     Id = 6,
-        //     ClassScheduleId = 2,
-        //     SessionTypeId = 1,
-        //     RoomId = 1,
-        //     Title = "Session 1",
-        //     LearningDate = DateTime.Today.AddYears(1).AddDays(1),
-        //     StartTime = new TimeSpan(8,0,0),
-        //     EndTime = new TimeSpan(12,0,0)
-        // },
-        // new Session()
-        // {
-        //     Id = 7,
-        //     ClassScheduleId = 2,
-        //     SessionTypeId = 1,
-        //     RoomId = 1,
-        //     Title = "Session 2",
-        //     LearningDate = DateTime.Today.AddYears(1).AddDays(2),
-        //     StartTime = new TimeSpan(8,0,0),
-        //     EndTime = new TimeSpan(12,0,0)
-        // },
-        // new Session()
-        // {
-        //     Id = 8,
-        //     ClassScheduleId = 2,
-        //     SessionTypeId = 1,
-        //     RoomId = 1,
-        //     Title = "Session 3",
-        //     LearningDate = DateTime.Today.AddYears(1).AddDays(3),
-        //     StartTime = new TimeSpan(8,0,0),
-        //     EndTime = new TimeSpan(12,0,0)
-        // },
-        // new Session()
-        // {
-        //     Id = 9,
-        //     ClassScheduleId = 2,
-        //     SessionTypeId = 1,
-        //     RoomId = 1,
-        //     Title = "Session 4",
-        //     LearningDate = DateTime.Today.AddYears(1).AddDays(4),
-        //     StartTime = new TimeSpan(8,0,0),
-        //     EndTime = new TimeSpan(12,0,0)
-        // },
-        // new Session()
-        // {
-        //     Id = 10,
-        //     ClassScheduleId = 2,
-        //     SessionTypeId = 1,
-        //     RoomId = 1,
-        //     Title = "Session 5",
-        //     LearningDate = DateTime.Today.AddYears(1).AddDays(5),
-        //     StartTime = new TimeSpan(8,0,0),
-        //     EndTime = new TimeSpan(12,0,0)
-        // },
+        new Session()
+        {
+            Id = 6,
+            ClassScheduleId = 2,
+            SessionTypeId = 1,
+            RoomId = 1,
+            Title = "Session 1",
+            LearningDate = DateTime.Today.AddYears(2).AddDays(1),
+            StartTime = new TimeSpan(8,0,0),
+            EndTime = new TimeSpan(12,0,0)
+        },
+        new Session()
+        {
+            Id = 7,
+            ClassScheduleId = 2,
+            SessionTypeId = 1,
+            RoomId = 1,
+            Title = "Session 2",
+            LearningDate = DateTime.Today.AddYears(2).AddDays(2),
+            StartTime = new TimeSpan(8,0,0),
+            EndTime = new TimeSpan(12,0,0)
+        },
+        new Session()
+        {
+            Id = 8,
+            ClassScheduleId = 2,
+            SessionTypeId = 1,
+            RoomId = 1,
+            Title = "Session 3",
+            LearningDate = DateTime.Today.AddYears(2).AddDays(3),
+            StartTime = new TimeSpan(8,0,0),
+            EndTime = new TimeSpan(12,0,0)
+        },
+        new Session()
+        {
+            Id = 9,
+            ClassScheduleId = 2,
+            SessionTypeId = 1,
+            RoomId = 1,
+            Title = "Session 4",
+            LearningDate = DateTime.Today.AddYears(2).AddDays(4),
+            StartTime = new TimeSpan(8,0,0),
+            EndTime = new TimeSpan(12,0,0)
+        },
+        new Session()
+        {
+            Id = 10,
+            ClassScheduleId = 2,
+            SessionTypeId = 1,
+            RoomId = 1,
+            Title = "Session 5",
+            LearningDate = DateTime.Today.AddYears(2).AddDays(5),
+            StartTime = new TimeSpan(8,0,0),
+            EndTime = new TimeSpan(12,0,0)
+        },
+        new Session()
+        {
+            Id = 11,
+            ClassScheduleId = 3,
+            SessionTypeId = 1,
+            RoomId = 1,
+            Title = "Session 1",
+            LearningDate = DateTime.Today.AddYears(3).AddDays(1),
+            StartTime = new TimeSpan(8,0,0),
+            EndTime = new TimeSpan(12,0,0)
+        },
+        new Session()
+        {
+            Id = 12,
+            ClassScheduleId = 3,
+            SessionTypeId = 1,
+            RoomId = 1,
+            Title = "Session 2",
+            LearningDate = DateTime.Today.AddYears(3).AddDays(2),
+            StartTime = new TimeSpan(8,0,0),
+            EndTime = new TimeSpan(12,0,0)
+        },
+        new Session()
+        {
+            Id = 13,
+            ClassScheduleId = 3,
+            SessionTypeId = 1,
+            RoomId = 1,
+            Title = "Session 3",
+            LearningDate = DateTime.Today.AddYears(3).AddDays(3),
+            StartTime = new TimeSpan(8,0,0),
+            EndTime = new TimeSpan(12,0,0)
+        },
+        new Session()
+        {
+            Id = 14,
+            ClassScheduleId = 3,
+            SessionTypeId = 1,
+            RoomId = 1,
+            Title = "Session 4",
+            LearningDate = DateTime.Today.AddYears(3).AddDays(4),
+            StartTime = new TimeSpan(8,0,0),
+            EndTime = new TimeSpan(12,0,0)
+        },
+        new Session()
+        {
+            Id = 15,
+            ClassScheduleId = 3,
+            SessionTypeId = 1,
+            RoomId = 1,
+            Title = "Session 5",
+            LearningDate = DateTime.Today.AddYears(3).AddDays(5),
+            StartTime = new TimeSpan(8,0,0),
+            EndTime = new TimeSpan(12,0,0)
+        },
     };
 }
