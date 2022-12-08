@@ -84,13 +84,15 @@ const Schedule = () => {
     console.log(body);
     FetchApi(UserStudentApis.getDetailSession, body, null, null)
       .then((res) => {
-        res.data.map((item) => {
-          setDetailLearningDate(item);
+        const data = res.data === null ? "" : res.data;
+        // res.data.map((item) => {
+        //   setDetailLearningDate(item);
 
-        });
+        // });
+        setDetailLearningDate(data);
       })
       .catch((err) => {
-        toast.error('Lỗi lấy chi tiết ngày học');
+        // toast.error('Lỗi lấy chi tiết ngày học');
       });
       // console.log( "sss" + detailLearningDate.title);
 
@@ -434,7 +436,7 @@ const Schedule = () => {
                   </Card>
                 </Grid>
               </Grid.Container>
-              {detailLearningDate !== "" && (
+              {detailLearningDate.is_taken_gpa === false && (
                 <Grid sm={2} css={{ marginTop: "24px", marginBottom: "12px" }}>
                   <Button
                     flat

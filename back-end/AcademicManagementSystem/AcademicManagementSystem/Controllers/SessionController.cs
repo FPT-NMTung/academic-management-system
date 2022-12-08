@@ -189,7 +189,7 @@ public class SessionController : ControllerBase
 
         if (session == null)
         {
-            return NotFound(CustomResponse.NotFound("Session not found for you"));
+            return Ok(CustomResponse.Ok("Session not found for you", null!));
         }
 
         var isGpaTaken = _context.GpaRecords

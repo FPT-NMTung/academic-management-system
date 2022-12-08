@@ -1,4 +1,4 @@
-import { Card, Grid, Loading, Spacer, Text } from '@nextui-org/react';
+import { Button, Card, Grid, Loading, Spacer, Text } from '@nextui-org/react';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useOutletContext, useParams } from 'react-router-dom';
@@ -15,6 +15,7 @@ const AttendanceDetail = () => {
   const [listSession, setListSession] = useState(undefined);
   const [loading, setLoading] = useState(true);
   const [selectSession, setSelectSession] = useState(undefined);
+  const [viewAttendance, setViewAttendance] = useState(false);
 
   const { id } = useParams();
   const [listData] = useOutletContext();
@@ -36,7 +37,7 @@ const AttendanceDetail = () => {
   };
 
   const handleCloseViewAttendance = () => {
-    // setViewAttendance(false);
+    setViewAttendance(false);
   };
 
   return (
@@ -48,13 +49,13 @@ const AttendanceDetail = () => {
           onClose={handleCloseModalAttendance}
         />
       )}
-      {/* {viewAttendance && (
+      {viewAttendance && (
         <ViewAllAttendance
           open={viewAttendance}
-          scheduleId={dataSchedule.id}
+          scheduleId={id}
           onClose={handleCloseViewAttendance}
         />
-      )} */}
+      )}
       <Card
         variant="bordered"
         css={{
@@ -79,6 +80,14 @@ const AttendanceDetail = () => {
               }
             </b>
           </Text>
+          <Button
+            flat
+            color={'warning'}
+            size={'sm'}
+            onPress={() => setViewAttendance(true)}
+          >
+            Xem điểm danh
+          </Button>
         </Card.Header>
         <Card.Body>
           {loading && <Loading />}
@@ -99,7 +108,7 @@ const AttendanceDetail = () => {
                       <Card
                         variant="bordered"
                         isPressable={
-                          moment(data.learning_date).add(1, 'days').toDate() -
+                          moment(data.learning_date).toDate() -
                             moment().toDate() <
                           0
                         }

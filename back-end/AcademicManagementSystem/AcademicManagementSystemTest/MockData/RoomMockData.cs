@@ -26,7 +26,7 @@ public static class RoomMockData
         {
             Id = 3,
             CenterId = 1,
-            RoomTypeId = 1,
+            RoomTypeId = 2,
             Name = "Room 3",
             Capacity = 20
         }
