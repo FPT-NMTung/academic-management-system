@@ -187,8 +187,8 @@ const AttendanceScreen = () => {
                 <Table.Column css={{ textAlign: "center" }} width={130}>
                   Ngày
                 </Table.Column>
-                <Table.Column css={{ textAlign: "center" }} width={80}>
-                  Nội dung
+                <Table.Column css={{ textAlign: "center" }} width={120}>
+                  Nội dung buổi học
                 </Table.Column>
                 <Table.Column width={100}>Phòng</Table.Column>
                 <Table.Column width={100}>Giáo viên</Table.Column>
@@ -211,7 +211,7 @@ const AttendanceScreen = () => {
                       <Badge color="secondary">
                         {/* {moment(item?.start_time, "HH:mm:ss").format("H:mm")}-{" "}
                         {moment(item?.end_time, "HH:mm:ss").format("H:mm")} */}
-                        {item.title}
+                        {item.session_type.value}
                       </Badge>
                     </Table.Cell>
                     <Table.Cell>{item.room.name}</Table.Cell>
