@@ -18,6 +18,8 @@ public class SessionController : ControllerBase
 {
     private readonly AmsContext _context;
     private readonly IUserService _userService;
+    private const int SessionTypeTheoryExam = 3;
+    private const int SessionTypePracticalExam = 4;
 
     public SessionController(AmsContext context, IUserService userService)
     {
@@ -95,6 +97,75 @@ public class SessionController : ControllerBase
 
         return Ok(CustomResponse.Ok("Student get session with learning date successfully", sessions));
     }
+    
+    // get dates that have session(s) teach by teacher 
+    [HttpGet]
+    [Route("api/sessions/teachers")]
+    [Authorize(Roles = "teacher")]
+    public IActionResult GetSessionsOfTeacher()
+    {
+        var userId = Convert.ToInt32(_userService.GetUserId());
+
+        // get all session that this student has learn and in current class (IsActive)
+        var dates = _context.Sessions
+            .Include(s => s.ClassSchedule)
+            .Include(s => s.ClassSchedule.Class)
+            // except session type exams
+            .Where(s => s.ClassSchedule.TeacherId == userId &&
+                        s.SessionTypeId != SessionTypeTheoryExam && s.SessionTypeId != SessionTypePracticalExam)
+            .OrderBy(s => s.LearningDate.Date)
+            .Select(s => s.LearningDate.Date).Distinct();
+
+        return Ok(CustomResponse.Ok("Teacher get dates that have session(s) teach by this teacher successfully", dates));
+    }
+    
+    [HttpPost]
+    [Route("api/sessions/detail/teachers-get")]
+    [Authorize(Roles = "teacher")]
+    public IActionResult GetSessionsDetailOfTeacher([FromBody] DetailSessionForTeacherRequest request)
+    {
+        var userId = Convert.ToInt32(_userService.GetUserId());
+
+        var sessions = _context.Sessions
+            .Include(s => s.ClassSchedule)
+            .Include(s => s.ClassSchedule.Class)
+            .Include(s => s.ClassSchedule.Module)
+            .Include(s => s.Room)
+            .Include(s => s.SessionType)
+            .Where(s => s.LearningDate.Date == request.TeachDate.Date &&
+                        s.ClassSchedule.TeacherId == userId &&
+                        s.SessionTypeId != SessionTypeTheoryExam && s.SessionTypeId != SessionTypePracticalExam)
+            .Select(s => new DetailSessionForTeacherResponse()
+            {
+                Class = new BasicClassResponse()
+                {
+                    Id = s.ClassSchedule.Class.Id,
+                    Name = s.ClassSchedule.Class.Name,
+                },
+                Module = new BasicModuleResponse()
+                {
+                    Id = s.ClassSchedule.Module.Id,
+                    Name = s.ClassSchedule.Module.ModuleName,
+                },
+                SessionId = s.Id,
+                SessionTitle = s.Title,
+                StartTime = s.StartTime,
+                EndTime = s.EndTime,
+                SessionType = new SessionTypeResponse()
+                {
+                    Id = s.SessionType.Id,
+                    Value = s.SessionType.Value
+                },
+                Room = new BasicRoomResponse()
+                {
+                    Id = s.Room.Id,
+                    Name = s.Room.Name
+                }
+            });
+
+        return Ok(CustomResponse.Ok("Teacher Get sessions detail successfully", sessions));
+    }
+    
 
     [HttpPost]
     [Route("api/sessions/detail/students/get")]
@@ -204,13 +275,14 @@ public class SessionController : ControllerBase
                        && gr.SessionId == session.Id
                        && gr.StudentId == userId);
 
-        if (session.LearningDate.Date > DateTime.Today)
+        if (session.LearningDate.Date > DateTime.Today || isGpaTaken)
         {
-            session.IsTakenGpa = false;
+            session.CanTakeGpa = false;
         }
-        else
+        
+        if(session.LearningDate <= DateTime.Today && !isGpaTaken)
         {
-            session.IsTakenGpa = isGpaTaken;
+            session.CanTakeGpa = true;
         }
 
         return Ok(CustomResponse.Ok("Student get detail session successfully", session));
