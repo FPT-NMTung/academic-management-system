@@ -14,12 +14,14 @@ const ViewGrade = ({ dataModule, dataSchedule, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [columns, setColumns] = useState([]);
 
+  console.log(dataModule);
+
   const { id, moduleId } = useParams();
 
   useEffect(() => {
     setData([]);
     setColumns([]);
-  }, [id, moduleId])
+  }, [id, moduleId]);
 
   useEffect(() => {
     setLoading(true);
@@ -28,6 +30,7 @@ const ViewGrade = ({ dataModule, dataSchedule, onSuccess }) => {
       String(moduleId),
     ])
       .then((res) => {
+        console.log(res);
         const temp = res.data[0].students[0].grade_categories.map((item) => {
           if (item.grade_items.length === 1) {
             return {
@@ -39,7 +42,20 @@ const ViewGrade = ({ dataModule, dataSchedule, onSuccess }) => {
               editable: true,
               render: (source, t) => {
                 console.log(t);
-                return <CustomInput data={t} defaultValue={source} />;
+                return (
+                  <CustomInput
+                    max={
+                      item.id === 5 || item.id === 7
+                        ? dataModule.max_practical_grade
+                        : item.id === 6 || item.id === 8
+                        ? dataModule.max_theory_grade
+                        : 10
+                    }
+                    min={0}
+                    data={t}
+                    defaultValue={source}
+                  />
+                );
               },
             };
           }
@@ -55,7 +71,20 @@ const ViewGrade = ({ dataModule, dataSchedule, onSuccess }) => {
                 align: 'center',
                 editable: true,
                 render: (source, t) => {
-                  return <CustomInput data={t} defaultValue={source} />;
+                  return (
+                    <CustomInput
+                      max={
+                        item.id === 5 || item.id === 7
+                          ? dataModule.max_practical_grade
+                          : item.id === 6 || item.id === 8
+                          ? dataModule.max_theory_grade
+                          : 10
+                      }
+                      min={0}
+                      data={t}
+                      defaultValue={source}
+                    />
+                  );
                 },
               };
             }),
@@ -101,8 +130,8 @@ const ViewGrade = ({ dataModule, dataSchedule, onSuccess }) => {
 
           item.grade_categories.forEach((item1) => {
             item1.grade_items.forEach((item2) => {
-              a[item2.id] = { 
-                grade: item2.grade, 
+              a[item2.id] = {
+                grade: item2.grade,
                 user_id: item.user_id,
                 grade_item_id: item2.id,
               };

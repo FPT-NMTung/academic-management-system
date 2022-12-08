@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom';
 import FetchApi from '../../apis/FetchApi';
 import { GradeStudentApis } from '../../apis/ListApi';
 
-const CustomInput = ({ defaultValue: defaultGrade, data }) => {
+const CustomInput = ({ defaultValue: defaultGrade, data, max, min }) => {
   const [form] = Form.useForm();
   const { id, moduleId } = useParams();
 
@@ -51,11 +51,11 @@ const CustomInput = ({ defaultValue: defaultGrade, data }) => {
               }
 
               const number = Number.parseFloat(value);
-              if (number > 100) {
+              if (number > max) {
                 return Promise.reject('Không hợp lệ');
               }
 
-              if (number < 0) {
+              if (number < min) {
                 return Promise.reject('Không hợp lệ');
               }
 
