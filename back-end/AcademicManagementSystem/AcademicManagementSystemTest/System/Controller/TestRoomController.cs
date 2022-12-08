@@ -58,6 +58,7 @@ public class TestRoomController
     {
         // act
         var result = _controller.GetRoomsBySro();
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<OkObjectResult>(result);
@@ -85,6 +86,7 @@ public class TestRoomController
 
         // act
         var result = _controller.GetRoomsByCenterId(centerId);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<OkObjectResult>(result);
