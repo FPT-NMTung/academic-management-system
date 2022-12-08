@@ -29,12 +29,14 @@ public class StudentController : ControllerBase
     private readonly User _user;
     private const int RoleIdStudent = 4;
     private const int MaxNumberStudentInClass = 100;
+    private readonly IUserService _userService;
 
     public StudentController(AmsContext context, IUserService userService)
     {
         _context = context;
         var userId = Convert.ToInt32(userService.GetUserId());
         _user = _context.Users.FirstOrDefault(u => u.Id == userId)!;
+        _userService = userService;
     }
 
     // get all students
