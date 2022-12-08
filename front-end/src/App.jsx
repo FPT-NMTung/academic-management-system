@@ -62,7 +62,7 @@ const App = () => {
 
       {/* Routers for role teacher */}
       <Route path={'/teacher'} element={<ThirdLayout><RequireAuth role={'teacher'} /></ThirdLayout>}>
-        <Route index element={<Navigate to="/teacher/attendance" />} />
+        <Route index element={<Navigate to="/teacher/schedule" />} />
         <Route path="/teacher/attendance" element={<Attendance />} >
           <Route index element={<AttendanceDetailEmpty />} />
           <Route path="/teacher/attendance/:id" element={<AttendanceDetail />} />

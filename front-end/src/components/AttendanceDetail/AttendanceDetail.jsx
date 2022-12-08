@@ -81,6 +81,17 @@ const AttendanceDetail = () => {
             </b>
           </Text>
           <Button
+            auto
+            flat
+            color={'primary'}
+            size={'sm'}
+            // onPress={() => setViewAttendance(true)}
+          >
+            Cập nhật điểm
+          </Button>
+          <Spacer x={0.5} />
+          <Button
+            auto
             flat
             color={'warning'}
             size={'sm'}
@@ -98,13 +109,17 @@ const AttendanceDetail = () => {
                   (a, b) =>
                     new Date(a.learning_date) - new Date(b.learning_date)
                 )
-                .map((data, index) => {                  
+                .map((data, index) => {
                   return (
                     <Grid key={index} xs={2}>
                       <Card
-                        variant={moment(data.learning_date).toDate() -
-                          moment().toDate() <
-                        0 ? 'bordered' : 'flat'}
+                        variant={
+                          moment(data.learning_date).toDate() -
+                            moment().toDate() <
+                          0
+                            ? 'bordered'
+                            : 'flat'
+                        }
                         isPressable={
                           moment(data.learning_date).toDate() -
                             moment().toDate() <

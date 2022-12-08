@@ -15,6 +15,7 @@ import { IoPeopleSharp } from 'react-icons/io5';
 import { HiUserCircle, HiCheckCircle, HiCalendar } from 'react-icons/hi';
 import { RiShutDownLine, RiMedalFill } from 'react-icons/ri';
 import { TiWarning } from 'react-icons/ti';
+import { SiGoogleclassroom } from 'react-icons/si';
 
 import {
   MdMeetingRoom,
@@ -105,15 +106,15 @@ const menu = {
   teacher: [
     {
       key: '1',
-      label: 'Điểm danh',
-      icon: <MdManageAccounts size={16} />,
-      url: '/teacher/attendance',
-    },
-    {
-      key: '2',
       label: 'Lịch dạy',
       icon: <FaCalendarDay size={16} />,
       url: '/teacher/schedule',
+    },
+    {
+      key: '2',
+      label: 'Danh sách lớp đang dạy',
+      icon: <SiGoogleclassroom size={16} />,
+      url: '/teacher/attendance',
     },
   ],
   student: [
