@@ -145,13 +145,13 @@ public class SessionController : ControllerBase
                         Avatar = s.ClassSchedule.Class.StudentsClasses
                             .FirstOrDefault(sc => sc.StudentId == userId)!.Student.User.Avatar,
                     },
-                    
+
                     AttendanceStatus = s.Attendances.Select(a => new AttendanceStatusResponse()
                     {
                         Id = a.AttendanceStatus.Id,
                         Value = a.AttendanceStatus.Value
                     }).FirstOrDefault(),
-                    
+
                     Note = s.Attendances.FirstOrDefault(a => a.StudentId == userId)!.Note
                 },
                 Class = new BasicClassResponse()
@@ -185,7 +185,26 @@ public class SessionController : ControllerBase
                     },
                     IsActive = s.Room.IsActive
                 }
-            });
+            }).FirstOrDefault();
+
+        if (session == null)
+        {
+            return NotFound(CustomResponse.NotFound("Session not found for you"));
+        }
+
+        var isGpaTaken = _context.GpaRecords
+            .Include(gr => gr.Class)
+            .Include(gr => gr.Module)
+            .Include(gr => gr.Teacher)
+            .Include(gr => gr.Session)
+            .Include(gr => gr.Student)
+            .Any(gr => gr.ClassId == session.Class.Id
+                       && gr.ModuleId == session.Module.Id
+                       && gr.TeacherId == session.Teacher.Id
+                       && gr.SessionId == session.Id
+                       && gr.StudentId == userId);
+
+        session.IsTakenGpa = isGpaTaken;
 
         return Ok(CustomResponse.Ok("Student get detail session successfully", session));
     }

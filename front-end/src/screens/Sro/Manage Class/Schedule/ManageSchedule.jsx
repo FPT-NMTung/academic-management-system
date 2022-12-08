@@ -45,7 +45,7 @@ const ManageSchedule = () => {
   const [dataClass, setDataClass] = useState(undefined);
   const [listModule, setListModule] = useState(undefined);
 
-  const { id } = useParams();
+  const { id, moduleId } = useParams();
   const navigate = useNavigate();
 
   const getInformationClass = () => {
@@ -61,16 +61,24 @@ const ManageSchedule = () => {
   const getListModule = () => {
     FetchApi(ManageClassApis.getAllModulesOfClass, null, null, [String(id)])
       .then((res) => {
-        const listHasSchedule = res.data.filter((item) => {
-          return item.status === true;
-        }).sort((a, b) => {
-          return new Date(a.schedule_start_time) - new Date(b.schedule_start_time);
-        });
-        const listNotSchedule = res.data.filter((item) => {
-          return item.status === false;
-        }).sort((a, b) => {
-          return new Date(a.module.created_at) - new Date(b.module.created_at);
-        });
+        const listHasSchedule = res.data
+          .filter((item) => {
+            return item.status === true;
+          })
+          .sort((a, b) => {
+            return (
+              new Date(a.schedule_start_time) - new Date(b.schedule_start_time)
+            );
+          });
+        const listNotSchedule = res.data
+          .filter((item) => {
+            return item.status === false;
+          })
+          .sort((a, b) => {
+            return (
+              new Date(a.module.created_at) - new Date(b.module.created_at)
+            );
+          });
 
         setListModule([...listHasSchedule, ...listNotSchedule]);
       })
@@ -81,7 +89,7 @@ const ManageSchedule = () => {
 
   const handleUpdateListCourse = () => {
     getListModule();
-  }
+  };
 
   useEffect(() => {
     getInformationClass();
@@ -167,7 +175,7 @@ const ManageSchedule = () => {
                       >
                         <Text
                           p
-                          b={item.status}
+                          b={moduleId === String(item.module.id)}
                           color={item.status ? 'green' : 'black'}
                           size={14}
                         >
@@ -188,7 +196,7 @@ const ManageSchedule = () => {
           height: 'fit-content',
         }}
       >
-        <Outlet context={[handleUpdateListCourse]}/>
+        <Outlet context={[handleUpdateListCourse]} />
       </Grid>
     </Grid.Container>
   );

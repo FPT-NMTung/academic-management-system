@@ -23,6 +23,9 @@ public class DetailSessionForStudentResponse
     [JsonPropertyName("end_time")]
     public TimeSpan EndTime { get; set; }
     
+    [JsonPropertyName("is_taken_gpa")]
+    public bool IsTakenGpa { get; set; }
+    
     [JsonPropertyName("session_type")]
     public SessionTypeResponse SessionType { get; set; }
     
