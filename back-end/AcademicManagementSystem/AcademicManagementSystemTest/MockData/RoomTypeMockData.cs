@@ -8,10 +8,12 @@ public static class RoomTypeMockData
     {
         new RoomType
         {
+            Id = 1,
             Value = "Theory"
         },
         new RoomType
         {
+            Id = 2,
             Value = "Practical"
         }
     };

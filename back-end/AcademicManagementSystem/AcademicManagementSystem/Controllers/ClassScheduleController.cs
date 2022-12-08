@@ -492,10 +492,9 @@ public class ClassScheduleController : ControllerBase
             return NotFound(CustomResponse.NotFound("Class not found"));
         }
 
-        var isDraftStudent =
-            _context.StudentsClasses.Any(sc => sc.ClassId == classContext.Id && sc.Student.IsDraft);
-
-        if (isDraftStudent)
+        // check class have any active student
+        var isActiveStudent = _context.StudentsClasses.Any(sc => sc.ClassId == classContext.Id && sc.IsActive);
+        if (!isActiveStudent)
         {
             var error = ErrorDescription.Error["E0094"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -590,7 +589,7 @@ public class ClassScheduleController : ControllerBase
                 var session = new Session
                 {
                     SessionTypeId = Theory,
-                    Title = module.ModuleName + " - T" + i,
+                    Title =  "Slot " + i,
                     LearningDate = learningDate,
                     StartTime = request.ClassHourStart,
                     EndTime = request.ClassHourEnd,
@@ -599,27 +598,23 @@ public class ClassScheduleController : ControllerBase
                 if (module.ModuleType == 1)
                 {
                     session.SessionTypeId = Theory;
-                    session.Title = module.ModuleName + " - T" + i;
                     session.RoomId = (int)request.TheoryRoomId!;
                 }
 
                 if (module.ModuleType == 2)
                 {
                     session.SessionTypeId = Practice;
-                    session.Title = module.ModuleName + " - P" + i;
                     session.RoomId = (int)request.LabRoomId!;
                 }
 
                 if (module.ModuleType == 3 && practiceSessions.Any(practice => practice == i))
                 {
                     session.SessionTypeId = Practice;
-                    session.Title = module.ModuleName + " - P" + i;
                     session.RoomId = (int)request.LabRoomId!;
                 }
                 else if (module.ModuleType == 3 && practiceSessions.All(practice => practice != i))
                 {
                     session.SessionTypeId = Theory;
-                    session.Title = module.ModuleName + " - T" + i;
                     session.RoomId = (int)request.TheoryRoomId!;
                 }
 
@@ -641,11 +636,12 @@ public class ClassScheduleController : ControllerBase
             {
                 if (IsValidLearningDate(request, learningDate, globalDayOff, false))
                 {
+                    i++;
                     var session = new Session
                     {
                         SessionTypeId = TheoryExam,
                         RoomId = (int)request.ExamRoomId!,
-                        Title = module.ModuleName + " - TheoryExam",
+                        Title = "Slot " + i,
                         LearningDate = learningDate,
                         StartTime = request.ClassHourStart + TimeSpan.FromHours(1),
                         EndTime = request.ClassHourStart + TimeSpan.FromHours(2),
@@ -667,11 +663,12 @@ public class ClassScheduleController : ControllerBase
             {
                 if (IsValidLearningDate(request, learningDate, globalDayOff, false))
                 {
+                    i++;
                     var session = new Session
                     {
                         SessionTypeId = PracticeExam,
                         RoomId = (int)request.ExamRoomId!,
-                        Title = module.ModuleName + " - PracticeExam",
+                        Title = "Slot " + i,
                         LearningDate = learningDate,
                         StartTime = request.ClassHourStart + TimeSpan.FromHours(1),
                         EndTime = request.ClassHourStart + TimeSpan.FromHours(2.5),
@@ -827,7 +824,7 @@ public class ClassScheduleController : ControllerBase
                 var session = new Session
                 {
                     SessionTypeId = Theory,
-                    Title = module.ModuleName + " - T" + i,
+                    Title = "Slot " + i,
                     LearningDate = learningDate,
                     StartTime = request.ClassHourStart,
                     EndTime = request.ClassHourEnd,
@@ -836,27 +833,23 @@ public class ClassScheduleController : ControllerBase
                 if (module.ModuleType == 1)
                 {
                     session.SessionTypeId = Theory;
-                    session.Title = module.ModuleName + " - T" + i;
                     session.RoomId = (int)request.TheoryRoomId!;
                 }
 
                 if (module.ModuleType == 2)
                 {
                     session.SessionTypeId = Practice;
-                    session.Title = module.ModuleName + " - P" + i;
                     session.RoomId = (int)request.LabRoomId!;
                 }
 
                 if (module.ModuleType == 3 && practiceSessions.Any(practice => practice == i))
                 {
                     session.SessionTypeId = Practice;
-                    session.Title = module.ModuleName + " - P" + i;
                     session.RoomId = (int)request.LabRoomId!;
                 }
                 else if (module.ModuleType == 3 && practiceSessions.All(practice => practice != i))
                 {
                     session.SessionTypeId = Theory;
-                    session.Title = module.ModuleName + " - T" + i;
                     session.RoomId = (int)request.TheoryRoomId!;
                 }
 
@@ -877,11 +870,12 @@ public class ClassScheduleController : ControllerBase
             {
                 if (IsValidLearningDate(request, learningDate, globalDayOff, false))
                 {
+                    i++;
                     var session = new Session
                     {
                         SessionTypeId = TheoryExam,
                         RoomId = (int)request.ExamRoomId!,
-                        Title = module.ModuleName + " - TheoryExam",
+                        Title = "Slot " + i,
                         LearningDate = learningDate,
                         StartTime = request.ClassHourStart + TimeSpan.FromHours(1),
                         EndTime = request.ClassHourStart + TimeSpan.FromHours(2),
@@ -904,11 +898,12 @@ public class ClassScheduleController : ControllerBase
             {
                 if (IsValidLearningDate(request, learningDate, globalDayOff, false))
                 {
+                    i++;
                     var session = new Session
                     {
                         SessionTypeId = PracticeExam,
                         RoomId = (int)request.ExamRoomId!,
-                        Title = module.ModuleName + " - PracticeExam",
+                        Title = "Slot " + i,
                         LearningDate = learningDate,
                         StartTime = request.ClassHourStart + TimeSpan.FromHours(1),
                         EndTime = request.ClassHourStart + TimeSpan.FromHours(2.5),
@@ -990,6 +985,7 @@ public class ClassScheduleController : ControllerBase
         classScheduleContext.ExamRoomId = request.ExamRoomId;
         classScheduleContext.StartDate = oldSessions.First().LearningDate.Date;
         classScheduleContext.EndDate = endDate;
+        classScheduleContext.Duration = request.Duration;
         classScheduleContext.Note = request.Note;
         classScheduleContext.ClassHourStart = request.ClassHourStart;
         classScheduleContext.ClassHourEnd = request.ClassHourEnd;

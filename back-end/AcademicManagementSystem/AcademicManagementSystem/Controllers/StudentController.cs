@@ -725,6 +725,35 @@ public class StudentController : ControllerBase
 
         return Ok(CustomResponse.Ok("Student changed class successfully", studentResponse));
     }
+    
+    // change active student
+    [HttpPatch]
+    [Route("api/students/{id:int}/change-active")]
+    [Authorize(Roles = "admin")]
+    public IActionResult ChangeActivateStudent(int id)
+    {
+        var student = _context.Students
+            .Include(s => s.User)
+            .FirstOrDefault(s => s.UserId == id);
+        if (student == null)
+        {
+            return NotFound(CustomResponse.NotFound("Not Found Student with id " + id));
+        }
+
+        try
+        {
+            student.User.IsActive = !student.User.IsActive;
+            student.User.UpdatedAt = DateTime.Now;
+            _context.SaveChanges();
+        }
+        catch (Exception)
+        {
+            var error = ErrorDescription.Error["E1151"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        return Ok(CustomResponse.Ok("Change active student successfully", null!));
+    }
 
     private List<StudentResponse> GetStudentsInThisCenterByContext()
     {

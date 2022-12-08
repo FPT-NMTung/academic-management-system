@@ -8,6 +8,7 @@ public static class RoomMockData
     {
         new Room()
         {
+            Id = 1,
             CenterId = 1,
             RoomTypeId = 1,
             Name = "Room 1",
@@ -15,6 +16,7 @@ public static class RoomMockData
         },
         new Room()
         {
+            Id = 2,
             CenterId = 2,
             RoomTypeId = 2,
             Name = "Room 2",
@@ -22,8 +24,9 @@ public static class RoomMockData
         },
         new Room()
         {
+            Id = 3,
             CenterId = 1,
-            RoomTypeId = 1,
+            RoomTypeId = 2,
             Name = "Room 3",
             Capacity = 20
         }

@@ -210,6 +210,9 @@ public static class ErrorDescription
         { "E1133", new ErrorModel() { Message = "Total number of students in both class is more than 100", Type = "class-error-0079" } },
         { "E1134", new ErrorModel() { Message = "There is no student in first class", Type = "class-error-0080" } },
         { "E1135", new ErrorModel() { Message = "There is no student in second class", Type = "class-error-0081" } },
+        { "E0076_1", new ErrorModel() { Message = "Not found course family", Type = "class-error-0082" } },
+        { "E0076_2", new ErrorModel() { Message = "At year of start date of this class, course family is not published yet", Type = "class-error-0083" } },
+        { "E0076_3", new ErrorModel() { Message = "Course family is not active", Type = "class-error-0084" } },
 
         // student class
         { "E1069", new ErrorModel() { Message = "Fail to SaveChange when import Students to class by excel", Type = "student-class-error-0001" } },
@@ -273,6 +276,7 @@ public static class ErrorDescription
         { "E1127", new ErrorModel() { Message = "New class already had 100 students", Type = "student-error-0043" } },
         { "E1129", new ErrorModel() { Message = "Birthday must less than Now", Type = "student-error-0044" } },
         { "E1136", new ErrorModel() { Message = "Identity card must less than Now", Type = "student-error-0045" } },
+        { "E1151", new ErrorModel() { Message = "SaveChanges fails when change active student", Type = "student-error-0046" } },
 
         // class schedule
         { "E0077", new ErrorModel() { Message = "Module Not For This Class", Type = "class-schedule-error-0001" } },
@@ -296,7 +300,7 @@ public static class ErrorDescription
         { "E0091", new ErrorModel() { Message = "Lab Room Busy", Type = "class-schedule-error-0015" } },
         { "E0092", new ErrorModel() { Message = "Exam Room Busy", Type = "class-schedule-error-0016" } },
         { "E0093", new ErrorModel() { Message = "Teacher Busy", Type = "class-schedule-error-0017" } },
-        { "E0094", new ErrorModel() { Message = "Class not ready to add schedule", Type = "class-schedule-error-0018" } },
+        { "E0094", new ErrorModel() { Message = "Class not have any active student", Type = "class-schedule-error-0018" } },
         { "E0095", new ErrorModel() { Message = "Learning time not match with working time id", Type = "class-schedule-error-0019" } },
         { "E0096", new ErrorModel() { Message = "Class schedule does not exist", Type = "class-schedule-error-0020" } },
         { "E0097", new ErrorModel() { Message = "This schedule not for this center", Type = "class-schedule-error-0021" } },
@@ -327,8 +331,8 @@ public static class ErrorDescription
         { "E2073", new ErrorModel() { Message = "Day off already exist", Type = "day-off-error-0006" } },
         
         // student grade (progress scores)
-        { "E0300", new ErrorModel() { Message = "Can't update before this module is learn and after 3 days of last session", Type = "student-grade-error-0000" } },
-        { "E0301", new ErrorModel() { Message = "Can't update before this module is learn and after 5 days of last session", Type = "student-grade-error-0001" } },
+        { "E0300", new ErrorModel() { Message = "Can't update before this module is learn and after last session", Type = "student-grade-error-0000" } },
+        { "E0301", new ErrorModel() { Message = "Can't update before this class schedule start", Type = "student-grade-error-0001" } },
         { "E0302", new ErrorModel() { Message = "Students in request must belong to this class (active and not draft)", Type = "student-grade-error-0002" } },
         { "E0303", new ErrorModel() { Message = "GradeItem in request must belong to this module", Type = "student-grade-error-0003" } },
         { "E0304", new ErrorModel() { Message = "Grade must in range [0-10]", Type = "student-grade-error-0004" } },
