@@ -204,6 +204,76 @@ public class GpaController : ControllerBase
         return Ok(CustomResponse.Ok("Request has been sent successfully", emailResult));
     }
 
+    // send email request gpa to student in 1 session
+    [HttpPost]
+    [Route("api/gpa/sessions/{sessionId:int}/request-email")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult SendEmailRequestGpaBySession(int sessionId)
+    {
+        // check class exists in center
+        var session = _context.Sessions
+            .Include(s => s.ClassSchedule)
+            .Include(s => s.ClassSchedule.Class)
+            .Include(s => s.ClassSchedule.Teacher)
+            .Include(s => s.ClassSchedule.Teacher.User)
+            .Include(s => s.ClassSchedule.Module)
+            .FirstOrDefault(s => s.Id == sessionId && s.ClassSchedule.Class.CenterId == _user.CenterId);
+        if (session == null)
+        {
+            return NotFound(CustomResponse.NotFound("Session not found in center with id " + sessionId));
+        }
+
+        var classId = session.ClassSchedule.ClassId;
+        // get students in class
+        var students = GetAllStudentsByClassId(classId);
+        if (students.Count == 0)
+        {
+            return NotFound(CustomResponse.NotFound("No student found in class with id " + classId));
+        }
+
+        // get email of students
+        var emailsStudent = students.Select(s => s.EmailOrganization).ToList();
+        // teacher name
+        var teacherFirstName = session.ClassSchedule.Teacher.User.FirstName;
+        var teacherLastName = session.ClassSchedule.Teacher.User.LastName;
+        var teacherName = teacherFirstName + " " + teacherLastName;
+        // class name
+        var className = session.ClassSchedule.Class.Name;
+        // get learning date
+        var learningDate = session.LearningDate.ToString("dd/MM/yyyy");
+        // get module name
+        var moduleName = session.ClassSchedule.Module.ModuleName;
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        var connectionString = configuration.GetConnectionString("AzureEmailConnectionString");
+        var emailClient = new EmailClient(connectionString);
+        var emailContent =
+            new EmailContent("[QUAN TRỌNG] Yêu cầu lấy đánh giá về việc giảng dạy môn " + moduleName + ".") // subject
+            {
+                // content
+                PlainText = "Học viên lớp " + className +
+                            " hãy dành chút thời gian vào mục lịch học trên AMS, chọn buổi học ngày " +
+                            learningDate + ", sau đó thực hiện đánh giá việc giảng dạy của giảng viên " + teacherName +
+                            ".\n\n" +
+                            "Lưu ý: Đánh giá chỉ được thực hiện 1 lần duy nhất cho mỗi buổi học. " +
+                            "Do đó những ai đã thực hiện đánh giá có thể bỏ qua Email này."
+            };
+        var listEmail = new List<EmailAddress>();
+        foreach (var email in emailsStudent)
+        {
+            listEmail.Add(new EmailAddress(email));
+        }
+
+        var emailRecipients = new EmailRecipients(listEmail);
+        var emailMessage = new EmailMessage("ams-no-reply@nmtung.dev", emailContent, emailRecipients);
+        SendEmailResult emailResult = emailClient.Send(emailMessage, CancellationToken.None);
+
+        return Ok(CustomResponse.Ok("Request has been sent successfully", emailResult));
+    }
+
     // student take gpa teacher
     [HttpPost]
     [Route("api/gpa/forms/{formId:int}")]
