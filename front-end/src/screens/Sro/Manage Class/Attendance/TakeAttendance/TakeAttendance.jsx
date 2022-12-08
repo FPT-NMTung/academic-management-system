@@ -64,6 +64,8 @@ const TakeAttendance = ({ session, scheduleId, onClose }) => {
 
   useEffect(() => {
     getListAttendance();
+    console.log( "id lịch học" + String(scheduleId) + 'id tiết học ' + String(session.id) );
+   
   }, []);
 
   const handleChangeStatus = (record, status) => {

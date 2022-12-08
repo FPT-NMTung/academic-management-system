@@ -108,6 +108,12 @@ const menu = {
       icon: <MdManageAccounts size={16} />,
       url: '/teacher/attendance',
     },
+    {
+      key: '2',
+      label: 'Lịch dạy',
+      icon: <FaCalendarDay size={16} />,
+      url: '/teacher/schedule',
+    },
   ],
   student: [
     {
