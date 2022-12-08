@@ -1,10 +1,10 @@
 ﻿using AcademicManagementSystem.Context;
 using AcademicManagementSystem.Controllers;
 using AcademicManagementSystem.Models.UserController.SroController;
+using AcademicManagementSystemTest.Helper;
 using AcademicManagementSystemTest.MockData;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NuGet.Protocol;
 using Xunit.Abstractions;
 using UpdateSroRequest = AcademicManagementSystem.Models.UserController.SroController.UpdateSroRequest;
 
@@ -17,11 +17,11 @@ public class TestSroController
 {
     private readonly AmsContext _context;
     private readonly SroController _controller;
-    private readonly ITestOutputHelper _testOutputHelper;
+    private readonly TestOutputHelper _testOutputHelper;
 
-    public TestSroController(ITestOutputHelper testOutputHelper)
+    public TestSroController(ITestOutputHelper output)
     {
-        _testOutputHelper = testOutputHelper;
+        _testOutputHelper = new TestOutputHelper(output);
 
         var optionsInMemoryDb = new DbContextOptionsBuilder<AmsContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
@@ -71,18 +71,9 @@ public class TestSroController
         };
 
         // act 
-        // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
-
-
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
+        
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
@@ -111,15 +102,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -150,15 +134,8 @@ public class TestSroController
 
         // act 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -188,15 +165,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -226,15 +196,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -264,15 +227,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -302,15 +258,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -340,15 +289,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -378,15 +320,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -416,15 +351,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -454,15 +382,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -492,15 +413,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -530,15 +444,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -568,15 +475,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -606,15 +506,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -644,15 +537,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -682,15 +568,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -720,15 +599,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -758,15 +630,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -796,15 +661,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -834,15 +692,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -872,15 +723,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -910,15 +754,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -948,15 +785,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -986,15 +816,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.CreateSro(request) as OkObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustom;
-            var message = value?.Message;
-            var data = value?.Data;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(data.ToJson());
-        }
+        var result = _controller.CreateSro(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<OkObjectResult>(result);
@@ -1024,15 +847,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1062,15 +878,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1101,15 +910,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1139,15 +941,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1177,15 +972,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1215,15 +1003,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1253,15 +1034,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1291,15 +1065,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1319,7 +1086,7 @@ public class TestSroController
             DistrictId = 1,
             WardId = 1,
             GenderId = 1,
-            MobilePhone = "0985563540", // belong to user id 2
+            MobilePhone = "0985563540", // belong to another user
             Email = "thanhnm136@gmail.personal.com",
             EmailOrganization = "thanhnm136@gmail.org.com",
             Birthday = new DateTime(2000, 01, 01),
@@ -1329,15 +1096,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1367,15 +1127,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1405,15 +1158,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1443,15 +1189,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1481,15 +1220,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1510,7 +1242,7 @@ public class TestSroController
             WardId = 1,
             GenderId = 1,
             MobilePhone = "0985563541",
-            Email = "thanhnmhe141011@fpt.personal.edu.vn", // belong user id 4
+            Email = "thanhnmhe141011@fpt.personal.edu.vn", // belong another user
             EmailOrganization = "thanhnm136@gmail.org.com",
             Birthday = new DateTime(2000, 01, 01),
             CitizenIdentityCardNo = "123456781",
@@ -1519,16 +1251,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
-
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
@@ -1549,7 +1273,7 @@ public class TestSroController
             GenderId = 1,
             MobilePhone = "0985563541",
             Email = "thanhnm136@gmail.personal.com",
-            EmailOrganization = "nmthanh1306@gmail.personal.com", // belong user id 2
+            EmailOrganization = "nmthanh1306@gmail.personal.com", // belong to another user
             Birthday = new DateTime(2000, 01, 01),
             CitizenIdentityCardNo = "123456781",
             CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
@@ -1557,15 +1281,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1595,15 +1312,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1633,16 +1343,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
-
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
@@ -1671,15 +1373,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1703,21 +1398,14 @@ public class TestSroController
             Email = "thanhnm136@gmail.personal.com",
             EmailOrganization = "thanhnm136@gmail.org.com",
             Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "123456782", // belong to user id 4
+            CitizenIdentityCardNo = "123456782", // belong to another user
             CitizenIdentityCardPublishedDate = new DateTime(2019, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1747,15 +1435,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1785,15 +1466,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1823,15 +1497,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1861,15 +1528,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1899,15 +1559,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var message = value?.Message;
-            var type = value?.TypeError;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
         
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1937,15 +1590,8 @@ public class TestSroController
         };
 
         // act 
-        var result = _controller.UpdateSro(sroId, request) as OkObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustom;
-            var message = value?.Message;
-            var data = value?.Data;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(data.ToJson());
-        }
+        var result = _controller.UpdateSro(sroId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<OkObjectResult>(result);

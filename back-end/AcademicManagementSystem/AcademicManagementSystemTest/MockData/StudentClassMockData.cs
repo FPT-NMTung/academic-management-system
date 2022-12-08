@@ -17,7 +17,7 @@ public static class StudentClassMockData
         new StudentClass()
         {
             StudentId = 6,
-            ClassId = 2,
+            ClassId = 3,
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             IsActive = false // not in class anymore
@@ -25,7 +25,7 @@ public static class StudentClassMockData
         new StudentClass()
         {
             StudentId = 7,
-            ClassId = 1,
+            ClassId = 2,
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             IsActive = true

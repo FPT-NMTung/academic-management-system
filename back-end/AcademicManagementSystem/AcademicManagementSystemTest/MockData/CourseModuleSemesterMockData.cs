@@ -17,6 +17,12 @@ public static class CourseModuleSemesterMockData
             CourseCode = "COURSE CODE 1",
             ModuleId = 2,
             SemesterId = 1
+        },
+        new CourseModuleSemester()
+        {
+            CourseCode = "COURSE CODE 1",
+            ModuleId = 3,
+            SemesterId = 1
         }
     };
 }
