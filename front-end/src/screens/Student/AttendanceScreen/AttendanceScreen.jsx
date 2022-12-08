@@ -1,4 +1,4 @@
-import classes from "./GradeScreen.module.css";
+import classes from "./AttendanceScreen.module.css";
 import {
   Button,
   Card,
@@ -10,7 +10,17 @@ import {
   Spacer,
   Badge,
 } from "@nextui-org/react";
-import { Calendar, Select, Row, Col, Form, Input, Tree, Menu } from "antd";
+import {
+  Calendar,
+  Select,
+  Row,
+  Col,
+  Form,
+  Input,
+  Tree,
+  Menu,
+  Space,
+} from "antd";
 import { Fragment, useState } from "react";
 import moment from "moment";
 import "moment/locale/vi";
@@ -19,14 +29,12 @@ import toast from "react-hot-toast";
 import { MdDelete } from "react-icons/md";
 import { UserStudentApis } from "../../../apis/ListApi";
 import FetchApi from "../../../apis/FetchApi";
-import {
-  MdMenuBook,
-} from 'react-icons/md';
-import { ImLibrary } from 'react-icons/im';
+import { MdMenuBook } from "react-icons/md";
+import { ImLibrary } from "react-icons/im";
 import Item from "antd/lib/list/Item";
-const GradeScreen = () => {
+const AttendanceScreen = () => {
   const [listModuleSemester, setListModuleSemester] = useState([]);
-  const [listGrade, setListGrade] = useState([]);
+  const [listAttendance, setListAttendance] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   // const [isLoadingGrade, setIsLoadingGrade] = useState(true);
 
@@ -47,27 +55,34 @@ const GradeScreen = () => {
       });
   };
   const onSelectTree = (moduleid, classid) => {
-    setListGrade([]);
+    setListAttendance([]);
     // setIsLoadingGrade(false);
     console.log("selected module " + moduleid + "classid " + classid);
     // console.log(FetchApi(UserStudentApis.getGradesbyclass, null, null, [String(classid),String(moduleid)]));
-    FetchApi(UserStudentApis.getGradesbyclass, null, null, [
+    FetchApi(UserStudentApis.getAttendance, null, null, [
       String(classid),
       String(moduleid),
     ])
       .then((res) => {
-      
-
-        setListGrade(res.data);
-        console.log(listGrade.map((item) => item));
+        setListAttendance(res.data);
+        console.log(listAttendance);
         // console.log(listGrade.map((item) => item.name));
       })
       .catch((err) => {
         // toast.error("Lỗi khi tải điểm");
-        // console.log("loi vkl");
       });
   };
-
+  const renderAttendanceStatus = (id) => {
+    if (id === 1) {
+      return <Badge color="default">Chưa điểm danh</Badge>;
+    } else if (id === 2) {
+      return <Badge color="error">Vắng mặt</Badge>;
+    } else if (id === 3) {
+      return <Badge color="success">Đã điểm danh</Badge>;
+    } else {
+      return <Badge color="default">Chưa điểm danh</Badge>;
+    }
+  };
   useEffect(() => {
     getModuleSemester();
   }, []);
@@ -97,42 +112,14 @@ const GradeScreen = () => {
           </Card.Header>
           <Card.Divider />
           <Card.Body>
-            {/* {listModuleSemester.map((item, index) => (
-              <Fragment key={index}>
-                <Tree css={{ display: "block" }}>
-                  <Tree.TreeNode
-                    title={item.name}
-                    key={index + 1}
-                    rootStyle={{ width: "100%" }}
-                  >
-                    {item.modules.map((modules, index) => (
-                      <Tree.TreeNode
-                        title={modules.name + " ( " + modules.class.name + " )"}
-                        key={index + 2}
-                        rootStyle={{ width: "100%" }}
-                      ></Tree.TreeNode>
-                    ))}
-                  </Tree.TreeNode>
-                </Tree>
-              </Fragment>
-            ))} */}
-            {/* <Menu mode="inline">
-              
-              <Menu.SubMenu key="122"  title= "Học kỳ 1">
-                
-                <Menu.Item title="sssss" key="232323" onClick={() => onSelectTree(144, 53)}>
-                <span>Option 1</span>
-                </Menu.Item>
-              </Menu.SubMenu>
-            </Menu> */}
             {isLoading ? (
               <Loading />
             ) : (
               <div style={{ color: "black !important" }}>
-                <Menu 
-                mode="inline"
-                // defaultOpenKeys={["1"]}
-                style={{ width: "100%"}}
+                <Menu
+                  mode="inline"
+                  // defaultOpenKeys={["1"]}
+                  style={{ width: "100%" }}
                 >
                   {listModuleSemester.map((item, index) => (
                     <Fragment key={index}>
@@ -142,7 +129,6 @@ const GradeScreen = () => {
                         key={index + 1}
                         rootStyle={{ width: "100%" }}
                         icon={<ImLibrary />}
-                        
                       >
                         {item.modules.map((modules, index) => (
                           <Menu.Item
@@ -168,7 +154,7 @@ const GradeScreen = () => {
           </Card.Body>
         </Card>
       </Grid>
-      <Grid xs={5}>
+      <Grid xs={8}>
         <Card variant="bordered">
           <Card.Header>
             <Text
@@ -180,7 +166,7 @@ const GradeScreen = () => {
                 textAlign: "center",
               }}
             >
-              Bảng điểm 
+              Xem điểm danh
             </Text>
           </Card.Header>
           <Spacer y={0.6} />
@@ -197,40 +183,52 @@ const GradeScreen = () => {
               shadow={false}
             >
               <Table.Header>
-                <Table.Column width={200}>Loại điểm</Table.Column>
-                <Table.Column width={100}>Trọng số</Table.Column>
-                <Table.Column width={50}>Điểm</Table.Column>
-                <Table.Column width={80}>Chú thích</Table.Column>
+                <Table.Column width={50}>STT</Table.Column>
+                <Table.Column css={{ textAlign: "center" }} width={130}>
+                  Ngày
+                </Table.Column>
+                <Table.Column css={{ textAlign: "center" }} width={80}>
+                  Nội dung
+                </Table.Column>
+                <Table.Column width={100}>Phòng</Table.Column>
+                <Table.Column width={100}>Giáo viên</Table.Column>
+                <Table.Column>Lớp học</Table.Column>
+                <Table.Column css={{ textAlign: "center" }} width={100}>
+                  Trạng thái
+                </Table.Column>
+                <Table.Column>Chú thích</Table.Column>
               </Table.Header>
               <Table.Body>
-                {listGrade.map((item, index) => (
-                  <Table.Row key={index}>
-                    <Table.Cell>{item.grade_item.name}</Table.Cell>
+                {listAttendance.map((item, index) => (
+                  <Table.Row key={item.id}>
+                    <Table.Cell>{index + 1}</Table.Cell>
                     <Table.Cell>
-                    
-                        
-                      {item.total_weight ? 
-                        <Badge color = "warning">
-                     { Math.round((item.total_weight) / (item.quantity_grade_item) * 10) / 10 }
-                     % 
-                      </Badge> : ""} 
-                   
-                      </Table.Cell>
-                    {/* <Table.Cell b>{Math.round((item.grade_item?.grade) * 10) / 10}</Table.Cell> */}
-                    <Table.Cell b>{item.grade_item.grade ? Math.round((item.grade_item?.grade) * 10) / 10 : " "}</Table.Cell>
-
-
+                      <Badge color="primary">
+                        {moment(item.learning_date).format("ddd DD/MM/YYYY")}
+                      </Badge>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Badge color="secondary">
+                        {/* {moment(item?.start_time, "HH:mm:ss").format("H:mm")}-{" "}
+                        {moment(item?.end_time, "HH:mm:ss").format("H:mm")} */}
+                        {item.title}
+                      </Badge>
+                    </Table.Cell>
+                    <Table.Cell>{item.room.name}</Table.Cell>
+                    <Table.Cell>
+                      {item.teacher.first_name} {item.teacher.last_name}
+                    </Table.Cell>
+                    <Table.Cell>{item.class.name}</Table.Cell>
+                    <Table.Cell>
+                      {renderAttendanceStatus(item.attendance_status?.id)}
+                    </Table.Cell>
                     <Table.Cell css={{ color: "#f31260" }}>
-                    {item.grade_item?.comment}
+                      {item?.note}{" "}
                     </Table.Cell>
                   </Table.Row>
                 ))}
-
-               
               </Table.Body>
             </Table>
-         
-            
           </Card.Body>
         </Card>
       </Grid>
@@ -238,4 +236,4 @@ const GradeScreen = () => {
   );
 };
 
-export default GradeScreen;
+export default AttendanceScreen;
