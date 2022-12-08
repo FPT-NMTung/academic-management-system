@@ -27,6 +27,7 @@ public class ModuleController : ControllerBase
     private const int TheoryExam = 6;
     private const int PracticeExamResit = 7;
     private const int TheoryExamResit = 8;
+    private const int FinalProject = 9;
 
     public ModuleController(AmsContext context)
     {
@@ -951,12 +952,6 @@ public class ModuleController : ControllerBase
     private void AddDataToGradeCategoryModule(int moduleId, int examType)
     {
         DeleteDataGradeCategoryModuleAndItems(moduleId);
-        // no exam
-        if (examType == 4)
-        {
-            _context.SaveChanges();
-            return;
-        }
 
         var gradeItemNamePe = _context.GradeCategories.Find(PracticeExam)!.Name;
         var gradeItemNamePeResit = _context.GradeCategories.Find(PracticeExamResit)!.Name;
@@ -1039,6 +1034,24 @@ public class ModuleController : ControllerBase
                 _context.GradeCategoryModules.Add(gradeCategoryModuleTe);
                 _context.GradeCategoryModules.Add(gradeCategoryModuleTeResit);
                 break;
+            case 4: // no exam, add only final project
+                var gradeCategoryFinal = new GradeCategoryModule()
+                {
+                    ModuleId = moduleId,
+                    GradeCategoryId = FinalProject,
+                    TotalWeight = 100,
+                    QuantityGradeItem = 1,
+                    GradeItems = new List<GradeItem>()
+                    {
+                        new GradeItem()
+                        {
+                            Name = _context.GradeCategories.Find(FinalProject)!.Name,
+                        }
+                    }
+                };
+                _context.GradeCategoryModules.Add(gradeCategoryFinal);
+                _context.SaveChanges();
+                return;
         }
 
         _context.GradeCategoryModules.Add(gradeCategoryModule);

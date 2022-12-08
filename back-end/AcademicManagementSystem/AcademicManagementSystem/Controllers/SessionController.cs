@@ -189,7 +189,7 @@ public class SessionController : ControllerBase
 
         if (session == null)
         {
-            return NotFound(CustomResponse.NotFound("Session not found for you"));
+            return Ok(CustomResponse.Ok("Session not found for you", null!));
         }
 
         var isGpaTaken = _context.GpaRecords
@@ -204,7 +204,14 @@ public class SessionController : ControllerBase
                        && gr.SessionId == session.Id
                        && gr.StudentId == userId);
 
-        session.IsTakenGpa = isGpaTaken;
+        if (session.LearningDate.Date > DateTime.Today)
+        {
+            session.IsTakenGpa = false;
+        }
+        else
+        {
+            session.IsTakenGpa = isGpaTaken;
+        }
 
         return Ok(CustomResponse.Ok("Student get detail session successfully", session));
     }

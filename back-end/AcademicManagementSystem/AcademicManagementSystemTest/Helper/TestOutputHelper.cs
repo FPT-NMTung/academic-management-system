@@ -66,4 +66,11 @@ public class TestOutputHelper : ITestOutputHelper
             _output.WriteLine("Message: " + message);
         }
     }
+    
+    private static string RandomString()
+    {
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        return new string(Enumerable.Repeat(chars, 32)
+            .Select(s => s[new Random().Next(s.Length)]).ToArray());
+    }
 }
