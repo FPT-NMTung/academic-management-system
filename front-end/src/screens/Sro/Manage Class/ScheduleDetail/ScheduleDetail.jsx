@@ -373,8 +373,8 @@ const ScheduleDetail = () => {
                           return (
                             <Grid key={index} xs={2}>
                               <Card
-                                variant="bordered"
-                                isPressable
+                                variant={canViewGrade() ? 'bordered' : 'flat'}
+                                isPressable={canViewGrade()}
                                 onPress={() => {
                                   setSelectSession(data);
                                 }}
@@ -387,6 +387,7 @@ const ScheduleDetail = () => {
                                       new Date(Date.now()).toLocaleDateString(
                                         'vi-VN'
                                       ) && '2px solid red',
+                                  cursor: canViewGrade() ? 'pointer' : 'no-drop',
                                 }}
                               >
                                 <Card.Body

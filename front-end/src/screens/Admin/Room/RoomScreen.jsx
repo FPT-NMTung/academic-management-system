@@ -212,7 +212,6 @@ const RoomScreen = () => {
                   <Table.Column>Cơ sở</Table.Column>
                   <Table.Column>Loại phòng</Table.Column>
                   <Table.Column>Sức chứa</Table.Column>
-                  <Table.Column>Tình trạng</Table.Column>
                   <Table.Column>Trạng thái</Table.Column>
                   <Table.Column width={30}></Table.Column>
                 </Table.Header>
@@ -224,11 +223,6 @@ const RoomScreen = () => {
                       <Table.Cell>{e.center_name}</Table.Cell>
                       <Table.Cell>{renderTypeRoom(e.room_type.id)}</Table.Cell>
                       <Table.Cell>{e.capacity}</Table.Cell>
-                      <Table.Cell>
-                        <Badge variant={'flat'} color={'error'}>
-                          Bận
-                        </Badge>
-                      </Table.Cell>
                       <Table.Cell>
                         <Switch
                           size={'xs'}
