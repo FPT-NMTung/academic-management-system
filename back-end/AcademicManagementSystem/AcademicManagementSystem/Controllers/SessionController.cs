@@ -275,13 +275,14 @@ public class SessionController : ControllerBase
                        && gr.SessionId == session.Id
                        && gr.StudentId == userId);
 
-        if (session.LearningDate.Date > DateTime.Today)
+        if (session.LearningDate.Date > DateTime.Today || isGpaTaken)
         {
-            session.IsTakenGpa = false;
+            session.CanTakeGpa = false;
         }
-        else
+        
+        if(session.LearningDate <= DateTime.Today && !isGpaTaken)
         {
-            session.IsTakenGpa = isGpaTaken;
+            session.CanTakeGpa = true;
         }
 
         return Ok(CustomResponse.Ok("Student get detail session successfully", session));
