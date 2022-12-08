@@ -67,7 +67,7 @@ const ManageSchedule = () => {
           })
           .sort((a, b) => {
             return (
-              new Date(a.schedule_start_time) - new Date(b.schedule_start_time)
+              new Date(b.schedule_start_time) - new Date(a.schedule_start_time)
             );
           });
         const listNotSchedule = res.data

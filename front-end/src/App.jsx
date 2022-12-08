@@ -41,6 +41,7 @@ import AttendanceDetailEmpty from './components/AttendanceDetailEmpty/Attendance
 import GradeScreen from './screens/Student/GradeScreen/GradeScreen';
 import AttendanceScreen from './screens/Student/AttendanceScreen/AttendanceScreen';
 import ScheduleTeacherScreen from './screens/Teacher/ScheduleTeacherScreen/ScheduleTeacherScreen';
+import WarningSchedule from './screens/Sro/WarningSchedule/WarningSchedule';
 
 const App = () => {
   return (
@@ -89,6 +90,7 @@ const App = () => {
         <Route path="/sro/manage/day-off" element={<ManageDayOff />} />
         <Route path="/sro/manage/teacher" element={<ManageTeacher/>} />
         <Route path="/sro/manage/teacher/:id" element={<TeacherInfo/>} />
+        <Route path="/sro/warning/schedule" element={<WarningSchedule/>} />
       </Route>
 
       {/* Routers for role admin */}

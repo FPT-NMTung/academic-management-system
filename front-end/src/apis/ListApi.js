@@ -504,6 +504,16 @@ export const ManageScheduleApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  getDuliicateScheduleRoom: {
+    url: '/api/classes-schedules/sessions-duplicate-room',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getDuliicateScheduleTeacher: {
+    url: '/api/classes-schedules/sessions-duplicate-teacher',
+    method: 'GET',
+    contextType: 'application/json',
+  }
 };
 
 export const ManageStudentApis = {
