@@ -98,15 +98,13 @@ const AttendanceDetail = () => {
                   (a, b) =>
                     new Date(a.learning_date) - new Date(b.learning_date)
                 )
-                .map((data, index) => {
-                  console.log(
-                    moment(data.learning_date).add(1, 'days').toDate() -
-                      moment().toDate()
-                  );
+                .map((data, index) => {                  
                   return (
                     <Grid key={index} xs={2}>
                       <Card
-                        variant="bordered"
+                        variant={moment(data.learning_date).toDate() -
+                          moment().toDate() <
+                        0 ? 'bordered' : 'flat'}
                         isPressable={
                           moment(data.learning_date).toDate() -
                             moment().toDate() <
