@@ -3,11 +3,11 @@ using AcademicManagementSystem.Context;
 using AcademicManagementSystem.Controllers;
 using AcademicManagementSystem.Models.UserController.TeacherController;
 using AcademicManagementSystem.Services;
+using AcademicManagementSystemTest.Helper;
 using AcademicManagementSystemTest.MockData;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NuGet.Protocol;
 using Xunit.Abstractions;
 
 namespace AcademicManagementSystemTest.System.Controller;
@@ -17,13 +17,15 @@ namespace AcademicManagementSystemTest.System.Controller;
  */
 public class TestTeacherController
 {
-    private readonly ITestOutputHelper _testOutputHelper;
     private readonly AmsContext _context;
     private readonly TeacherController _controller;
+    private readonly TestOutputHelper _testOutputHelper;
 
-    public TestTeacherController(ITestOutputHelper testOutputHelper)
+    public TestTeacherController(ITestOutputHelper output)
     {
-        _testOutputHelper = testOutputHelper;
+        
+        _testOutputHelper = new TestOutputHelper(output);
+        
         var optionsInMemoryDb = new DbContextOptionsBuilder<AmsContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
@@ -92,16 +94,9 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as OkObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustom;
-            var message = value?.Message;
-            var data = value?.Data;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(data.ToJson());
-        }
-
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
+        
         // assert
         Assert.IsType<OkObjectResult>(result);
     }
@@ -137,15 +132,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -182,15 +170,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -227,15 +208,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -272,15 +246,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -317,15 +284,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -362,15 +322,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -407,15 +360,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -452,15 +398,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -497,15 +436,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -542,15 +474,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -587,15 +512,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -632,15 +550,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -677,15 +588,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -722,15 +626,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -767,15 +664,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -812,15 +702,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -857,15 +740,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -902,15 +778,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -947,15 +816,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -992,15 +854,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1037,15 +892,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1082,15 +930,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1127,15 +968,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1172,15 +1006,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1217,15 +1044,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1262,15 +1082,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1307,15 +1120,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1352,15 +1158,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.CreateTeacher(request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.CreateTeacher(request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1397,16 +1196,9 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as OkObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustom;
-            var message = value?.Message;
-            var data = value?.Data;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(data.ToJson());
-        }
-
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
+        
         // assert
         Assert.IsType<OkObjectResult>(result);
     }
@@ -1442,15 +1234,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1487,15 +1272,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1532,15 +1310,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1577,15 +1348,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1622,15 +1386,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1667,15 +1424,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1712,15 +1462,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1757,15 +1500,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1802,15 +1538,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1847,15 +1576,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1892,15 +1614,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1937,15 +1652,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -1982,15 +1690,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -2027,15 +1728,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -2072,15 +1766,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -2117,15 +1804,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -2162,15 +1842,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -2207,15 +1880,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -2252,15 +1918,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -2297,15 +1956,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -2342,15 +1994,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -2387,15 +2032,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -2432,15 +2070,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -2477,15 +2108,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -2522,15 +2146,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -2567,15 +2184,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -2612,15 +2222,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -2657,15 +2260,8 @@ public class TestTeacherController
         };
 
         // act 
-        var result = _controller.UpdateTeacher(teacherId, request) as BadRequestObjectResult;
-        if (result != null)
-        {
-            var value = result.Value as ResponseCustomBadRequest;
-            var type = value?.TypeError;
-            var message = value?.Message;
-            _testOutputHelper.WriteLine(message);
-            _testOutputHelper.WriteLine(type);
-        }
+        var result = _controller.UpdateTeacher(teacherId, request);
+        _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);

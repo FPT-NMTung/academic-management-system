@@ -9,15 +9,17 @@
   grid-row   : 4 / 6;
 }
 
-.sessions {
+.containSessions {
   grid-column: 1 / 3;
   grid-row   : 7 / 8;
 
-  display              : grid;
-  grid-template-columns: repeat(15, 1fr);
-
   width : 70%;
   margin: 30px auto;
+}
+
+.sessions {
+  display              : grid;
+  grid-template-columns: repeat(15, 1fr);
 
   row-gap: 10px;
 }

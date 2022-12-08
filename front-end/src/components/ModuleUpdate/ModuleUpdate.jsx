@@ -172,7 +172,7 @@ const ModuleUpdate = () => {
         total_weight: item.weight,
         quantity_grade_item: item.quantity,
       };
-    });
+    }).filter((item) => item.grade_category_id !== 6 && item.grade_category_id !== 8);
 
     const body = {
       grade_category_details: data,
