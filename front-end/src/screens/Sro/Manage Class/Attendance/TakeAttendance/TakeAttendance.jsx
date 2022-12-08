@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import FetchApi from '../../../../../apis/FetchApi';
 import { ManageAttendanceApis } from '../../../../../apis/ListApi';
 import { Validater } from '../../../../../validater/Validater';
-
+import { MdEmail } from 'react-icons/md';
 import classes from './TakeAttendance.module.css';
 
 const TakeAttendance = ({ session, scheduleId, onClose }) => {
@@ -137,6 +137,22 @@ const TakeAttendance = ({ session, scheduleId, onClose }) => {
       </Modal.Header>
       <Modal.Body>
         <div className={classes.buttonChangeAttendance}>
+        <Button
+            flat
+            auto
+            size={'sm'}
+            color={'error'}
+            css={{
+              position: 'absolute',
+              left: '24px',
+            }}
+            // onPress={}
+          >
+            <MdEmail size={18} style={{ marginRight: '8px' }}
+            />
+            Gửi Email lấy ý kiến
+         
+          </Button>
           <Button
             flat
             auto
