@@ -39,7 +39,7 @@ public class GpaController : ControllerBase
     // get all form
     [HttpGet]
     [Route("api/gpa/forms")]
-    [Authorize(Roles = "admin, sro, student")]
+    [Authorize(Roles = "sro, student")]
     public IActionResult GetForms()
     {
         var forms = _context.Forms
@@ -53,7 +53,7 @@ public class GpaController : ControllerBase
     // get all question by form id
     [HttpGet]
     [Route("api/gpa/forms/{formId:int}/questions")]
-    [Authorize(Roles = "admin, sro, student")]
+    [Authorize(Roles = "sro, student")]
     public IActionResult GetQuestionsByFormId(int formId)
     {
         // check if form exists
@@ -76,7 +76,7 @@ public class GpaController : ControllerBase
     // get all answer by question id
     [HttpGet]
     [Route("api/gpa/forms/{formId:int}/questions/{questionId:int}/answers")]
-    [Authorize(Roles = "admin, sro, student")]
+    [Authorize(Roles = "sro, student")]
     public IActionResult GetAnswersByQuestionId(int formId, int questionId)
     {
         // check if form exists or not
@@ -112,7 +112,7 @@ public class GpaController : ControllerBase
     // get all question and answer by form id
     [HttpGet]
     [Route("api/gpa/forms/{formId:int}/questions/answers")]
-    [Authorize(Roles = "admin, sro, student")]
+    [Authorize(Roles = "sro, student")]
     public IActionResult GetQuestionsAndAnswersByFormId(int formId)
     {
         // check if form exists
@@ -151,18 +151,26 @@ public class GpaController : ControllerBase
         return Ok(CustomResponse.Ok("Questions and answers retrieved successfully", questions));
     }
 
+    // send email request gpa to student in 1 session
     [HttpPost]
-    [Route("api/gpa/{classId:int}/request-email")]
+    [Route("api/gpa/sessions/{sessionId:int}/request-email")]
     [Authorize(Roles = "sro")]
-    public IActionResult SendEmailRequestGpa(int classId)
+    public IActionResult SendEmailRequestGpaBySession(int sessionId)
     {
         // check class exists in center
-        var classToSend = _context.Classes.FirstOrDefault(c => c.Id == classId && c.CenterId == _user.CenterId);
-        if (classToSend == null)
+        var session = _context.Sessions
+            .Include(s => s.ClassSchedule)
+            .Include(s => s.ClassSchedule.Class)
+            .Include(s => s.ClassSchedule.Teacher)
+            .Include(s => s.ClassSchedule.Teacher.User)
+            .Include(s => s.ClassSchedule.Module)
+            .FirstOrDefault(s => s.Id == sessionId && s.ClassSchedule.Class.CenterId == _user.CenterId);
+        if (session == null)
         {
-            return NotFound(CustomResponse.NotFound("Class not found in center with id " + classId));
+            return NotFound(CustomResponse.NotFound("Session not found in center with id " + sessionId));
         }
 
+        var classId = session.ClassSchedule.ClassId;
         // get students in class
         var students = GetAllStudentsByClassId(classId);
         if (students.Count == 0)
@@ -172,25 +180,34 @@ public class GpaController : ControllerBase
 
         // get email of students
         var emailsStudent = students.Select(s => s.EmailOrganization).ToList();
-
-        // get today date and format
-        var today = DateTime.Now;
-        var todayString = today.ToString("dd/MM/yyyy");
-
+        // teacher name
+        var teacherFirstName = session.ClassSchedule.Teacher.User.FirstName;
+        var teacherLastName = session.ClassSchedule.Teacher.User.LastName;
+        var teacherName = teacherFirstName + " " + teacherLastName;
+        // class name
+        var className = session.ClassSchedule.Class.Name;
+        // get learning date
+        var learningDate = session.LearningDate.ToString("dd/MM/yyyy");
+        // get module name
+        var moduleName = session.ClassSchedule.Module.ModuleName;
         var configuration = new ConfigurationBuilder()
             .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
             .AddJsonFile("appsettings.json")
             .Build();
+
         var connectionString = configuration.GetConnectionString("AzureEmailConnectionString");
         var emailClient = new EmailClient(connectionString);
         var emailContent =
-            new EmailContent("[QUAN TRỌNG] Yêu cầu lấy đánh giá về việc giảng dạy của giảng viên.") // subject
+            new EmailContent("[QUAN TRỌNG] Yêu cầu lấy đánh giá về việc giảng dạy môn " + moduleName + ".") // subject
             {
-                PlainText = "Học viên hãy vào lịch học và đánh giá giảng viên trong buổi học ngày hôm nay (" +
-                            todayString + ").\n" +
-                            "Những ai đã thực hiện đánh giá có thể bỏ qua Email này." // content
+                // content
+                PlainText = "Học viên lớp " + className +
+                            " hãy dành chút thời gian vào mục lịch học trên AMS để thực hiện đánh giá việc giảng dạy của giảng viên " +
+                            teacherName + " cho buổi học ngày " + learningDate +
+                            ".\n\n" +
+                            "Lưu ý: Đánh giá chỉ được thực hiện 1 lần duy nhất cho mỗi buổi học. " +
+                            "Do đó những ai đã thực hiện đánh giá có thể bỏ qua Email này."
             };
-
         var listEmail = new List<EmailAddress>();
         foreach (var email in emailsStudent)
         {
@@ -353,7 +370,7 @@ public class GpaController : ControllerBase
     // sro view gpa teacher by teacherId
     [HttpGet]
     [Route("api/gpa/teachers/{teacherId:int}")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult ViewGpaTeacherByTeacherId(int teacherId)
     {
         // check if teacher exists or not
@@ -408,7 +425,7 @@ public class GpaController : ControllerBase
     // sro view gpa teacher by teacherId and classId
     [HttpGet]
     [Route("api/gpa/teachers/{teacherId:int}/classes/{classId:int}")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult ViewGpaTeacherByTeacherIdAndClassId(int teacherId, int classId)
     {
         // check if teacher exists or not
@@ -470,7 +487,7 @@ public class GpaController : ControllerBase
     // sro view gpa teacher by teacherId and moduleId
     [HttpGet]
     [Route("api/gpa/teachers/{teacherId:int}/modules/{moduleId:int}")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult ViewGpaTeacherByTeacherIdAndModuleId(int teacherId, int moduleId)
     {
         // check if teacher exists or not
@@ -529,10 +546,79 @@ public class GpaController : ControllerBase
         return Ok(CustomResponse.Ok("GPA records has been retrieved successfully", gpaResponse));
     }
 
+    // sro view gpa teacher by teacherId, classId and moduleId
+    [HttpGet]
+    [Route("api/gpa/teachers/{teacherId:int}/classes/{classId:int}/modules/{moduleId:int}")]
+    [Authorize(Roles = "sro")]
+    public IActionResult ViewGpaTeacherByTeacherIdAndClassIdAndModuleId(int teacherId, int classId, int moduleId)
+    {
+        // check if teacher exists or not
+        if (!IsTeacherExisted(teacherId))
+        {
+            var error = ErrorDescription.Error["E1140"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check if class exists or not
+        if (!IsClassExisted(classId))
+        {
+            var error = ErrorDescription.Error["E1139"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        // check if module exists or not
+        if (!IsModuleExisted(moduleId))
+        {
+            var error = ErrorDescription.Error["E1141"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var gpaRecords = _context.GpaRecords
+            .Include(g => g.Student)
+            .Include(g => g.Teacher)
+            .Include(g => g.Form)
+            .Include(g => g.Class)
+            .Include(g => g.Module)
+            .Include(g => g.Session)
+            .Include(g => g.GpaRecordsAnswers)
+            .ThenInclude(gra => gra.Answer)
+            .ThenInclude(a => a.Question)
+            .Where(g => g.TeacherId == teacherId && g.ClassId == classId && g.ModuleId == moduleId)
+            .ToList();
+
+        var gpaRecordAnswer = gpaRecords.Select(g => g.GpaRecordsAnswers).ToList();
+
+        // get list comment
+        var comments = gpaRecords.Select(g => g.Comment).ToList();
+
+        // get answerNo by answerId
+        var answerNo = new List<int>();
+        foreach (var gpaRecordAnswers in gpaRecordAnswer)
+        {
+            foreach (var record in gpaRecordAnswers)
+            {
+                answerNo.Add(record.Answer.AnswerNo);
+            }
+        }
+
+        var sum = 0;
+        foreach (var answer in answerNo)
+        {
+            sum += answer;
+        }
+
+        var average = (double)sum / answerNo.Count;
+        var gpaResponse = new GpaResponse()
+        {
+            AverageGpa = average, Comments = comments
+        };
+        return Ok(CustomResponse.Ok("GPA records has been retrieved successfully", gpaResponse));
+    }
+
     // sro view gpa teacher by teacherId, classId, moduleId and sessionId
     [HttpGet]
     [Route("api/gpa/teachers/{teacherId:int}/classes/{classId:int}/modules/{moduleId:int}/sessions/{sessionId:int}")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult ViewGpaTeacherByTeacherIdAndClassIdAndModuleIdAndSessionId(int teacherId, int classId,
         int moduleId, int sessionId)
     {
@@ -610,7 +696,7 @@ public class GpaController : ControllerBase
     // get list class of teacher
     [HttpGet]
     [Route("api/gpa/teachers/{teacherId:int}/classes")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult GetListClassOfTeacher(int teacherId)
     {
         // check if teacher exists or not
@@ -637,7 +723,7 @@ public class GpaController : ControllerBase
     // get list module of teacher
     [HttpGet]
     [Route("api/gpa/teachers/{teacherId:int}/modules")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult GetListModuleOfTeacher(int teacherId)
     {
         // check if teacher exists or not
@@ -659,6 +745,33 @@ public class GpaController : ControllerBase
             .ToList();
 
         return Ok(CustomResponse.Ok("List modules of teacher has been retrieved successfully", modules));
+    }
+
+    // get list class of module
+    [HttpGet]
+    [Route("api/gpa/modules/{moduleId:int}/classes")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetListClassOfModule(int moduleId)
+    {
+        // check if module exists or not
+        if (!IsModuleExisted(moduleId))
+        {
+            var error = ErrorDescription.Error["E1141"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var classes = _context.Classes
+            .Include(c => c.GpaRecords)
+            .ThenInclude(gr => gr.Module)
+            .Where(c => c.GpaRecords.Select(gr => gr.ModuleId).Contains(moduleId))
+            .Select(c => new ClassGpaResponse()
+            {
+                Id = c.GpaRecords.Select(gr => gr.ModuleId).Contains(moduleId) ? c.Id : 0,
+                Name = c.GpaRecords.Select(gr => gr.ModuleId).Contains(moduleId) ? c.Name : null
+            })
+            .ToList();
+
+        return Ok(CustomResponse.Ok("List classes of module has been retrieved successfully", classes));
     }
 
     [HttpGet]
