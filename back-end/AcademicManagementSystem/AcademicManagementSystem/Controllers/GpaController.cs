@@ -545,7 +545,7 @@ public class GpaController : ControllerBase
         };
         return Ok(CustomResponse.Ok("GPA records has been retrieved successfully", gpaResponse));
     }
-    
+
     // sro view gpa teacher by teacherId, classId and moduleId
     [HttpGet]
     [Route("api/gpa/teachers/{teacherId:int}/classes/{classId:int}/modules/{moduleId:int}")]
@@ -745,6 +745,33 @@ public class GpaController : ControllerBase
             .ToList();
 
         return Ok(CustomResponse.Ok("List modules of teacher has been retrieved successfully", modules));
+    }
+
+    // get list class of module
+    [HttpGet]
+    [Route("api/gpa/modules/{moduleId:int}/classes")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult GetListClassOfModule(int moduleId)
+    {
+        // check if module exists or not
+        if (!IsModuleExisted(moduleId))
+        {
+            var error = ErrorDescription.Error["E1141"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var classes = _context.Classes
+            .Include(c => c.GpaRecords)
+            .ThenInclude(gr => gr.Module)
+            .Where(c => c.GpaRecords.Select(gr => gr.ModuleId).Contains(moduleId))
+            .Select(c => new ClassGpaResponse()
+            {
+                Id = c.GpaRecords.Select(gr => gr.ModuleId).Contains(moduleId) ? c.Id : 0,
+                Name = c.GpaRecords.Select(gr => gr.ModuleId).Contains(moduleId) ? c.Name : null
+            })
+            .ToList();
+
+        return Ok(CustomResponse.Ok("List classes of module has been retrieved successfully", classes));
     }
 
     [HttpGet]
