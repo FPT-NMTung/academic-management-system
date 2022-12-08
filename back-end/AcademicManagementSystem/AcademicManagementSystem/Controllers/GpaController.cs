@@ -151,59 +151,6 @@ public class GpaController : ControllerBase
         return Ok(CustomResponse.Ok("Questions and answers retrieved successfully", questions));
     }
 
-    [HttpPost]
-    [Route("api/gpa/{classId:int}/request-email")]
-    [Authorize(Roles = "sro")]
-    public IActionResult SendEmailRequestGpa(int classId)
-    {
-        // check class exists in center
-        var classToSend = _context.Classes.FirstOrDefault(c => c.Id == classId && c.CenterId == _user.CenterId);
-        if (classToSend == null)
-        {
-            return NotFound(CustomResponse.NotFound("Class not found in center with id " + classId));
-        }
-
-        // get students in class
-        var students = GetAllStudentsByClassId(classId);
-        if (students.Count == 0)
-        {
-            return NotFound(CustomResponse.NotFound("No student found in class with id " + classId));
-        }
-
-        // get email of students
-        var emailsStudent = students.Select(s => s.EmailOrganization).ToList();
-
-        // get today date and format
-        var today = DateTime.Now;
-        var todayString = today.ToString("dd/MM/yyyy");
-
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-            .AddJsonFile("appsettings.json")
-            .Build();
-        var connectionString = configuration.GetConnectionString("AzureEmailConnectionString");
-        var emailClient = new EmailClient(connectionString);
-        var emailContent =
-            new EmailContent("[QUAN TRỌNG] Yêu cầu lấy đánh giá về việc giảng dạy của giảng viên.") // subject
-            {
-                PlainText = "Học viên hãy vào lịch học và đánh giá giảng viên trong buổi học ngày hôm nay (" +
-                            todayString + ").\n" +
-                            "Những ai đã thực hiện đánh giá có thể bỏ qua Email này." // content
-            };
-
-        var listEmail = new List<EmailAddress>();
-        foreach (var email in emailsStudent)
-        {
-            listEmail.Add(new EmailAddress(email));
-        }
-
-        var emailRecipients = new EmailRecipients(listEmail);
-        var emailMessage = new EmailMessage("ams-no-reply@nmtung.dev", emailContent, emailRecipients);
-        SendEmailResult emailResult = emailClient.Send(emailMessage, CancellationToken.None);
-
-        return Ok(CustomResponse.Ok("Request has been sent successfully", emailResult));
-    }
-
     // send email request gpa to student in 1 session
     [HttpPost]
     [Route("api/gpa/sessions/{sessionId:int}/request-email")]
@@ -255,8 +202,8 @@ public class GpaController : ControllerBase
             {
                 // content
                 PlainText = "Học viên lớp " + className +
-                            " hãy dành chút thời gian vào mục lịch học trên AMS, chọn buổi học ngày " +
-                            learningDate + ", sau đó thực hiện đánh giá việc giảng dạy của giảng viên " + teacherName +
+                            " hãy dành chút thời gian vào mục lịch học trên AMS để thực hiện đánh giá việc giảng dạy của giảng viên " +
+                            teacherName + " cho buổi học ngày " + learningDate +
                             ".\n\n" +
                             "Lưu ý: Đánh giá chỉ được thực hiện 1 lần duy nhất cho mỗi buổi học. " +
                             "Do đó những ai đã thực hiện đánh giá có thể bỏ qua Email này."
