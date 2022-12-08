@@ -63,7 +63,6 @@ const Schedule = () => {
           )
         );
         setisLoading(false);
-
       })
       .catch((err) => {
         toast.error("Đã xảy ra lỗi");
@@ -73,11 +72,10 @@ const Schedule = () => {
     navigate(`/student/feedback/${detailLearningDate.id}`);
   };
   const getDetail = () => {
-
     setDetailLearningDate("");
     // console.log(listSession);
     // console.log(listExamDate.map((item) => item.learning_date));
-   
+
     const body = {
       learning_date: moment.utc(selectedValue).local().format(),
     };
@@ -92,10 +90,9 @@ const Schedule = () => {
         setDetailLearningDate(data);
       })
       .catch((err) => {
-        toast.error('Lỗi lấy chi tiết ngày học');
+        toast.error("Lỗi lấy chi tiết ngày học");
       });
-      // console.log( "sss" + detailLearningDate.title);
-
+    // console.log( "sss" + detailLearningDate.title);
   };
   const renderAttendanceStatus = (id) => {
     if (id === 1) {
@@ -109,9 +106,7 @@ const Schedule = () => {
     }
   };
   useEffect(() => {
-   
     getDetail();
-    
   }, [selectedValue]);
   useEffect(() => {
     // getForm();
@@ -350,22 +345,41 @@ const Schedule = () => {
                       borderStyle: "dashed",
                     }}
                   >
-                    <Card.Header css={{display:"flex",justifyContent:"space-around"}}>
-                      {detailLearningDate !== ""  && (
-                        <div style={{display:"block",textAlign:"center"}}>
-                          <Text p b size={14} css={{display:"block",width:"100%"}}>
-                          {detailLearningDate.title}
-                      </Text>
+                    <Card.Header
+                      css={{ display: "flex", justifyContent: "space-around" }}
+                    >
+                      {detailLearningDate !== "" && (
+                        <div style={{ display: "block", textAlign: "center" }}>
+                          <Text
+                            p
+                            b
+                            size={14}
+                            css={{ display: "block", width: "100%" }}
+                          >
+                            {detailLearningDate.title}
+                          </Text>
 
-                        <Text p b size={14} css={{display:"block",width:"100%"}}>
-                        Thời gian: <strong> {moment(detailLearningDate?.start_time, "HH:mm:ss").format( "HH:mm")}
-                        - {moment(detailLearningDate?.end_time, "HH:mm:ss").format( "HH:mm")}  </strong> 
-                       
-                        </Text>
-                        
-                        
-                      </div>
-
+                          <Text
+                            p
+                            b
+                            size={14}
+                            css={{ display: "block", width: "100%" }}
+                          >
+                            Thời gian:{" "}
+                            <Badge color="success">
+                              {" "}
+                              {moment(
+                                detailLearningDate?.start_time,
+                                "HH:mm:ss"
+                              ).format("HH:mm")}
+                              -{" "}
+                              {moment(
+                                detailLearningDate?.end_time,
+                                "HH:mm:ss"
+                              ).format("HH:mm")}{" "}
+                            </Badge>
+                          </Text>
+                        </div>
                       )}
                     </Card.Header>
 
@@ -401,23 +415,40 @@ const Schedule = () => {
                           shadow={false}
                         >
                           <Table.Header>
-                            <Table.Column>Môn học</Table.Column>
+                            <Table.Column width={150}>Môn học</Table.Column>
                             <Table.Column width={100}>Phòng học</Table.Column>
                             <Table.Column width={150}>Giảng viên</Table.Column>
+                            <Table.Column width={80}>Nội dung</Table.Column>
                             <Table.Column width={150}>Điểm danh</Table.Column>
-                            <Table.Column width={150}>Ghi chú</Table.Column>
+                            <Table.Column >Ghi chú</Table.Column>
                           </Table.Header>
                           <Table.Body>
                             <Table.Row key="1">
-                            <Table.Cell>{detailLearningDate.module.name}</Table.Cell>
-                            <Table.Cell>{detailLearningDate.room.name}</Table.Cell>
-                            <Table.Cell> {detailLearningDate.teacher.first_name}{' '}
-                                      {detailLearningDate.teacher.last_name}</Table.Cell>
-                          
-                                      <Table.Cell>                           
-                            {renderAttendanceStatus(detailLearningDate.attendance.attendance_status?.id ? detailLearningDate.attendance.attendance_status.id : 0)}
-                            </Table.Cell>
-                          <Table.Cell>{detailLearningDate.attendance.note}</Table.Cell>
+                              <Table.Cell>
+                                {detailLearningDate.module.name}
+                              </Table.Cell>
+                              <Table.Cell>
+                                {detailLearningDate.room.name}
+                              </Table.Cell>
+                              <Table.Cell>
+                                {" "}
+                                {detailLearningDate.teacher.first_name}{" "}
+                                {detailLearningDate.teacher.last_name}
+                              </Table.Cell>
+                              <Table.Cell>{detailLearningDate.session_type?.value}</Table.Cell>
+
+                              <Table.Cell>
+                                {renderAttendanceStatus(
+                                  detailLearningDate.attendance
+                                    .attendance_status?.id
+                                    ? detailLearningDate.attendance
+                                        .attendance_status.id
+                                    : 0
+                                )}
+                              </Table.Cell>
+                              <Table.Cell>
+                                {detailLearningDate.attendance.note}
+                              </Table.Cell>
 
                               {/* <Table.Cell>{detailLearningDate.module.name}</Table.Cell>
                               <Table.Cell>{detailLearningDate.room.name}</Table.Cell>
@@ -436,7 +467,7 @@ const Schedule = () => {
                   </Card>
                 </Grid>
               </Grid.Container>
-              {detailLearningDate.is_taken_gpa === false && (
+              {detailLearningDate.can_take_gpa === true && (
                 <Grid sm={2} css={{ marginTop: "24px", marginBottom: "12px" }}>
                   <Button
                     flat
@@ -444,7 +475,7 @@ const Schedule = () => {
                     icon={<MdNoteAlt size={14} />}
                     color={"error"}
                     onPress={() => {
-                     FeedbackTeacher();
+                      FeedbackTeacher();
                     }}
                     css={{
                       width: "50px",
