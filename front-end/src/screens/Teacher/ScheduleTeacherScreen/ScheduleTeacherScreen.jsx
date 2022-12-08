@@ -1,4 +1,5 @@
-import classes from "./ScheduleScreen.module.css";
+
+import classes from "./ScheduleTeacherScreen.module.css";
 import CalendarStudent from "../../../components/CalendarStudent/CalendarStudent";
 import {
   Card,
@@ -30,38 +31,26 @@ import { Fragment } from "react";
 import moment from "moment";
 import "moment/locale/vi";
 import toast from "react-hot-toast";
-import DoFeedback from "../Feedback/Feedback/DoFeedback/DoFeedback";
 
-const Schedule = () => {
-  const navigate = useNavigate();
+
+const ScheduleTeacherScreen = () => {
+
   const [listSession, setListSession] = useState([]);
-  const [listExamDate, setListExamDate] = useState([]);
-  const [listForm, setListForm] = useState([]);
   const [value, setValue] = useState(moment());
   const [selectedValue, setSelectedValue] = useState(moment());
   const [detailLearningDate, setDetailLearningDate] = useState([]);
-  const [isLoading, setisLoading] = useState(true);
-  const getForm = () => {
-    setisLoading(true);
-    FetchApi(ManageGpa.getForm)
-      .then((res) => {
-        setListForm(res.data);
-        setisLoading(false);
-      })
-      .catch((err) => {
-        toast.error("Đã xảy ra lỗi");
-      });
-  };
+  const [isLoading, setisLoading] = useState(false);
+
   const getData = () => {
     setisLoading(true);
     FetchApi(UserStudentApis.getAllSession)
       .then((res) => {
         setListSession(res.data);
-        setListExamDate(
-          res.data.filter(
-            (item) => item.session_type === 3 || item.session_type === 4
-          )
-        );
+        // setListExamDate(
+        //   res.data.filter(
+        //     (item) => item.session_type === 3 || item.session_type === 4
+        //   )
+        // );
         setisLoading(false);
 
       })
@@ -69,9 +58,7 @@ const Schedule = () => {
         toast.error("Đã xảy ra lỗi");
       });
   };
-  const FeedbackTeacher = () => {
-    navigate(`/student/feedback/${detailLearningDate.id}`);
-  };
+
   const getDetail = () => {
 
     setDetailLearningDate("");
@@ -108,14 +95,14 @@ const Schedule = () => {
       return <Badge color="default">Chưa điểm danh</Badge>;
     }
   };
-  useEffect(() => {
+//   useEffect(() => {
    
-    getDetail();
+//     getDetail();
     
-  }, [selectedValue]);
+//   }, [selectedValue]);
   useEffect(() => {
     // getForm();
-    getData();
+    // getData();
   }, []);
 
   return (
@@ -258,22 +245,22 @@ const Schedule = () => {
                             value.format("DD/MM/YYYY") ===
                             selectedValue.format("DD/MM/YYYY")
                               ? "#CEE4FE"
-                              : listExamDate.find(
-                                  (item) =>
-                                    value.format("DD/MM/YYYY") ===
-                                    moment(item.learning_date).format(
-                                      "DD/MM/YYYY"
-                                    )
-                                )
-                              ? "#7828c8"
-                              : listSession.find(
-                                  (item) =>
-                                    value.format("DD/MM/YYYY") ===
-                                    moment(item.learning_date).format(
-                                      "DD/MM/YYYY"
-                                    )
-                                )
-                              ? "#fdd8e5"
+                            //   : listExamDate.find(
+                            //       (item) =>
+                            //         value.format("DD/MM/YYYY") ===
+                            //         moment(item.learning_date).format(
+                            //           "DD/MM/YYYY"
+                            //         )
+                            //     )
+                            //   ? "#7828c8"
+                            //   : listSession.find(
+                            //       (item) =>
+                            //         value.format("DD/MM/YYYY") ===
+                            //         moment(item.learning_date).format(
+                            //           "DD/MM/YYYY"
+                            //         )
+                            //     )
+                            //   ? "#fdd8e5"
                               : value.day() === 0
                               ? "#F1F1F1"
                               : // : value.format('DD/MM/YYYY') === moment(dataUser[0].end_date).format('DD/MM/YYYY')
@@ -309,16 +296,9 @@ const Schedule = () => {
                     variant="default"
                   />
                   <Spacer x={0.5} />
-                  <Text css={{ ml: "$2" }}>Ngày có lịch học</Text>
+                  <Text css={{ ml: "$2" }}>Ngày có lịch dạy</Text>
                 </Grid>
-                <Grid xs={12} alignItems="center">
-                  <Badge
-                    css={{ backgroundColor: "#7828c8" }}
-                    variant="default"
-                  />
-                  <Spacer x={0.5} />
-                  <Text css={{ ml: "$2" }}>Ngày có lịch thi</Text>
-                </Grid>
+              
               </Grid.Container>
             </Card>
           </Grid>
@@ -338,7 +318,7 @@ const Schedule = () => {
                     width: "100%",
                   }}
                 >
-                  Lịch học của ngày {selectedValue.format("DD/MM/YYYY")}
+                  Lịch dạy của ngày {selectedValue.format("DD/MM/YYYY")}
                 </Text>
               </Card.Header>
               <Grid.Container gap={2}>
@@ -351,22 +331,24 @@ const Schedule = () => {
                     }}
                   >
                     <Card.Header css={{display:"flex",justifyContent:"space-around"}}>
-                      {detailLearningDate !== ""  && (
+                      
                         <div style={{display:"block",textAlign:"center"}}>
                           <Text p b size={14} css={{display:"block",width:"100%"}}>
-                          {detailLearningDate.title}
+                          Slot 3
                       </Text>
 
                         <Text p b size={14} css={{display:"block",width:"100%"}}>
-                        Thời gian: <strong> {moment(detailLearningDate?.start_time, "HH:mm:ss").format( "HH:mm")}
-                        - {moment(detailLearningDate?.end_time, "HH:mm:ss").format( "HH:mm")}  </strong> 
+                        Thời gian:  <Badge color="primary">
+                            19:00 - 20:00
+                        </Badge>
+                        
                        
                         </Text>
                         
                         
                       </div>
 
-                      )}
+                    
                     </Card.Header>
 
                     <Card.Body
@@ -374,8 +356,8 @@ const Schedule = () => {
                         padding: "5px 10px",
                       }}
                     >
-                      {detailLearningDate === "" && (
-                        <Text
+                      
+                        {/* <Text
                           p
                           size={14}
                           css={{
@@ -386,10 +368,10 @@ const Schedule = () => {
                           i
                         >
                           Không có lịch
-                        </Text>
-                      )}
+                        </Text> */}
+                   
 
-                      {detailLearningDate !== "" && (
+                     
                         <Table
                           aria-label=""
                           css={{
@@ -401,62 +383,32 @@ const Schedule = () => {
                           shadow={false}
                         >
                           <Table.Header>
-                            <Table.Column>Môn học</Table.Column>
-                            <Table.Column width={100}>Phòng học</Table.Column>
-                            <Table.Column width={150}>Giảng viên</Table.Column>
-                            <Table.Column width={150}>Điểm danh</Table.Column>
-                            <Table.Column width={150}>Ghi chú</Table.Column>
+                            <Table.Column width={200}>Môn học</Table.Column>
+                            <Table.Column width={100}>Lớp</Table.Column>
+                            <Table.Column width={150}>Phòng</Table.Column>
+
                           </Table.Header>
                           <Table.Body>
                             <Table.Row key="1">
-                            <Table.Cell>{detailLearningDate.module.name}</Table.Cell>
-                            <Table.Cell>{detailLearningDate.room.name}</Table.Cell>
-                            <Table.Cell> {detailLearningDate.teacher.first_name}{' '}
-                                      {detailLearningDate.teacher.last_name}</Table.Cell>
-                          
-                                      <Table.Cell>                           
-                            {renderAttendanceStatus(detailLearningDate.attendance.attendance_status?.id ? detailLearningDate.attendance.attendance_status.id : 0)}
-                            </Table.Cell>
-                          <Table.Cell>{detailLearningDate.attendance.note}</Table.Cell>
+                                <Table.Cell>
+                                    HTML/CSS
+                                </Table.Cell>
+                                <Table.Cell>
+                                    12A1
+                                </Table.Cell>
+                                <Table.Cell>
+                                    101
+                                </Table.Cell>
 
-                              {/* <Table.Cell>{detailLearningDate.module.name}</Table.Cell>
-                              <Table.Cell>{detailLearningDate.room.name}</Table.Cell>
-
-                            <Table.Cell> {detailLearningDate.teacher.first_name}{' '}
-                                      {detailLearningDate.teacher.last_name}</Table.Cell>
-                            <Table.Cell>                           
-                            {renderAttendanceStatus(detailLearningDate.attendance.attendance_status?.id ? detailLearningDate.attendance.attendance_status.id : 0)}
-                            </Table.Cell>
-                              <Table.Cell>{detailLearningDate.teacher.last_name}</Table.Cell> */}
                             </Table.Row>
                           </Table.Body>
-                        </Table>
-                      )}
+                        </Table> 
+                  
                     </Card.Body>
                   </Card>
                 </Grid>
               </Grid.Container>
-              {detailLearningDate.is_taken_gpa === false && (
-                <Grid sm={2} css={{ marginTop: "24px", marginBottom: "12px" }}>
-                  <Button
-                    flat
-                    auto
-                    icon={<MdNoteAlt size={14} />}
-                    color={"error"}
-                    onPress={() => {
-                     FeedbackTeacher();
-                    }}
-                    css={{
-                      width: "50px",
-                      position: "absolute",
-                      bottom: "12px",
-                      right: "10px",
-                    }}
-                  >
-                    Đánh giá việc giảng dậy
-                  </Button>
-                </Grid>
-              )}
+         
             </Card>
           </Grid>
         </Grid.Container>
@@ -465,4 +417,4 @@ const Schedule = () => {
   );
 };
 
-export default Schedule;
+export default ScheduleTeacherScreen;

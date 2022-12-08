@@ -40,6 +40,7 @@ import AttendanceDetail from './components/AttendanceDetail/AttendanceDetail';
 import AttendanceDetailEmpty from './components/AttendanceDetailEmpty/AttendanceDetailEmpty';
 import GradeScreen from './screens/Student/GradeScreen/GradeScreen';
 import AttendanceScreen from './screens/Student/AttendanceScreen/AttendanceScreen';
+import ScheduleTeacherScreen from './screens/Teacher/ScheduleTeacherScreen/ScheduleTeacherScreen';
 
 const App = () => {
   return (
@@ -65,6 +66,7 @@ const App = () => {
           <Route index element={<AttendanceDetailEmpty />} />
           <Route path="/teacher/attendance/:id" element={<AttendanceDetail />} />
         </Route>
+        <Route path="/teacher/schedule" element={<ScheduleTeacherScreen /> } />
       </Route>
 
       {/* Routers for role sro */}
