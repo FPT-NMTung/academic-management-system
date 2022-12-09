@@ -341,6 +341,7 @@ public static class ErrorDescription
         { "E0307", new ErrorModel() { Message = "Can't update grade, this module don't take exam", Type = "student-grade-error-0007" } },
         { "E0308", new ErrorModel() { Message = "Grade must in range 0 -> max theory grade of module", Type = "student-grade-error-0008" } },
         { "E0309", new ErrorModel() { Message = "Grade must in range 0 -> max practical grade of module", Type = "student-grade-error-0009" } },
+        { "E0310", new ErrorModel() { Message = "This class have been merge", Type = "student-grade-error-0010" } },
 
         //gpa
         { "E1139", new ErrorModel() { Message = "Class is not exists in center", Type = "gpa-error-1" } },
