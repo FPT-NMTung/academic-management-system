@@ -550,11 +550,18 @@ public class ClassController : ControllerBase
                             return BadRequest(CustomResponse.BadRequest(error.Message + studentNo, error.Type));
                         }
 
+                        province = Regex.Replace(province!, StringConstant.RegexWhiteSpaces, " ");
+                        province = province.Replace(" ' ", "'").Trim();
+                        district = Regex.Replace(district!, StringConstant.RegexWhiteSpaces, " ");
+                        district = district.Replace(" ' ", "'").Trim();
+                        ward = Regex.Replace(ward!, StringConstant.RegexWhiteSpaces, " ");
+                        ward = ward.Replace(" ' ", "'").Trim();
+
                         // get list Province name
                         var listProvinceName = _context.Provinces.Select(p => p.Name).ToList();
                         foreach (var item in listProvinceName)
                         {
-                            if (ConvertToUnsignedString(item).Equals(ConvertToUnsignedString(province!)))
+                            if (ConvertToUnsignedString(item).Equals(ConvertToUnsignedString(province)))
                             {
                                 province = item;
                                 break;
@@ -570,7 +577,7 @@ public class ClassController : ControllerBase
                             .Select(d => d.Name).ToList();
                         foreach (var item in listDistrictName)
                         {
-                            if (ConvertToUnsignedString(item).Equals(ConvertToUnsignedString(district!)))
+                            if (ConvertToUnsignedString(item).Equals(ConvertToUnsignedString(district)))
                             {
                                 district = item;
                                 break;
@@ -587,7 +594,7 @@ public class ClassController : ControllerBase
 
                         foreach (var item in listWardName)
                         {
-                            if (ConvertToUnsignedString(item).Equals(ConvertToUnsignedString(ward!)))
+                            if (ConvertToUnsignedString(item).Equals(ConvertToUnsignedString(ward)))
                             {
                                 ward = item;
                                 break;
