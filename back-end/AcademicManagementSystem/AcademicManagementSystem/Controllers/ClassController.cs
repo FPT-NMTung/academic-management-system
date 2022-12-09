@@ -550,11 +550,36 @@ public class ClassController : ControllerBase
                             return BadRequest(CustomResponse.BadRequest(error.Message + studentNo, error.Type));
                         }
 
+                        if (province == null)
+                        {
+                            var error = ErrorDescription.Error["E1152"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message + studentNo, error.Type));
+                        }
+
+                        if (district == null)
+                        {
+                            var error = ErrorDescription.Error["E1153"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message + studentNo, error.Type));
+                        }
+
+                        if (ward == null)
+                        {
+                            var error = ErrorDescription.Error["E1154"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message + studentNo, error.Type));
+                        }
+
+                        province = Regex.Replace(province, StringConstant.RegexWhiteSpaces, " ");
+                        province = province.Replace(" ' ", "'").Trim();
+                        district = Regex.Replace(district, StringConstant.RegexWhiteSpaces, " ");
+                        district = district.Replace(" ' ", "'").Trim();
+                        ward = Regex.Replace(ward, StringConstant.RegexWhiteSpaces, " ");
+                        ward = ward.Replace(" ' ", "'").Trim();
+
                         // get list Province name
                         var listProvinceName = _context.Provinces.Select(p => p.Name).ToList();
                         foreach (var item in listProvinceName)
                         {
-                            if (ConvertToUnsignedString(item).Equals(ConvertToUnsignedString(province!)))
+                            if (ConvertToUnsignedString(item).Equals(ConvertToUnsignedString(province)))
                             {
                                 province = item;
                                 break;
@@ -562,7 +587,9 @@ public class ClassController : ControllerBase
                         }
 
                         // get province id
-                        var provinceId = _context.Provinces.FirstOrDefault(p => p.Name.Equals(province))!.Id;
+                        var provinceId = _context.Provinces.FirstOrDefault(p => p.Name.Equals(province)) == null
+                            ? 1
+                            : _context.Provinces.FirstOrDefault(p => p.Name.Equals(province))!.Id;
 
                         // get list District name
                         var listDistrictName = _context.Districts
@@ -570,7 +597,7 @@ public class ClassController : ControllerBase
                             .Select(d => d.Name).ToList();
                         foreach (var item in listDistrictName)
                         {
-                            if (ConvertToUnsignedString(item).Equals(ConvertToUnsignedString(district!)))
+                            if (ConvertToUnsignedString(item).Equals(ConvertToUnsignedString(district)))
                             {
                                 district = item;
                                 break;
@@ -578,7 +605,9 @@ public class ClassController : ControllerBase
                         }
 
                         // get district id
-                        var districtId = _context.Districts.FirstOrDefault(d => d.Name.Equals(district))!.Id;
+                        var districtId = _context.Districts.FirstOrDefault(d => d.Name.Equals(district)) == null
+                            ? 1
+                            : _context.Districts.FirstOrDefault(d => d.Name.Equals(district))!.Id;
 
                         // get list Ward name
                         var listWardName = _context.Wards
@@ -587,7 +616,7 @@ public class ClassController : ControllerBase
 
                         foreach (var item in listWardName)
                         {
-                            if (ConvertToUnsignedString(item).Equals(ConvertToUnsignedString(ward!)))
+                            if (ConvertToUnsignedString(item).Equals(ConvertToUnsignedString(ward)))
                             {
                                 ward = item;
                                 break;
@@ -595,7 +624,9 @@ public class ClassController : ControllerBase
                         }
 
                         // get ward id
-                        var wardId = _context.Wards.FirstOrDefault(w => w.Name.Equals(ward))!.Id;
+                        var wardId = _context.Wards.FirstOrDefault(w => w.Name.Equals(ward)) == null
+                            ? 1
+                            : _context.Wards.FirstOrDefault(w => w.Name.Equals(ward))!.Id;
 
                         var newBirthday = DateTime.Parse(birthday ?? throw new InvalidOperationException());
                         var newIdentityCardPublishedDate =
