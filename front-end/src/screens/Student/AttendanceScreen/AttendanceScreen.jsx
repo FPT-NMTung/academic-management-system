@@ -126,14 +126,14 @@ const AttendanceScreen = () => {
                       <Menu.SubMenu
                         style={{ color: "black!important" }}
                         title={item.name}
-                        key={index + 1}
+                        key={item.id}
                         rootStyle={{ width: "100%" }}
                         icon={<ImLibrary />}
                       >
                         {item.modules.map((modules, index) => (
                           <Menu.Item
                             // title={modules.name + " ( " + modules.class.name + " )"}
-                            key={index + 2}
+                            key={modules.id + modules.class.id}
                             rootStyle={{ width: "100%" }}
                             onClick={() =>
                               onSelectTree(modules.id, modules.class.id)
