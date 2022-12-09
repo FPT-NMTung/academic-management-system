@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AcademicManagementSystem.Controllers;
 
 [ApiController]
-public class GradeStudentController : ControllerBase
+public class StudentGradeController : ControllerBase
 {
     private readonly AmsContext _context;
     private readonly IUserService _userService;
@@ -23,8 +23,9 @@ public class GradeStudentController : ControllerBase
     private const int TheoryExamResit = 8;
     private const int ExamTypeTheory = 1;
     private const int ExamTypeNoTakeExam = 4;
+    private const int ClassStatusMerged = 6;
 
-    public GradeStudentController(AmsContext context, IUserService userService)
+    public StudentGradeController(AmsContext context, IUserService userService)
     {
         _context = context;
         _userService = userService;
@@ -49,6 +50,12 @@ public class GradeStudentController : ControllerBase
         if (clazz == null)
         {
             return NotFound(CustomResponse.NotFound("Class not found"));
+        }
+        
+        if (clazz.ClassStatusId == ClassStatusMerged)
+        {
+            var error = ErrorDescription.Error["E0401"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         var student = _context.Students
@@ -100,11 +107,11 @@ public class GradeStudentController : ControllerBase
         return Ok(CustomResponse.Ok("Student get grades successfully", moduleProgressScores));
     }
 
-    // student get their grades by class and module
+    // sro get specific grades of student by class and module
     [HttpGet]
     [Route("api/classes/{classId:int}/modules/{moduleId:int}/students/{studentId:int}/grades")]
     [Authorize(Roles = "sro")]
-    public IActionResult SroGetGradesOfStudent(int classId, int moduleId, int studentId)
+    public IActionResult SroGetGradesOfSpecificStudent(int classId, int moduleId, int studentId)
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
         var sro = _context.Sros.Include(s => s.User.Center).First(s => s.UserId == userId);
@@ -113,7 +120,6 @@ public class GradeStudentController : ControllerBase
             .Include(c => c.CourseFamily)
             .Include(c => c.CourseFamily.Courses)
             .ThenInclude(c => c.CoursesModulesSemesters)
-            .Include(c => c.Center)
             .Include(c => c.ClassSchedules)
             .ThenInclude(cs => cs.Module)
             .FirstOrDefault(c => c.Id == classId);
@@ -126,6 +132,12 @@ public class GradeStudentController : ControllerBase
         if (sro.User.Center.Id != clazz.Center.Id)
         {
             return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
+        }
+
+        if (clazz.ClassStatusId == ClassStatusMerged)
+        {
+            var error = ErrorDescription.Error["E0401"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         var isModuleForThisClass = clazz.CourseFamily.Courses
@@ -149,7 +161,30 @@ public class GradeStudentController : ControllerBase
             return NotFound(CustomResponse.NotFound("Student not found in class"));
         }
 
-        var moduleProgressScores = GetGradesOfSpecificStudent(clazz, moduleId, student);
+        var moduleProgressScores = _context.GradeItems
+            .Include(gi => gi.GradeCategoryModule)
+            .Include(gi => gi.GradeCategoryModule.GradeCategory)
+            .Where(gi => gi.GradeCategoryModule.ModuleId == moduleId)
+            .Select(gi => new StudentGradeForStudentResponse()
+            {
+                GradeCategoryId = gi.GradeCategoryModule.GradeCategory.Id,
+                GradeCategoryName = gi.GradeCategoryModule.GradeCategory.Name,
+                TotalWeight = gi.GradeCategoryModule.TotalWeight,
+                QuantityGradeItem = gi.GradeCategoryModule.QuantityGradeItem,
+                GradeItem = new GradeItemWithStudentScoreResponse()
+                {
+                    Id = gi.Id,
+                    Name = gi.Name,
+                    Grade = gi.StudentGrades
+                        .Where(sg => sg.StudentId == studentId && sg.ClassId == classId)
+                        .Select(sg => sg.Grade)
+                        .FirstOrDefault(),
+                    Comment = gi.StudentGrades
+                        .Where(sg => sg.StudentId == studentId && sg.ClassId == classId)
+                        .Select(sg => sg.Comment)
+                        .FirstOrDefault()
+                }
+            });
 
         return Ok(CustomResponse.Ok("SRO get grades of specific student successfully", moduleProgressScores));
     }
@@ -248,6 +283,7 @@ public class GradeStudentController : ControllerBase
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
 
+        // get module that have been started in class, (don't get merged classes)
         var classSchedule = _context.ClassSchedules
             .Include(cs => cs.Class)
             .Include(cs => cs.Class.StudentsClasses)
@@ -256,7 +292,7 @@ public class GradeStudentController : ControllerBase
             .ThenInclude(cms => cms.Course)
             .Include(cs => cs.Module.CoursesModulesSemesters)
             .ThenInclude(cms => cms.Semester)
-            .Where(cs => cs.StartDate.Date <= DateTime.Today &&
+            .Where(cs => cs.StartDate.Date <= DateTime.Today && cs.Class.ClassStatusId != ClassStatusMerged &&
                          cs.Class.StudentsClasses.Any(sc => sc.StudentId == userId));
 
         var semesters = classSchedule.Select(cs => cs.Module.CoursesModulesSemesters)
@@ -289,6 +325,63 @@ public class GradeStudentController : ControllerBase
             .ToList();
 
         return Ok(CustomResponse.Ok("Student get semesters and modules successfully", distinctSemesters));
+    }
+
+    [HttpGet]
+    [Route("api/students/{studentId:int}/semesters/modules")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetLearningModulesInSemestersOfStudent(int studentId)
+    {
+        var userId = Convert.ToInt32(_userService.GetUserId());
+        var userSro = _context.Users.First(u => u.Id == userId);
+        var userStudent = _context.Users.FirstOrDefault(u => u.Id == studentId);
+        if (userStudent == null || userStudent.CenterId != userSro.CenterId)
+        {
+            return NotFound(CustomResponse.NotFound("Student not found in this center"));
+        }
+
+        // get module that have been started in class, (don't get merged classes)
+        var classSchedule = _context.ClassSchedules
+            .Include(cs => cs.Class)
+            .Include(cs => cs.Class.StudentsClasses)
+            .Include(cs => cs.Module)
+            .Include(cs => cs.Module.CoursesModulesSemesters)
+            .ThenInclude(cms => cms.Course)
+            .Include(cs => cs.Module.CoursesModulesSemesters)
+            .ThenInclude(cms => cms.Semester)
+            .Where(cs => cs.StartDate.Date <= DateTime.Today && cs.Class.ClassStatusId != ClassStatusMerged &&
+                         cs.Class.StudentsClasses.Any(sc => sc.StudentId == userStudent.Id));
+
+        var semesters = classSchedule.Select(cs => cs.Module.CoursesModulesSemesters)
+            .SelectMany(cms => cms)
+            // .Where(cms => cms.CourseCode == student.CourseCode)
+            .Select(cms => cms.Semester)
+            .Select(s => new SemesterWithModuleResponse()
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Modules = classSchedule.Where(cs => cs.Module.CoursesModulesSemesters.Any(cms =>
+                        // cms.CourseCode == student.CourseCode &&
+                        cms.SemesterId == s.Id))
+                    .Select(cs => new ModuleWithClassResponse()
+                    {
+                        Id = cs.Module.Id,
+                        Name = cs.Module.ModuleName,
+
+                        Class = new BasicClassResponse()
+                        {
+                            Id = cs.Class.Id,
+                            Name = cs.Class.Name,
+                        },
+                    }).ToList()
+            });
+
+        // distinct semester
+        var distinctSemesters = semesters.GroupBy(s => s.Id)
+            .Select(s => s.First())
+            .ToList();
+
+        return Ok(CustomResponse.Ok("Sro get semesters of student and modules successfully", distinctSemesters));
     }
 
     [HttpPost]
@@ -451,7 +544,7 @@ public class GradeStudentController : ControllerBase
 
             var isExist = gradesOfAllStudentInThisClass.Any(sg => sg.StudentId == r.StudentId
                                                                   && sg.GradeItemId == r.GradeItemId);
-            
+
             // if have any record in student grade of this student by classId, studentId, gradeItemId then update else add
             if (!isExist)
             {
@@ -721,58 +814,58 @@ public class GradeStudentController : ControllerBase
             });
     }
 
-    private IQueryable<StudentGradeResponse> GetGradesOfSpecificStudent(Class clazz, int moduleId, Student student)
-    {
-        return _context.Modules
-            .Include(m => m.GradeCategoryModule)
-            .ThenInclude(gcm => gcm.GradeCategory)
-            .Include(m => m.GradeCategoryModule)
-            .ThenInclude(gcm => gcm.GradeItems)
-            .ThenInclude(gi => gi.StudentGrades)
-            .ThenInclude(sg => sg.Class)
-            .Where(m => m.Id == moduleId)
-            .Select(m => new StudentGradeResponse()
-            {
-                Class = new BasicClassResponse()
-                {
-                    Id = clazz.Id,
-                    Name = clazz.Name
-                },
-
-                Module = new BasicModuleResponse()
-                {
-                    Id = m.Id,
-                    Name = m.ModuleName
-                },
-
-                Student = new StudentInfoAndGradeResponse()
-                {
-                    UserId = student.UserId,
-                    EnrollNumber = student.EnrollNumber,
-                    EmailOrganization = student.User.EmailOrganization,
-                    FirstName = student.User.FirstName,
-                    LastName = student.User.LastName,
-                    Avatar = student.User.Avatar,
-                    GradeCategories = m.GradeCategoryModule
-                        .Select(gcm => new GradeCategoryWithItemsResponse()
-                        {
-                            Id = gcm.GradeCategory.Id,
-                            Name = gcm.GradeCategory.Name,
-                            TotalWeight = gcm.TotalWeight,
-                            QuantityGradeItem = gcm.QuantityGradeItem,
-                            GradeItems = gcm.GradeItems
-                                .Select(gi => new GradeItemWithStudentScoreResponse()
-                                {
-                                    Id = gi.Id,
-                                    Name = gi.Name,
-                                    Grade = gi.StudentGrades.FirstOrDefault(sg =>
-                                        sg.StudentId == student.UserId && sg.ClassId == clazz.Id)!.Grade,
-                                    Comment = gi.StudentGrades.FirstOrDefault(sg =>
-                                        sg.StudentId == student.UserId && sg.ClassId == clazz.Id)!.Comment
-                                })
-                                .ToList()
-                        }).ToList()
-                },
-            });
-    }
+    // private IQueryable<StudentGradeResponse> GetGradesOfSpecificStudent(Class clazz, int moduleId, Student student)
+    // {
+    //     return _context.Modules
+    //         .Include(m => m.GradeCategoryModule)
+    //         .ThenInclude(gcm => gcm.GradeCategory)
+    //         .Include(m => m.GradeCategoryModule)
+    //         .ThenInclude(gcm => gcm.GradeItems)
+    //         .ThenInclude(gi => gi.StudentGrades)
+    //         .ThenInclude(sg => sg.Class)
+    //         .Where(m => m.Id == moduleId)
+    //         .Select(m => new StudentGradeResponse()
+    //         {
+    //             Class = new BasicClassResponse()
+    //             {
+    //                 Id = clazz.Id,
+    //                 Name = clazz.Name
+    //             },
+    //
+    //             Module = new BasicModuleResponse()
+    //             {
+    //                 Id = m.Id,
+    //                 Name = m.ModuleName
+    //             },
+    //
+    //             Student = new StudentInfoAndGradeResponse()
+    //             {
+    //                 UserId = student.UserId,
+    //                 EnrollNumber = student.EnrollNumber,
+    //                 EmailOrganization = student.User.EmailOrganization,
+    //                 FirstName = student.User.FirstName,
+    //                 LastName = student.User.LastName,
+    //                 Avatar = student.User.Avatar,
+    //                 GradeCategories = m.GradeCategoryModule
+    //                     .Select(gcm => new GradeCategoryWithItemsResponse()
+    //                     {
+    //                         Id = gcm.GradeCategory.Id,
+    //                         Name = gcm.GradeCategory.Name,
+    //                         TotalWeight = gcm.TotalWeight,
+    //                         QuantityGradeItem = gcm.QuantityGradeItem,
+    //                         GradeItems = gcm.GradeItems
+    //                             .Select(gi => new GradeItemWithStudentScoreResponse()
+    //                             {
+    //                                 Id = gi.Id,
+    //                                 Name = gi.Name,
+    //                                 Grade = gi.StudentGrades.FirstOrDefault(sg =>
+    //                                     sg.StudentId == student.UserId && sg.ClassId == clazz.Id)!.Grade,
+    //                                 Comment = gi.StudentGrades.FirstOrDefault(sg =>
+    //                                     sg.StudentId == student.UserId && sg.ClassId == clazz.Id)!.Comment
+    //                             })
+    //                             .ToList()
+    //                     }).ToList()
+    //             },
+    //         });
+    // }
 }
