@@ -19,15 +19,14 @@ import toast from "react-hot-toast";
 import { MdDelete } from "react-icons/md";
 import { UserStudentApis } from "../../../apis/ListApi";
 import FetchApi from "../../../apis/FetchApi";
-import {
-  MdMenuBook,
-} from 'react-icons/md';
-import { ImLibrary } from 'react-icons/im';
+import { MdMenuBook } from "react-icons/md";
+import { ImLibrary } from "react-icons/im";
 import Item from "antd/lib/list/Item";
 const GradeScreen = () => {
   const [listModuleSemester, setListModuleSemester] = useState([]);
   const [listGrade, setListGrade] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [listGradeFinal, setListGradeFinal] = useState([]);
   // const [isLoadingGrade, setIsLoadingGrade] = useState(true);
 
   const getModuleSemester = () => {
@@ -56,11 +55,8 @@ const GradeScreen = () => {
       String(moduleid),
     ])
       .then((res) => {
-      
-
         setListGrade(res.data);
         console.log(listGrade.map((item) => item));
-        // console.log(listGrade.map((item) => item.name));
       })
       .catch((err) => {
         // toast.error("Lỗi khi tải điểm");
@@ -129,25 +125,24 @@ const GradeScreen = () => {
               <Loading />
             ) : (
               <div style={{ color: "black !important" }}>
-                <Menu 
-                mode="inline"
-                // defaultOpenKeys={["1"]}
-                style={{ width: "100%"}}
+                <Menu
+                  mode="inline"
+                  // defaultOpenKeys={["1"]}
+                  style={{ width: "100%" }}
                 >
                   {listModuleSemester.map((item, index) => (
                     <Fragment key={index}>
                       <Menu.SubMenu
                         style={{ color: "black!important" }}
                         title={item.name}
-                        key={index + 1}
+                        key={item.id}
                         rootStyle={{ width: "100%" }}
                         icon={<ImLibrary />}
-                        
                       >
                         {item.modules.map((modules, index) => (
                           <Menu.Item
                             // title={modules.name + " ( " + modules.class.name + " )"}
-                            key={index + 2}
+                            key={modules.id + modules.class.id}
                             rootStyle={{ width: "100%" }}
                             onClick={() =>
                               onSelectTree(modules.id, modules.class.id)
@@ -180,58 +175,62 @@ const GradeScreen = () => {
                 textAlign: "center",
               }}
             >
-              Bảng điểm 
+              Bảng điểm
             </Text>
           </Card.Header>
           <Spacer y={0.6} />
           <Card.Divider />
-          <Card.Body>
-            <Table
-              aria-label=""
-              css={{
-                height: "auto",
-                minWidth: "100%",
-              }}
-              lined
-              headerLined
-              shadow={false}
-            >
-              <Table.Header>
-                <Table.Column width={200}>Loại điểm</Table.Column>
-                <Table.Column width={100}>Trọng số</Table.Column>
-                <Table.Column width={50}>Điểm</Table.Column>
-                <Table.Column width={80}>Chú thích</Table.Column>
-              </Table.Header>
-              <Table.Body>
-                {listGrade.map((item, index) => (
-                  <Table.Row key={index}>
-                    <Table.Cell>{item.grade_item.name}</Table.Cell>
-                    <Table.Cell>
-                    
-                        
-                      {item.total_weight ? 
-                        <Badge color = "warning">
-                     { Math.round((item.total_weight) / (item.quantity_grade_item) * 10) / 10 }
-                     % 
-                      </Badge> : ""} 
-                   
+          {
+            <Card.Body>
+              <Table
+                aria-label=""
+                css={{
+                  height: "auto",
+                  minWidth: "100%",
+                }}
+                lined
+                headerLined
+                shadow={false}
+              >
+                <Table.Header>
+                  <Table.Column width={200}>Loại điểm</Table.Column>
+                  <Table.Column width={100}>Trọng số</Table.Column>
+                  <Table.Column width={50}>Điểm</Table.Column>
+                  <Table.Column width={80}>Chú thích</Table.Column>
+                </Table.Header>
+                <Table.Body>
+                  {listGrade.map((item, index) => (
+                    <Table.Row key={index}>
+                      <Table.Cell>{item.grade_item.name}</Table.Cell>
+                      <Table.Cell>
+                        {item.total_weight ? (
+                          <Badge color="warning">
+                            {Math.round(
+                              (item.total_weight / item.quantity_grade_item) *
+                                10
+                            ) / 10}
+                            %
+                          </Badge>
+                        ) : (
+                          ""
+                        )}
                       </Table.Cell>
-                    {/* <Table.Cell b>{Math.round((item.grade_item?.grade) * 10) / 10}</Table.Cell> */}
-                    <Table.Cell b>{item.grade_item.grade ? Math.round((item.grade_item?.grade) * 10) / 10 : " "}</Table.Cell>
+                      {/* <Table.Cell b>{Math.round((item.grade_item?.grade) * 10) / 10}</Table.Cell> */}
+                      <Table.Cell b>
+                        {item.grade_item.grade
+                          ? Math.round(item.grade_item?.grade * 10) / 10
+                          : " "}
+                      </Table.Cell>
 
-
-                    <Table.Cell css={{ color: "#f31260" }}>
-                    {item.grade_item?.comment}
-                    </Table.Cell>
-                  </Table.Row>
-                ))}
-
-               
-              </Table.Body>
-            </Table>
-         
-            
-          </Card.Body>
+                      <Table.Cell css={{ color: "#f31260" }}>
+                        {item.grade_item?.comment}
+                      </Table.Cell>
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+              </Table>
+            </Card.Body>
+          }
         </Card>
       </Grid>
     </Grid.Container>

@@ -70,5 +70,21 @@ public static class ModuleMockData
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
         },
+        new Module()
+        {
+            Id = 5,
+            CenterId = 2,
+            SemesterNamePortal = "semester 2",
+            ModuleName = "Module 5",
+            ModuleExamNamePortal = "Module Exam Portal 5",
+            ModuleType = 3,
+            MaxTheoryGrade = 100,
+            MaxPracticalGrade = 100,
+            Hours = 20,
+            Days = 5,
+            ExamType = 3, // both practice and theory exam
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+        },
     };
 }

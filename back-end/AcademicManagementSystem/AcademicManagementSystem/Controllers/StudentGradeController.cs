@@ -330,12 +330,12 @@ public class GradeStudentController : ControllerBase
         }
 
         // can't update grades if module exam type is don't take exam
-        var module = classContext.ClassSchedules.First(cs => cs.ModuleId == moduleId).Module;
-        if (module.ExamType is ExamTypeNoTakeExam)
-        {
-            var error = ErrorDescription.Error["E0307"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
+        // var module = classContext.ClassSchedules.First(cs => cs.ModuleId == moduleId).Module;
+        // if (module.ExamType is ExamTypeNoTakeExam)
+        // {
+        //     var error = ErrorDescription.Error["E0307"];
+        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        // }
 
         // // first session in class schedule
         // var firstSession = classContext.ClassSchedules
@@ -403,15 +403,41 @@ public class GradeStudentController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        var module = classContext.ClassSchedules.First(cs => cs.ModuleId == moduleId).Module;
+        var maxTheoryGrade = module.MaxTheoryGrade;
+        var maxPracticeGrade = module.MaxPracticalGrade;
+
         var gradesOfAllStudentInThisClass = _context.StudentGrades
             .Where(sg => sg.ClassId == classId);
 
         foreach (var r in distinctRequest)
         {
-            if (r.Grade is < 0 or > 10)
+            var gradeItem = gradeItemsOfModule.First(gi => gi.Id == r.GradeItemId);
+            // except exams, limit grade is 10
+            if (gradeItem.GradeCategoryModule.GradeCategoryId != PracticeExam &&
+                gradeItem.GradeCategoryModule.GradeCategoryId != TheoryExam &&
+                gradeItem.GradeCategoryModule.GradeCategoryId != PracticeExamResit &&
+                gradeItem.GradeCategoryModule.GradeCategoryId != TheoryExamResit &&
+                r.Grade is < 0 or > 10)
             {
                 var error = ErrorDescription.Error["E0304"];
                 return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+
+            // exams will depends on max grade practical of module
+            if (gradeItem.GradeCategoryModule.GradeCategoryId is PracticeExam or PracticeExamResit
+                && maxPracticeGrade != null && (r.Grade is < 0 || r.Grade > maxPracticeGrade))
+            {
+                var error = ErrorDescription.Error["E0309"];
+                return BadRequest(CustomResponse.BadRequest(error.Message + "(" + maxPracticeGrade + ")", error.Type));
+            }
+
+            // exams will depends on max grade theory of module
+            if (gradeItem.GradeCategoryModule.GradeCategoryId is TheoryExam or TheoryExamResit
+                && maxTheoryGrade != null && (r.Grade is < 0 || r.Grade > maxTheoryGrade))
+            {
+                var error = ErrorDescription.Error["E0308"];
+                return BadRequest(CustomResponse.BadRequest(error.Message + "(" + maxTheoryGrade + ")", error.Type));
             }
 
             var studentGrade = new StudentGrade()
@@ -423,9 +449,10 @@ public class GradeStudentController : ControllerBase
                 Comment = r.Comment,
             };
 
-            // if have any record in student grade of this student by classId, studentId, gradeItemId then update else add
             var isExist = gradesOfAllStudentInThisClass.Any(sg => sg.StudentId == r.StudentId
                                                                   && sg.GradeItemId == r.GradeItemId);
+            
+            // if have any record in student grade of this student by classId, studentId, gradeItemId then update else add
             if (!isExist)
             {
                 _context.StudentGrades.Add(studentGrade);
@@ -491,12 +518,12 @@ public class GradeStudentController : ControllerBase
             case ExamTypeTheory:
                 return Unauthorized(CustomResponse.Unauthorized("You are not able to update grades for this module"));
 
-            // can't update grades if module exam type is don't take exam
-            case ExamTypeNoTakeExam:
-            {
-                var error = ErrorDescription.Error["E0307"];
-                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-            }
+            // // can't update grades if module exam type is don't take exam
+            // case ExamTypeNoTakeExam:
+            // {
+            //     var error = ErrorDescription.Error["E0307"];
+            //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            // }
         }
 
         // check user center is same center of class

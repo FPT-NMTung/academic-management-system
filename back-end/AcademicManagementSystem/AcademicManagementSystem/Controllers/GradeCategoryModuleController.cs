@@ -19,6 +19,10 @@ public class GradeCategoryModuleController : ControllerBase
     private const int PracticeExamResit = 7;
     private const int TheoryExamResit = 8;
     private const int FinalProject = 9;
+    private const int ExamTypePe = 1;
+    private const int ExamTypeTe = 2;
+    private const int ExamTypeBothPeAndTe = 3;
+    private const int ExamTypeNoTakeExam = 4;
 
     public GradeCategoryModuleController(AmsContext context)
     {
@@ -56,7 +60,7 @@ public class GradeCategoryModuleController : ControllerBase
             var error = ErrorDescription.Error["E0062"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         // check module is learning 
         var isModuleLearned = _context.Modules
             .Include(m => m.ClassSchedules)
@@ -67,20 +71,20 @@ public class GradeCategoryModuleController : ControllerBase
             var error = ErrorDescription.Error["E0067_5"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         RemoveDataGradeCategoryAndGradeItem(moduleId);
 
         // not null and count > 0
         if (request.GradeCategoryDetails is { Count: > 0 })
         {
-            // 1: only take theory exam -> can't add any grade category (because theory exam is default and auto add later)
-            // 4: not take exam -> can't add any grade category
-            if (module.ExamType is 1 or 4)
+            // ExamTypePe: only take theory exam -> can't add any grade category (because theory exam is default and auto add later)
+            // ExamTypeNoTakeExam: not take exam -> add only grade category FINAL PROJECT (auto add later)
+            if (module.ExamType is ExamTypePe or ExamTypeNoTakeExam)
             {
                 var error = ErrorDescription.Error["E0067_3"];
                 return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
             }
-            
+
             // check duplicate grade category id
             var duplicateGradeCategoryId = request.GradeCategoryDetails
                 .GroupBy(g => g.GradeCategoryId)
@@ -120,7 +124,7 @@ public class GradeCategoryModuleController : ControllerBase
             //check list request have practice exam
             var isHavePeExam = request.GradeCategoryDetails.Any(gcd => gcd.GradeCategoryId == PracticeExam);
             // practice exam or both exam but don't have practice exam 
-            if (module.ExamType is 2 or 3 && !isHavePeExam)
+            if (module.ExamType is ExamTypePe or ExamTypeBothPeAndTe && !isHavePeExam)
             {
                 var error = ErrorDescription.Error["E0067"];
                 return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -199,21 +203,28 @@ public class GradeCategoryModuleController : ControllerBase
             }
 
             // auto add theory exam type
-            if (module.ExamType == 3)
+            if (module.ExamType == ExamTypeBothPeAndTe)
             {
                 AutoAddTheoryExam(module);
             }
         }
         /*
          * case request null or count = 0
-         * module exam type is te or both pe & te -> auto add theory exam
+         * - module exam type is te(1) or both(3) pe & te -> auto add theory exam
+         * - module exam type is pe(4) -> auto 
          */
         else
         {
-            // auto add theory exam and theory exam resit if module exam type is 1(theory exam) or 3(both)
-            if (module.ExamType is 1 or 3)
+            switch (module.ExamType)
             {
-                AutoAddTheoryExam(module);
+                // auto add theory exam and theory exam resit if module exam type is 1(theory exam)
+                case ExamTypeTe:
+                    AutoAddTheoryExam(module);
+                    break;
+                // auto add final project when no take exam
+                case ExamTypeNoTakeExam:
+                    AutoAddFinalProject(module);
+                    break;
             }
         }
 
@@ -311,5 +322,28 @@ public class GradeCategoryModuleController : ControllerBase
 
         _context.GradeCategoryModules.Add(te);
         _context.GradeCategoryModules.Add(teResit);
+    }
+
+    private void AutoAddFinalProject(Module module)
+    {
+        var finalProjectName = _context.GradeCategories.Find(FinalProject)!.Name;
+
+        // add final project
+        var fp = new GradeCategoryModule()
+        {
+            ModuleId = module.Id,
+            GradeCategoryId = FinalProject,
+            TotalWeight = 100,
+            QuantityGradeItem = 1,
+            GradeItems = new List<GradeItem>()
+            {
+                new GradeItem()
+                {
+                    Name = finalProjectName
+                }
+            }
+        };
+
+        _context.GradeCategoryModules.Add(fp);
     }
 }
