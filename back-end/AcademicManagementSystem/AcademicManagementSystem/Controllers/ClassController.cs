@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using AcademicManagementSystem.Context;
@@ -141,7 +142,7 @@ public class ClassController : ControllerBase
             var error = ErrorDescription.Error["E0076_2"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         if (!courseFamily.IsActive)
         {
             var error = ErrorDescription.Error["E0076_3"];
@@ -549,27 +550,52 @@ public class ClassController : ControllerBase
                             return BadRequest(CustomResponse.BadRequest(error.Message + studentNo, error.Type));
                         }
 
-                        var provinceId =
-                            _context.Provinces.FirstOrDefault(p =>
-                                string.Equals(p.Name.ToLower().Trim(), province!.ToLower().Trim())) == null
-                                ? 1
-                                : _context.Provinces.FirstOrDefault(p => p.Name == province)!.Id;
+                        // get list Province name
+                        var listProvinceName = _context.Provinces.Select(p => p.Name).ToList();
+                        foreach (var item in listProvinceName)
+                        {
+                            if (ConvertToUnsignedString(item).Equals(ConvertToUnsignedString(province!)))
+                            {
+                                province = item;
+                                break;
+                            }
+                        }
 
-                        var districtId = _context.Districts
+                        // get province id
+                        var provinceId = _context.Provinces.FirstOrDefault(p => p.Name.Equals(province))!.Id;
+
+                        // get list District name
+                        var listDistrictName = _context.Districts
                             .Where(d => d.ProvinceId == provinceId)
-                            .FirstOrDefault(d =>
-                                string.Equals(d.Name.ToLower().Trim(), district!.ToLower().Trim())) == null
-                            ? 1
-                            : _context.Districts.Where(d => d.ProvinceId == provinceId)
-                                .FirstOrDefault(d => d.Name == district)!.Id;
+                            .Select(d => d.Name).ToList();
+                        foreach (var item in listDistrictName)
+                        {
+                            if (ConvertToUnsignedString(item).Equals(ConvertToUnsignedString(district!)))
+                            {
+                                district = item;
+                                break;
+                            }
+                        }
 
-                        var wardId = _context.Wards
-                            .Where(w => w.DistrictId == districtId)
-                            .FirstOrDefault(w =>
-                                string.Equals(w.Name.ToLower().Trim(), ward!.ToLower().Trim())) == null
-                            ? 1
-                            : _context.Wards.Where(w => w.DistrictId == districtId).FirstOrDefault(w => w.Name == ward)!
-                                .Id;
+                        // get district id
+                        var districtId = _context.Districts.FirstOrDefault(d => d.Name.Equals(district))!.Id;
+
+                        // get list Ward name
+                        var listWardName = _context.Wards
+                            .Where(w => w.DistrictId == districtId && w.ProvinceId == provinceId)
+                            .Select(w => w.Name).ToList();
+
+                        foreach (var item in listWardName)
+                        {
+                            if (ConvertToUnsignedString(item).Equals(ConvertToUnsignedString(ward!)))
+                            {
+                                ward = item;
+                                break;
+                            }
+                        }
+
+                        // get ward id
+                        var wardId = _context.Wards.FirstOrDefault(w => w.Name.Equals(ward))!.Id;
 
                         var newBirthday = DateTime.Parse(birthday ?? throw new InvalidOperationException());
                         var newIdentityCardPublishedDate =
@@ -2151,7 +2177,6 @@ public class ClassController : ControllerBase
         return students;
     }
 
-
     // download template
     [HttpGet]
     [Route("api/classes/download-template-import-students")]
@@ -2232,5 +2257,22 @@ public class ClassController : ControllerBase
         return Regex.Replace(normalizedStr, pattern, string.Empty)
             .Replace('\u0111', 'd')
             .Replace('\u0110', 'D');
+    }
+
+    // convert to unsigned string
+    private string ConvertToUnsignedString(string text)
+    {
+        var normalizedString = text.Normalize(NormalizationForm.FormD);
+        var stringBuilder = new StringBuilder();
+        foreach (var c in normalizedString)
+        {
+            var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+            if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+            {
+                stringBuilder.Append(c);
+            }
+        }
+
+        return stringBuilder.ToString().Normalize(NormalizationForm.FormD).Trim().ToLower();
     }
 }
