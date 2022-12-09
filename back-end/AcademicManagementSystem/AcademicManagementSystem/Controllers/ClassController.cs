@@ -550,11 +550,29 @@ public class ClassController : ControllerBase
                             return BadRequest(CustomResponse.BadRequest(error.Message + studentNo, error.Type));
                         }
 
-                        province = Regex.Replace(province!, StringConstant.RegexWhiteSpaces, " ");
+                        if (province == null)
+                        {
+                            var error = ErrorDescription.Error["E1152"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message + studentNo, error.Type));
+                        }
+
+                        if (district == null)
+                        {
+                            var error = ErrorDescription.Error["E1153"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message + studentNo, error.Type));
+                        }
+
+                        if (ward == null)
+                        {
+                            var error = ErrorDescription.Error["E1154"];
+                            return BadRequest(CustomResponse.BadRequest(error.Message + studentNo, error.Type));
+                        }
+
+                        province = Regex.Replace(province, StringConstant.RegexWhiteSpaces, " ");
                         province = province.Replace(" ' ", "'").Trim();
-                        district = Regex.Replace(district!, StringConstant.RegexWhiteSpaces, " ");
+                        district = Regex.Replace(district, StringConstant.RegexWhiteSpaces, " ");
                         district = district.Replace(" ' ", "'").Trim();
-                        ward = Regex.Replace(ward!, StringConstant.RegexWhiteSpaces, " ");
+                        ward = Regex.Replace(ward, StringConstant.RegexWhiteSpaces, " ");
                         ward = ward.Replace(" ' ", "'").Trim();
 
                         // get list Province name

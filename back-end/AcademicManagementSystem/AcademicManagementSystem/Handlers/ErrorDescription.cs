@@ -213,6 +213,9 @@ public static class ErrorDescription
         { "E0076_1", new ErrorModel() { Message = "Not found course family", Type = "class-error-0082" } },
         { "E0076_2", new ErrorModel() { Message = "At year of start date of this class, course family is not published yet", Type = "class-error-0083" } },
         { "E0076_3", new ErrorModel() { Message = "Course family is not active", Type = "class-error-0084" } },
+        { "E1152", new ErrorModel() { Message = "Province is not exist at ", Type = "class-error-0085" } },
+        { "E1153", new ErrorModel() { Message = "District is not exist at ", Type = "class-error-0086" } },
+        { "E1154", new ErrorModel() { Message = "Ward is not exist at ", Type = "class-error-0087" } },
 
         // student class
         { "E1069", new ErrorModel() { Message = "Fail to SaveChange when import Students to class by excel", Type = "student-class-error-0001" } },
