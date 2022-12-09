@@ -38,6 +38,17 @@ public static class TeacherMockData
             StartWorkingDate = DateTime.Today,
             Salary = 1000,
             TaxCode = "0000000003"
+        },
+        new Teacher()
+        {
+            UserId = 11,
+            TeacherTypeId = 1,
+            WorkingTimeId = 2,
+            Nickname = null,
+            CompanyAddress = null,
+            StartWorkingDate = DateTime.Today,
+            Salary = 1000000000,
+            TaxCode = "0000000004"
         }
     };
 }

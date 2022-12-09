@@ -351,12 +351,10 @@ const StudentDetail = () => {
               </Card>
                   </items>
 
-                  <items className="" tab="Đánh giá GPA" key="2">
+                  <items className="" tab="GPA giáo viên" key="2">
                     GPA
                   </items>
-                  <items tab="Thông tin khác " key="3">
-                    Thông tin khác
-                  </items>
+                
                 </Tabs>
               </Grid>
             </Grid.Container>
