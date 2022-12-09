@@ -290,6 +290,11 @@ export const ManageTeacherApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  searchTeacherBySro: {
+    url: 'api/teachers/search-by-sro',
+    method: 'GET',
+    contextType: 'application/json',
+  },
   detailTeacher: {
     url: 'api/teachers/{0}',
     method: 'GET',
@@ -350,6 +355,33 @@ export const ManageTeacherApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  getListModulesOfATeacher: {
+    url: '/api/gpa/teachers/{0}/modules',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getListClassOfATeacherByModule: {
+    url: '/api/gpa/modules/{0}/classes',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getAverageGPAOfATeacher: {
+    url: '/api/gpa/teachers/{0}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getAverageGPAOfATeacherByModule: {
+    url: 'api/gpa/teachers/{0}/modules/{1}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getAverageGPAOfATeacherByModuleAndClass: {
+    url: 'api/gpa/teachers/{0}/classes/{1}/modules/{2}',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  
+
 };
 
 export const UserApis = {
@@ -612,6 +644,7 @@ export const ManageGpa = {
     method: 'POST',
     contextType: 'application/json',
   },
+
 
 
 
