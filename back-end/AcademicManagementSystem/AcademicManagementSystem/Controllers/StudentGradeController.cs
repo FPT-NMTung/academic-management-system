@@ -107,7 +107,7 @@ public class GradeStudentController : ControllerBase
         return Ok(CustomResponse.Ok("Student get grades successfully", moduleProgressScores));
     }
 
-    // student get their grades by class and module
+    // sro get specific grades of student by class and module
     [HttpGet]
     [Route("api/classes/{classId:int}/modules/{moduleId:int}/students/{studentId:int}/grades")]
     [Authorize(Roles = "sro")]
