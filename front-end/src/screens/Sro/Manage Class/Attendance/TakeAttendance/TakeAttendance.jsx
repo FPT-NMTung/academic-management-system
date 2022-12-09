@@ -1,19 +1,31 @@
-import { Button, Modal, Spacer, Switch as SwitchNextUI, Text } from '@nextui-org/react';
-import { Form, Input, Table, Switch } from 'antd';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import toast from 'react-hot-toast';
-import { Link } from 'react-router-dom';
-import FetchApi from '../../../../../apis/FetchApi';
-import { ManageAttendanceApis } from '../../../../../apis/ListApi';
-import { Validater } from '../../../../../validater/Validater';
-import { MdEmail } from 'react-icons/md';
-import classes from './TakeAttendance.module.css';
+import {
+  Button,
+  Modal,
+  Spacer,
+  Switch as SwitchNextUI,
+  Text,
+} from "@nextui-org/react";
+import { Form, Input, Table, Switch } from "antd";
+import { useEffect } from "react";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
+import FetchApi from "../../../../../apis/FetchApi";
+import { ManageAttendanceApis, ManageGpa } from "../../../../../apis/ListApi";
+import { Validater } from "../../../../../validater/Validater";
+import { MdEmail } from "react-icons/md";
+import classes from "./TakeAttendance.module.css";
+import moment from "moment";
+import { ErrorCodeApi } from "../../../../../apis/ErrorCodeApi";
 
 const TakeAttendance = ({ session, scheduleId, onClose }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [listAttendance, setListAttendance] = useState([]);
   const [listStatus, setListStatus] = useState([]);
+  const [learning_date, setLearning_date] = useState(
+    moment().format("YYYY-MM-DD")
+  );
+  const [messageFailed, setMessageFailed] = useState(undefined);
 
   const [form] = Form.useForm();
 
@@ -24,11 +36,12 @@ const TakeAttendance = ({ session, scheduleId, onClose }) => {
       String(session.id),
     ])
       .then((res) => {
+        setLearning_date(res.data[0].learning_date);
         const data = res.data[0].attendances.map((item, index) => {
           return {
             image: item.student.avatar,
             information: {
-              name: item.student.first_name + ' ' + item.student.last_name,
+              name: item.student.first_name + " " + item.student.last_name,
               user_id: item.student.user_id,
               enroll_number: item.student.enroll_number,
               email_organization: item.student.email_organization,
@@ -58,14 +71,15 @@ const TakeAttendance = ({ session, scheduleId, onClose }) => {
         form.setFieldsValue(dataForm);
       })
       .catch((err) => {
-        toast.error('Lỗi lấy thoong tin điểm danh');
+        toast.error("Lỗi lấy thoong tin điểm danh");
       });
   };
 
   useEffect(() => {
     getListAttendance();
-    console.log( "id lịch học" + String(scheduleId) + 'id tiết học ' + String(session.id) );
-   
+    console.log(
+      "id lịch học" + String(scheduleId) + "id tiết học " + String(session.id)
+    );
   }, []);
 
   const handleChangeStatus = (record, status) => {
@@ -84,12 +98,32 @@ const TakeAttendance = ({ session, scheduleId, onClose }) => {
     });
     setListStatus(data);
   };
+  const handleSendEmail = () => {
+    console.log("send email to " + session.id);
+    toast.promise(
+      FetchApi(ManageGpa.requestStudentTakeGPA, null, null, [String(session.id)]),
+      {
+        loading: "Đang gửi ... ",
+        success: (res) => {
+          return "Gửi thành công";
+        },
+        error: (err) => {
+          setMessageFailed(ErrorCodeApi[err.type_error]);
+        if (err?.type_error) {
+          return ErrorCodeApi[err.type_error];
+        }
+
+        return 'Thất bại';
+        },
+      }
+    );
+  };
 
   const onSubmitForm = (values) => {
     // convert object to array
     const data = Object.keys(values).map((key) => {
       return {
-        user_id: Number.parseInt(key.split('-')[1]),
+        user_id: Number.parseInt(key.split("-")[1]),
         note: values[key],
       };
     });
@@ -99,24 +133,24 @@ const TakeAttendance = ({ session, scheduleId, onClose }) => {
       return {
         student_id: item.user_id,
         attendance_status_id: item.status ? 3 : 2,
-        note: find === '' ? null : find,
+        note: find === "" ? null : find,
       };
-    });    
+    });
 
-    var api = localStorage.getItem('role') === 'teacher' ? ManageAttendanceApis.submitAttendanceTeacher : ManageAttendanceApis.submitAttendanceSro;
+    var api =
+      localStorage.getItem("role") === "teacher"
+        ? ManageAttendanceApis.submitAttendanceTeacher
+        : ManageAttendanceApis.submitAttendanceSro;
 
     toast.promise(
-      FetchApi(api, dataSubmit, null, [
-        String(scheduleId),
-        String(session.id),
-      ]),
+      FetchApi(api, dataSubmit, null, [String(scheduleId), String(session.id)]),
       {
-        loading: 'Đang lưu ... ',
+        loading: "Đang lưu ... ",
         success: (res) => {
-          return 'Lưu thành công';
+          return "Lưu thành công";
         },
         error: (err) => {
-          return 'Lưu thất bại';
+          return "Lưu thất bại";
         },
       }
     );
@@ -137,27 +171,28 @@ const TakeAttendance = ({ session, scheduleId, onClose }) => {
       </Modal.Header>
       <Modal.Body>
         <div className={classes.buttonChangeAttendance}>
-        <Button
+          <Button
             flat
             auto
-            size={'sm'}
-            color={'error'}
+            size={"sm"}
+            color={"error"}
             css={{
-              position: 'absolute',
-              left: '24px',
+              position: "absolute",
+              left: "24px",
             }}
-            // onPress={}
+            disabled={moment() <= moment(learning_date)}
+            onPress={() => {
+              handleSendEmail();
+            }}
           >
-            <MdEmail size={18} style={{ marginRight: '8px' }}
-            />
-            Gửi Email lấy ý kiến
-         
+            <MdEmail size={18} style={{ marginRight: "8px" }} />
+            Gửi Email lấy ý kiến giảng viên
           </Button>
           <Button
             flat
             auto
-            size={'sm'}
-            color={'success'}
+            size={"sm"}
+            color={"success"}
             onPress={() => handleChangeAllStatus(true)}
           >
             Tất cả có mặt
@@ -165,8 +200,8 @@ const TakeAttendance = ({ session, scheduleId, onClose }) => {
           <Button
             flat
             auto
-            size={'sm'}
-            color={'error'}
+            size={"sm"}
+            color={"error"}
             onPress={() => handleChangeAllStatus(false)}
           >
             Tất cả vắng mặt
@@ -178,22 +213,22 @@ const TakeAttendance = ({ session, scheduleId, onClose }) => {
             loading={isLoading}
             columns={[
               {
-                title: 'Hình ảnh',
-                dataIndex: 'image',
-                key: 'image',
+                title: "Hình ảnh",
+                dataIndex: "image",
+                key: "image",
                 render: (image) => (
                   <img className={classes.imageStudent} src={image} />
                 ),
                 width: 200,
               },
               {
-                title: 'Thông tin',
-                dataIndex: 'information',
-                key: 'information',
+                title: "Thông tin",
+                dataIndex: "information",
+                key: "information",
                 render: (information) => (
                   <div className={classes.information}>
                     <Link
-                      target={'_blank'}
+                      target={"_blank"}
                       to={`/sro/manage/student/${information.user_id}`}
                     >
                       <Text p b size={14}>
@@ -210,10 +245,10 @@ const TakeAttendance = ({ session, scheduleId, onClose }) => {
                 ),
               },
               {
-                title: 'Trạng thái',
-                dataIndex: 'status',
+                title: "Trạng thái",
+                dataIndex: "status",
                 width: 100,
-                key: 'status',
+                key: "status",
                 render: (status, record) => {
                   const temp = listStatus.find(
                     (item) => item.user_id === record.information.user_id
@@ -227,15 +262,15 @@ const TakeAttendance = ({ session, scheduleId, onClose }) => {
                     <SwitchNextUI
                       onChange={() => handleChangeStatus(record, check)}
                       checked={check}
-                      color={'success'}
+                      color={"success"}
                     />
                   );
                 },
               },
               {
-                title: 'Ghi chú',
-                dataIndex: 'note',
-                key: 'note',
+                title: "Ghi chú",
+                dataIndex: "note",
+                key: "note",
                 render: (note, record) => (
                   <Form.Item
                     name={`note-${record.information.user_id}`}
@@ -246,7 +281,7 @@ const TakeAttendance = ({ session, scheduleId, onClose }) => {
                           if (
                             value === null ||
                             value === undefined ||
-                            value.trim() === ''
+                            value.trim() === ""
                           ) {
                             return Promise.resolve();
                           }
@@ -256,7 +291,7 @@ const TakeAttendance = ({ session, scheduleId, onClose }) => {
                             )
                           ) {
                             return Promise.reject(
-                              'Trường này không được chứa ký tự đặc biệt'
+                              "Trường này không được chứa ký tự đặc biệt"
                             );
                           }
                           if (
@@ -264,7 +299,7 @@ const TakeAttendance = ({ session, scheduleId, onClose }) => {
                             value.trim().length > 255
                           ) {
                             return Promise.reject(
-                              new Error('Trường phải từ 1 đến 255 ký tự')
+                              new Error("Trường phải từ 1 đến 255 ký tự")
                             );
                           }
                           return Promise.resolve();
@@ -272,7 +307,7 @@ const TakeAttendance = ({ session, scheduleId, onClose }) => {
                       },
                       {
                         whitespace: true,
-                        message: 'Trường không được chứa khoảng trắng',
+                        message: "Trường không được chứa khoảng trắng",
                       },
                     ]}
                   >
@@ -288,7 +323,7 @@ const TakeAttendance = ({ session, scheduleId, onClose }) => {
           {/* )} */}
           <Form.Item>
             <Spacer y={1} />
-            <Button auto color={'success'} type="primary" htmlType="submit">
+            <Button auto color={"success"} type="primary" htmlType="submit">
               Lưu
             </Button>
           </Form.Item>
