@@ -587,7 +587,9 @@ public class ClassController : ControllerBase
                         }
 
                         // get province id
-                        var provinceId = _context.Provinces.FirstOrDefault(p => p.Name.Equals(province))!.Id;
+                        var provinceId = _context.Provinces.FirstOrDefault(p => p.Name.Equals(province)) == null
+                            ? 1
+                            : _context.Provinces.FirstOrDefault(p => p.Name.Equals(province))!.Id;
 
                         // get list District name
                         var listDistrictName = _context.Districts
@@ -603,7 +605,9 @@ public class ClassController : ControllerBase
                         }
 
                         // get district id
-                        var districtId = _context.Districts.FirstOrDefault(d => d.Name.Equals(district))!.Id;
+                        var districtId = _context.Districts.FirstOrDefault(d => d.Name.Equals(district)) == null
+                            ? 1
+                            : _context.Districts.FirstOrDefault(d => d.Name.Equals(district))!.Id;
 
                         // get list Ward name
                         var listWardName = _context.Wards
@@ -620,7 +624,9 @@ public class ClassController : ControllerBase
                         }
 
                         // get ward id
-                        var wardId = _context.Wards.FirstOrDefault(w => w.Name.Equals(ward))!.Id;
+                        var wardId = _context.Wards.FirstOrDefault(w => w.Name.Equals(ward)) == null
+                            ? 1
+                            : _context.Wards.FirstOrDefault(w => w.Name.Equals(ward))!.Id;
 
                         var newBirthday = DateTime.Parse(birthday ?? throw new InvalidOperationException());
                         var newIdentityCardPublishedDate =
