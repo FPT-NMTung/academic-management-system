@@ -460,6 +460,11 @@ public class GpaController : ControllerBase
             .Where(g => g.TeacherId == teacherId && g.ClassId == classId)
             .ToList();
 
+        if (gpaRecords.Count == 0)
+        {
+            return Ok(CustomResponse.Ok("teacher has not been taken a gpa by any students", null!));
+        }
+
         var gpaRecordAnswer = gpaRecords.Select(g => g.GpaRecordsAnswers).ToList();
 
         // get list comment
@@ -521,6 +526,11 @@ public class GpaController : ControllerBase
             .ThenInclude(a => a.Question)
             .Where(g => g.TeacherId == teacherId && g.ModuleId == moduleId)
             .ToList();
+
+        if (gpaRecords.Count == 0)
+        {
+            return Ok(CustomResponse.Ok("teacher has not been taken a gpa by any students", null!));
+        }
 
         var gpaRecordAnswer = gpaRecords.Select(g => g.GpaRecordsAnswers).ToList();
 
@@ -590,6 +600,11 @@ public class GpaController : ControllerBase
             .ThenInclude(a => a.Question)
             .Where(g => g.TeacherId == teacherId && g.ClassId == classId && g.ModuleId == moduleId)
             .ToList();
+
+        if (gpaRecords.Count == 0)
+        {
+            return Ok(CustomResponse.Ok("teacher has not been taken a gpa by any students", null!));
+        }
 
         var gpaRecordAnswer = gpaRecords.Select(g => g.GpaRecordsAnswers).ToList();
 
@@ -668,6 +683,11 @@ public class GpaController : ControllerBase
             .Where(g => g.TeacherId == teacherId && g.ClassId == classId && g.ModuleId == moduleId &&
                         g.SessionId == sessionId)
             .ToList();
+
+        if (gpaRecords.Count == 0)
+        {
+            return Ok(CustomResponse.Ok("teacher has not been taken a gpa by any students", null!));
+        }
 
         var gpaRecordAnswer = gpaRecords.Select(g => g.GpaRecordsAnswers).ToList();
 
