@@ -505,12 +505,12 @@ export const ManageScheduleApis = {
     contextType: 'application/json',
   },
   getDuliicateScheduleRoom: {
-    url: '/api/classes-schedules/sessions-duplicate-room',
+    url: 'api/classes-schedules/sessions-duplicate-room',
     method: 'GET',
     contextType: 'application/json',
   },
   getDuliicateScheduleTeacher: {
-    url: '/api/classes-schedules/sessions-duplicate-teacher',
+    url: 'api/classes-schedules/sessions-duplicate-teacher',
     method: 'GET',
     contextType: 'application/json',
   }
@@ -603,7 +603,7 @@ export const ManageGpa = {
     contextType: 'application/json',
   },
   getScheduleInformationBySessionId: {
-    url: '/api/gpa/sessions/{0}',
+    url: 'api/gpa/sessions/{0}',
     method: 'GET',
     contextType: 'application/json',
   },
@@ -633,12 +633,12 @@ export const ManageAttendanceApis = {
     contextType: 'application/json',
   },
   getTeachingClass: {
-    url: '/api/teaching-classes/teachers',
+    url: 'api/teaching-classes/teachers',
     method: 'GET',
     contextType: 'application/json',
   },
   teacherGetListSessions: {
-    url: '/api/classes-schedules/{0}/sessions',
+    url: 'api/classes-schedules/{0}/sessions',
     method: 'GET',
     contextType: 'application/json',
   },
