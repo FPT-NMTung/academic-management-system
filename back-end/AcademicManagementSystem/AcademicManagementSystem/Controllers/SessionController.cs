@@ -38,6 +38,7 @@ public class SessionController : ControllerBase
         var userId = Convert.ToInt32(_userService.GetUserId());
 
         var classSchedule = _context.ClassSchedules
+            .Include(cs => cs.Class)
             .Include(cs => cs.Sessions)
             .ThenInclude(s => s.Room)
             .ThenInclude(r => r.Center)
@@ -200,7 +201,7 @@ public class SessionController : ControllerBase
             .Include(s => s.Attendances)
             .ThenInclude(a => a.AttendanceStatus)
             .Where(s => s.ClassSchedule.Class.StudentsClasses.Any(sc => sc.StudentId == userId && sc.IsActive)
-                        && s.LearningDate.Date == request.LearningDate.Date 
+                        && s.LearningDate.Date == request.LearningDate.Date
                         && s.ClassSchedule.Class.ClassStatusId != ClassStatusMerged)
             .Select(s => new DetailSessionForStudentResponse()
             {

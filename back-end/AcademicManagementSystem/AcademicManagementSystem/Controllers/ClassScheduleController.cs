@@ -448,11 +448,11 @@ public class ClassScheduleController : ControllerBase
         return Ok(CustomResponse.Ok("Get teaching schedules for teacher successfully", classSchedule));
     }
 
-    // get teaching schedules for teacher to take attendance (accept merged class)
+    // get teaching schedules for teacher to take attendance (except merged class)
     [HttpGet]
     [Route("api/teaching-classes/teachers")]
     [Authorize(Roles = "teacher")]
-    public IActionResult TeacherGetClassAndModuleTeachingToTakeAttendance()
+    public IActionResult TeacherGetTeachingClassAndModule()
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
 
