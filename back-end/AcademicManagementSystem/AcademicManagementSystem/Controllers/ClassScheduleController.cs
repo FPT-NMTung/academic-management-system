@@ -32,7 +32,6 @@ public class ClassScheduleController : ControllerBase
     private const int StatusNotScheduled = 5;
     private const int ClassStatusMerged = 6;
 
-
     public ClassScheduleController(AmsContext context, IUserService userService)
     {
         _context = context;
@@ -593,7 +592,7 @@ public class ClassScheduleController : ControllerBase
                 var session = new Session
                 {
                     SessionTypeId = Theory,
-                    Title =  "Slot " + i,
+                    Title = "Slot " + i,
                     LearningDate = learningDate,
                     StartTime = request.ClassHourStart,
                     EndTime = request.ClassHourEnd,
@@ -777,7 +776,7 @@ public class ClassScheduleController : ControllerBase
             var error = ErrorDescription.Error["E0077_2"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-        
+
         /*
         * Check input data like: durations in range, startDate must < today,
         * LearningTime must match with workingTime(1,2,3), room type must correct, range of learningTime...

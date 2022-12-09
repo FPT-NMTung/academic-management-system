@@ -54,7 +54,7 @@ public class GradeStudentController : ControllerBase
         
         if (clazz.ClassStatusId == ClassStatusMerged)
         {
-            var error = ErrorDescription.Error["E0310"];
+            var error = ErrorDescription.Error["E0401"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -136,7 +136,7 @@ public class GradeStudentController : ControllerBase
 
         if (clazz.ClassStatusId == ClassStatusMerged)
         {
-            var error = ErrorDescription.Error["E0310"];
+            var error = ErrorDescription.Error["E0401"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
