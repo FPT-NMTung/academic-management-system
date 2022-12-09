@@ -29,7 +29,7 @@ import {
   
     const getListTeacher = (param) => {
       setIsGetData(true);
-      FetchApi(ManageTeacherApis.searchTeacher, null, param, null)
+      FetchApi(ManageTeacherApis.searchTeacherBySro, null, param, null)
         .then((res) => {
           setDataSource(
             res.data.map((item, index) => {
