@@ -90,7 +90,7 @@ public class TeacherController : ControllerBase
     // search teacher by by firstName, lastName, nickname, mobilePhone, email, emailOrganization
     [HttpGet]
     [Route("api/teachers/search")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "admin")]
     public IActionResult SearchTeachers([FromQuery] string? firstName, [FromQuery] string? lastName,
         [FromQuery] string? nickname, [FromQuery] string? mobilePhone, [FromQuery] string? email,
         [FromQuery] string? emailOrganization)
@@ -137,6 +137,60 @@ public class TeacherController : ControllerBase
         }
 
         return Ok(CustomResponse.Ok("Search Teacher successfully", teacherResponses));
+    }
+
+    [HttpGet]
+    [Route("api/teachers/search-by-sro")]
+    [Authorize(Roles = "sro")]
+    public IActionResult SearchTeachersBySro([FromQuery] string? firstName, [FromQuery] string? lastName,
+        [FromQuery] string? nickname, [FromQuery] string? mobilePhone, [FromQuery] string? email,
+        [FromQuery] string? emailOrganization)
+    {
+        var userId = Int32.Parse(_userService.GetUserId());
+        var user = _context.Users.FirstOrDefault(u => u.Id == userId)!;
+
+        var sFirstName = firstName == null ? string.Empty : RemoveDiacritics(firstName.Trim().ToLower());
+        var sLastName = lastName == null ? string.Empty : RemoveDiacritics(lastName.Trim().ToLower());
+        var sNickname = nickname == null ? string.Empty : RemoveDiacritics(nickname.Trim().ToLower());
+        var sMobilePhone = mobilePhone == null ? string.Empty : RemoveDiacritics(mobilePhone.Trim().ToLower());
+        var sEmail = email == null ? string.Empty : RemoveDiacritics(email.Trim().ToLower());
+        var sEmailOrganization = emailOrganization == null
+            ? string.Empty
+            : RemoveDiacritics(emailOrganization.Trim().ToLower());
+
+        var teachers = GetAllUserRoleTeacher().Where(t => t.CenterId == user.CenterId).ToList();
+
+        // if user didn't input any search condition, return all teachers
+        if (sFirstName == string.Empty && sLastName == string.Empty
+                                       && sNickname == string.Empty && sMobilePhone == string.Empty
+                                       && sEmail == string.Empty && sEmailOrganization == string.Empty)
+        {
+            return Ok(CustomResponse.Ok("Search teachers successfully", teachers));
+        }
+
+        var teacherResponses = new List<TeacherResponse>();
+        foreach (var t in teachers)
+        {
+            var s1 = RemoveDiacritics(t.FirstName!.ToLower());
+            var s2 = RemoveDiacritics(t.LastName!.ToLower());
+            t.Nickname ??= string.Empty;
+            var s3 = RemoveDiacritics(t.Nickname.ToLower());
+            var s4 = RemoveDiacritics(t.MobilePhone!.ToLower());
+            var s5 = RemoveDiacritics(t.Email!.ToLower());
+            var s6 = RemoveDiacritics(t.EmailOrganization!.ToLower());
+
+            if (s1.Contains(sFirstName)
+                && s2.Contains(sLastName)
+                && s3.Contains(sNickname)
+                && s4.Contains(sMobilePhone)
+                && s5.Contains(sEmail)
+                && s6.Contains(sEmailOrganization))
+            {
+                teacherResponses.Add(t);
+            }
+        }
+
+        return Ok(CustomResponse.Ok("Search Teachers by SRO successfully", teacherResponses));
     }
 
     // create teacher
