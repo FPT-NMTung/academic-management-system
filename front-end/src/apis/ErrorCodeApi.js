@@ -198,6 +198,8 @@ export const ErrorCodeApi = {
   "class-error-0083": "Chương trình học chưa được kích hoạt vào thời điểm lớp học bắt đầu",
   "class-error-0084": "Chương trình học chưa được kích hoạt",
 
+  "class-status-error-0001":"Lớp học đã được ghép",
+
   "student-class-error-0001": "Hệ thống đã xảy ra lỗi, vui lòng thử lại",
   "student-class-error-0002": "Mã số sinh viên đã tồn tại",
   "student-class-error-0003": "Email cá nhân hoặc email tổ chức, số điện thoại, số CMND/CCCD đã tồn tại",
