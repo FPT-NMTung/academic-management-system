@@ -597,6 +597,12 @@ export const ManageGpa = {
     method: 'GET',
     contextType: 'application/json',
   },
+  requestStudentTakeGPA: {
+    url: '/api/gpa/sessions/{0}/request-email',
+    method: 'POST',
+    contextType: 'application/json',
+  },
+
 
 
 };
@@ -665,5 +671,20 @@ export const UserStudentApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+};
+
+  export const UserTeacherApis = {
+
+    getAllTeachSession: {
+      url: 'api/sessions/teachers',
+      method: 'GET',
+      contextType: 'application/json',
+    },
+    getDetailTeachSession: {
+      url: 'api/sessions/detail//teachers-get',
+      method: 'POST',
+      contextType: 'application/json',
+    },
+
 
 };

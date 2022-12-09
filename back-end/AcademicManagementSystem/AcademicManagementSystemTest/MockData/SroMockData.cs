@@ -10,5 +10,9 @@ public static class SroMockData
         {
             UserId = 3,
         },
+        new Sro()
+        {
+            UserId = 10,
+        },
     };
 }
