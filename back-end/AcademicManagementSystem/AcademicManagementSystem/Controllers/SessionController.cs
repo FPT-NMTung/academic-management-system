@@ -1,4 +1,5 @@
 ﻿using AcademicManagementSystem.Context;
+using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.AttendanceController.AttendanceModel;
 using AcademicManagementSystem.Models.AttendanceStatusController.AttendanceStatusModel;
 using AcademicManagementSystem.Models.BasicResponse;
@@ -20,6 +21,8 @@ public class SessionController : ControllerBase
     private readonly IUserService _userService;
     private const int SessionTypeTheoryExam = 3;
     private const int SessionTypePracticalExam = 4;
+    private const int ClassStatusMerged = 6;
+
 
     public SessionController(AmsContext context, IUserService userService)
     {
@@ -35,6 +38,7 @@ public class SessionController : ControllerBase
         var userId = Convert.ToInt32(_userService.GetUserId());
 
         var classSchedule = _context.ClassSchedules
+            .Include(cs => cs.Class)
             .Include(cs => cs.Sessions)
             .ThenInclude(s => s.Room)
             .ThenInclude(r => r.Center)
@@ -43,6 +47,12 @@ public class SessionController : ControllerBase
         if (classSchedule == null)
         {
             return NotFound(CustomResponse.NotFound("Class schedule not found"));
+        }
+
+        if (classSchedule.Class.ClassStatusId == ClassStatusMerged)
+        {
+            var error = ErrorDescription.Error["E0401"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         if (classSchedule.TeacherId != userId)
@@ -80,13 +90,14 @@ public class SessionController : ControllerBase
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
 
-        // get all session that this student has learn and in current class (IsActive)
+        // get all session that this student has learn and in current class (IsActive) and except merged class
         var sessions = _context.Sessions
             .Include(s => s.ClassSchedule)
             .Include(s => s.ClassSchedule.Class)
             .Include(s => s.ClassSchedule.Class.StudentsClasses)
             .ThenInclude(sc => sc.Student)
-            .Where(s => s.ClassSchedule.Class.StudentsClasses.Any(sc => sc.StudentId == userId && sc.IsActive))
+            .Where(s => s.ClassSchedule.Class.StudentsClasses.Any(sc => sc.StudentId == userId && sc.IsActive)
+                        && s.ClassSchedule.Class.ClassStatusId != ClassStatusMerged)
             .Select(s => new SessionDateForStudentResponse()
             {
                 Id = s.Id,
@@ -97,7 +108,7 @@ public class SessionController : ControllerBase
 
         return Ok(CustomResponse.Ok("Student get session with learning date successfully", sessions));
     }
-    
+
     // get dates that have session(s) teach by teacher 
     [HttpGet]
     [Route("api/sessions/teachers")]
@@ -110,15 +121,17 @@ public class SessionController : ControllerBase
         var dates = _context.Sessions
             .Include(s => s.ClassSchedule)
             .Include(s => s.ClassSchedule.Class)
-            // except session type exams
+            // except session type exams and merged class
             .Where(s => s.ClassSchedule.TeacherId == userId &&
-                        s.SessionTypeId != SessionTypeTheoryExam && s.SessionTypeId != SessionTypePracticalExam)
+                        s.SessionTypeId != SessionTypeTheoryExam && s.SessionTypeId != SessionTypePracticalExam
+                        && s.ClassSchedule.Class.ClassStatusId != ClassStatusMerged)
             .OrderBy(s => s.LearningDate.Date)
             .Select(s => s.LearningDate.Date).Distinct();
 
-        return Ok(CustomResponse.Ok("Teacher get dates that have session(s) teach by this teacher successfully", dates));
+        return Ok(CustomResponse.Ok("Teacher get dates that have session(s) teach by this teacher successfully",
+            dates));
     }
-    
+
     [HttpPost]
     [Route("api/sessions/detail/teachers-get")]
     [Authorize(Roles = "teacher")]
@@ -134,7 +147,9 @@ public class SessionController : ControllerBase
             .Include(s => s.SessionType)
             .Where(s => s.LearningDate.Date == request.TeachDate.Date &&
                         s.ClassSchedule.TeacherId == userId &&
-                        s.SessionTypeId != SessionTypeTheoryExam && s.SessionTypeId != SessionTypePracticalExam)
+                        s.SessionTypeId != SessionTypeTheoryExam &&
+                        s.SessionTypeId != SessionTypePracticalExam &&
+                        s.ClassSchedule.Class.ClassStatusId != ClassStatusMerged)
             .Select(s => new DetailSessionForTeacherResponse()
             {
                 Class = new BasicClassResponse()
@@ -165,7 +180,7 @@ public class SessionController : ControllerBase
 
         return Ok(CustomResponse.Ok("Teacher Get sessions detail successfully", sessions));
     }
-    
+
 
     [HttpPost]
     [Route("api/sessions/detail/students/get")]
@@ -186,7 +201,8 @@ public class SessionController : ControllerBase
             .Include(s => s.Attendances)
             .ThenInclude(a => a.AttendanceStatus)
             .Where(s => s.ClassSchedule.Class.StudentsClasses.Any(sc => sc.StudentId == userId && sc.IsActive)
-                        && s.LearningDate.Date == request.LearningDate.Date)
+                        && s.LearningDate.Date == request.LearningDate.Date
+                        && s.ClassSchedule.Class.ClassStatusId != ClassStatusMerged)
             .Select(s => new DetailSessionForStudentResponse()
             {
                 Id = s.Id,
@@ -279,8 +295,8 @@ public class SessionController : ControllerBase
         {
             session.CanTakeGpa = false;
         }
-        
-        if(session.LearningDate <= DateTime.Today && !isGpaTaken)
+
+        if (session.LearningDate <= DateTime.Today && !isGpaTaken)
         {
             session.CanTakeGpa = true;
         }

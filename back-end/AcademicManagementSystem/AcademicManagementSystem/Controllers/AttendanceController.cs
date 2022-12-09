@@ -426,9 +426,9 @@ public class AttendanceController : ControllerBase
                     }
                 },
 
-                // all student in class and isActive,also can get draft student 
+                // all student in class and isActive,also not draft student 
                 StudentAttendances = s.ClassSchedule.Class.StudentsClasses
-                    .Where(sc => sc.IsActive)
+                    .Where(sc => sc.IsActive && !sc.Student.IsDraft)
                     .Select(sc => new StudentAttendanceResponse()
                     {
                         Student = new BasicStudentResponse()

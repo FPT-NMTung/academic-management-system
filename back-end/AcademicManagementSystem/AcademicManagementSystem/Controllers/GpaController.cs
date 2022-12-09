@@ -393,6 +393,11 @@ public class GpaController : ControllerBase
             .Where(g => g.TeacherId == teacherId)
             .ToList();
 
+        if (gpaRecords.Count == 0)
+        {
+            return Ok(CustomResponse.Ok("teacher has not been taken a gpa by any students", null!));
+        }
+
         var gpaRecordAnswer = gpaRecords.Select(g => g.GpaRecordsAnswers).ToList();
 
         // get list comment
