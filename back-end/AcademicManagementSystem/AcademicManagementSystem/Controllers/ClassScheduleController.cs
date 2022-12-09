@@ -30,6 +30,8 @@ public class ClassScheduleController : ControllerBase
     private const int TheoryExam = 3;
     private const int PracticeExam = 4;
     private const int StatusNotScheduled = 5;
+    private const int ClassStatusMerged = 6;
+
 
     public ClassScheduleController(AmsContext context, IUserService userService)
     {
@@ -365,6 +367,7 @@ public class ClassScheduleController : ControllerBase
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
 
+        //get teaching schedule not merged class
         var classSchedule = _context.ClassSchedules
             .Include(cs => cs.Class)
             .Include(cs => cs.Class.StudentsClasses)
@@ -378,7 +381,7 @@ public class ClassScheduleController : ControllerBase
             .Include(s => s.Sessions)
             .ThenInclude(r => r.Room)
             .ThenInclude(r => r.RoomType)
-            .Where(cs => cs.TeacherId == userId &&
+            .Where(cs => cs.TeacherId == userId && cs.Class.ClassStatusId != ClassStatusMerged &&
                          cs.StartDate <= DateTime.Today && DateTime.Today <= cs.EndDate) // teaching schedules
             .Select(cs => new ClassScheduleResponse()
             {
@@ -446,7 +449,7 @@ public class ClassScheduleController : ControllerBase
         return Ok(CustomResponse.Ok("Get teaching schedules for teacher successfully", classSchedule));
     }
 
-    // get teaching schedules for teacher to take attendance, include all session
+    // get teaching schedules for teacher to take attendance (accept merged class)
     [HttpGet]
     [Route("api/teaching-classes/teachers")]
     [Authorize(Roles = "teacher")]
@@ -454,10 +457,11 @@ public class ClassScheduleController : ControllerBase
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
 
+        //get teaching schedule not merged class
         var classSchedules = _context.ClassSchedules
             .Include(cs => cs.Class)
             .Include(cs => cs.Module)
-            .Where(cs => cs.TeacherId == userId &&
+            .Where(cs => cs.TeacherId == userId && cs.Class.ClassStatusId != ClassStatusMerged &&
                          cs.StartDate <= DateTime.Today && DateTime.Today <= cs.EndDate) // teaching schedules
             .Select(cs => new ClassScheduleForTeacherResponse()
             {
