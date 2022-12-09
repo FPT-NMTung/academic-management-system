@@ -50,7 +50,7 @@ public class SessionController : ControllerBase
 
         if (classSchedule.Class.ClassStatusId == ClassStatusMerged)
         {
-            var error = ErrorDescription.Error["E0310"];
+            var error = ErrorDescription.Error["E0401"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
