@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AcademicManagementSystem.Controllers;
 
 [ApiController]
-public class GradeStudentController : ControllerBase
+public class StudentGradeController : ControllerBase
 {
     private readonly AmsContext _context;
     private readonly IUserService _userService;
@@ -25,7 +25,7 @@ public class GradeStudentController : ControllerBase
     private const int ExamTypeNoTakeExam = 4;
     private const int ClassStatusMerged = 6;
 
-    public GradeStudentController(AmsContext context, IUserService userService)
+    public StudentGradeController(AmsContext context, IUserService userService)
     {
         _context = context;
         _userService = userService;
@@ -54,7 +54,7 @@ public class GradeStudentController : ControllerBase
         
         if (clazz.ClassStatusId == ClassStatusMerged)
         {
-            var error = ErrorDescription.Error["E0310"];
+            var error = ErrorDescription.Error["E0401"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -136,7 +136,7 @@ public class GradeStudentController : ControllerBase
 
         if (clazz.ClassStatusId == ClassStatusMerged)
         {
-            var error = ErrorDescription.Error["E0310"];
+            var error = ErrorDescription.Error["E0401"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -814,58 +814,58 @@ public class GradeStudentController : ControllerBase
             });
     }
 
-    private IQueryable<StudentGradeResponse> GetGradesOfSpecificStudent(Class clazz, int moduleId, Student student)
-    {
-        return _context.Modules
-            .Include(m => m.GradeCategoryModule)
-            .ThenInclude(gcm => gcm.GradeCategory)
-            .Include(m => m.GradeCategoryModule)
-            .ThenInclude(gcm => gcm.GradeItems)
-            .ThenInclude(gi => gi.StudentGrades)
-            .ThenInclude(sg => sg.Class)
-            .Where(m => m.Id == moduleId)
-            .Select(m => new StudentGradeResponse()
-            {
-                Class = new BasicClassResponse()
-                {
-                    Id = clazz.Id,
-                    Name = clazz.Name
-                },
-
-                Module = new BasicModuleResponse()
-                {
-                    Id = m.Id,
-                    Name = m.ModuleName
-                },
-
-                Student = new StudentInfoAndGradeResponse()
-                {
-                    UserId = student.UserId,
-                    EnrollNumber = student.EnrollNumber,
-                    EmailOrganization = student.User.EmailOrganization,
-                    FirstName = student.User.FirstName,
-                    LastName = student.User.LastName,
-                    Avatar = student.User.Avatar,
-                    GradeCategories = m.GradeCategoryModule
-                        .Select(gcm => new GradeCategoryWithItemsResponse()
-                        {
-                            Id = gcm.GradeCategory.Id,
-                            Name = gcm.GradeCategory.Name,
-                            TotalWeight = gcm.TotalWeight,
-                            QuantityGradeItem = gcm.QuantityGradeItem,
-                            GradeItems = gcm.GradeItems
-                                .Select(gi => new GradeItemWithStudentScoreResponse()
-                                {
-                                    Id = gi.Id,
-                                    Name = gi.Name,
-                                    Grade = gi.StudentGrades.FirstOrDefault(sg =>
-                                        sg.StudentId == student.UserId && sg.ClassId == clazz.Id)!.Grade,
-                                    Comment = gi.StudentGrades.FirstOrDefault(sg =>
-                                        sg.StudentId == student.UserId && sg.ClassId == clazz.Id)!.Comment
-                                })
-                                .ToList()
-                        }).ToList()
-                },
-            });
-    }
+    // private IQueryable<StudentGradeResponse> GetGradesOfSpecificStudent(Class clazz, int moduleId, Student student)
+    // {
+    //     return _context.Modules
+    //         .Include(m => m.GradeCategoryModule)
+    //         .ThenInclude(gcm => gcm.GradeCategory)
+    //         .Include(m => m.GradeCategoryModule)
+    //         .ThenInclude(gcm => gcm.GradeItems)
+    //         .ThenInclude(gi => gi.StudentGrades)
+    //         .ThenInclude(sg => sg.Class)
+    //         .Where(m => m.Id == moduleId)
+    //         .Select(m => new StudentGradeResponse()
+    //         {
+    //             Class = new BasicClassResponse()
+    //             {
+    //                 Id = clazz.Id,
+    //                 Name = clazz.Name
+    //             },
+    //
+    //             Module = new BasicModuleResponse()
+    //             {
+    //                 Id = m.Id,
+    //                 Name = m.ModuleName
+    //             },
+    //
+    //             Student = new StudentInfoAndGradeResponse()
+    //             {
+    //                 UserId = student.UserId,
+    //                 EnrollNumber = student.EnrollNumber,
+    //                 EmailOrganization = student.User.EmailOrganization,
+    //                 FirstName = student.User.FirstName,
+    //                 LastName = student.User.LastName,
+    //                 Avatar = student.User.Avatar,
+    //                 GradeCategories = m.GradeCategoryModule
+    //                     .Select(gcm => new GradeCategoryWithItemsResponse()
+    //                     {
+    //                         Id = gcm.GradeCategory.Id,
+    //                         Name = gcm.GradeCategory.Name,
+    //                         TotalWeight = gcm.TotalWeight,
+    //                         QuantityGradeItem = gcm.QuantityGradeItem,
+    //                         GradeItems = gcm.GradeItems
+    //                             .Select(gi => new GradeItemWithStudentScoreResponse()
+    //                             {
+    //                                 Id = gi.Id,
+    //                                 Name = gi.Name,
+    //                                 Grade = gi.StudentGrades.FirstOrDefault(sg =>
+    //                                     sg.StudentId == student.UserId && sg.ClassId == clazz.Id)!.Grade,
+    //                                 Comment = gi.StudentGrades.FirstOrDefault(sg =>
+    //                                     sg.StudentId == student.UserId && sg.ClassId == clazz.Id)!.Comment
+    //                             })
+    //                             .ToList()
+    //                     }).ToList()
+    //             },
+    //         });
+    // }
 }
