@@ -53,7 +53,6 @@ public static class ErrorDescription
         { "E0027", new ErrorModel() { Message = "Duplicated citizenIdentityCardNo for CREATE/UPDATE SRO", Type = "sro-error-0012" } },
         { "E0028", new ErrorModel() { Message = "Please enter at least one search criteria", Type = "sro-error-0013" } },
         { "E0029", new ErrorModel() { Message = "CitizenIdentityCardPublishedDate must match format yyyy/MM/dd for CREATE/UPDATE SRO", Type = "sro-error-0014" } },
-      
         { "E0030", new ErrorModel() { Message = "MobilePhone 10 digits and starting with 0", Type = "sro-error-0015" } },
         { "E0031", new ErrorModel() { Message = "Email must match with format", Type = "sro-error-0016" } },
         { "E0032", new ErrorModel() { Message = "EmailOrganization must match with format", Type = "sro-error-0017" } },
