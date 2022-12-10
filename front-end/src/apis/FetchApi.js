@@ -1,6 +1,6 @@
-const endpoint = 'https://apms-api.azurewebsites.net/';
+// const endpoint = 'https://apms-api.azurewebsites.net/';
 // const endpoint = 'https://localhost:7142/';
-
+// const endpoint = 'https://apms-final.azurewebsites.net/';
 /**
  * Fetches data from the API and returns a promise.
  * @param {object} api - The API endpoint.
@@ -10,6 +10,12 @@ const endpoint = 'https://apms-api.azurewebsites.net/';
  * @returns {Promise<any>} - A promise that resolves to the response.
  */
 const FetchApi = async (api, bodyObject = null, params = null, pathVariable = null) => {
+  if (!localStorage.getItem('endpoint')) {
+    localStorage.setItem('endpoint', 'https://apms-api.azurewebsites.net/');
+  }
+
+  const endpoint = localStorage.getItem('endpoint');
+
   // add no-cors
   let options = {
     method: api.method,
@@ -103,6 +109,12 @@ const FetchApi = async (api, bodyObject = null, params = null, pathVariable = nu
 };
 
 const refreshToken = async () => {
+  if (!localStorage.getItem('endpoint')) {
+    localStorage.setItem('endpoint', 'https://apms-api.azurewebsites.net/');
+  }
+
+  const endpoint = localStorage.getItem('endpoint');
+
   if (!localStorage.getItem('refresh_token')) {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');

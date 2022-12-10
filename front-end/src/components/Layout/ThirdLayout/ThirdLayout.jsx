@@ -1,12 +1,12 @@
 import classes from './ThirdLayout.module.css';
 import Logo from '../../../images/logo_1.webp';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { IoHome, IoTodaySharp } from 'react-icons/io5';
-import { Badge, Dropdown, Spacer, Text, User } from '@nextui-org/react';
+import { Badge, Card, Dropdown, Spacer, Text, User } from '@nextui-org/react';
 import { useNavigate } from 'react-router-dom';
 import FetchApi from '../../../apis/FetchApi';
-import { UserApis } from '../../../apis/ListApi';
+import { ManageScheduleApis, UserApis } from '../../../apis/ListApi';
 import { Fragment } from 'react';
 import { FaPowerOff, FaDoorOpen, FaCalendarDay } from 'react-icons/fa';
 import { MdManageAccounts, MdFeedback } from 'react-icons/md';
@@ -14,7 +14,8 @@ import { ImBooks, ImBook, ImLibrary } from 'react-icons/im';
 import { IoPeopleSharp } from 'react-icons/io5';
 import { HiUserCircle, HiCheckCircle, HiCalendar } from 'react-icons/hi';
 import { RiShutDownLine, RiMedalFill } from 'react-icons/ri';
-
+import { TiWarning } from 'react-icons/ti';
+import { SiGoogleclassroom } from 'react-icons/si';
 import {
   MdMeetingRoom,
   MdSupervisedUserCircle,
@@ -97,22 +98,22 @@ const menu = {
     {
       key: '11',
       label: 'Danh sách giáo viên',
-      icon: <MdManageAccounts size={16}/>,
+      icon: <MdManageAccounts size={16} />,
       url: '/sro/manage/teacher',
     },
   ],
   teacher: [
     {
       key: '1',
-      label: 'Điểm danh',
-      icon: <MdManageAccounts size={16} />,
-      url: '/teacher/attendance',
-    },
-    {
-      key: '2',
       label: 'Lịch dạy',
       icon: <FaCalendarDay size={16} />,
       url: '/teacher/schedule',
+    },
+    {
+      key: '2',
+      label: 'Danh sách lớp đang dạy',
+      icon: <SiGoogleclassroom size={16} />,
+      url: '/teacher/class',
     },
   ],
   student: [
@@ -146,8 +147,9 @@ const menu = {
 const ThirdLayout = ({ children }) => {
   const [dataUser, setDataUser] = useState({});
   const [isOpenDropdown, setIsOpenDropdown] = useState(true);
+  const [isOpenWarning, setIsOpenWarning] = useState(false);
 
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');
@@ -174,6 +176,33 @@ const navigate = useNavigate();
       });
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (localStorage.getItem('role') === 'sro') {
+        const res1 = await FetchApi(
+          ManageScheduleApis.getDuliicateScheduleTeacher,
+          null,
+          null,
+          null
+        );
+
+        const res2 = await FetchApi(
+          ManageScheduleApis.getDuliicateScheduleRoom,
+          null,
+          null,
+          null
+        );
+
+        if (res1.data.length > 0 || res2.data.length > 0) {
+          setIsOpenWarning(true);
+        } else {
+          setIsOpenWarning(false);
+        }
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className={classes.foundation}>
       <Toaster
@@ -181,28 +210,38 @@ const navigate = useNavigate();
           zIndex: 99999999,
         }}
       />
+      {isOpenWarning && (
+        <Link className={classes.warningSchedule} to={'/sro/warning/schedule'}>
+          <TiWarning color="white" size={20} />
+          <span>
+            Lịch học đã bị trùng giáo viên hoặc phòng học, bấm để xem chi tiết
+          </span>
+        </Link>
+      )}
       <div className={classes.main}>
         <div className={classes.leftSide}>
           <div className={classes.logo}>
             <img src={Logo} alt="logo" />
           </div>
           <div className={classes.menu}>
-            {menu[localStorage.getItem('role')]?.map((item) => (
-              <NavLink
-                key={item.key}
-                to={item.url}
-                className={({ isActive }) => {
-                  return isActive
-                    ? `${classes.menuItem} ${classes.menuItemActive}`
-                    : classes.menuItem;
-                }}
-              >
-                <div className={classes.menuContent}>
-                  <div className={classes.menuItemIcon}>{item.icon}</div>
-                  <div className={classes.menuItemLabel}>{item.label}</div>
-                </div>
-              </NavLink>
-            ))}
+            {menu[localStorage.getItem('role')]?.map((item) => {
+              return (
+                <NavLink
+                  key={item.key}
+                  to={item.url}
+                  className={({ isActive }) => {
+                    return isActive
+                      ? `${classes.menuItem} ${classes.menuItemActive}`
+                      : classes.menuItem;
+                  }}
+                >
+                  <div className={classes.menuContent}>
+                    <div className={classes.menuItemIcon}>{item.icon}</div>
+                    <div className={classes.menuItemLabel}>{item.label}</div>
+                  </div>
+                </NavLink>
+              );
+            })}
           </div>
         </div>
         <div className={classes.rightSide}>

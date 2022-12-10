@@ -41,6 +41,7 @@ import AttendanceDetailEmpty from './components/AttendanceDetailEmpty/Attendance
 import GradeScreen from './screens/Student/GradeScreen/GradeScreen';
 import AttendanceScreen from './screens/Student/AttendanceScreen/AttendanceScreen';
 import ScheduleTeacherScreen from './screens/Teacher/ScheduleTeacherScreen/ScheduleTeacherScreen';
+import WarningSchedule from './screens/Sro/WarningSchedule/WarningSchedule';
 
 const App = () => {
   return (
@@ -61,10 +62,10 @@ const App = () => {
 
       {/* Routers for role teacher */}
       <Route path={'/teacher'} element={<ThirdLayout><RequireAuth role={'teacher'} /></ThirdLayout>}>
-        <Route index element={<Navigate to="/teacher/attendance" />} />
-        <Route path="/teacher/attendance" element={<Attendance />} >
+        <Route index element={<Navigate to="/teacher/schedule" />} />
+        <Route path="/teacher/class" element={<Attendance />} >
           <Route index element={<AttendanceDetailEmpty />} />
-          <Route path="/teacher/attendance/:id" element={<AttendanceDetail />} />
+          <Route path="/teacher/class/:id/module/:moduleId/schedule/:scheduleId" element={<AttendanceDetail />} />
         </Route>
         <Route path="/teacher/schedule" element={<ScheduleTeacherScreen /> } />
       </Route>
@@ -89,6 +90,7 @@ const App = () => {
         <Route path="/sro/manage/day-off" element={<ManageDayOff />} />
         <Route path="/sro/manage/teacher" element={<ManageTeacher/>} />
         <Route path="/sro/manage/teacher/:id" element={<TeacherInfo/>} />
+        <Route path="/sro/warning/schedule" element={<WarningSchedule/>} />
       </Route>
 
       {/* Routers for role admin */}

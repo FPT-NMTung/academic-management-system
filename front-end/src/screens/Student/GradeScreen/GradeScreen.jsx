@@ -1,4 +1,4 @@
-import classes from "./GradeScreen.module.css";
+import classes from './GradeScreen.module.css';
 import {
   Button,
   Card,
@@ -9,24 +9,25 @@ import {
   Text,
   Spacer,
   Badge,
-} from "@nextui-org/react";
-import { Calendar, Select, Row, Col, Form, Input, Tree, Menu } from "antd";
-import { Fragment, useState } from "react";
-import moment from "moment";
-import "moment/locale/vi";
-import { useEffect } from "react";
-import toast from "react-hot-toast";
-import { MdDelete } from "react-icons/md";
-import { UserStudentApis } from "../../../apis/ListApi";
-import FetchApi from "../../../apis/FetchApi";
-import { MdMenuBook } from "react-icons/md";
-import { ImLibrary } from "react-icons/im";
-import Item from "antd/lib/list/Item";
+} from '@nextui-org/react';
+import { Calendar, Select, Row, Col, Form, Input, Tree, Menu } from 'antd';
+import { Fragment, useState } from 'react';
+import moment from 'moment';
+import 'moment/locale/vi';
+import { useEffect } from 'react';
+import toast from 'react-hot-toast';
+import { MdDelete } from 'react-icons/md';
+import { ModulesApis, UserStudentApis } from '../../../apis/ListApi';
+import FetchApi from '../../../apis/FetchApi';
+import { MdMenuBook } from 'react-icons/md';
+import { ImLibrary } from 'react-icons/im';
+import Item from 'antd/lib/list/Item';
 const GradeScreen = () => {
   const [listModuleSemester, setListModuleSemester] = useState([]);
   const [listGrade, setListGrade] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [listGradeFinal, setListGradeFinal] = useState([]);
+  const [informationModule, setInformationModule] = useState(undefined);
   // const [isLoadingGrade, setIsLoadingGrade] = useState(true);
 
   const getModuleSemester = () => {
@@ -42,13 +43,13 @@ const GradeScreen = () => {
         setIsLoading(false);
       })
       .catch((err) => {
-        toast.error("Lỗi khi tải dữ liệu");
+        toast.error('Lỗi khi tải dữ liệu');
       });
   };
   const onSelectTree = (moduleid, classid) => {
     setListGrade([]);
     // setIsLoadingGrade(false);
-    console.log("selected module " + moduleid + "classid " + classid);
+    console.log('selected module ' + moduleid + 'classid ' + classid);
     // console.log(FetchApi(UserStudentApis.getGradesbyclass, null, null, [String(classid),String(moduleid)]));
     FetchApi(UserStudentApis.getGradesbyclass, null, null, [
       String(classid),
@@ -64,17 +65,25 @@ const GradeScreen = () => {
       });
   };
 
+  const getInformationModule = (moduleId) => {
+    FetchApi(ModulesApis.getModuleByID, null, null, [String(moduleId)])
+      .then((res) => {
+        setInformationModule(res.data);
+      })
+      .catch((err) => {});
+  };
+
   useEffect(() => {
     getModuleSemester();
   }, []);
 
   return (
-    <Grid.Container gap={2} justify={"center"}>
+    <Grid.Container gap={2} justify={'center'}>
       <Grid xs={4}>
         <Card
           variant="bordered"
           css={{
-            height: "fit-content",
+            height: 'fit-content',
           }}
         >
           <Card.Header>
@@ -83,9 +92,9 @@ const GradeScreen = () => {
               b
               size={14}
               css={{
-                width: "100%",
-                textAlign: "center",
-                marginBottom: "12px",
+                width: '100%',
+                textAlign: 'center',
+                marginBottom: '12px',
               }}
             >
               Chọn môn học
@@ -124,33 +133,34 @@ const GradeScreen = () => {
             {isLoading ? (
               <Loading />
             ) : (
-              <div style={{ color: "black !important" }}>
+              <div style={{ color: 'black !important' }}>
                 <Menu
                   mode="inline"
                   // defaultOpenKeys={["1"]}
-                  style={{ width: "100%" }}
+                  style={{ width: '100%' }}
                 >
                   {listModuleSemester.map((item, index) => (
                     <Fragment key={index}>
                       <Menu.SubMenu
-                        style={{ color: "black!important" }}
+                        style={{ color: 'black!important' }}
                         title={item.name}
                         key={item.id}
-                        rootStyle={{ width: "100%" }}
+                        rootStyle={{ width: '100%' }}
                         icon={<ImLibrary />}
                       >
                         {item.modules.map((modules, index) => (
                           <Menu.Item
                             // title={modules.name + " ( " + modules.class.name + " )"}
                             key={modules.id + modules.class.id}
-                            rootStyle={{ width: "100%" }}
-                            onClick={() =>
-                              onSelectTree(modules.id, modules.class.id)
-                            }
+                            rootStyle={{ width: '100%' }}
+                            onClick={() => {
+                              onSelectTree(modules.id, modules.class.id);
+                              getInformationModule(modules.id);
+                            }}
                             icon={<MdMenuBook />}
                           >
                             <span>
-                              {modules.name + " ( " + modules.class.name + " )"}
+                              {modules.name + ' ( ' + modules.class.name + ' )'}
                             </span>
                           </Menu.Item>
                         ))}
@@ -171,8 +181,8 @@ const GradeScreen = () => {
               b
               size={14}
               css={{
-                width: "100%",
-                textAlign: "center",
+                width: '100%',
+                textAlign: 'center',
               }}
             >
               Bảng điểm
@@ -182,11 +192,37 @@ const GradeScreen = () => {
           <Card.Divider />
           {
             <Card.Body>
+              {informationModule?.max_practical_grade && (
+                <Text
+                  p
+                  i
+                  size={12}
+                  css={{
+                    paddingLeft: '10px',
+                  }}
+                >
+                  * Điểm tối đa của Practical exam:{' '}
+                  {informationModule?.max_practical_grade}
+                </Text>
+              )}
+              {informationModule?.max_theory_grade && (
+                <Text
+                  p
+                  i
+                  size={12}
+                  css={{
+                    paddingLeft: '10px',
+                  }}
+                >
+                  * Điểm tối đa của Theory exam:{' '}
+                  {informationModule?.max_theory_grade}
+                </Text>
+              )}
               <Table
                 aria-label=""
                 css={{
-                  height: "auto",
-                  minWidth: "100%",
+                  height: 'auto',
+                  minWidth: '100%',
                 }}
                 lined
                 headerLined
@@ -196,7 +232,6 @@ const GradeScreen = () => {
                   <Table.Column width={200}>Loại điểm</Table.Column>
                   <Table.Column width={100}>Trọng số</Table.Column>
                   <Table.Column width={50}>Điểm</Table.Column>
-                  <Table.Column width={80}>Chú thích</Table.Column>
                 </Table.Header>
                 <Table.Body>
                   {listGrade.map((item, index) => (
@@ -212,18 +247,12 @@ const GradeScreen = () => {
                             %
                           </Badge>
                         ) : (
-                          ""
+                          ''
                         )}
                       </Table.Cell>
                       {/* <Table.Cell b>{Math.round((item.grade_item?.grade) * 10) / 10}</Table.Cell> */}
                       <Table.Cell b>
-                        {item.grade_item.grade
-                          ? Math.round(item.grade_item?.grade * 10) / 10
-                          : " "}
-                      </Table.Cell>
-
-                      <Table.Cell css={{ color: "#f31260" }}>
-                        {item.grade_item?.comment}
+                        {item.grade_item.grade ? item.grade_item?.grade : ' '}
                       </Table.Cell>
                     </Table.Row>
                   ))}

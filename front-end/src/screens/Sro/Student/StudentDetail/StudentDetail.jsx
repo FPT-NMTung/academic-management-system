@@ -857,7 +857,6 @@ const StudentDetail = () => {
                       >
                         Chỉnh sửa
                       </Dropdown.Item>
-
                       {dataStudent.current_class !== null && dataStudent.is_draft == false  && (
                         <Dropdown.Item
                           key="change"
