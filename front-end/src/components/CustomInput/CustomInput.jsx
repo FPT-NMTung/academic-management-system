@@ -6,7 +6,14 @@ import { useParams } from 'react-router-dom';
 import FetchApi from '../../apis/FetchApi';
 import { GradeStudentApis } from '../../apis/ListApi';
 
-const CustomInput = ({ defaultValue: defaultGrade, data, max, min }) => {
+const CustomInput = ({
+  defaultValue: defaultGrade,
+  data,
+  max,
+  min,
+  type,
+  role,
+}) => {
   const [form] = Form.useForm();
   const { id, moduleId } = useParams();
 
@@ -29,44 +36,58 @@ const CustomInput = ({ defaultValue: defaultGrade, data, max, min }) => {
         comment: null,
       },
     ];
-    FetchApi(GradeStudentApis.updateGradeStudentBySro, body, null, [
-      String(id),
-      String(moduleId),
-    ])
+
+    const api =
+      localStorage.getItem('role') === 'teacher'
+        ? GradeStudentApis.updateGradeStudentByTeacher
+        : GradeStudentApis.updateGradeStudentBySro;
+
+    FetchApi(api, body, null, [String(id), String(moduleId)])
       .then((res) => {})
       .catch((err) => {});
   };
 
+  const disabled = role === 'teacher' && type >= 5 && type <= 8;
+
   return (
-    <Form form={form} initialValues={{ grade: defaultGrade.grade }}>
-      <Form.Item
-        name="grade"
-        rules={[
-          {
-            // check max min
-            validator: (rule, value) => {
-              const re = new RegExp(/^[0-9]+(\.[0-9]{1,5})?$/);
-              if (!re.test(value)) {
-                return Promise.reject('Không hợp lệ');
-              }
+    <Fragment>
+      {!disabled && (
+        <Form form={form} initialValues={{ grade: defaultGrade.grade }}>
+          <Form.Item
+            name="grade"
+            rules={[
+              {
+                // check max min
+                validator: (rule, value) => {
+                  const re = new RegExp(/^[0-9]+(\.[0-9]{1,5})?$/);
+                  if (!re.test(value)) {
+                    return Promise.reject('Không hợp lệ');
+                  }
 
-              const number = Number.parseFloat(value);
-              if (number > max) {
-                return Promise.reject('Không hợp lệ');
-              }
+                  const number = Number.parseFloat(value);
+                  if (number > max) {
+                    return Promise.reject('Không hợp lệ');
+                  }
 
-              if (number < min) {
-                return Promise.reject('Không hợp lệ');
-              }
+                  if (number < min) {
+                    return Promise.reject('Không hợp lệ');
+                  }
 
-              return Promise.resolve();
-            },
-          },
-        ]}
-      >
-        <Input onBlur={handleBlur} defaultValue={defaultGrade} />
-      </Form.Item>
-    </Form>
+                  return Promise.resolve();
+                },
+              },
+            ]}
+          >
+            <Input onBlur={handleBlur} defaultValue={defaultGrade} />
+          </Form.Item>
+        </Form>
+      )}
+      {disabled && (
+        <Text p b size={14}>
+          {defaultGrade.grade}
+        </Text>
+      )}
+    </Fragment>
   );
 };
 

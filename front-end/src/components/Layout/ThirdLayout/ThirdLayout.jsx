@@ -16,7 +16,6 @@ import { HiUserCircle, HiCheckCircle, HiCalendar } from 'react-icons/hi';
 import { RiShutDownLine, RiMedalFill } from 'react-icons/ri';
 import { TiWarning } from 'react-icons/ti';
 import { SiGoogleclassroom } from 'react-icons/si';
-
 import {
   MdMeetingRoom,
   MdSupervisedUserCircle,
@@ -114,7 +113,7 @@ const menu = {
       key: '2',
       label: 'Danh sách lớp đang dạy',
       icon: <SiGoogleclassroom size={16} />,
-      url: '/teacher/attendance',
+      url: '/teacher/class',
     },
   ],
   student: [

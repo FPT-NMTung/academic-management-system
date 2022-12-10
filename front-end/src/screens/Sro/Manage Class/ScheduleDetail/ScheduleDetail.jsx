@@ -479,6 +479,7 @@ const ScheduleDetail = () => {
           )}
           {viewGrade && dataModule !== undefined && (
             <ViewGrade
+              role={'sro'}
               dataModule={dataModule}
               dataSchedule={dataSchedule}
               onSuccess={handleSuccess}

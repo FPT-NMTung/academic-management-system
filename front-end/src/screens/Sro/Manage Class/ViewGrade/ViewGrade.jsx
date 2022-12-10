@@ -9,7 +9,7 @@ import FetchApi from '../../../../apis/FetchApi';
 import { GradeStudentApis } from '../../../../apis/ListApi';
 import CustomInput from '../../../../components/CustomInput/CustomInput';
 
-const ViewGrade = ({ dataModule, dataSchedule, onSuccess }) => {
+const ViewGrade = ({ role, dataModule, dataSchedule, onSuccess }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [columns, setColumns] = useState([]);
@@ -25,10 +25,12 @@ const ViewGrade = ({ dataModule, dataSchedule, onSuccess }) => {
 
   useEffect(() => {
     setLoading(true);
-    FetchApi(GradeStudentApis.getListGradeByClassIdAndModuleId, null, null, [
-      String(id),
-      String(moduleId),
-    ])
+    const api =
+      role === 'teacher'
+        ? GradeStudentApis.getListGradeByClassIdAndModuleIdByTeacher
+        : GradeStudentApis.getListGradeByClassIdAndModuleIdBySro;
+
+    FetchApi(api, null, null, [String(id), String(moduleId)])
       .then((res) => {
         console.log(res);
         const temp = res.data[0].students[0].grade_categories.map((item) => {
@@ -44,6 +46,7 @@ const ViewGrade = ({ dataModule, dataSchedule, onSuccess }) => {
                 console.log(t);
                 return (
                   <CustomInput
+                    role={role}
                     max={
                       item.id === 5 || item.id === 7
                         ? dataModule.max_practical_grade
@@ -51,6 +54,7 @@ const ViewGrade = ({ dataModule, dataSchedule, onSuccess }) => {
                         ? dataModule.max_theory_grade
                         : 10
                     }
+                    type={item.id}
                     min={0}
                     data={t}
                     defaultValue={source}
@@ -73,6 +77,7 @@ const ViewGrade = ({ dataModule, dataSchedule, onSuccess }) => {
                 render: (source, t) => {
                   return (
                     <CustomInput
+                      role={role}
                       max={
                         item.id === 5 || item.id === 7
                           ? dataModule.max_practical_grade
@@ -80,6 +85,7 @@ const ViewGrade = ({ dataModule, dataSchedule, onSuccess }) => {
                           ? dataModule.max_theory_grade
                           : 10
                       }
+                      type={item.id}
                       min={0}
                       data={t}
                       defaultValue={source}
