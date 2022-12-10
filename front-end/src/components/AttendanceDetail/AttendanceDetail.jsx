@@ -136,14 +136,14 @@ const AttendanceDetail = () => {
       {selectSession && (
         <TakeAttendance
           session={selectSession}
-          scheduleId={id}
+          scheduleId={scheduleId}
           onClose={handleCloseModalAttendance}
         />
       )}
       {viewAttendance && (
         <ViewAllAttendance
           open={viewAttendance}
-          scheduleId={id}
+          scheduleId={scheduleId}
           onClose={handleCloseViewAttendance}
         />
       )}
@@ -215,6 +215,19 @@ const AttendanceDetail = () => {
                   </Dropdown.Menu>
                 </Dropdown>
               )}
+              {viewSlot && (
+                <Button
+                  color={'success'}
+                  size={'sm'}
+                  onClick={() => {
+                    setViewAttendance(true);
+                  }}
+                  flat
+                  auto
+                >
+                  Xem điểm danh
+                </Button>
+              )}
             </Grid>
           </Grid.Container>
         </Card.Header>
@@ -266,7 +279,9 @@ const AttendanceDetail = () => {
                 />
               </Table>
             )}
-          {!loading && viewGrade && <ViewGrade dataModule={module} role={'teacher'}/>}
+          {!loading && viewGrade && (
+            <ViewGrade dataModule={module} role={'teacher'} />
+          )}
           {!loading && viewSlot && (
             <Grid.Container gap={2}>
               {listSession

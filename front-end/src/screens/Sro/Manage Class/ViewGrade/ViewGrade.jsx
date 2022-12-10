@@ -166,6 +166,7 @@ const ViewGrade = ({ role, dataModule, dataSchedule, onSuccess }) => {
       columns={columns}
       dataSource={data}
       loading={loading}
+      pagination={false}
     />
   );
 };
