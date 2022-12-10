@@ -196,7 +196,7 @@ const ManageSchedule = () => {
           height: 'fit-content',
         }}
       >
-        <Outlet context={[handleUpdateListCourse]} />
+        <Outlet context={[handleUpdateListCourse, dataClass]} />
       </Grid>
     </Grid.Container>
   );
