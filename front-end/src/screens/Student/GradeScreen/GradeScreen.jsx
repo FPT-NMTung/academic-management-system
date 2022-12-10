@@ -232,7 +232,6 @@ const GradeScreen = () => {
                   <Table.Column width={200}>Loại điểm</Table.Column>
                   <Table.Column width={100}>Trọng số</Table.Column>
                   <Table.Column width={50}>Điểm</Table.Column>
-                  <Table.Column width={80}>Hệ số</Table.Column>
                 </Table.Header>
                 <Table.Body>
                   {listGrade.map((item, index) => (
@@ -254,10 +253,6 @@ const GradeScreen = () => {
                       {/* <Table.Cell b>{Math.round((item.grade_item?.grade) * 10) / 10}</Table.Cell> */}
                       <Table.Cell b>
                         {item.grade_item.grade ? item.grade_item?.grade : ' '}
-                      </Table.Cell>
-
-                      <Table.Cell css={{ color: '#f31260' }}>
-                        {item.grade_item?.comment}
                       </Table.Cell>
                     </Table.Row>
                   ))}
