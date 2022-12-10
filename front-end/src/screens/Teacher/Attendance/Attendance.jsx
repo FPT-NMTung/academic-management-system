@@ -43,7 +43,7 @@ const Attendance = () => {
               {listData.map((item) => {
                 return (
                   <NavLink
-                    to={`/teacher/attendance/${item.schedule_id}`}
+                    to={`/teacher/class/${item.class.id}/module/${item.module.id}/schedule/${item.schedule_id}`}
                     css={{
                       textDecoration: 'none',
                       color: 'black',
