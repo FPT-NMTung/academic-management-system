@@ -121,7 +121,7 @@ public class StudentController : ControllerBase
     // get students by id
     [HttpGet]
     [Route("api/students/{id:int}")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "admin, sro, teacher")]
     public IActionResult GetStudentById(int id)
     {
         var student = GetAllStudentsInThisCenterByContext().FirstOrDefault(s => s.UserId == id);
@@ -731,7 +731,7 @@ public class StudentController : ControllerBase
     // change active student
     [HttpPatch]
     [Route("api/students/{id:int}/change-active")]
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "admin, sro")]
     public IActionResult ChangeActivateStudent(int id)
     {
         var student = _context.Students

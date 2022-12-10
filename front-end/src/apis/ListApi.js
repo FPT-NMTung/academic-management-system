@@ -380,8 +380,6 @@ export const ManageTeacherApis = {
     method: 'GET',
     contextType: 'application/json',
   },
-  
-
 };
 
 export const UserApis = {
@@ -424,8 +422,13 @@ export const GradeModuleSemesterApis = {
 };
 
 export const GradeStudentApis = {
-  getListGradeByClassIdAndModuleId: {
+  getListGradeByClassIdAndModuleIdBySro: {
     url: 'api/classes/{0}/modules/{1}/grades-students/sros',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getListGradeByClassIdAndModuleIdByTeacher: {
+    url: 'api/classes/{0}/modules/{1}/grades-students/teachers',
     method: 'GET',
     contextType: 'application/json',
   },
@@ -433,8 +436,13 @@ export const GradeStudentApis = {
     url: 'api/classes/{0}/modules/{1}/grades/sros',
     method: 'POST',
     contextType: 'application/json',
-  }
-}
+  },
+  updateGradeStudentByTeacher: {
+    url: 'api/classes/{0}/modules/{1}/grades/teachers',
+    method: 'POST',
+    contextType: 'application/json',
+  },
+};
 
 export const ManageClassApis = {
   searchClass: {
@@ -536,6 +544,16 @@ export const ManageScheduleApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  getDuliicateScheduleRoom: {
+    url: 'api/classes-schedules/sessions-duplicate-room',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getDuliicateScheduleTeacher: {
+    url: 'api/classes-schedules/sessions-duplicate-teacher',
+    method: 'GET',
+    contextType: 'application/json',
+  },
 };
 
 export const ManageStudentApis = {
@@ -625,7 +643,7 @@ export const ManageGpa = {
     contextType: 'application/json',
   },
   getScheduleInformationBySessionId: {
-    url: '/api/gpa/sessions/{0}',
+    url: 'api/gpa/sessions/{0}',
     method: 'GET',
     contextType: 'application/json',
   },
@@ -634,10 +652,6 @@ export const ManageGpa = {
     method: 'POST',
     contextType: 'application/json',
   },
-
-
-
-
 };
 
 export const ManageAttendanceApis = {
@@ -662,12 +676,12 @@ export const ManageAttendanceApis = {
     contextType: 'application/json',
   },
   getTeachingClass: {
-    url: '/api/teaching-classes/teachers',
+    url: 'api/teaching-classes/teachers',
     method: 'GET',
     contextType: 'application/json',
   },
   teacherGetListSessions: {
-    url: '/api/classes-schedules/{0}/sessions',
+    url: 'api/classes-schedules/{0}/sessions',
     method: 'GET',
     contextType: 'application/json',
   },
@@ -706,18 +720,15 @@ export const UserStudentApis = {
   },
 };
 
-  export const UserTeacherApis = {
-
-    getAllTeachSession: {
-      url: 'api/sessions/teachers',
-      method: 'GET',
-      contextType: 'application/json',
-    },
-    getDetailTeachSession: {
-      url: 'api/sessions/detail//teachers-get',
-      method: 'POST',
-      contextType: 'application/json',
-    },
-
-
+export const UserTeacherApis = {
+  getAllTeachSession: {
+    url: 'api/sessions/teachers',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getDetailTeachSession: {
+    url: 'api/sessions/detail/teachers-get',
+    method: 'POST',
+    contextType: 'application/json',
+  },
 };
