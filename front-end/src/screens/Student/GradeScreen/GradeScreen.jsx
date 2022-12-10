@@ -28,7 +28,7 @@ const GradeScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [listGradeFinal, setListGradeFinal] = useState([]);
   const [informationModule, setInformationModule] = useState(undefined);
-  const [averagePracticeGrade, setAveragePracticeGrade] = useState(0);
+  const [averagePracticeGrade, setAveragePracticeGrade] = useState(undefined);
 
   const getModuleSemester = () => {
     setIsLoading(true);
@@ -268,7 +268,7 @@ const GradeScreen = () => {
                   </Table.Body>
                 </Table>
               )}
-              {listGrade.length > 0 && (
+              {listGrade.length > 0 &&  averagePracticeGrade !== 0 && (
                 <div>
                   <Text
                     b
