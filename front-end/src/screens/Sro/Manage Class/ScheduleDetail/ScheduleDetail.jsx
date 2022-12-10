@@ -50,7 +50,7 @@ const ScheduleDetail = () => {
   const [selectSession, setSelectSession] = useState(undefined);
 
   const { id, moduleId } = useParams();
-  const [handleUpdateListCourse] = useOutletContext();
+  const [handleUpdateListCourse, dataClass] = useOutletContext();
   const navigate = useNavigate();
 
   const getData = () => {
@@ -148,7 +148,7 @@ const ScheduleDetail = () => {
 
   const canViewGrade = () => {
     return new Date(Date.now()) >= new Date(dataSchedule?.start_date);
-  }
+  };
 
   return (
     <Fragment>
@@ -307,54 +307,58 @@ const ScheduleDetail = () => {
                         </Descriptions.Item>
                         <Descriptions.Item>
                           <div className={classes.buttonGroupEdit}>
-                            <Dropdown>
-                              <Dropdown.Button flat color="secondary">
-                                Chức năng
-                              </Dropdown.Button>
-                              <Dropdown.Menu
-                                onAction={handleSelectOption}
-                                color="secondary"
-                                aria-label="Actions"
-                                css={{ $$dropdownMenuWidth: '340px' }}
-                              >
-                                <Dropdown.Section title="Cơ bản">
-                                  <Dropdown.Item
-                                    key="attendance"
-                                    description="Xem danh sách điểm danh"
-                                    color={'success'}
-                                    icon={<BsFillPersonCheckFill />}
-                                  >
-                                    Điểm danh
-                                  </Dropdown.Item>
-                                  <Dropdown.Item
-                                    key="edit"
-                                    description="Chỉnh sửa lịch học"
-                                    color={'secondary'}
-                                    icon={<MdEditCalendar />}
-                                  >
-                                    Chỉnh sửa
-                                  </Dropdown.Item>
-                                  {canViewGrade() && <Dropdown.Item
-                                    key="grade"
-                                    description="Xem điểm của học sinh"
-                                    color={'warning'}
-                                    icon={<RiBookmark3Fill />}
-                                  >
-                                    Xem điểm
-                                  </Dropdown.Item>}
-                                </Dropdown.Section>
-                                <Dropdown.Section title="Nguy hiểm">
-                                  <Dropdown.Item
-                                    key="delete"
-                                    description="Xóa lịch học"
-                                    color={'error'}
-                                    icon={<MdDelete />}
-                                  >
-                                    Xóa lịch học
-                                  </Dropdown.Item>
-                                </Dropdown.Section>
-                              </Dropdown.Menu>
-                            </Dropdown>
+                            {dataClass?.class_status.id !== 6 && (
+                              <Dropdown>
+                                <Dropdown.Button flat color="secondary">
+                                  Chức năng
+                                </Dropdown.Button>
+                                <Dropdown.Menu
+                                  onAction={handleSelectOption}
+                                  color="secondary"
+                                  aria-label="Actions"
+                                  css={{ $$dropdownMenuWidth: '340px' }}
+                                >
+                                  <Dropdown.Section title="Cơ bản">
+                                    <Dropdown.Item
+                                      key="attendance"
+                                      description="Xem danh sách điểm danh"
+                                      color={'success'}
+                                      icon={<BsFillPersonCheckFill />}
+                                    >
+                                      Điểm danh
+                                    </Dropdown.Item>
+                                    <Dropdown.Item
+                                      key="edit"
+                                      description="Chỉnh sửa lịch học"
+                                      color={'secondary'}
+                                      icon={<MdEditCalendar />}
+                                    >
+                                      Chỉnh sửa
+                                    </Dropdown.Item>
+                                    {canViewGrade() && (
+                                      <Dropdown.Item
+                                        key="grade"
+                                        description="Xem điểm của học sinh"
+                                        color={'warning'}
+                                        icon={<RiBookmark3Fill />}
+                                      >
+                                        Xem điểm
+                                      </Dropdown.Item>
+                                    )}
+                                  </Dropdown.Section>
+                                  <Dropdown.Section title="Nguy hiểm">
+                                    <Dropdown.Item
+                                      key="delete"
+                                      description="Xóa lịch học"
+                                      color={'error'}
+                                      icon={<MdDelete />}
+                                    >
+                                      Xóa lịch học
+                                    </Dropdown.Item>
+                                  </Dropdown.Section>
+                                </Dropdown.Menu>
+                              </Dropdown>
+                            )}
                           </div>
                         </Descriptions.Item>
                       </Descriptions>
@@ -373,8 +377,16 @@ const ScheduleDetail = () => {
                           return (
                             <Grid key={index} xs={2}>
                               <Card
-                                variant="bordered"
-                                isPressable
+                                variant={
+                                  canViewGrade() &&
+                                  dataClass?.class_status.id !== 6
+                                    ? 'bordered'
+                                    : 'flat'
+                                }
+                                isPressable={
+                                  canViewGrade() &&
+                                  dataClass?.class_status.id !== 6
+                                }
                                 onPress={() => {
                                   setSelectSession(data);
                                 }}
@@ -387,6 +399,11 @@ const ScheduleDetail = () => {
                                       new Date(Date.now()).toLocaleDateString(
                                         'vi-VN'
                                       ) && '2px solid red',
+                                  cursor:
+                                    canViewGrade() &&
+                                    dataClass?.class_status.id !== 6
+                                      ? 'pointer'
+                                      : 'no-drop',
                                 }}
                               >
                                 <Card.Body
@@ -462,6 +479,7 @@ const ScheduleDetail = () => {
           )}
           {viewGrade && dataModule !== undefined && (
             <ViewGrade
+              role={'sro'}
               dataModule={dataModule}
               dataSchedule={dataSchedule}
               onSuccess={handleSuccess}
