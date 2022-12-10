@@ -192,7 +192,7 @@ const GradeScreen = () => {
           <Card.Divider />
           {
             <Card.Body>
-              {informationModule.max_practical_grade && (
+              {informationModule?.max_practical_grade && (
                 <Text
                   p
                   i
@@ -202,10 +202,10 @@ const GradeScreen = () => {
                   }}
                 >
                   * Điểm tối đa của Practical exam:{' '}
-                  {informationModule.max_practical_grade}
+                  {informationModule?.max_practical_grade}
                 </Text>
               )}
-              {informationModule.max_theory_grade && (
+              {informationModule?.max_theory_grade && (
                 <Text
                   p
                   i
@@ -215,7 +215,7 @@ const GradeScreen = () => {
                   }}
                 >
                   * Điểm tối đa của Theory exam:{' '}
-                  {informationModule.max_theory_grade}
+                  {informationModule?.max_theory_grade}
                 </Text>
               )}
               <Table
