@@ -121,7 +121,7 @@ public class StudentController : ControllerBase
     // get students by id
     [HttpGet]
     [Route("api/students/{id:int}")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "admin, sro, teacher")]
     public IActionResult GetStudentById(int id)
     {
         var student = GetAllStudentsInThisCenterByContext().FirstOrDefault(s => s.UserId == id);

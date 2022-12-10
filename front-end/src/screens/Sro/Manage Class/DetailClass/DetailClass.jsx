@@ -324,6 +324,10 @@ const DetailClass = () => {
     return false;
   }
 
+  const hasMerge = () => {
+    return dataClass?.class_status?.id === 6
+  };
+
   return (
     <Fragment>
       <Modal
@@ -583,15 +587,15 @@ const DetailClass = () => {
                       css={{ $$dropdownMenuWidth: '340px' }}
                     >
                       <Dropdown.Section title="Cơ bản">
-                        <Dropdown.Item
+                        {!hasMerge() && <Dropdown.Item
                           key="add"
                           description="Thêm học viên thủ công"
                           icon={<MdPersonAdd />}
                           color={'success'}
                         >
                           Thêm học viên
-                        </Dropdown.Item>
-                        {listStudent?.length === 0 && (
+                        </Dropdown.Item>}
+                        {listStudent?.length === 0 && !hasMerge() && (
                           <Dropdown.Item
                             key="import"
                             description="Tải lên danh sách học viên"
@@ -601,7 +605,7 @@ const DetailClass = () => {
                             Import
                           </Dropdown.Item>
                         )}
-                        {listStudent?.length === 0 && (
+                        {listStudent?.length === 0 && !hasMerge() && (
                           <Dropdown.Item
                             key="download"
                             description="Tải xuống file mẫu"
@@ -621,7 +625,7 @@ const DetailClass = () => {
                             Lưu
                           </Dropdown.Item>
                         )}
-                        {hasAcitveStudent() && (
+                        {(hasAcitveStudent() || hasMerge()) && (
                           <Dropdown.Item
                             key="schedule"
                             description="Xem tất cả lịch học của lớp"

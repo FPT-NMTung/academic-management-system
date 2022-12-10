@@ -1750,7 +1750,7 @@ public class ClassController : ControllerBase
     // get students in class
     [HttpGet]
     [Route("api/classes/{id:int}/students")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "admin, sro, teacher")]
     public IActionResult GetStudentsInClass(int id)
     {
         // is class exist

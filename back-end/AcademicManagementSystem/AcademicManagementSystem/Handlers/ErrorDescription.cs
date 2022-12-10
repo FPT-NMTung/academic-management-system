@@ -53,7 +53,6 @@ public static class ErrorDescription
         { "E0027", new ErrorModel() { Message = "Duplicated citizenIdentityCardNo for CREATE/UPDATE SRO", Type = "sro-error-0012" } },
         { "E0028", new ErrorModel() { Message = "Please enter at least one search criteria", Type = "sro-error-0013" } },
         { "E0029", new ErrorModel() { Message = "CitizenIdentityCardPublishedDate must match format yyyy/MM/dd for CREATE/UPDATE SRO", Type = "sro-error-0014" } },
-      
         { "E0030", new ErrorModel() { Message = "MobilePhone 10 digits and starting with 0", Type = "sro-error-0015" } },
         { "E0031", new ErrorModel() { Message = "Email must match with format", Type = "sro-error-0016" } },
         { "E0032", new ErrorModel() { Message = "EmailOrganization must match with format", Type = "sro-error-0017" } },
@@ -344,7 +343,10 @@ public static class ErrorDescription
         { "E0307", new ErrorModel() { Message = "Can't update grade, this module don't take exam", Type = "student-grade-error-0007" } },
         { "E0308", new ErrorModel() { Message = "Grade must in range 0 -> max theory grade of module", Type = "student-grade-error-0008" } },
         { "E0309", new ErrorModel() { Message = "Grade must in range 0 -> max practical grade of module", Type = "student-grade-error-0009" } },
-        { "E0310", new ErrorModel() { Message = "This class have been merge", Type = "class-error-0010" } },
+        
+        // class status
+        { "E0401", new ErrorModel() { Message = "This class have been merge", Type = "class-status-error-0001" } },
+        { "E0402", new ErrorModel() { Message = "This class have been complete", Type = "class-status-error-0002" } },
 
         //gpa
         { "E1139", new ErrorModel() { Message = "Class is not exists in center", Type = "gpa-error-1" } },

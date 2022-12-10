@@ -19,7 +19,6 @@ export const ErrorCodeApi = {
   "room-error-0018": "Thay đổi trạng thái không thành công",
   "room-error-0019": "Không thể xóa phòng",
 
-
   "center-error-0001": "Cơ sở không tồn tại",
   "center-error-0002": "Tên cơ sở không được để trống",
   "center-error-0003": "Tên cơ sở không hợp lệ",
@@ -197,6 +196,12 @@ export const ErrorCodeApi = {
   "class-error-0082": "Không tìm thấy chương trình học",
   "class-error-0083": "Chương trình học chưa được kích hoạt vào thời điểm lớp học bắt đầu",
   "class-error-0084": "Chương trình học chưa được kích hoạt",
+  "class-error-0085": "TỈnh thành không hợp lệ",
+  "class-error-0086": "Quận huyện không hợp lệ",
+  "class-error-0087": "Phường xã không hợp lệ",
+
+  "class-status-error-0001":"Lớp học đã được ghép",
+  "class-status-error-0002":"Lớp học đã được kết thúc",
 
   "student-class-error-0001": "Hệ thống đã xảy ra lỗi, vui lòng thử lại",
   "student-class-error-0002": "Mã số sinh viên đã tồn tại",
@@ -213,9 +218,6 @@ export const ErrorCodeApi = {
   "student-class-error-0013": "Lớp hiện tại không có trong cơ sở",
   "student-class-error-0014": "Lớp ghép không có trong cơ sở",
 
-
-
-
   "student-error-0001": "Họ và tên đệm không đúng định dạng",
   "student-error-0002": "Tên không được chứa ký tự đặc biệt",
   "student-error-0003": "Số điện thoại cá nhân đã tồn tại",
@@ -230,7 +232,6 @@ export const ErrorCodeApi = {
   "student-error-0009": "Email cá nhân và email tổ chức không được trùng nhau",
   "student-error-00010": "CCCD/CMND đã tồn tại",
   "student-error-00011": "CCCD/CMND không đúng định dạng",
-
   "student-error-00014": "Tỉnh không tồn tại",
   "student-error-00015": "Huyện không tồn tại",
   "student-error-00016": "Phường không tồn tại",
@@ -263,6 +264,7 @@ export const ErrorCodeApi = {
   "student-error-0043": "Lớp chuyển tới đã có hơn 100 học viên",
   "student-error-0044": "Ngày sinh phải nhỏ hơn ngày hiện tại",
   "student-error-0045": "Ngày cấp thẻ CMT/CCCD phải nhỏ hơn ngày hiện tại",
+  "student-error-0046": "Lỗi khi lưu trạng thái học viên",
 
 
 
@@ -272,6 +274,7 @@ export const ErrorCodeApi = {
 
   "class-schedule-error-0001": "Môn học không dành cho lớp này",
   "class-schedule-error-0001_1": "Giáo viên không có tại cơ sở này",
+  "class-schedule-error-0001_2": "Giáo viên chưa kích hoạt tài khoản",
   "class-schedule-error-0002": "Dữ liệu không hợp lệ",
   "class-schedule-error-0003": "Môn này đã được lên lịch",
   "class-schedule-error-0004": "Số lượng buổi học phải từ 1 đến 50",
@@ -327,6 +330,8 @@ export const ErrorCodeApi = {
   "student-grade-error-0005": "Cập nhật thất bại",
   "student-grade-error-0006": "Điểm TE và TEResit sẽ được cập nhật bởi SRO import",
   "student-grade-error-0007": "Không thể cập nhật, môn học không có bài thi",
+  "student-grade-error-0008": "Điểm không nằm trong mức cho phép",
+  "student-grade-error-0009": "Điểm không nằm trong mức cho phép",
 
   "gpa-error-1": "Lớp học không có trong cơ sở",
   "gpa-error-2": "Giáo viên không có trong cơ sở",
@@ -340,7 +345,4 @@ export const ErrorCodeApi = {
   "gpa-error-10": "Lớp học đang không học môn học này",
   "gpa-error-11": "Lớp học đang không học tiết học này",
   "gpa-error-12": "Giáo viên đang không dạy tiết này trong lớp",
-
-
-
 };
