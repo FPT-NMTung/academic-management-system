@@ -42,6 +42,9 @@ public class StatisticController : ControllerBase
     {
         var clazz = _context.Classes
             .Include(c => c.ClassSchedules)
+            .ThenInclude(cs => cs.Teacher)
+            .ThenInclude(t => t.User)
+            .Include(c => c.ClassSchedules)
             .ThenInclude(cs => cs.Module)
             .FirstOrDefault(c => c.Id == classId);
 
@@ -57,13 +60,6 @@ public class StatisticController : ControllerBase
         }
 
         var moduleProgressScores = GetGradesOfStudentsInClass(clazz);
-
-        var progressScore = moduleProgressScores.FirstOrDefault();
-
-        if (progressScore == null)
-        {
-            return Ok(CustomResponse.Ok("Get pass rate of class and module successfully", null!));
-        }
 
         var responses = new List<PassRateOfClassAndModuleResponse>();
 
@@ -86,6 +82,8 @@ public class StatisticController : ControllerBase
                 }
             }
 
+            var teacher = clazz.ClassSchedules.First(cs => cs.ModuleId == m.Module.Id).Teacher;
+
             var response = new PassRateOfClassAndModuleResponse()
             {
                 Class = new BasicClassResponse()
@@ -97,6 +95,13 @@ public class StatisticController : ControllerBase
                 {
                     Id = module!.Id,
                     Name = module.ModuleName,
+                },
+                Teacher = new BasicTeacherInformationResponse()
+                {
+                    Id = teacher.User.Id,
+                    EmailOrganization = teacher.User.EmailOrganization,
+                    FirstName = teacher.User.FirstName,
+                    LastName = teacher.User.LastName,
                 },
                 NumberOfStudents = m.Students.Count,
                 NumberOfPassStudents = passedCount
@@ -116,6 +121,9 @@ public class StatisticController : ControllerBase
         var userId = Convert.ToInt32(_userService.GetUserId());
 
         var clazz = _context.Classes
+            .Include(c => c.ClassSchedules)
+            .ThenInclude(cs => cs.Teacher)
+            .ThenInclude(t => t.User)
             .Include(c => c.CourseFamily)
             .Include(c => c.CourseFamily.Courses)
             .ThenInclude(c => c.CoursesModulesSemesters)
@@ -177,6 +185,8 @@ public class StatisticController : ControllerBase
             }
         }
 
+        var teacher = clazz.ClassSchedules.First(cs => cs.ModuleId == moduleId).Teacher;
+
         var response = new PassRateOfClassAndModuleResponse()
         {
             Class = new BasicClassResponse()
@@ -189,12 +199,231 @@ public class StatisticController : ControllerBase
                 Id = module!.Id,
                 Name = module.ModuleName,
             },
+            Teacher = new BasicTeacherInformationResponse()
+            {
+                Id = teacher.User.Id,
+                EmailOrganization = teacher.User.EmailOrganization,
+                FirstName = teacher.User.FirstName,
+                LastName = teacher.User.LastName,
+            },
             // NumberOfStudents = numberOfStudent,
             NumberOfStudents = students.Count,
             NumberOfPassStudents = passedCount
         };
 
         return Ok(CustomResponse.Ok("Get pass rate of class and module successfully", response));
+    }
+
+    [HttpGet]
+    [Route("api/statistics/teachers/{teacherId:int}/modules")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetModulesTeachByTeacher(int teacherId)
+    {
+        var teacher = _context.Teachers.Find(teacherId);
+
+        if (teacher == null)
+        {
+            return NotFound(CustomResponse.NotFound("Teacher not found"));
+        }
+
+        var modules = _context.ClassSchedules
+            .Include(cs => cs.Module)
+            .Where(cs => cs.TeacherId == teacherId)
+            .Select(cs => new BasicModuleResponse()
+            {
+                Id = cs.Module.Id,
+                Name = cs.Module.ModuleName,
+            });
+
+        return Ok(CustomResponse.Ok("Get modules teach by teacher successfully", modules));
+    }
+
+    [HttpGet]
+    [Route("api/statistics/teachers/{teacherId:int}/modules/{moduleId:int}/classes")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetClassesOfTeacherByModuleId(int teacherId, int moduleId)
+    {
+        var teacher = _context.Teachers.Find(teacherId);
+
+        if (teacher == null)
+        {
+            return NotFound(CustomResponse.NotFound("Teacher not found"));
+        }
+
+        var classes = GetClassesTeachByTeacherByModuleId(teacherId, moduleId);
+
+        return Ok(CustomResponse.Ok("Get classes of teacher by module successfully", classes));
+    }
+
+    [HttpGet]
+    [Route("api/statistics/teachers/{teacherId:int}/modules/{moduleId:int}/pass-rate")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetPassRateOfTeacherByModuleInAllClasses(int teacherId, int moduleId)
+    {
+        var teacher = _context.Teachers.Find(teacherId);
+
+        if (teacher == null)
+        {
+            return NotFound(CustomResponse.NotFound("Teacher not found"));
+        }
+
+        var schedule = _context.ClassSchedules.Include(cs => cs.Module)
+            .FirstOrDefault(cs => cs.TeacherId == teacherId && cs.ModuleId == moduleId);
+
+        if (schedule == null)
+        {
+            return NotFound(CustomResponse.NotFound("Teacher not teach this module"));
+        }
+
+        var module = schedule.Module;
+
+        var classes = GetClassesTeachByTeacherByModuleId(teacherId, moduleId).ToList();
+
+        var numberOfStudentInAllClass = 0;
+        var passedCount = 0;
+
+        foreach (var c in classes)
+        {
+            var clazz = new Class
+            {
+                Id = c.Id,
+                Name = c.Name
+            };
+
+            var progressScores = GetGradesOfStudentsInClass(clazz)
+                .FirstOrDefault(m => m.Module.Id == moduleId);
+
+            if (progressScores == null)
+            {
+                continue;
+            }
+
+            var students = progressScores.Students;
+            numberOfStudentInAllClass += students.Count;
+
+            foreach (var student in students)
+            {
+                var totalScore = CalculateAverageScore(student, module!);
+                Console.WriteLine("student: " + student.UserId + " total score: " + totalScore);
+                if (totalScore != null)
+                {
+                    var roundedScore = Math.Round((double)totalScore, 2); // round to 2 decimal places
+
+                    if (roundedScore >= GradeToPass)
+                    {
+                        passedCount++;
+                    }
+                }
+            }
+        }
+
+        var response = new PassRateOfTeacherAndModuleResponse()
+        {
+            Module = new BasicModuleResponse()
+            {
+                Id = module.Id,
+                Name = module.ModuleName,
+            },
+            NumberOfStudentInAllClass = numberOfStudentInAllClass,
+            NumberOfPassStudents = passedCount
+        };
+
+        return Ok(CustomResponse.Ok("Get pass rate teacher by module in all classes successfully", response));
+    }
+
+    [HttpGet]
+    [Route("api/statistics/teachers/{teacherId:int}/modules/{moduleId:int}/classes/{classId:int}/pass-rate")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetPassRateOfTeacherByModuleInSpecificClass(int teacherId, int moduleId, int classId)
+    {
+        var teacher = _context.Teachers.Include(t => t.User)
+            .FirstOrDefault(t => t.UserId == teacherId);
+
+        if (teacher == null)
+        {
+            return NotFound(CustomResponse.NotFound("Teacher not found"));
+        }
+
+        var schedule = _context.ClassSchedules
+            .Include(cs => cs.Module)
+            .FirstOrDefault(cs => cs.TeacherId == teacherId && cs.ModuleId == moduleId);
+
+        if (schedule == null)
+        {
+            return NotFound(CustomResponse.NotFound("Teacher not teach this module"));
+        }
+
+        var module = schedule.Module;
+
+        var classResponse = GetClassesTeachByTeacherByModuleId(teacherId, moduleId)
+            .FirstOrDefault(c => c.Id == classId);
+
+        if (classResponse == null)
+        {
+            return NotFound(CustomResponse.NotFound("Class not found for this teacher and module"));
+        }
+
+        var passedCount = 0;
+
+
+        var clazz = new Class
+        {
+            Id = classResponse.Id,
+            Name = classResponse.Name
+        };
+
+        var progressScores = GetGradesOfStudentsInClass(clazz)
+            .FirstOrDefault(m => m.Module.Id == moduleId);
+
+        if (progressScores == null)
+        {
+            return Ok(CustomResponse.Ok("Get pass rate of teacher by class and module successfully", null!));
+        }
+
+        var students = progressScores.Students;
+
+        foreach (var student in students)
+        {
+            var totalScore = CalculateAverageScore(student, module);
+            
+            Console.WriteLine("student: " + student.UserId + " total score: " + totalScore);
+            
+            if (totalScore != null)
+            {
+                var roundedScore = Math.Round((double)totalScore, 2); // round to 2 decimal places
+
+                if (roundedScore >= GradeToPass)
+                {
+                    passedCount++;
+                }
+            }
+        }
+        
+        var response = new PassRateOfClassAndModuleResponse()
+        {
+            Class = new BasicClassResponse()
+            {
+                Id = clazz.Id,
+                Name = clazz.Name,
+            },
+            Module = new BasicModuleResponse()
+            {
+                Id = module!.Id,
+                Name = module.ModuleName,
+            },
+            Teacher = new BasicTeacherInformationResponse()
+            {
+                Id = teacher.User.Id,
+                EmailOrganization = teacher.User.EmailOrganization,
+                FirstName = teacher.User.FirstName,
+                LastName = teacher.User.LastName,
+            },
+            // NumberOfStudents = numberOfStudent,
+            NumberOfStudents = students.Count,
+            NumberOfPassStudents = passedCount
+        };
+
+        return Ok(CustomResponse.Ok("Get pass rate of teacher by module in specific class successfully", response));
     }
 
     private static double? CalculateAverageScore(StudentInfoAndGradeResponse studentGrades, Module module)
@@ -371,7 +600,8 @@ public class StatisticController : ControllerBase
             .Include(m => m.GradeCategoryModule)
             .ThenInclude(gcm => gcm.GradeItems)
             .ThenInclude(gi => gi.StudentGrades)
-            .Where(m => m.ClassSchedules.Any(cs => cs.ClassId == clazz.Id && cs.ModuleId == m.Id))
+            .Where(m => m.ClassSchedules.Any(cs =>
+                cs.ClassId == clazz.Id && cs.ModuleId == m.Id)) // && cs.EndDate <= DateTime.Today))
             .Select(m => new ListStudentGradeResponse()
             {
                 Class = new BasicClassResponse()
@@ -416,6 +646,18 @@ public class StatisticController : ControllerBase
                                     .ToList()
                             }).ToList()
                     }).ToList()
+            });
+    }
+
+    private IQueryable<BasicClassResponse> GetClassesTeachByTeacherByModuleId(int teacherId, int moduleId)
+    {
+        return _context.ClassSchedules
+            .Include(cs => cs.Class)
+            .Where(cs => cs.TeacherId == teacherId && cs.ModuleId == moduleId)
+            .Select(cs => new BasicClassResponse()
+            {
+                Id = cs.Class.Id,
+                Name = cs.Class.Name,
             });
     }
 
