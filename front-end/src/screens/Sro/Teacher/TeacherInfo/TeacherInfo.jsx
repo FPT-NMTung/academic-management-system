@@ -133,12 +133,14 @@ const StudentDetail = () => {
     const moduleid = form.getFieldValue("subject");
     const classid = form.getFieldValue("class");
     console.log("sssssMon hoc id " + moduleSelected);
-    console.log(FetchApi(
-      ManageTeacherApis.getAverageGPAOfATeacherByModuleAndClass,
-      null,
-      null,
-      [`${id}`, `${classid}`, `${moduleid}`]
-    ));
+    console.log(
+      FetchApi(
+        ManageTeacherApis.getAverageGPAOfATeacherByModuleAndClass,
+        null,
+        null,
+        [`${id}`, `${classid}`, `${moduleid}`]
+      )
+    );
     FetchApi(
       ManageTeacherApis.getAverageGPAOfATeacherByModuleAndClass,
       null,
@@ -461,7 +463,7 @@ const StudentDetail = () => {
                             {gpa === ""
                               ? "Chưa có dữ liệu"
                               : Math.round(gpa.average_gpa * 10) / 10}
-                            {gpa === "" ? "" : " %"}
+                            {gpa === "" ? "" : " "}
                           </Badge>
                         </Text>
                         <Divider
@@ -575,7 +577,7 @@ const StudentDetail = () => {
                                     ? "Chưa có dữ liệu"
                                     : Math.round(gpaByModule.average_gpa * 10) /
                                       10}
-                                  {gpaByModule === "" ? "" : " %"}
+                                  {gpaByModule === "" ? "" : ""}
                                 </Badge>
                               )}
                             </Divider>
@@ -595,7 +597,7 @@ const StudentDetail = () => {
                                   //   padding: '0',
                                 }}
                               >
-                                GPA trung bình môn {" "}
+                                GPA trung bình môn{" "}
                                 {listModule.length == 0
                                   ? ""
                                   : listModule.map((item) => {
