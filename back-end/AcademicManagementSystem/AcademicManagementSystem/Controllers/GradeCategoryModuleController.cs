@@ -19,8 +19,8 @@ public class GradeCategoryModuleController : ControllerBase
     private const int PracticeExamResit = 7;
     private const int TheoryExamResit = 8;
     private const int FinalProject = 9;
-    private const int ExamTypePe = 1;
-    private const int ExamTypeTe = 2;
+    private const int ExamTypeTe = 1;
+    private const int ExamTypePe = 2;
     private const int ExamTypeBothPeAndTe = 3;
     private const int ExamTypeNoTakeExam = 4;
 
@@ -79,7 +79,7 @@ public class GradeCategoryModuleController : ControllerBase
         {
             // ExamTypePe: only take theory exam -> can't add any grade category (because theory exam is default and auto add later)
             // ExamTypeNoTakeExam: not take exam -> add only grade category FINAL PROJECT (auto add later)
-            if (module.ExamType is ExamTypePe or ExamTypeNoTakeExam)
+            if (module.ExamType is ExamTypeTe or ExamTypeNoTakeExam)
             {
                 var error = ErrorDescription.Error["E0067_3"];
                 return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));

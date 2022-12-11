@@ -21,6 +21,7 @@ import {
   Form,
   Input,
 } from "antd";
+import { RingProgress } from "@ant-design/plots";
 import { useState, useEffect } from "react";
 import { AiFillPhone } from "react-icons/ai";
 import { MdDelete, MdPersonAdd, MdSave } from "react-icons/md";
@@ -34,14 +35,14 @@ import { RiEyeFill, RiPencilFill } from "react-icons/ri";
 import { Fragment } from "react";
 import toast from "react-hot-toast";
 import React from "react";
-
+import ReactDOM from "react-dom";
 const gender = {
   1: "Nam",
   2: "Nữ",
   3: "Khác",
   4: "Không xác định",
 };
-const StudentDetail = () => {
+const TeacherInfo = () => {
   const [dataUser, setdataUser] = useState({});
   const [listSkill, setListSkill] = useState(undefined);
   const [listModule, setListModule] = useState([]);
@@ -92,6 +93,9 @@ const StudentDetail = () => {
   };
   const getListClass = () => {
     const moduleid = form.getFieldValue("subject");
+    form.resetFields(["class"]);
+    setClassSelected("");
+    setGpaByClass("");
     FetchApi(ManageTeacherApis.getListClassOfATeacherByModule, null, null, [
       `${moduleid}`,
     ])
@@ -130,15 +134,10 @@ const StudentDetail = () => {
       });
   };
   const getGPAByModuleAndClass = () => {
+ 
     const moduleid = form.getFieldValue("subject");
     const classid = form.getFieldValue("class");
-    console.log("sssssMon hoc id " + moduleSelected);
-    console.log(FetchApi(
-      ManageTeacherApis.getAverageGPAOfATeacherByModuleAndClass,
-      null,
-      null,
-      [`${id}`, `${classid}`, `${moduleid}`]
-    ));
+    console.log("sssssMon hoc id " + moduleSelected + "class id " + classid);
     FetchApi(
       ManageTeacherApis.getAverageGPAOfATeacherByModuleAndClass,
       null,
@@ -148,7 +147,7 @@ const StudentDetail = () => {
       .then((res) => {
         const data = res.data === null ? "" : res.data;
         setGpaByClass(data);
-        console.log(gpaByClass);
+        // console.log(gpaByClass);
       })
       .catch(() => {
         toast.error("Lỗi lấy GPA giáo viên theo môn học và lớp học");
@@ -329,6 +328,7 @@ const StudentDetail = () => {
                     setModuleSelected("");
                     setGpaByModule("");
                     setClassSelected("");
+                    setGpaByClass("");
                   }}
 
                   // closable={false}
@@ -461,7 +461,7 @@ const StudentDetail = () => {
                             {gpa === ""
                               ? "Chưa có dữ liệu"
                               : Math.round(gpa.average_gpa * 10) / 10}
-                            {gpa === "" ? "" : " %"}
+                            {gpa === "" ? "" : " / 4"}
                           </Badge>
                         </Text>
                         <Divider
@@ -480,7 +480,7 @@ const StudentDetail = () => {
                               //   padding: '0',
                             }}
                           >
-                            Xem GPA trung bình của giáo viên theo môn học và lớp
+                            Xem GPA trung bình của giáo viên theo môn và lớp
                           </Text>
                         </Divider>
 
@@ -515,7 +515,7 @@ const StudentDetail = () => {
                                 value={classSelected}
                                 onSelect={setClassSelected}
                                 onChange={() => {
-                                  // getGPAByModuleAndClass();
+                                  getGPAByModuleAndClass();
                                 }}
                               >
                                 {listClass.map((item, index) => (
@@ -554,7 +554,18 @@ const StudentDetail = () => {
                               >
                                 GPA trung bình của môn{" "}
                                 {listModule.length == 0
-                                  ? ""
+                                  ? 
+                                  <div>
+                                  <Badge
+                                    variant="bordered"
+                                    color="success"
+                                    shape="circle"
+                                    size="md"
+                                    css={{ margin: "10px 0" }}
+                                  >
+                                    Chưa có dữ liệu
+                                  </Badge>
+                                </div>
                                   : listModule.map((item) => {
                                       if (item.id === moduleSelected) {
                                         return item.module_name + " " + "là:  ";
@@ -562,23 +573,43 @@ const StudentDetail = () => {
                                     })}
                               </Text>
                               {gpaByModule.length == 0 ? (
-                                ""
+                             ""
                               ) : (
-                                <Badge
-                                  variant="bordered"
-                                  color="success"
-                                  shape="circle"
-                                  size="md"
-                                >
-                                  {" "}
-                                  {gpaByModule === ""
-                                    ? "Chưa có dữ liệu"
-                                    : Math.round(gpaByModule.average_gpa * 10) /
-                                      10}
-                                  {gpaByModule === "" ? "" : " %"}
-                                </Badge>
+                                <div>
+                                  <Badge
+                                    variant="bordered"
+                                    color="success"
+                                    shape="circle"
+                                    size="md"
+                                    css={{ margin: "10px 0" }}
+                                  >
+                                    {" "}
+                                    {gpaByModule === ""
+                                      ? "Chưa có dữ liệu"
+                                      : Math.round(
+                                          gpaByModule.average_gpa * 10
+                                        ) / 10}
+                                    {gpaByModule === "" ? "" : " / 4"}
+                                  </Badge>
+                                </div>
+                              )}
+                              {gpaByModule.length == 0 ?
+                              "": (
+                                <RingProgress
+                                  height={100}
+                                  width={100}
+                                  color={["#1891ff", "#E8EDF3"]}
+                                  percent={
+                                    gpaByModule === ""
+                                      ? 0
+                                      : Math.round(
+                                          gpaByModule.average_gpa * 10
+                                        ) / 40
+                                  }
+                                />
                               )}
                             </Divider>
+
                             <Divider
                               orientation="left"
                               style={{ marginTop: 10, marginBottom: 24 }}
@@ -595,7 +626,7 @@ const StudentDetail = () => {
                                   //   padding: '0',
                                 }}
                               >
-                                GPA trung bình môn {" "}
+                                GPA trung bình môn{" "}
                                 {listModule.length == 0
                                   ? ""
                                   : listModule.map((item) => {
@@ -612,7 +643,45 @@ const StudentDetail = () => {
                                       }
                                     })}
                               </Text>
+                              {listClass.length == 0 ? (
+                                   ""
+                              ) : (
+                                <div>
+                                  <Badge
+                                    variant="bordered"
+                                    color="success"
+                                    shape="circle"
+                                    size="md"
+                                    css={{ margin: "10px 0" }}
+                                  >
+                                    {" "}
+                                    {gpaByClass === ""
+                                      ? "Chưa có dữ liệu"
+                                      : Math.round(
+                                        gpaByClass.average_gpa * 10
+                                        ) / 10}
+                                    {gpaByClass === "" ? "" : " / 4"}
+                                  </Badge>
+                                </div>
+                              )}
+                              {gpaByClass.length == 0 ? (
+                                ""
+                              ) : (
+                                <RingProgress
+                                  height={100}
+                                  width={100}
+                                  color={["#1891ff", "#E8EDF3"]}
+                                  percent={
+                                    gpaByClass === ""
+                                      ? 0
+                                      : Math.round(
+                                        gpaByClass.average_gpa * 10
+                                        ) / 40
+                                  }
+                                />
+                              )}
                             </Divider>
+                           
                           </div>
                         </Card>
                       </Card.Body>
@@ -627,4 +696,4 @@ const StudentDetail = () => {
     </Fragment>
   );
 };
-export default StudentDetail;
+export default TeacherInfo;

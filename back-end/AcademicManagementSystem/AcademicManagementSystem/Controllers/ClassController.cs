@@ -19,7 +19,6 @@ using AcademicManagementSystem.Models.RoleController;
 using AcademicManagementSystem.Models.UserController.StudentController;
 using AcademicManagementSystem.Services;
 using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -1084,6 +1083,186 @@ public class ClassController : ControllerBase
         {
             return BadRequest(CustomResponse.BadRequest(e.Message + " at Student No " + studentNo,
                 e.GetType().ToString()));
+        }
+    }
+
+    // export students in class
+    [HttpGet]
+    [Route("api/classes/{id:int}/export-students")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult DownloadStudents(int id)
+    {
+        // get class by id
+        var classInfo = GetAllClassesInThisCenterByContext().FirstOrDefault(c => c.Id == id);
+        if (classInfo == null)
+        {
+            return NotFound(CustomResponse.NotFound("Class not found in this center"));
+        }
+
+        var students = GetAllStudentsByClassId(id);
+
+        if (students.Count == 0)
+        {
+            return NotFound(CustomResponse.NotFound("No student in this class"));
+        }
+
+        var fileName = $"{classInfo.Name}.xlsx";
+        using (var workbook = new XLWorkbook())
+        {
+            var worksheet = workbook.Worksheets.Add("students");
+
+            // row 1
+            worksheet.Cell(1, 1).Value = "1";
+            worksheet.Cell(1, 2).Value = "2";
+            worksheet.Cell(1, 3).Value = "3";
+            worksheet.Cell(1, 4).Value = "4";
+            worksheet.Cell(1, 5).Value = "5";
+            worksheet.Cell(1, 6).Value = "6";
+            worksheet.Cell(1, 7).Value = "7";
+            worksheet.Cell(1, 8).Value = "8";
+            worksheet.Cell(1, 9).Value = "9";
+            worksheet.Cell(1, 10).Value = "10";
+            worksheet.Cell(1, 11).Value = "11";
+            worksheet.Cell(1, 12).Value = "12";
+            worksheet.Cell(1, 13).Value = "13";
+            worksheet.Cell(1, 14).Value = "14";
+            worksheet.Cell(1, 15).Value = "15";
+            worksheet.Cell(1, 16).Value = "16";
+            worksheet.Cell(1, 17).Value = "17";
+            worksheet.Cell(1, 18).Value = "18";
+            worksheet.Cell(1, 19).Value = "19";
+            worksheet.Cell(1, 20).Value = "20";
+            worksheet.Cell(1, 21).Value = "21";
+            worksheet.Cell(1, 22).Value = "22";
+            worksheet.Cell(1, 23).Value = "23";
+            worksheet.Cell(1, 24).Value = "24";
+            worksheet.Cell(1, 25).Value = "25";
+            worksheet.Cell(1, 26).Value = "26";
+            worksheet.Cell(1, 27).Value = "27";
+            worksheet.Cell(1, 28).Value = "28";
+            worksheet.Cell(1, 29).Value = "29";
+            worksheet.Cell(1, 30).Value = "30";
+            worksheet.Cell(1, 31).Value = "31";
+            worksheet.Cell(1, 32).Value = "32";
+            worksheet.Cell(1, 33).Value = "33";
+            worksheet.Cell(1, 34).Value = "34";
+            worksheet.Cell(1, 35).Value = "35";
+            worksheet.Cell(1, 36).Value = "36";
+            worksheet.Cell(1, 37).Value = "37";
+            worksheet.Cell(1, 38).Value = "38";
+
+            // row 2
+            worksheet.Row(2).Style.Fill.BackgroundColor = XLColor.FromHtml("#46E0DB");
+            worksheet.Cell(2, 1).Value = "No.";
+            worksheet.Cell(2, 2).Value = "Mã số sinh viên";
+            worksheet.Cell(2, 3).Value = "Họ và tên đệm";
+            worksheet.Cell(2, 4).Value = "Tên";
+            worksheet.Cell(2, 5).Value = "Tên đầy đủ";
+            worksheet.Cell(2, 6).Value = "Trạng thái";
+            worksheet.Cell(2, 7).Value = "Ngày cập nhật trạng thái";
+            worksheet.Cell(2, 8).Value = "Giới tính";
+            worksheet.Cell(2, 9).Value = "Ngày sinh";
+            worksheet.Cell(2, 10).Value = "Số điện thoại di động";
+            worksheet.Cell(2, 11).Value = "Số điện thoại nhà";
+            worksheet.Cell(2, 12).Value = "Số điện thoại liên hệ";
+            worksheet.Cell(2, 13).Value = "Email";
+            worksheet.Cell(2, 14).Value = "Email của trung tâm";
+            worksheet.Cell(2, 15).Value = "CCCD/CMND";
+            worksheet.Cell(2, 16).Value = "Ngày cấp CCCD/CMND";
+            worksheet.Cell(2, 17).Value = "Nơi cấp CCCD/CMND";
+            worksheet.Cell(2, 18).Value = "Địa chỉ liên hệ";
+            worksheet.Cell(2, 19).Value = "Phường/Xã";
+            worksheet.Cell(2, 20).Value = "Quận/Huyện";
+            worksheet.Cell(2, 21).Value = "Tỉnh/Thành phố";
+            worksheet.Cell(2, 22).Value = "Phụ huynh hoặc Người bảo trợ của học viên";
+            worksheet.Cell(2, 23).Value = "Quan hệ với học viên";
+            worksheet.Cell(2, 24).Value = "Số điện thoại phụ huynh hoặc người bảo trợ";
+            worksheet.Cell(2, 25).Value = "Ngày đăng ký";
+            worksheet.Cell(2, 26).Value = "Hồ sơ đăng ký";
+            worksheet.Cell(2, 27).Value = "Mã khoá học";
+            worksheet.Cell(2, 28).Value = "Mã chương trình học";
+            worksheet.Cell(2, 29).Value = "Trường THPT";
+            worksheet.Cell(2, 30).Value = "Trường đại học";
+            worksheet.Cell(2, 31).Value = "Facebook";
+            worksheet.Cell(2, 32).Value = "Portfolio";
+            worksheet.Cell(2, 33).Value = "Công ty đang làm việc";
+            worksheet.Cell(2, 34).Value = "Mức lương hiện tại";
+            worksheet.Cell(2, 35).Value = "Vị trí trong công ty";
+            worksheet.Cell(2, 36).Value = "Địa chỉ công ty";
+            worksheet.Cell(2, 37).Value = "Kế hoạch học phí (Fee plan)";
+            worksheet.Cell(2, 38).Value = "Học bổng";
+
+            for (var i = 3; i < students.Count + 3; i++)
+            {
+                worksheet.Cell(i, 1).Value = i - 2;
+                worksheet.Cell(i, 2).Value = students[i - 3].EnrollNumber;
+                worksheet.Cell(i, 3).Value = students[i - 3].FirstName;
+                worksheet.Cell(i, 4).Value = students[i - 3].LastName;
+                var fullName = $"{students[i - 3].FirstName} {students[i - 3].LastName}";
+                worksheet.Cell(i, 5).Value = fullName;
+                var learningStatus = students[i - 3].Status switch
+                {
+                    1 => "Studying",
+                    2 => "Delay",
+                    3 => "Dropout",
+                    4 => "ClassQueue",
+                    5 => "Transfer",
+                    6 => "Upgrade",
+                    7 => "Finished",
+                    _ => "Error"
+                };
+                worksheet.Cell(i, 6).Value = learningStatus;
+                worksheet.Cell(i, 7).Value = students[i - 3].StatusDate;
+                worksheet.Cell(i, 8).Value = students[i - 3].Gender?.Value;
+                worksheet.Cell(i, 9).Value = students[i - 3].Birthday;
+
+                worksheet.Cell(i, 10).Style.NumberFormat.Format = "@";
+                worksheet.Cell(i, 10).Value = students[i - 3].MobilePhone;
+                worksheet.Cell(i, 11).Style.NumberFormat.Format = "@";
+                worksheet.Cell(i, 11).Value = students[i - 3].HomePhone;
+                worksheet.Cell(i, 12).Style.NumberFormat.Format = "@";
+                worksheet.Cell(i, 12).Value = students[i - 3].ContactPhone;
+
+                worksheet.Cell(i, 13).Value = students[i - 3].Email;
+                worksheet.Cell(i, 14).Value = students[i - 3].EmailOrganization;
+
+                worksheet.Cell(i, 15).Style.NumberFormat.Format = "@";
+                worksheet.Cell(i, 15).Value = students[i - 3].CitizenIdentityCardNo;
+
+                worksheet.Cell(i, 16).Value = students[i - 3].CitizenIdentityCardPublishedDate;
+                worksheet.Cell(i, 17).Value = students[i - 3].CitizenIdentityCardPublishedPlace;
+                worksheet.Cell(i, 18).Value = students[i - 3].ContactAddress;
+                worksheet.Cell(i, 19).Value = students[i - 3].Ward?.Name;
+                worksheet.Cell(i, 20).Value = students[i - 3].District?.Name;
+                worksheet.Cell(i, 21).Value = students[i - 3].Province?.Name;
+                worksheet.Cell(i, 22).Value = students[i - 3].ParentalName;
+                worksheet.Cell(i, 23).Value = students[i - 3].ParentalRelationship;
+
+                worksheet.Cell(i, 24).Style.NumberFormat.Format = "@";
+                worksheet.Cell(i, 24).Value = students[i - 3].ParentalPhone;
+
+                worksheet.Cell(i, 25).Value = students[i - 3].ApplicationDate;
+                worksheet.Cell(i, 26).Value = students[i - 3].ApplicationDocument;
+                worksheet.Cell(i, 27).Value = students[i - 3].CourseCode;
+                worksheet.Cell(i, 28).Value = students[i - 3].Course?.CourseFamily?.Code;
+                worksheet.Cell(i, 29).Value = students[i - 3].HighSchool;
+                worksheet.Cell(i, 30).Value = students[i - 3].University;
+                worksheet.Cell(i, 31).Value = students[i - 3].FacebookUrl;
+                worksheet.Cell(i, 32).Value = students[i - 3].PortfolioUrl;
+                worksheet.Cell(i, 33).Value = students[i - 3].WorkingCompany;
+                worksheet.Cell(i, 34).Value = students[i - 3].CompanySalary;
+                worksheet.Cell(i, 35).Value = students[i - 3].CompanyPosition;
+                worksheet.Cell(i, 36).Value = students[i - 3].CompanyAddress;
+                worksheet.Cell(i, 37).Value = students[i - 3].FeePlan;
+                worksheet.Cell(i, 38).Value = students[i - 3].Promotion;
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                workbook.SaveAs(stream);
+                var content = stream.ToArray();
+                return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            }
         }
     }
 
