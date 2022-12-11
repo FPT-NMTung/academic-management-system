@@ -7,6 +7,8 @@ import {
   Button,
   Dropdown,
   Modal,
+  Table,
+  Loading,
 } from "@nextui-org/react";
 import classes from "./StudentDetail.module.css";
 import { useParams, useNavigate } from "react-router-dom";
@@ -19,19 +21,22 @@ import {
   Divider,
   Form,
   Input,
+  Menu,
 } from "antd";
 import { useState, useEffect } from "react";
 import { AiFillPhone } from "react-icons/ai";
 import { MdDelete, MdPersonAdd, MdSave } from "react-icons/md";
 import { HiHome } from "react-icons/hi";
 import FetchApi from "../../../../apis/FetchApi";
-import { ManageStudentApis } from "../../../../apis/ListApi";
+import { ManageStudentApis, ModulesApis } from "../../../../apis/ListApi";
 import ManImage from "../../../../images/3d-fluency-businessman-1.png";
 import WomanImage from "../../../../images/3d-fluency-businesswoman-1.png";
 import { FaCloudDownloadAlt, FaSyncAlt } from "react-icons/fa";
 import { RiEyeFill, RiPencilFill } from "react-icons/ri";
 import { Fragment } from "react";
 import toast from "react-hot-toast";
+import { MdMenuBook } from "react-icons/md";
+import { ImLibrary } from "react-icons/im";
 
 const gender = {
   1: "Nam",
@@ -48,16 +53,101 @@ const StudentDetail = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [currentClass, setCurrentClass] = useState(null);
   const [form] = Form.useForm();
-
+  const [listModuleSemester, setListModuleSemester] = useState([]);
+  const [listGrade, setListGrade] = useState([]);
+  const [listGradeFinal, setListGradeFinal] = useState([]);
+  const [informationModule, setInformationModule] = useState(undefined);
+  const [averagePracticeGrade, setAveragePracticeGrade] = useState(undefined);
   const { id } = useParams();
   const navigate = useNavigate();
+
+  const getModuleSemester = () => {
+    // setIsLoading(true);
+    FetchApi(
+      ManageStudentApis.getStudentSemesterWithClassAndModuleBySro,
+      null,
+      null,
+      [`${id}`]
+    )
+      .then((res) => {
+        const data = res.data === null ? "" : res.data;
+        setListModuleSemester(data);
+        // setIsLoading(false);
+      })
+      .catch((err) => {
+        toast.error("Lỗi khi tải dữ liệu");
+      });
+  };
+
+  const onSelectTree = async (moduleid, classid) => {
+    setListGrade([]);
+
+    const res1 = await FetchApi(ModulesApis.getModuleByID, null, null, [
+      String(moduleid),
+    ]);
+    const info = res1.data;
+    setInformationModule(info);
+
+    const res2 = await FetchApi(
+      ManageStudentApis.getGradeStudentBySro,
+      null,
+      null,
+      [String(classid), String(moduleid), String(id)]
+    );
+
+    const listGradePractice = res2.data.filter(
+      (item) => item.grade_category_id !== 6 && item.grade_category_id !== 8
+    );
+
+    const listGradeTheory = res2.data.filter(
+      (item) => item.grade_category_id === 6 || item.grade_category_id === 8
+    );
+
+    setListGrade(listGradePractice);
+    setListGradeFinal(listGradeTheory);
+
+    console.clear();
+
+    let avgPracticeGrade = 0;
+    const hasResitPractice =
+      listGradePractice.find((item) => item.grade_category_id === 7) !==
+      undefined;
+
+    const clone = [...listGradePractice].filter((item) => {
+      if (hasResitPractice) {
+        return item.grade_category_id !== 5;
+      } else {
+        return item.grade_category_id !== 7;
+      }
+    });
+
+    for (let i = 0; i < clone.length; i++) {
+      const gradeItem = clone[i];
+      if (
+        gradeItem.grade_category_id === 5 ||
+        gradeItem.grade_category_id === 7
+      ) {
+        // console.log(true, gradeItem);
+        avgPracticeGrade +=
+          clone[i].grade_item.grade *
+          (10 / info?.max_practical_grade) *
+          (gradeItem.total_weight / clone[i].quantity_grade_item);
+      } else {
+        // console.log(false, gradeItem);
+        avgPracticeGrade +=
+          clone[i].grade_item.grade *
+          (gradeItem.total_weight / clone[i].quantity_grade_item);
+      }
+    }
+    setAveragePracticeGrade(avgPracticeGrade / 100);
+  };
+
+  const getInformationModule = (moduleId) => {};
 
   const getDataStudent = () => {
     FetchApi(ManageStudentApis.detailStudent, null, null, [`${id}`])
       .then((res) => {
         setDataStudent(res.data);
-        // console.log(res.data);
-        // console.log(res.data.old_class[0].class_name);
         setIsLoading(false);
       })
       .catch(() => {
@@ -90,6 +180,7 @@ const StudentDetail = () => {
 
   useEffect(() => {
     getDataStudent();
+    getModuleSemester();
   }, []);
   const renderStatusStudent = (id) => {
     if (id === 1) {
@@ -318,7 +409,7 @@ const StudentDetail = () => {
                       </Text>
                       {dataStudent.current_class === null && (
                         <Text p size={14}>
-                        Hiện Không học lớp nào
+                          Hiện Không học lớp nào
                         </Text>
                       )}
                       {dataStudent.current_class !== null && (
@@ -625,6 +716,9 @@ const StudentDetail = () => {
                   }}
                   type="line"
                   size="large"
+                  // onChange={() => {
+                  //   getModuleSemester();
+                  // }}
 
                   // closable={false}
                 >
@@ -798,13 +892,290 @@ const StudentDetail = () => {
                     </Card>
                   </items>
 
-                  <items className="" tab="Thông tin học tập" key="2">
-                    Thông tin học tập
+                  <items className="" tab="Điểm số học viên" key="222222">
+                    <Grid.Container gap={1} justify={"space-between"}>
+                      <Grid xs={4}>
+                        <Card
+                          variant="bordered"
+                          css={{
+                            height: "fit-content",
+                          }}
+                        >
+                          <Card.Header>
+                            <Text
+                              p
+                              b
+                              size={14}
+                              css={{
+                                width: "100%",
+                                textAlign: "center",
+                                marginBottom: "12px",
+                              }}
+                            >
+                              Chọn môn học
+                            </Text>
+                          </Card.Header>
+                          <Card.Divider />
+                          <Card.Body>
+                            {isLoading ? (
+                              <Loading />
+                            ) : (
+                              <div style={{ color: "black !important" }}>
+                                <Menu
+                                  mode="inline"
+                                  // defaultOpenKeys={["1"]}
+                                  style={{ width: "100%" }}
+                                >
+                                  {listModuleSemester.map((item, index) => (
+                                    <Fragment key={index}>
+                                      <Menu.SubMenu
+                                        style={{ color: "black!important" }}
+                                        title={item.name}
+                                        key={item.id}
+                                        rootStyle={{ width: "100%" }}
+                                        icon={<ImLibrary />}
+                                      >
+                                        {item.modules.map((modules, index) => (
+                                          <Menu.Item
+                                            key={modules.id + modules.class.id}
+                                            rootStyle={{ width: "100%" }}
+                                            onClick={() => {
+                                              onSelectTree(
+                                                modules.id,
+                                                modules.class.id
+                                              );
+                                              getInformationModule(modules.id);
+                                            }}
+                                            icon={<MdMenuBook />}
+                                          >
+                                            <span>
+                                              {modules.name +
+                                                " ( " +
+                                                modules.class.name +
+                                                " )"}
+                                            </span>
+                                          </Menu.Item>
+                                        ))}
+                                      </Menu.SubMenu>
+                                    </Fragment>
+                                  ))}
+                                </Menu>
+                              </div>
+                            )}
+                          </Card.Body>
+                        </Card>
+                      </Grid>
+                      <Grid xs={8}>
+                        <Card variant="bordered">
+                          <Card.Header>
+                            <Text
+                              p
+                              b
+                              size={14}
+                              css={{
+                                width: "100%",
+                                textAlign: "center",
+                              }}
+                            >
+                              Bảng điểm
+                            </Text>
+                          </Card.Header>
+                          <Spacer y={0.6} />
+                          <Card.Divider />
+                          {
+                            <Card.Body>
+                              {informationModule?.max_practical_grade && (
+                                <Text
+                                  p
+                                  i
+                                  size={12}
+                                  css={{
+                                    paddingLeft: "10px",
+                                  }}
+                                >
+                                  * Điểm tối đa của Practical exam:{" "}
+                                  {informationModule?.max_practical_grade}
+                                </Text>
+                              )}
+                              {informationModule?.max_theory_grade && (
+                                <Text
+                                  p
+                                  i
+                                  size={12}
+                                  css={{
+                                    paddingLeft: "10px",
+                                  }}
+                                >
+                                  * Điểm tối đa của Theory exam:{" "}
+                                  {informationModule?.max_theory_grade}
+                                </Text>
+                              )}
+                              {listGrade.length > 0 && (
+                                <Fragment>
+                                  {/* {" "}
+                  <Text
+                    b
+                    
+                    size={18}
+                    css={{
+                      paddingLeft: "10px",
+                      marginTop: "10px",
+                    }}
+                  >
+                    {" "}
+                    <Badge color="success">Thực hành</Badge> 
+                  </Text> */}
+                                  <Table
+                                    aria-label=""
+                                    css={{
+                                      height: "auto",
+                                      minWidth: "100%",
+                                    }}
+                                    lined
+                                    headerLined
+                                    shadow={false}
+                                  >
+                                    <Table.Header>
+                                      <Table.Column width={200}>
+                                        Loại điểm thành phần
+                                      </Table.Column>
+                                      <Table.Column width={100}>
+                                        Trọng số
+                                      </Table.Column>
+                                      <Table.Column width={50}>
+                                        Điểm
+                                      </Table.Column>
+                                    </Table.Header>
+                                    <Table.Body>
+                                      {listGrade.map((item, index) => (
+                                        <Table.Row key={index}>
+                                          <Table.Cell>
+                                            {item.grade_item.name}
+                                          </Table.Cell>
+                                          <Table.Cell>
+                                            {item.total_weight ? (
+                                              <Badge color="warning">
+                                                {Math.round(
+                                                  (item.total_weight /
+                                                    item.quantity_grade_item) *
+                                                    100
+                                                ) / 100}
+                                                %
+                                              </Badge>
+                                            ) : (
+                                              ""
+                                            )}
+                                          </Table.Cell>
+                                          <Table.Cell b>
+                                            {item.grade_item.grade !== null
+                                              ? Math.round(
+                                                  item.grade_item?.grade * 100
+                                                ) / 100
+                                              : " "}
+                                          </Table.Cell>
+                                        </Table.Row>
+                                      ))}
+                                    </Table.Body>
+                                  </Table>
+                                </Fragment>
+                              )}
+                              {listGrade.length > 0 &&
+                                averagePracticeGrade !== 0 && (
+                                  <div>
+                                    <Text
+                                      b
+                                      i
+                                      size={18}
+                                      css={{
+                                        paddingLeft: "10px",
+                                      }}
+                                    >
+                                      Tổng điểm thực hành:{" "}
+                                      <Badge color="success">
+                                        {Math.round(
+                                          averagePracticeGrade * 100
+                                        ) / 100}{" "}
+                                        {informationModule?.max_practical_grade ===
+                                        null
+                                          ? ""
+                                          : "/ 10"}
+                                      </Badge>
+                                    </Text>
+                                    <Text p i size={12}>
+                                      (Đã quy về hệ số 10)
+                                    </Text>
+                                  </div>
+                                )}
+                              {listGradeFinal.length > 0 && (
+                                <Card
+                                  variant="bordered"
+                                  css={{
+                                    minHeight: "140px",
+                                    borderStyle: "dashed",
+                                    marginTop: "12px",
+                                    borderColor: "#17c964",
+                                  }}
+                                >
+                                  <Table
+                                    aria-label=""
+                                    css={{
+                                      height: "auto",
+                                      minWidth: "100%",
+                                    }}
+                                    lined
+                                    headerLined
+                                    shadow={false}
+                                  >
+                                    <Table.Header>
+                                      <Table.Column width={200}>
+                                        Điểm cuối kỳ lý thuyết
+                                      </Table.Column>
+                                      <Table.Column width={50}>
+                                        Điểm
+                                      </Table.Column>
+                                    </Table.Header>
+                                    <Table.Body>
+                                      {listGradeFinal.map((item, index) => (
+                                        <Table.Row key={index}>
+                                          <Table.Cell>
+                                            {item.grade_item.name}
+                                          </Table.Cell>
+                                          {/* <Table.Cell>
+                            {item.total_weight !== null ? (
+                              <Badge color="warning">
+                                {Math.round(
+                                  (item.total_weight /
+                                    item.quantity_grade_item) *
+                                    10
+                                ) / 10}
+                                %
+                              </Badge>
+                            ) : (
+                              ''
+                            )}
+                          </Table.Cell> */}
+                                          <Table.Cell b>
+                                            {item.grade_item.grade
+                                              ? Math.round(
+                                                  item.grade_item?.grade * 100
+                                                ) / 100
+                                              : " "}
+                                          </Table.Cell>
+                                        </Table.Row>
+                                      ))}
+                                    </Table.Body>
+                                  </Table>
+                                </Card>
+                              )}
+                            </Card.Body>
+                          }
+                        </Card>
+                      </Grid>
+                    </Grid.Container>
                   </items>
-                  <items tab="Thông tin khác " key="3">
-                  <Card variant="bordered" css={{ marginBottom: "20px" }}>
+                  <items tab="Thông tin khác " key="333333">
+                    <Card variant="bordered" css={{ marginBottom: "20px" }}>
                       <Card.Body>
-
                         <Descriptions
                           bordered
                           title="Các lớp đã học"
@@ -816,21 +1187,17 @@ const StudentDetail = () => {
                           {dataStudent.old_class.map((item, index) => {
                             return (
                               <Descriptions.Item
-                              label={dataStudent.course_code}
+                                label={dataStudent.course_code}
                                 // labelStyle={{ width: "100%" }}
                                 // style={{ width: "100%" }}
                               >
-                                 {item.class_name}
-                               
+                                {item.class_name}
                               </Descriptions.Item>
                             );
-                            
-                          }
-                          )}
+                          })}
                           {/* // <Descriptions.Item >
                           //   {dataStudent.old_class[0].class_name}
                           // </Descriptions.Item> */}
-                          
                         </Descriptions>
                       </Card.Body>
                     </Card>
@@ -857,16 +1224,17 @@ const StudentDetail = () => {
                       >
                         Chỉnh sửa
                       </Dropdown.Item>
-                      {dataStudent.current_class !== null && dataStudent.is_draft == false  && (
-                        <Dropdown.Item
-                          key="change"
-                          description="Chuyển lớp học viên"
-                          icon={<FaSyncAlt />}
-                          color={"warning"}
-                        >
-                          Chuyển lớp
-                        </Dropdown.Item>
-                      )}
+                      {dataStudent.current_class !== null &&
+                        dataStudent.is_draft == false && (
+                          <Dropdown.Item
+                            key="change"
+                            description="Chuyển lớp học viên"
+                            icon={<FaSyncAlt />}
+                            color={"warning"}
+                          >
+                            Chuyển lớp
+                          </Dropdown.Item>
+                        )}
                     </Dropdown.Section>
 
                     {/* <Dropdown.Section title="Nguy hiểm">

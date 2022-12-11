@@ -592,6 +592,18 @@ export const ManageStudentApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  getStudentSemesterWithClassAndModuleBySro: {
+    url: 'api/students/{0}/semesters/modules',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getGradeStudentBySro: {
+    url: '/api/classes/{0}/modules/{1}/students/{2}/grades',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  
+
 };
 
 export const ManageDayOffApis = {
