@@ -18,15 +18,13 @@ const CustomInput = ({
   const { id, moduleId } = useParams();
 
   const handleBlur = () => {
-    const regex = new RegExp(/^[0-9]+(\.[0-9]{1,5})?$/);
+    const regex = new RegExp(/^[0-9]+(\.[0-9]{1,2})?$/);
 
-    if (!regex.test(form.getFieldValue('grade'))) {
+    const d = form.getFieldValue('grade');
+
+    if (d !== null && d !== undefined && d?.trim() !== '' && !regex.test(d)) {
       return;
     }
-
-    toast.success('Cập nhật');
-
-    console.log(data);
 
     const body = [
       {
@@ -44,7 +42,9 @@ const CustomInput = ({
 
     FetchApi(api, body, null, [String(id), String(moduleId)])
       .then((res) => {})
-      .catch((err) => {});
+      .catch((err) => {
+        toast.error('Cập nhật không thành công');
+      });
   };
 
   const disabled = role === 'teacher' && type >= 5 && type <= 8;
@@ -59,7 +59,15 @@ const CustomInput = ({
               {
                 // check max min
                 validator: (rule, value) => {
-                  const re = new RegExp(/^[0-9]+(\.[0-9]{1,5})?$/);
+                  if (
+                    value === undefined ||
+                    value === null ||
+                    value?.trim() === ''
+                  ) {
+                    return Promise.resolve();
+                  }
+
+                  const re = new RegExp(/^[0-9]+(\.[0-9]{1,2})?$/);
                   if (!re.test(value)) {
                     return Promise.reject('Không hợp lệ');
                   }

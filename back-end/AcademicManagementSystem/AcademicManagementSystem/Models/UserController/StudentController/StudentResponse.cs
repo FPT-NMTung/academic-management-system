@@ -147,6 +147,9 @@ public class StudentResponse
 
     [JsonPropertyName("current_class")]
     public ClassNameResponse? CurrentClass { get; set; }
+    
+    [JsonPropertyName("is_active")]
+    public bool IsActive { get; set; }
 }
 
 public class ClassNameResponse
