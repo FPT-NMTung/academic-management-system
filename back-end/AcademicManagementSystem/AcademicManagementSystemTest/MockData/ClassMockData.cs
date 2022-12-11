@@ -73,6 +73,23 @@ public static class ClassMockData
             ClassHourEnd = new TimeSpan(12,0,0),
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
-        }
+        },
+        new Class()
+        {
+            Id = 100,
+            SroId = 3,
+            CenterId = 1,
+            CourseFamilyCode = "COURSE FAMILY CODE 1",
+            ClassDaysId = 1,
+            ClassStatusId = 5,
+            Name = "Class 100 center 1",
+            StartDate = new DateTime(2022, 12, 15),
+            CompletionDate = new DateTime(2023, 12, 15),
+            GraduationDate = new DateTime(2022, 12, 30),
+            ClassHourStart = new TimeSpan(8,0,0),
+            ClassHourEnd = new TimeSpan(12,0,0),
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+        },
     };
 }
