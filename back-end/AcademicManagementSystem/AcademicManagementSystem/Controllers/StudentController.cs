@@ -731,7 +731,7 @@ public class StudentController : ControllerBase
     // change active student
     [HttpPatch]
     [Route("api/students/{id:int}/change-active")]
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "admin, sro")]
     public IActionResult ChangeActivateStudent(int id)
     {
         var student = _context.Students
