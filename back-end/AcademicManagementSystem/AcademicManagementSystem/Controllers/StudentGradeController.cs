@@ -426,30 +426,6 @@ public class StudentGradeController : ControllerBase
             return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
         }
 
-        // can't update grades if module exam type is don't take exam
-        // var module = classContext.ClassSchedules.First(cs => cs.ModuleId == moduleId).Module;
-        // if (module.ExamType is ExamTypeNoTakeExam)
-        // {
-        //     var error = ErrorDescription.Error["E0307"];
-        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        // }
-
-        // // first session in class schedule
-        // var firstSession = classContext.ClassSchedules
-        //     .First(cs => cs.ModuleId == moduleId)
-        //     .Sessions.OrderBy(s => s.LearningDate).First();
-        //
-        // // last session in class schedule
-        // var lastSession = classContext.ClassSchedules
-        //     .First(cs => cs.ModuleId == moduleId)
-        //     .Sessions.OrderBy(s => s.LearningDate).Last();
-        //
-        // // check module is start learning and no more than 5 days after last session
-        // var canUpdateModule = classContext.ClassSchedules
-        //     .Any(cs => cs.ModuleId == moduleId &&
-        //                firstSession.LearningDate.Date <= DateTime.Today &&
-        //                DateTime.Today <= lastSession.LearningDate.AddDays(5));
-        //
         var canUpdateGrade =
             classContext.ClassSchedules.Any(cs =>
                 cs.StartDate <= DateTime.Today && cs.ModuleId == moduleId);
@@ -614,13 +590,6 @@ public class StudentGradeController : ControllerBase
             // teacher can't update grades if module exam type is theory (just sro)
             case ExamTypeTe:
                 return Unauthorized(CustomResponse.Unauthorized("You are not able to update grades for this module"));
-
-            // // can't update grades if module exam type is don't take exam
-            // case ExamTypeNoTakeExam:
-            // {
-            //     var error = ErrorDescription.Error["E0307"];
-            //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-            // }
         }
 
         // check user center is same center of class
@@ -949,7 +918,8 @@ public class StudentGradeController : ControllerBase
 
         var modules = _context.ClassSchedules
             .Include(cs => cs.Module)
-            .Where(cs => cs.TeacherId == teacherId)
+            .Include(cs => cs.Class)
+            .Where(cs => cs.TeacherId == teacherId && cs.Class.ClassStatusId != ClassStatusMerged)
             .Select(cs => cs.Module).Distinct();
 
         var response = modules.Select(m => new BasicModuleResponse()
@@ -986,11 +956,12 @@ public class StudentGradeController : ControllerBase
         // modules that teach by this teacher
         var modules = _context.ClassSchedules
             .Include(cs => cs.Module)
-            .Where(cs => cs.TeacherId == teacherId)
+            .Include(cs => cs.Class)
+            .Where(cs => cs.TeacherId == teacherId && cs.Class.ClassStatusId != ClassStatusMerged)
             .Select(cs => cs.Module).Distinct().ToList();
 
-        int numberOfStudentInAllModule = 0;
-        int passedCount = 0;
+        var numberOfStudentInAllModule = 0;
+        var passedCount = 0;
         foreach (var module in modules)
         {
             var classes = GetClassesTeachByTeacherByModuleId(teacherId, module.Id).ToList();
@@ -1037,6 +1008,164 @@ public class StudentGradeController : ControllerBase
         };
 
         return Ok(CustomResponse.Ok("Get pass rate all module of teacher successfully", response));
+    }
+
+    [HttpGet]
+    [Route("api/statistics/teachers/pass-rate-all-time")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetPassRateOfAllTeacherInAPeriodOfTime()
+    {
+        var userId = Convert.ToInt32(_userService.GetUserId());
+        var user = _context.Users.First(u => u.Id == userId);
+
+        // get all teacher in this center
+        var teachers = _context.Teachers
+            .Include(t => t.User)
+            .Where(t => t.User.CenterId == user.CenterId).ToList();
+
+        var responses = new List<PassRateOfTeacherResponse>();
+
+        foreach (var teacher in teachers)
+        {
+            // modules that teach by this teacher
+            var modules = _context.ClassSchedules
+                .Include(cs => cs.Module)
+                .Include(cs => cs.Class)
+                .Where(cs => cs.TeacherId == teacher.UserId && cs.Class.ClassStatusId != ClassStatusMerged)
+                .Select(cs => cs.Module).Distinct().ToList();
+            var numberOfStudentInAllModule = 0;
+            var passedCount = 0;
+            foreach (var module in modules)
+            {
+                var classes = GetClassesTeachByTeacherByModuleId(teacher.UserId, module.Id).ToList();
+                foreach (var c in classes)
+                {
+                    var clazz = new Class()
+                    {
+                        Id = c.Id,
+                        Name = c.Name,
+                    };
+
+                    var progressScores = GetGradesOfStudentsInClass(clazz)
+                        .FirstOrDefault(m => m.Module.Id == module.Id);
+
+                    if (progressScores == null)
+                    {
+                        continue;
+                    }
+
+                    var students = progressScores.Students;
+                    numberOfStudentInAllModule += students.Count;
+
+                    foreach (var student in students)
+                    {
+                        var totalScore = CalculateAverageScore(student, module);
+                        Console.WriteLine("student: " + student.UserId + " total score: " + totalScore);
+                        if (totalScore != null)
+                        {
+                            var roundedScore = Math.Round((double)totalScore, 2); // round to 2 decimal places
+
+                            if (roundedScore >= GradeToPass)
+                            {
+                                passedCount++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            var response = new PassRateOfTeacherResponse()
+            {
+                Teacher = new BasicTeacherInformationResponse()
+                {
+                    Id = teacher.UserId,
+                    EmailOrganization = teacher.User.EmailOrganization,
+                    FirstName = teacher.User.FirstName,
+                    LastName = teacher.User.LastName
+                },
+                NumberOfAllStudents = numberOfStudentInAllModule,
+                NumberOfPassStudents = passedCount
+            };
+            responses.Add(response);
+        }
+
+        return Ok(CustomResponse.Ok("Get pass rate of all teacher in all time successfully", responses));
+    }
+
+    [HttpPost]
+    [Route("api/statistics/teachers/pass-rate-period-time/get")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetPassRateOfAllTeacherInAPeriodOfTime([FromBody] PassRateOfTeacherInAPeriodRequest request)
+    {
+        var userId = Convert.ToInt32(_userService.GetUserId());
+        var user = _context.Users.First(u => u.Id == userId);
+
+        // get all teacher in this center
+        var teachers = _context.Teachers
+            .Include(t => t.User)
+            .Where(t => t.User.CenterId == user.CenterId).ToList();
+
+        var fromDate = request.FromDate.Date;
+        var toDate = request.ToDate.Date;
+
+        var responses = new List<PassRateOfTeacherResponse>();
+
+        foreach (var teacher in teachers)
+        {
+            var schedules = _context.ClassSchedules
+                .Include(cs => cs.Module)
+                .Include(cs => cs.Class)
+                // select all schedules in range from date to to date base on start date and end date of schedule
+                .Where(cs => cs.TeacherId == teacher.UserId && cs.Class.ClassStatusId != ClassStatusMerged &&
+                             //check overlap two date range
+                             ((cs.StartDate.Date <= fromDate && fromDate <= cs.EndDate.Date) ||
+                              (cs.StartDate.Date <= toDate && toDate <= cs.EndDate.Date) ||
+                              (cs.StartDate.Date >= fromDate && toDate >= cs.EndDate.Date))).ToList();
+            var numberOfStudentInAllModule = 0;
+            var passedCount = 0;
+            foreach (var schedule in schedules)
+            {
+                var progressScores = GetGradesOfStudentsInClass(schedule.Class, schedule.ModuleId);
+
+                var students = progressScores.FirstOrDefault()?.Students;
+
+                if (students != null)
+                {
+                    numberOfStudentInAllModule += students.Count;
+
+                    foreach (var student in students)
+                    {
+                        var totalScore = CalculateAverageScore(student, schedule.Module);
+                        Console.WriteLine("student: " + student.UserId + " total score: " + totalScore);
+                        if (totalScore != null)
+                        {
+                            var roundedScore = Math.Round((double)totalScore, 2); // round to 2 decimal places
+
+                            if (roundedScore >= GradeToPass)
+                            {
+                                passedCount++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            var response = new PassRateOfTeacherResponse()
+            {
+                Teacher = new BasicTeacherInformationResponse()
+                {
+                    Id = teacher.UserId,
+                    EmailOrganization = teacher.User.EmailOrganization,
+                    FirstName = teacher.User.FirstName,
+                    LastName = teacher.User.LastName
+                },
+                NumberOfAllStudents = numberOfStudentInAllModule,
+                NumberOfPassStudents = passedCount
+            };
+            responses.Add(response);
+        }
+
+        return Ok(CustomResponse.Ok("Get pass rate of all teacher in a period of time successfully", responses));
     }
 
     [HttpGet]
@@ -1377,7 +1506,8 @@ public class StudentGradeController : ControllerBase
     {
         return _context.ClassSchedules
             .Include(cs => cs.Class)
-            .Where(cs => cs.TeacherId == teacherId && cs.ModuleId == moduleId)
+            .Where(cs =>
+                cs.TeacherId == teacherId && cs.ModuleId == moduleId && cs.Class.ClassStatusId != ClassStatusMerged)
             .Select(cs => new BasicClassResponse()
             {
                 Id = cs.Class.Id,
