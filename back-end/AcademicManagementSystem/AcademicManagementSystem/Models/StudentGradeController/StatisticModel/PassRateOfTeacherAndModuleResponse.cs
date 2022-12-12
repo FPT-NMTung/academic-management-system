@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using AcademicManagementSystem.Models.BasicResponse;
 
-namespace AcademicManagementSystem.Models.StatisticController;
+namespace AcademicManagementSystem.Models.StudentGradeController.StatisticModel;
 
 public class PassRateOfTeacherAndModuleResponse
 {
