@@ -927,7 +927,8 @@ public class StudentController : ControllerBase
                     .Select(sc => new ClassNameResponse()
                     {
                         ClassId = sc.Class.Id, ClassName = sc.Class.Name
-                    }).FirstOrDefault()
+                    }).FirstOrDefault(),
+                IsActive = u.IsActive
             })
             .Where(u => u.CenterId == _user.CenterId)
             .ToList();

@@ -356,17 +356,17 @@ export const ManageTeacherApis = {
     contextType: 'application/json',
   },
   getListModulesOfATeacher: {
-    url: '/api/gpa/teachers/{0}/modules',
+    url: 'api/gpa/teachers/{0}/modules',
     method: 'GET',
     contextType: 'application/json',
   },
   getListClassOfATeacherByModule: {
-    url: '/api/gpa/modules/{0}/classes',
+    url: 'api/gpa/modules/{0}/classes',
     method: 'GET',
     contextType: 'application/json',
   },
   getAverageGPAOfATeacher: {
-    url: '/api/gpa/teachers/{0}',
+    url: 'api/gpa/teachers/{0}',
     method: 'GET',
     contextType: 'application/json',
   },
@@ -592,6 +592,21 @@ export const ManageStudentApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  getStudentSemesterWithClassAndModuleBySro: {
+    url: 'api/students/{0}/semesters/modules',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getGradeStudentBySro: {
+    url: 'api/classes/{0}/modules/{1}/students/{2}/grades',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  ChangeActive: {
+    url: 'api/students/{0}/change-active',
+    method: 'PATCH',
+    contextType: 'application/json',
+  },
 };
 
 export const ManageDayOffApis = {
@@ -648,7 +663,7 @@ export const ManageGpa = {
     contextType: 'application/json',
   },
   requestStudentTakeGPA: {
-    url: '/api/gpa/sessions/{0}/request-email',
+    url: 'api/gpa/sessions/{0}/request-email',
     method: 'POST',
     contextType: 'application/json',
   },
