@@ -954,10 +954,12 @@ public class StudentGradeController : ControllerBase
             .Where(cs => cs.TeacherId == teacherId && cs.Class.ClassStatusId != ClassStatusMerged)
             .Select(cs => cs.Module).Distinct().ToList();
 
-        var numberOfStudentInAllModule = 0;
-        var passedCount = 0;
+        var responses = new List<PassRateOfTeacherAndModuleResponse>();
+
         foreach (var module in modules)
         {
+            var numberOfStudentInAllModule = 0;
+            var passedCount = 0;
             var classes = GetClassesTeachByTeacherByModuleId(teacherId, module.Id).ToList();
             foreach (var c in classes)
             {
@@ -993,15 +995,24 @@ public class StudentGradeController : ControllerBase
                     }
                 }
             }
+
+            var response = new PassRateOfTeacherAndModuleResponse()
+            {
+                Module = new BasicModuleResponse()
+                {
+                    Id = module.Id,
+                    Name = module.ModuleName,
+                },
+                
+                NumberOfStudentInAllClass = numberOfStudentInAllModule,
+                NumberOfPassStudents = passedCount
+            };
+
+            responses.Add(response);
         }
 
-        var response = new PassRateOfTeacherInAllModuleResponse()
-        {
-            NumberOfAllStudents = numberOfStudentInAllModule,
-            NumberOfPassStudents = passedCount
-        };
 
-        return Ok(CustomResponse.Ok("Get pass rate all module of teacher successfully", response));
+        return Ok(CustomResponse.Ok("Get pass rate all module of teacher successfully", responses));
     }
 
     [HttpGet]
