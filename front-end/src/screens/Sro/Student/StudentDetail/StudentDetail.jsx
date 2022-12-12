@@ -58,6 +58,9 @@ const StudentDetail = () => {
   const [listGradeFinal, setListGradeFinal] = useState([]);
   const [informationModule, setInformationModule] = useState(undefined);
   const [averagePracticeGrade, setAveragePracticeGrade] = useState(undefined);
+  const [isShowAveragePracticeGrade, setIsShowAveragePracticeGrade] =
+    useState(false);
+
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -105,13 +108,19 @@ const StudentDetail = () => {
 
     setListGrade(listGradePractice);
     setListGradeFinal(listGradeTheory);
+    setIsShowAveragePracticeGrade(
+      listGradePractice.find(
+        (item) => item.grade_category_id === 5 && item.grade_item.grade !== null
+      ) !== undefined
+    );
 
     console.clear();
 
     let avgPracticeGrade = 0;
     const hasResitPractice =
-      listGradePractice.find((item) => item.grade_category_id === 7) !==
-      undefined;
+      listGradePractice.find(
+        (item) => item.grade_category_id === 7 && item.grade_item.grade !== null
+      ) !== undefined;
 
     const clone = [...listGradePractice].filter((item) => {
       if (hasResitPractice) {
@@ -1085,7 +1094,8 @@ const StudentDetail = () => {
                                   </Table>
                                 </Fragment>
                               )}
-                              {listGrade.length > 0 &&
+                              {isShowAveragePracticeGrade &&
+                                listGrade.length > 0 &&
                                 averagePracticeGrade !== 0 && (
                                   <div>
                                     <Text
@@ -1107,7 +1117,12 @@ const StudentDetail = () => {
                                           : "/ 10"}
                                       </Badge>
                                     </Text>
-                                    <Text p i size={12} css={{marginRight:"46px"}}>
+                                    <Text
+                                      p
+                                      i
+                                      size={12}
+                                      css={{ marginRight: "46px" }}
+                                    >
                                       (Đã quy về hệ số 10)
                                     </Text>
                                     {/* {averagePracticeGrade >= 5 ? (
