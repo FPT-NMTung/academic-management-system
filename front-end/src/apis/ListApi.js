@@ -516,6 +516,12 @@ export const ManageClassApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  exportStudent: {
+    url: 'api/classes/{0}/export-students',
+    method: 'GET',
+    contextType: 'application/json',
+    responseType: 'blob',
+  }
 };
 
 export const ManageScheduleApis = {
