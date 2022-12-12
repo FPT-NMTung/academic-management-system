@@ -1,4 +1,4 @@
-import classes from "./GradeScreen.module.css";
+import classes from './GradeScreen.module.css';
 import {
   Button,
   Card,
@@ -9,19 +9,19 @@ import {
   Text,
   Spacer,
   Badge,
-} from "@nextui-org/react";
-import { Calendar, Select, Row, Col, Form, Input, Tree, Menu } from "antd";
-import { Fragment, useState } from "react";
-import moment from "moment";
-import "moment/locale/vi";
-import { useEffect } from "react";
-import toast from "react-hot-toast";
-import { MdDelete } from "react-icons/md";
-import { ModulesApis, UserStudentApis } from "../../../apis/ListApi";
-import FetchApi from "../../../apis/FetchApi";
-import { MdMenuBook } from "react-icons/md";
-import { ImLibrary } from "react-icons/im";
-import Item from "antd/lib/list/Item";
+} from '@nextui-org/react';
+import { Calendar, Select, Row, Col, Form, Input, Tree, Menu } from 'antd';
+import { Fragment, useState } from 'react';
+import moment from 'moment';
+import 'moment/locale/vi';
+import { useEffect } from 'react';
+import toast from 'react-hot-toast';
+import { MdDelete } from 'react-icons/md';
+import { ModulesApis, UserStudentApis } from '../../../apis/ListApi';
+import FetchApi from '../../../apis/FetchApi';
+import { MdMenuBook } from 'react-icons/md';
+import { ImLibrary } from 'react-icons/im';
+import Item from 'antd/lib/list/Item';
 const GradeScreen = () => {
   const [listModuleSemester, setListModuleSemester] = useState([]);
   const [listGrade, setListGrade] = useState([]);
@@ -38,7 +38,7 @@ const GradeScreen = () => {
         setIsLoading(false);
       })
       .catch((err) => {
-        toast.error("Lỗi khi tải dữ liệu");
+        toast.error('Lỗi khi tải dữ liệu');
       });
   };
 
@@ -67,12 +67,11 @@ const GradeScreen = () => {
     setListGrade(listGradePractice);
     setListGradeFinal(listGradeTheory);
 
-    console.clear();
-
     let avgPracticeGrade = 0;
     const hasResitPractice =
-      listGradePractice.find((item) => item.grade_category_id === 7) !==
-      undefined;
+      listGradePractice.find(
+        (item) => item.grade_category_id === 7 && item.grade_item.grade !== null
+      ) !== undefined;
 
     const clone = [...listGradePractice].filter((item) => {
       if (hasResitPractice) {
@@ -116,12 +115,12 @@ const GradeScreen = () => {
   }, []);
 
   return (
-    <Grid.Container gap={2} justify={"center"}>
+    <Grid.Container gap={2} justify={'center'}>
       <Grid xs={4}>
         <Card
           variant="bordered"
           css={{
-            height: "fit-content",
+            height: 'fit-content',
           }}
         >
           <Card.Header>
@@ -130,9 +129,9 @@ const GradeScreen = () => {
               b
               size={14}
               css={{
-                width: "100%",
-                textAlign: "center",
-                marginBottom: "12px",
+                width: '100%',
+                textAlign: 'center',
+                marginBottom: '12px',
               }}
             >
               Chọn môn học
@@ -143,25 +142,25 @@ const GradeScreen = () => {
             {isLoading ? (
               <Loading />
             ) : (
-              <div style={{ color: "black !important" }}>
+              <div style={{ color: 'black !important' }}>
                 <Menu
                   mode="inline"
                   // defaultOpenKeys={["1"]}
-                  style={{ width: "100%" }}
+                  style={{ width: '100%' }}
                 >
                   {listModuleSemester.map((item, index) => (
                     <Fragment key={index}>
                       <Menu.SubMenu
-                        style={{ color: "black!important" }}
+                        style={{ color: 'black!important' }}
                         title={item.name}
                         key={item.id}
-                        rootStyle={{ width: "100%" }}
+                        rootStyle={{ width: '100%' }}
                         icon={<ImLibrary />}
                       >
                         {item.modules.map((modules, index) => (
                           <Menu.Item
                             key={modules.id + modules.class.id}
-                            rootStyle={{ width: "100%" }}
+                            rootStyle={{ width: '100%' }}
                             onClick={() => {
                               onSelectTree(modules.id, modules.class.id);
                               getInformationModule(modules.id);
@@ -169,7 +168,7 @@ const GradeScreen = () => {
                             icon={<MdMenuBook />}
                           >
                             <span>
-                              {modules.name + " ( " + modules.class.name + " )"}
+                              {modules.name + ' ( ' + modules.class.name + ' )'}
                             </span>
                           </Menu.Item>
                         ))}
@@ -190,8 +189,8 @@ const GradeScreen = () => {
               b
               size={14}
               css={{
-                width: "100%",
-                textAlign: "center",
+                width: '100%',
+                textAlign: 'center',
               }}
             >
               Bảng điểm
@@ -207,10 +206,10 @@ const GradeScreen = () => {
                   i
                   size={12}
                   css={{
-                    paddingLeft: "10px",
+                    paddingLeft: '10px',
                   }}
                 >
-                  * Điểm tối đa của Practical exam:{" "}
+                  * Điểm tối đa của Practical exam:{' '}
                   {informationModule?.max_practical_grade}
                 </Text>
               )}
@@ -220,10 +219,10 @@ const GradeScreen = () => {
                   i
                   size={12}
                   css={{
-                    paddingLeft: "10px",
+                    paddingLeft: '10px',
                   }}
                 >
-                  * Điểm tối đa của Theory exam:{" "}
+                  * Điểm tối đa của Theory exam:{' '}
                   {informationModule?.max_theory_grade}
                 </Text>
               )}
@@ -245,8 +244,8 @@ const GradeScreen = () => {
                   <Table
                     aria-label=""
                     css={{
-                      height: "auto",
-                      minWidth: "100%",
+                      height: 'auto',
+                      minWidth: '100%',
                     }}
                     lined
                     headerLined
@@ -274,13 +273,13 @@ const GradeScreen = () => {
                                 %
                               </Badge>
                             ) : (
-                              ""
+                              ''
                             )}
                           </Table.Cell>
                           <Table.Cell b>
                             {item.grade_item.grade !== null
                               ? Math.round(item.grade_item?.grade * 100) / 100
-                              : " "}
+                              : ' '}
                           </Table.Cell>
                         </Table.Row>
                       ))}
@@ -295,15 +294,15 @@ const GradeScreen = () => {
                     i
                     size={18}
                     css={{
-                      paddingLeft: "10px",
+                      paddingLeft: '10px',
                     }}
                   >
-                    Tổng điểm thực hành:{" "}
+                    Tổng điểm thực hành:{' '}
                     <Badge color="success">
-                      {Math.round(averagePracticeGrade * 100) / 100}{" "}
+                      {Math.round(averagePracticeGrade * 100) / 100}{' '}
                       {informationModule?.max_practical_grade === null
-                        ? ""
-                        : "/ 10"}
+                        ? ''
+                        : '/ 10'}
                     </Badge>
                   </Text>
                   <Text p i size={12}>
@@ -315,17 +314,17 @@ const GradeScreen = () => {
                 <Card
                   variant="bordered"
                   css={{
-                    minHeight: "140px",
-                    borderStyle: "dashed",
-                    marginTop: "12px",
-                    borderColor: "#17c964",
+                    minHeight: '140px',
+                    borderStyle: 'dashed',
+                    marginTop: '12px',
+                    borderColor: '#17c964',
                   }}
                 >
                   <Table
                     aria-label=""
                     css={{
-                      height: "auto",
-                      minWidth: "100%",
+                      height: 'auto',
+                      minWidth: '100%',
                     }}
                     lined
                     headerLined
@@ -358,7 +357,7 @@ const GradeScreen = () => {
                           <Table.Cell b>
                             {item.grade_item.grade
                               ? Math.round(item.grade_item?.grade * 100) / 100
-                              : " "}
+                              : ' '}
                           </Table.Cell>
                         </Table.Row>
                       ))}
