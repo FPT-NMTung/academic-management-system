@@ -29,6 +29,8 @@ const GradeScreen = () => {
   const [listGradeFinal, setListGradeFinal] = useState([]);
   const [informationModule, setInformationModule] = useState(undefined);
   const [averagePracticeGrade, setAveragePracticeGrade] = useState(undefined);
+  const [isShowAveragePracticeGrade, setIsShowAveragePracticeGrade] =
+    useState(false);
 
   const getModuleSemester = () => {
     setIsLoading(true);
@@ -66,6 +68,13 @@ const GradeScreen = () => {
 
     setListGrade(listGradePractice);
     setListGradeFinal(listGradeTheory);
+    setIsShowAveragePracticeGrade(
+      listGradePractice.find(
+        (item) => item.grade_category_id === 5 && item.grade_item.grade !== null
+      ) !== undefined
+    );
+
+    console.clear();
 
     let avgPracticeGrade = 0;
     const hasResitPractice =
@@ -83,11 +92,12 @@ const GradeScreen = () => {
 
     for (let i = 0; i < clone.length; i++) {
       const gradeItem = clone[i];
+      console.log(gradeItem.grade_item.grade);
+
       if (
         gradeItem.grade_category_id === 5 ||
         gradeItem.grade_category_id === 7
       ) {
-        // console.log(true, gradeItem);
         avgPracticeGrade +=
           clone[i].grade_item.grade *
           (10 / info?.max_practical_grade) *
@@ -96,14 +106,13 @@ const GradeScreen = () => {
         console.log(false, gradeItem);
         if (gradeItem.grade_item.grade === null) {
           avgPracticeGrade = 0;
+          break;
         } else {
           avgPracticeGrade +=
             clone[i].grade_item.grade *
             (gradeItem.total_weight / clone[i].quantity_grade_item);
         }
       }
-
-      console.log(avgPracticeGrade);
     }
     setAveragePracticeGrade(avgPracticeGrade / 100);
   };
@@ -287,7 +296,7 @@ const GradeScreen = () => {
                   </Table>
                 </Fragment>
               )}
-              {listGrade.length > 0 && averagePracticeGrade !== 0 && (
+              {isShowAveragePracticeGrade && listGrade.length > 0 && averagePracticeGrade !== 0 && (
                 <div>
                   <Text
                     b
