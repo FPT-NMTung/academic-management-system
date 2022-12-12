@@ -129,7 +129,6 @@ const StudentDetail = () => {
         gradeItem.grade_category_id === 5 ||
         gradeItem.grade_category_id === 7
       ) {
-        // console.log(true, gradeItem);
         avgPracticeGrade +=
           clone[i].grade_item.grade *
           (10 / info?.max_practical_grade) *
@@ -138,6 +137,7 @@ const StudentDetail = () => {
         console.log(false, gradeItem);
         if (gradeItem.grade_item.grade === null) {
           avgPracticeGrade = 0;
+          break;
         } else {
           avgPracticeGrade +=
             clone[i].grade_item.grade *
@@ -900,7 +900,7 @@ const StudentDetail = () => {
 
                   <items className="" tab="Điểm số học viên" key="222222">
                     <Grid.Container gap={1} justify={"space-between"}>
-                      <Grid xs={4}>
+                      <Grid xs={5}>
                         <Card
                           variant="bordered"
                           css={{
@@ -971,7 +971,7 @@ const StudentDetail = () => {
                           </Card.Body>
                         </Card>
                       </Grid>
-                      <Grid xs={8}>
+                      <Grid xs={7}>
                         <Card variant="bordered">
                           <Card.Header>
                             <Text
@@ -1107,9 +1107,14 @@ const StudentDetail = () => {
                                           : "/ 10"}
                                       </Badge>
                                     </Text>
-                                    <Text p i size={12}>
+                                    <Text p i size={12} css={{marginRight:"46px"}}>
                                       (Đã quy về hệ số 10)
                                     </Text>
+                                    {/* {averagePracticeGrade >= 5 ? (
+                                      <Badge size="lg" color="success">Đạt</Badge>
+                                    ) : (
+                                      <Badge size="lg" color="error">Không đạt</Badge>
+                                    )} */}
                                   </div>
                                 )}
                               {listGradeFinal.length > 0 && (
