@@ -294,7 +294,7 @@ public static class UserMockData
             FirstName = "Nguyên",
             LastName = "Hoàng",
             Avatar = null,
-            MobilePhone = "0973248896",
+            MobilePhone = "0973247896",
             Email = "nguyenht_student1@fpt.personal.edu.vn",
             EmailOrganization = "nguyenht_student1@fpt.org.edu.vn",
             Birthday = new DateTime(2000, 10, 06),
