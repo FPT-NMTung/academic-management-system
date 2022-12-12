@@ -125,14 +125,18 @@ const StudentDetail = () => {
       const gradeItem = clone[i];
       if (
         gradeItem.grade_category_id === 5 ||
-        gradeItem.grade_category_id === 7
+        gradeItem.grade_category_id === 7 && 
+        clone[i].grade_item.grade  !== null
       ) {
         // console.log(true, gradeItem);
         avgPracticeGrade +=
           clone[i].grade_item.grade *
           (10 / info?.max_practical_grade) *
           (gradeItem.total_weight / clone[i].quantity_grade_item);
-      } else {
+
+      }
+    
+       else {
         // console.log(false, gradeItem);
         avgPracticeGrade +=
           clone[i].grade_item.grade *
