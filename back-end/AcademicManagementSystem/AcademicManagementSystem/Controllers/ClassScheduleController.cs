@@ -1360,15 +1360,14 @@ public class ClassScheduleController : ControllerBase
             .Include(s => s.ClassSchedule)
             .ThenInclude(cs => cs.Teacher)
             .ThenInclude(t => t.User)
-            .Where(s => s.ClassSchedule.TeacherId == teacherId && s.ClassSchedule.ClassId == classId && 
-                        s.SessionTypeId != 3 && s.SessionTypeId != 4)
+            .Where(s => s.ClassSchedule.TeacherId == teacherId && s.ClassSchedule.ClassId == classId &&
+                        s.LearningDate.Date < DateTime.Now.Date && s.SessionTypeId != 3 && s.SessionTypeId != 4)
             .ToList();
-        
+
         var statistics = new StatisticsTeachingHoursResponse()
         {
             TotalTeachingHours = sessions.Sum(s => s.EndTime.Subtract(s.StartTime).TotalMinutes / 60),
         };
-
 
         return Ok(CustomResponse.Ok("Get statistics teaching hours successfully", statistics));
     }
