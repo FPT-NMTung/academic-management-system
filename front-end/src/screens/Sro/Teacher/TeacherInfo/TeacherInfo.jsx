@@ -8,6 +8,8 @@ import {
   Dropdown,
   Modal,
   Loading,
+  Collapse,
+  useModal,
 } from "@nextui-org/react";
 import classes from "./TeacherInfo.module.css";
 import { useParams, useNavigate } from "react-router-dom";
@@ -20,6 +22,8 @@ import {
   Divider,
   Form,
   Input,
+  Comment,
+  Avatar,
 } from "antd";
 import { RingProgress } from "@ant-design/plots";
 import { useState, useEffect } from "react";
@@ -36,6 +40,7 @@ import { Fragment } from "react";
 import toast from "react-hot-toast";
 import React from "react";
 import ReactDOM from "react-dom";
+import DefaultAvatar from "../../../../images/3d-fluency-manager.png";
 const gender = {
   1: "Nam",
   2: "Nữ",
@@ -54,6 +59,8 @@ const TeacherInfo = () => {
   const [classSelected, setClassSelected] = React.useState("");
   const [gpaByModule, setGpaByModule] = useState([]);
   const [gpaByClass, setGpaByClass] = useState([]);
+  const [listComment, setListComment] = useState([]);
+  const { setVisible, bindings } = useModal();
 
   const [form] = Form.useForm();
 
@@ -96,6 +103,7 @@ const TeacherInfo = () => {
     form.resetFields(["class"]);
     setClassSelected("");
     setGpaByClass("");
+    setListComment("");
     FetchApi(ManageTeacherApis.getListClassOfATeacherByModule, null, null, [
       `${moduleid}`,
     ])
@@ -134,9 +142,10 @@ const TeacherInfo = () => {
       });
   };
   const getGPAByModuleAndClass = () => {
- 
+    setListComment("");
     const moduleid = form.getFieldValue("subject");
     const classid = form.getFieldValue("class");
+    // setListComment("");
     console.log("sssssMon hoc id " + moduleSelected + "class id " + classid);
     FetchApi(
       ManageTeacherApis.getAverageGPAOfATeacherByModuleAndClass,
@@ -147,7 +156,13 @@ const TeacherInfo = () => {
       .then((res) => {
         const data = res.data === null ? "" : res.data;
         setGpaByClass(data);
-        // console.log(gpaByClass);
+        if (data !== "") {
+          setListComment(data.comments.filter((item) => item !== null));
+          // console.log(data.comments.filter((item) => item !== null));
+        }
+        // const comment = res.data.comments === null ? "" : res.data.comments;
+
+        // setListComment(comment);
       })
       .catch(() => {
         toast.error("Lỗi lấy GPA giáo viên theo môn học và lớp học");
@@ -329,6 +344,7 @@ const TeacherInfo = () => {
                     setGpaByModule("");
                     setClassSelected("");
                     setGpaByClass("");
+                    setListComment("");
                   }}
 
                   // closable={false}
@@ -553,27 +569,28 @@ const TeacherInfo = () => {
                                 }}
                               >
                                 GPA trung bình của môn{" "}
-                                {listModule.length == 0
-                                  ? 
+                                {listModule.length == 0 ? (
                                   <div>
-                                  <Badge
-                                    variant="bordered"
-                                    color="success"
-                                    shape="circle"
-                                    size="md"
-                                    css={{ margin: "10px 0" }}
-                                  >
-                                    Chưa có dữ liệu
-                                  </Badge>
-                                </div>
-                                  : listModule.map((item) => {
-                                      if (item.id === moduleSelected) {
-                                        return item.module_name + " " + "là:  ";
-                                      }
-                                    })}
+                                    <Badge
+                                      variant="bordered"
+                                      color="success"
+                                      shape="circle"
+                                      size="md"
+                                      css={{ margin: "10px 0" }}
+                                    >
+                                      Chưa có dữ liệu
+                                    </Badge>
+                                  </div>
+                                ) : (
+                                  listModule.map((item) => {
+                                    if (item.id === moduleSelected) {
+                                      return item.module_name + " " + "là:  ";
+                                    }
+                                  })
+                                )}
                               </Text>
                               {gpaByModule.length == 0 ? (
-                             ""
+                                ""
                               ) : (
                                 <div>
                                   <Badge
@@ -593,8 +610,9 @@ const TeacherInfo = () => {
                                   </Badge>
                                 </div>
                               )}
-                              {gpaByModule.length == 0 ?
-                              "": (
+                              {/* {gpaByModule.length == 0 ? (
+                                ""
+                              ) : (
                                 <RingProgress
                                   height={100}
                                   width={100}
@@ -606,8 +624,8 @@ const TeacherInfo = () => {
                                           gpaByModule.average_gpa * 10
                                         ) / 40
                                   }
-                                />
-                              )}
+                                ></RingProgress>
+                              )} */}
                             </Divider>
 
                             <Divider
@@ -644,7 +662,7 @@ const TeacherInfo = () => {
                                     })}
                               </Text>
                               {listClass.length == 0 ? (
-                                   ""
+                                ""
                               ) : (
                                 <div>
                                   <Badge
@@ -658,13 +676,13 @@ const TeacherInfo = () => {
                                     {gpaByClass === ""
                                       ? "Chưa có dữ liệu"
                                       : Math.round(
-                                        gpaByClass.average_gpa * 10
+                                          gpaByClass.average_gpa * 10
                                         ) / 10}
                                     {gpaByClass === "" ? "" : " / 4"}
                                   </Badge>
                                 </div>
                               )}
-                              {gpaByClass.length == 0 ? (
+                              {/* {gpaByClass.length == 0 ? (
                                 ""
                               ) : (
                                 <RingProgress
@@ -675,16 +693,69 @@ const TeacherInfo = () => {
                                     gpaByClass === ""
                                       ? 0
                                       : Math.round(
-                                        gpaByClass.average_gpa * 10
+                                          gpaByClass.average_gpa * 10
                                         ) / 40
                                   }
                                 />
+                              )} */}
+                                 {listComment.length == 0 ? (
+                                ""
+                              ) : (
+                                <div>
+                                  <Button
+                                    color="success"
+                                    css={{
+                                      position: "absolute",
+                                      right: "12px",
+                                      bottom: "12px",
+                                      fontStyle: "bold",
+                                    }}
+                                    auto
+                                    flat
+                                    onClick={() => setVisible(true)}
+                                  >
+                                    Xem bình luận của lớp
+                                  </Button>
+                                  <Modal
+                                    scroll
+                                    width="700px"
+                                    closeButton
+                                    aria-labelledby="modal-title"
+                                    aria-describedby="modal-description"
+                                    {...bindings}
+                                  >
+                                    <Modal.Header>
+                                      <Text b id="modal-title" size={18}>
+                                        Bình luận của học viên trong lớp về
+                                        giảng viên
+                                      </Text>
+                                    </Modal.Header>
+                                    <Card.Divider />
+                                    <Modal.Body>
+                                      {listComment.map((item, index) => (
+                                        <Comment
+                                          avatar={
+                                            <Avatar src={DefaultAvatar} />
+                                          }
+                                          author={
+                                            <Text b>
+                                              {"Học viên " + (index + 1)}
+                                            </Text>
+                                          }
+                                          content={<Text>{item}</Text>}
+                                        ></Comment>
+                                      ))}
+                                    </Modal.Body>
+                                    
+                                  </Modal>
+                                </div>
                               )}
                             </Divider>
-                           
                           </div>
                         </Card>
                       </Card.Body>
+                      <Grid></Grid>
+                  
                     </Card>
                   </items>
                 </Tabs>

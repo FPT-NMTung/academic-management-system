@@ -52,13 +52,14 @@ const ManageSchedule = () => {
     FetchApi(ManageClassApis.getInformationClass, null, null, [String(id)])
       .then((res) => {
         setDataClass(res.data);
+        getListModule(res.data.class_status.id);
       })
       .catch((err) => {
         navigate('/404');
       });
   };
 
-  const getListModule = () => {
+  const getListModule = (status) => {
     FetchApi(ManageClassApis.getAllModulesOfClass, null, null, [String(id)])
       .then((res) => {
         const listHasSchedule = res.data
@@ -80,7 +81,11 @@ const ManageSchedule = () => {
             );
           });
 
-        setListModule([...listHasSchedule, ...listNotSchedule]);
+        if (status === 6) {
+          setListModule([...listHasSchedule]);
+        } else {
+          setListModule([...listHasSchedule, ...listNotSchedule]);
+        }
       })
       .catch((err) => {
         navigate('/404');
@@ -88,12 +93,11 @@ const ManageSchedule = () => {
   };
 
   const handleUpdateListCourse = () => {
-    getListModule();
+    getListModule(dataClass.class_status.id);
   };
 
   useEffect(() => {
     getInformationClass();
-    getListModule();
   }, []);
 
   return (

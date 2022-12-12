@@ -278,6 +278,23 @@ const StudentUpdate = () => {
     getListCourse();
     getInformationStudent();
   }, []);
+
+  const handleChangeStatus = (value) => {
+    toast.promise(
+      FetchApi(ManageStudentApis.ChangeActive, null, null, [String(id)]),
+      {
+        loading: 'Đang xử lý',
+        success: (res) => {
+          return 'Đổi trạng thái thành công';
+        },
+        error: (err) => {
+          console.log(err);
+          return 'Đổi trạng thái thất bại';
+        },
+      }
+    );
+  };
+
   return (
     <Form
       labelCol={{ span: 7 }}
@@ -1501,6 +1518,60 @@ const StudentUpdate = () => {
               >
                 <Input placeholder="Đường dẫn tới cv" />
               </Form.Item>
+            </Card.Body>
+          </Card>
+          <Card variant="bordered">
+            <Card.Header css={{ margin: '0px 0 0 0' }}>
+              <Text
+                b
+                p
+                size={15}
+                css={{
+                  width: '100%',
+                  textAlign: 'center',
+                  //   margin: '0',
+                  //   padding: '0',
+                }}
+              >
+                Trạng thái
+              </Text>
+            </Card.Header>
+            <Card.Body
+              css={{
+                width: '100%',
+                //   textAlign: "center",
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                  alignItems: 'center',
+                  margin: '0px 50px',
+
+                  gap: '20px',
+                }}
+              >
+                <Text p size={14}>
+                  Trạng thái tài khoản:
+                </Text>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  {dataUser && <Switch
+                    color={'success'}
+                    size={'sm'}
+                    checked={dataUser?.is_active === 1}
+                    onChange={(checked) => {
+                      handleChangeStatus(checked);
+                    }}
+                  />}
+                </div>
+              </div>
             </Card.Body>
           </Card>
           <Form.Item
