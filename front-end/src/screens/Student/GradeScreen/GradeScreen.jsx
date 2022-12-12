@@ -88,16 +88,20 @@ const GradeScreen = () => {
         gradeItem.grade_category_id === 5 ||
         gradeItem.grade_category_id === 7
       ) {
-        console.log(true, gradeItem);
+        // console.log(true, gradeItem);
         avgPracticeGrade +=
           clone[i].grade_item.grade *
           (10 / info?.max_practical_grade) *
           (gradeItem.total_weight / clone[i].quantity_grade_item);
       } else {
         console.log(false, gradeItem);
-        avgPracticeGrade +=
-          clone[i].grade_item.grade *
-          (gradeItem.total_weight / clone[i].quantity_grade_item);
+        if (gradeItem.grade_item.grade === null) {
+          avgPracticeGrade = 0;
+        } else {
+          avgPracticeGrade +=
+            clone[i].grade_item.grade *
+            (gradeItem.total_weight / clone[i].quantity_grade_item);
+        }
       }
 
       console.log(avgPracticeGrade);

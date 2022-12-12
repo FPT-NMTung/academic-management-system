@@ -123,24 +123,26 @@ const StudentDetail = () => {
 
     for (let i = 0; i < clone.length; i++) {
       const gradeItem = clone[i];
+      console.log(gradeItem.grade_item.grade);
+
       if (
         gradeItem.grade_category_id === 5 ||
-        gradeItem.grade_category_id === 7 && 
-        clone[i].grade_item.grade  !== null
+        gradeItem.grade_category_id === 7
       ) {
         // console.log(true, gradeItem);
         avgPracticeGrade +=
           clone[i].grade_item.grade *
           (10 / info?.max_practical_grade) *
           (gradeItem.total_weight / clone[i].quantity_grade_item);
-
-      }
-    
-       else {
-        // console.log(false, gradeItem);
-        avgPracticeGrade +=
-          clone[i].grade_item.grade *
-          (gradeItem.total_weight / clone[i].quantity_grade_item);
+      } else {
+        console.log(false, gradeItem);
+        if (gradeItem.grade_item.grade === null) {
+          avgPracticeGrade = 0;
+        } else {
+          avgPracticeGrade +=
+            clone[i].grade_item.grade *
+            (gradeItem.total_weight / clone[i].quantity_grade_item);
+        }
       }
     }
     setAveragePracticeGrade(avgPracticeGrade / 100);
