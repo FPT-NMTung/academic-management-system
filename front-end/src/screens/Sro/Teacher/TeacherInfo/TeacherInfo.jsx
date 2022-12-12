@@ -718,7 +718,7 @@ const TeacherInfo = () => {
                                   </Button>
                                   <Modal
                                     scroll
-                                    width="500px"
+                                    width="700px"
                                     closeButton
                                     aria-labelledby="modal-title"
                                     aria-describedby="modal-description"
