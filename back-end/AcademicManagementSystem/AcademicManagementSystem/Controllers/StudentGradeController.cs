@@ -56,12 +56,6 @@ public class StudentGradeController : ControllerBase
             return NotFound(CustomResponse.NotFound("Class not found"));
         }
 
-        if (clazz.ClassStatusId == ClassStatusMerged)
-        {
-            var error = ErrorDescription.Error["E0401"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
         var student = _context.Students
             .Include(s => s.StudentsClasses)
             .Include(s => s.User)
@@ -287,7 +281,7 @@ public class StudentGradeController : ControllerBase
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
 
-        // get module that have been started in class, (don't get merged classes)
+        // get module that have been started in class
         var classSchedule = _context.ClassSchedules
             .Include(cs => cs.Class)
             .Include(cs => cs.Class.StudentsClasses)
@@ -296,7 +290,7 @@ public class StudentGradeController : ControllerBase
             .ThenInclude(cms => cms.Course)
             .Include(cs => cs.Module.CoursesModulesSemesters)
             .ThenInclude(cms => cms.Semester)
-            .Where(cs => cs.StartDate.Date <= DateTime.Today && cs.Class.ClassStatusId != ClassStatusMerged &&
+            .Where(cs => cs.StartDate.Date <= DateTime.Today &&
                          cs.Class.StudentsClasses.Any(sc => sc.StudentId == userId));
 
         var semesters = classSchedule.Select(cs => cs.Module.CoursesModulesSemesters)
@@ -1013,7 +1007,7 @@ public class StudentGradeController : ControllerBase
     [HttpGet]
     [Route("api/statistics/teachers/pass-rate-all-time")]
     [Authorize(Roles = "sro")]
-    public IActionResult GetPassRateOfAllTeacherInAPeriodOfTime()
+    public IActionResult GetPassRateOfAllTeacherInAllTime()
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
         var user = _context.Users.First(u => u.Id == userId);
@@ -1491,7 +1485,15 @@ public class StudentGradeController : ControllerBase
                 }
             }
 
-            totalScore += (totalScoreTheory + totalScorePractice) / 2;
+            if (module.ExamType is ExamTypePe)
+            {
+                totalScore += totalScorePractice;
+            }
+            else
+            {
+                totalScore += (totalScoreTheory + totalScorePractice) / 2;
+            }
+
             // student has not taken the exam | don't have grade
             if ((flagPractice && flagPracticeResit) || (flagTheory && flagTheoryResit))
             {
