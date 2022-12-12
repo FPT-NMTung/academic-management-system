@@ -1003,7 +1003,7 @@ public class StudentGradeController : ControllerBase
                     Id = module.Id,
                     Name = module.ModuleName,
                 },
-                
+
                 NumberOfStudentInAllClass = numberOfStudentInAllModule,
                 NumberOfPassStudents = passedCount
             };
@@ -1104,6 +1104,12 @@ public class StudentGradeController : ControllerBase
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
         var user = _context.Users.First(u => u.Id == userId);
+
+        if (request.FromDate > request.ToDate)
+        {
+            var error = ErrorDescription.Error["E0500"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         // get all teacher in this center
         var teachers = _context.Teachers
