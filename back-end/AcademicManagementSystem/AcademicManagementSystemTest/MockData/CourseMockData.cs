@@ -25,6 +25,16 @@ public static class CourseMockData
             IsActive = true,
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now
+        },
+        new Course()
+        {
+            Code = "COURSE CODE 555",
+            CourseFamilyCode = "COURSE FAMILY CODE 2",
+            Name = "Course 555",
+            SemesterCount = 3,
+            IsActive = false,
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now
         }
     };
 }
