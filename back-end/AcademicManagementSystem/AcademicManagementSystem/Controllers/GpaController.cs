@@ -291,7 +291,7 @@ public class GpaController : ControllerBase
         }
 
         // check if teacher is teaching this module in class or not
-        if (!IsTeacherTeachingModuleSession(request.TeacherId, request.ModuleId, request.SessionId, request.ClassId))
+        if (!IsTeacherTeachModuleSession(request.TeacherId, request.ModuleId, request.SessionId, request.ClassId))
         {
             var error = ErrorDescription.Error["E1150"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -520,6 +520,12 @@ public class GpaController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        if (!IsTeacherTeachModule(teacherId, moduleId))
+        {
+            var error = ErrorDescription.Error["E1159"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         var gpaRecords = _context.GpaRecords
             .Include(g => g.Student)
             .Include(g => g.Teacher)
@@ -591,6 +597,18 @@ public class GpaController : ControllerBase
         if (!IsModuleExisted(moduleId))
         {
             var error = ErrorDescription.Error["E1141"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsTeacherTeachModule(teacherId, moduleId))
+        {
+            var error = ErrorDescription.Error["E1159"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsTeacherTeachModuleInClass(classId, moduleId, teacherId))
+        {
+            var error = ErrorDescription.Error["E1160"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -673,6 +691,24 @@ public class GpaController : ControllerBase
         if (!IsSessionExisted(sessionId))
         {
             var error = ErrorDescription.Error["E1142"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsTeacherTeachModule(teacherId, moduleId))
+        {
+            var error = ErrorDescription.Error["E1159"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsTeacherTeachModuleInClass(classId, moduleId, teacherId))
+        {
+            var error = ErrorDescription.Error["E1160"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsTeacherTeachModuleSession(teacherId, moduleId, sessionId, classId))
+        {
+            var error = ErrorDescription.Error["E1150"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -911,8 +947,27 @@ public class GpaController : ControllerBase
             .Any(s => s.ClassSchedule.ClassId == classId && s.Id == sessionId && s.ClassSchedule.ModuleId == moduleId);
     }
 
+    // is teacher teaching this module
+    private bool IsTeacherTeachModule(int teacherId, int moduleId)
+    {
+        return _context.ClassSchedules
+            .Include(cs => cs.Teacher)
+            .Include(cs => cs.Module)
+            .Any(cs => cs.TeacherId == teacherId && cs.ModuleId == moduleId);
+    }
+
+    // is teacher teaching this module in class
+    private bool IsTeacherTeachModuleInClass(int classId, int moduleId, int teacherId)
+    {
+        return _context.ClassSchedules
+            .Include(cs => cs.Class)
+            .Include(cs => cs.Module)
+            .Include(cs => cs.Teacher)
+            .Any(cs => cs.ClassId == classId && cs.ModuleId == moduleId && cs.TeacherId == teacherId);
+    }
+
     // is teacher teaching this module session in class
-    private bool IsTeacherTeachingModuleSession(int teacherId, int moduleId, int sessionId, int classId)
+    private bool IsTeacherTeachModuleSession(int teacherId, int moduleId, int sessionId, int classId)
     {
         return _context.Sessions
             .Include(s => s.ClassSchedule)
