@@ -336,7 +336,7 @@ public static class ErrorDescription
         { "E2073", new ErrorModel() { Message = "Day off already exist", Type = "day-off-error-0006" } },
         
         // student grade (progress scores)
-        { "E0300", new ErrorModel() { Message = "Can't update grade before this module is learn and after last session", Type = "student-grade-error-0000" } },
+        { "E0300", new ErrorModel() { Message = "Can't update grade before this module is learn and after last teach session", Type = "student-grade-error-0000" } },
         { "E0301", new ErrorModel() { Message = "Can't update grade before this class schedule start", Type = "student-grade-error-0001" } },
         { "E0302", new ErrorModel() { Message = "Students in request must belong to this class (active and not draft)", Type = "student-grade-error-0002" } },
         { "E0303", new ErrorModel() { Message = "GradeItem in request must belong to this module", Type = "student-grade-error-0003" } },
@@ -353,7 +353,10 @@ public static class ErrorDescription
 
         // statistic
         { "E0500", new ErrorModel() { Message = "FromDate must before ToDate", Type = "statistic-error-0000" } },
-
+        
+        // authorize
+        { "E0600", new ErrorModel() { Message = "You are not authorized to access this resource", Type = "authorize-error-0000" } },
+        
         //gpa
         { "E1139", new ErrorModel() { Message = "Class is not exists in center", Type = "gpa-error-1" } },
         { "E1140", new ErrorModel() { Message = "Teacher is not exists in center", Type = "gpa-error-2" } },
