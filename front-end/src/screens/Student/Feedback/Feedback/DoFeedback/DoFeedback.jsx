@@ -289,7 +289,7 @@ const DoFeedback = () => {
                     }}
                     maxLength = {1000}
                     showCount
-                    placeholder="Các góp ý khác của bạn về việc giảng dậy của giáo viên..."
+                    placeholder="Các góp ý khác của bạn về việc giảng dạy của giáo viên..."
                   ></Input.TextArea>
 
                   {/* <Card.Divider css={{ marginTop: "20px" }} /> */}
