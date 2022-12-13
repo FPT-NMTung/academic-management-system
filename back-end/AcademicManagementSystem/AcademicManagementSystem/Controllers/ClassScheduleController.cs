@@ -54,7 +54,8 @@ public class ClassScheduleController : ControllerBase
 
         if (classContext.CenterId != user.CenterId)
         {
-            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
+            var error = ErrorDescription.Error["E0600"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         var classSchedule = GetClassSchedulesResponse(classId).OrderBy(response => response.StartDate);
