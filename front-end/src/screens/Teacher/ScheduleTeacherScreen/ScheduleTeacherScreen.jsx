@@ -47,7 +47,7 @@ const ScheduleTeacherScreen = () => {
         console.log(res.data);
       })
       .catch((err) => {
-        toast.error("Lỗi lấy lịch dậy");
+        toast.error("Lỗi lấy lịch dạy");
       });
   };
 

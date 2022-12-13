@@ -129,8 +129,8 @@ public class StudentGradeController : ControllerBase
 
         if (sro.User.Center.Id != clazz.Center.Id)
         {
-            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
-        }
+            var error = ErrorDescription.Error["E0600"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));        }
 
         if (clazz.ClassStatusId == ClassStatusMerged)
         {
@@ -213,8 +213,8 @@ public class StudentGradeController : ControllerBase
 
         if (sro.User.Center.Id != clazz.Center.Id)
         {
-            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
-        }
+            var error = ErrorDescription.Error["E0600"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));        }
 
         var isModuleForThisClass = clazz.CourseFamily.Courses
             .Select(c => c.CoursesModulesSemesters)
@@ -257,8 +257,8 @@ public class StudentGradeController : ControllerBase
         // check teacher is teach this schedule (class and module)
         if (!isTeacherTeachThisClass)
         {
-            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
-        }
+            var error = ErrorDescription.Error["E0600"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));        }
 
         var isModuleForThisClass = clazz.CourseFamily.Courses
             .Select(c => c.CoursesModulesSemesters)
@@ -395,8 +395,6 @@ public class StudentGradeController : ControllerBase
         var classContext = _context.Classes
             .Include(c => c.ClassSchedules)
             .ThenInclude(cs => cs.Module)
-            .Include(c => c.ClassSchedules)
-            .ThenInclude(cs => cs.Sessions)
             .Include(c => c.Center)
             .Include(c => c.StudentsClasses)
             .ThenInclude(sc => sc.Student)
@@ -417,8 +415,8 @@ public class StudentGradeController : ControllerBase
         // check user center is same center of class
         if (classContext.CenterId != user.CenterId)
         {
-            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
-        }
+            var error = ErrorDescription.Error["E0600"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));        }
 
         var canUpdateGrade =
             classContext.ClassSchedules.Any(cs =>
@@ -558,8 +556,6 @@ public class StudentGradeController : ControllerBase
         var classContext = _context.Classes
             .Include(c => c.ClassSchedules)
             .ThenInclude(cs => cs.Module)
-            .Include(c => c.ClassSchedules)
-            .ThenInclude(cs => cs.Sessions)
             .Include(c => c.Center)
             .Include(c => c.StudentsClasses)
             .ThenInclude(sc => sc.Student)
@@ -583,14 +579,15 @@ public class StudentGradeController : ControllerBase
         {
             // teacher can't update grades if module exam type is theory (just sro)
             case ExamTypeTe:
-                return Unauthorized(CustomResponse.Unauthorized("You are not able to update grades for this module"));
+                var error = ErrorDescription.Error["E0600"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         // check user center is same center of class
         if (classContext.CenterId != user.CenterId)
         {
-            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
-        }
+            var error = ErrorDescription.Error["E0600"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));        }
 
         var isTeacherTeachThisClass = classContext.ClassSchedules.Any(cs =>
             cs.ClassId == classId && cs.ModuleId == moduleId && cs.TeacherId == user.Id);
@@ -598,24 +595,14 @@ public class StudentGradeController : ControllerBase
         // check teacher is teach this schedule (class and module)
         if (!isTeacherTeachThisClass)
         {
-            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
-        }
-
-        // first session in class schedule
-        var firstSession = classContext.ClassSchedules
-            .First(cs => cs.ModuleId == moduleId)
-            .Sessions.OrderBy(s => s.LearningDate).First();
-
-        // last session in class schedule
-        var lastSession = classContext.ClassSchedules
-            .First(cs => cs.ModuleId == moduleId)
-            .Sessions.OrderBy(s => s.LearningDate).Last();
+            var error = ErrorDescription.Error["E0600"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));        }
 
         // check module is start learning and no more than 3 days after last session
         var canUpdateModule = classContext.ClassSchedules
             .Any(cs => cs.ModuleId == moduleId &&
-                       firstSession.LearningDate.Date <= DateTime.Today &&
-                       DateTime.Today <= lastSession.LearningDate.Date);
+                       cs.StartDate.Date <= DateTime.Today &&
+                       DateTime.Today <= cs.EndDate.Date);
 
         if (!canUpdateModule)
         {
@@ -669,6 +656,15 @@ public class StudentGradeController : ControllerBase
 
         foreach (var r in distinctRequest)
         {
+            // if grade item is exams -> error (teacher can't update these grade items)
+            // var gradeItem = gradeItemsOfModule.First(gi => gi.Id == r.GradeItemId);
+            // if (gradeItem.GradeCategoryModule.GradeCategoryId
+            //     is PracticeExam or TheoryExam or PracticeExamResit or TheoryExamResit)
+            // {
+            //     var error = ErrorDescription.Error["E0306"];
+            //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            // }
+            
             if (r.Grade is < 0 or > 10)
             {
                 var error = ErrorDescription.Error["E0304"];
@@ -694,15 +690,6 @@ public class StudentGradeController : ControllerBase
             else
             {
                 _context.StudentGrades.Update(studentGrade);
-            }
-
-            // if grade item is exams -> error (teacher can't update these grade items)
-            var gradeItem = gradeItemsOfModule.First(gi => gi.Id == r.GradeItemId);
-            if (gradeItem.GradeCategoryModule.GradeCategoryId
-                is PracticeExam or TheoryExam or PracticeExamResit or TheoryExamResit)
-            {
-                var error = ErrorDescription.Error["E0306"];
-                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
             }
         }
 
@@ -954,10 +941,12 @@ public class StudentGradeController : ControllerBase
             .Where(cs => cs.TeacherId == teacherId && cs.Class.ClassStatusId != ClassStatusMerged)
             .Select(cs => cs.Module).Distinct().ToList();
 
-        var numberOfStudentInAllModule = 0;
-        var passedCount = 0;
+        var responses = new List<PassRateOfTeacherAndModuleResponse>();
+
         foreach (var module in modules)
         {
+            var numberOfStudentInAllModule = 0;
+            var passedCount = 0;
             var classes = GetClassesTeachByTeacherByModuleId(teacherId, module.Id).ToList();
             foreach (var c in classes)
             {
@@ -993,15 +982,24 @@ public class StudentGradeController : ControllerBase
                     }
                 }
             }
+
+            var response = new PassRateOfTeacherAndModuleResponse()
+            {
+                Module = new BasicModuleResponse()
+                {
+                    Id = module.Id,
+                    Name = module.ModuleName,
+                },
+
+                NumberOfStudentInAllClass = numberOfStudentInAllModule,
+                NumberOfPassStudents = passedCount
+            };
+
+            responses.Add(response);
         }
 
-        var response = new PassRateOfTeacherInAllModuleResponse()
-        {
-            NumberOfAllStudents = numberOfStudentInAllModule,
-            NumberOfPassStudents = passedCount
-        };
 
-        return Ok(CustomResponse.Ok("Get pass rate all module of teacher successfully", response));
+        return Ok(CustomResponse.Ok("Get pass rate all module of teacher successfully", responses));
     }
 
     [HttpGet]
@@ -1093,6 +1091,12 @@ public class StudentGradeController : ControllerBase
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
         var user = _context.Users.First(u => u.Id == userId);
+
+        if (request.FromDate > request.ToDate)
+        {
+            var error = ErrorDescription.Error["E0500"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
 
         // get all teacher in this center
         var teachers = _context.Teachers
