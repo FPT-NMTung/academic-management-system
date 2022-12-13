@@ -61,108 +61,6 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_ValidRequest_ReturnOK()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0972222222",
-            Email = "nguyenvana@gmail.com",
-            EmailOrganization = "nguyenvana_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099922228272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<OkObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_FirstNameRemoveUnUsedSpace_ReturnOk()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "   Trần   ",
-            LastName = "Văn A",
-            MobilePhone = "0972222223",
-            Email = "tranvana1@gmail.com",
-            EmailOrganization = "tranvana2_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099922428273",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HETranVanA",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222224",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<OkObjectResult>(result);
-    }
-
-    [Fact]
     public void AddStudentManual_ClassIsNotExisted_ReturnBadRequest()
     {
         // arrange
@@ -3527,7 +3425,7 @@ public class TestClassController
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-    
+
     [Fact]
     public void AddStudentManual_AddressNotExists_ReturnBadRequest()
     {
@@ -3578,7 +3476,7 @@ public class TestClassController
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-    
+
     [Fact]
     public void AddStudentManual_GenderIsNotExist_ReturnBadRequest()
     {
@@ -3629,7 +3527,7 @@ public class TestClassController
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-    
+
     [Fact]
     public void AddStudentManual_StatusIdIsLessThan1_ReturnBadRequest()
     {
@@ -3680,7 +3578,7 @@ public class TestClassController
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-    
+
     [Fact]
     public void AddStudentManual_StatusIdIsMoreThan7_ReturnBadRequest()
     {
@@ -3731,7 +3629,7 @@ public class TestClassController
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-    
+
     [Fact]
     public void AddStudentManual_FeePlanIsNegative_ReturnBadRequest()
     {
@@ -3782,7 +3680,7 @@ public class TestClassController
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-    
+
     [Fact]
     public void AddStudentManual_PromotionIsNegative_ReturnBadRequest()
     {
@@ -3833,7 +3731,7 @@ public class TestClassController
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-    
+
     [Fact]
     public void AddStudentManual_CompanySalaryIsNegative_ReturnBadRequest()
     {
@@ -3884,7 +3782,7 @@ public class TestClassController
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-    
+
     [Fact]
     public void AddStudentManual_BirthdateIsLargerThanNow_ReturnBadRequest()
     {
@@ -3935,7 +3833,7 @@ public class TestClassController
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-    
+
     [Fact]
     public void AddStudentManual_IdentityCardPublishedDateIsLargerThanNow_ReturnBadRequest()
     {
@@ -3981,6 +3879,144 @@ public class TestClassController
 
         // act 
         var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void AddStudentManual_ValidRequest_ReturnOK()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0972222222",
+            Email = "nguyenvana@gmail.com",
+            EmailOrganization = "nguyenvana_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099922228272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<OkObjectResult>(result);
+    }
+
+    [Fact]
+    public void AddStudentManual_FirstNameRemoveUnUsedSpace_ReturnOk()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "   Trần   ",
+            LastName = "Văn A",
+            MobilePhone = "0972222223",
+            Email = "tranvana1@gmail.com",
+            EmailOrganization = "tranvana2_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099922428273",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HETranVanA",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222224",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<OkObjectResult>(result);
+    }
+
+    [Fact]
+    public void MergeClass_FirstClassNotExists_ReturnBadRequest()
+    {
+        // arrange
+        var request = new MergeClassRequest2()
+        {
+            FirstClassId = 1000,
+            SecondClassId = 2,
+        };
+
+        // act 
+        var result = _controller.MergeClass2(request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void MergeClass_SecondClassNotExists_ReturnBadRequest()
+    {
+        // arrange
+        var request = new MergeClassRequest2()
+        {
+            FirstClassId = 100,
+            SecondClassId = 1000,
+        };
+
+        // act 
+        var result = _controller.MergeClass2(request);
         _testOutputHelper.PrintMessage(result);
 
         // assert

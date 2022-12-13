@@ -372,6 +372,8 @@ public class ClassController : ControllerBase
 
     private IQueryable<ClassResponse> GetAllClassesInThisCenterByContext()
     {
+        var userId = Int32.Parse(_userService.GetUserId());
+        var centerId = _context.Users.FirstOrDefault(u => u.Id == userId)!.CenterId;
         return _context.Classes.Include(c => c.Center)
             .Include(c => c.ClassDays)
             .Include(c => c.ClassStatus)
@@ -443,7 +445,7 @@ public class ClassController : ControllerBase
                 SroId = c.Sro.UserId,
                 SroFirstName = c.Sro.User.FirstName,
                 SroLastName = c.Sro.User.LastName
-            }).Where(c => c.CenterId == _user.CenterId);
+            }).Where(c => c.CenterId == centerId);
     }
 
     // import student from excel file
@@ -2042,9 +2044,11 @@ public class ClassController : ControllerBase
     [Authorize(Roles = "admin, sro")]
     public IActionResult MergeClass2([FromBody] MergeClassRequest2 request)
     {
+        var userId = Int32.Parse(_userService.GetUserId());
+        var centerId = _context.Users.FirstOrDefault(u => u.Id == userId)!.CenterId;
         var firstClass = _context.Classes
             .Include(c => c.Center)
-            .Any(c => c.Id == request.FirstClassId && c.CenterId == _user.CenterId);
+            .Any(c => c.Id == request.FirstClassId && c.CenterId == centerId);
         if (!firstClass)
         {
             var error = ErrorDescription.Error["E1130"];
@@ -2053,7 +2057,7 @@ public class ClassController : ControllerBase
 
         var secondClass = _context.Classes
             .Include(c => c.Center)
-            .Any(c => c.Id == request.SecondClassId && c.CenterId == _user.CenterId);
+            .Any(c => c.Id == request.SecondClassId && c.CenterId == centerId);
         if (!secondClass)
         {
             var error = ErrorDescription.Error["E1131"];
