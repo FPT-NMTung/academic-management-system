@@ -1374,9 +1374,8 @@ public class ClassScheduleController : ControllerBase
 
         var sessions = _context.Sessions
             .Include(s => s.ClassSchedule)
-            .ThenInclude(cs => cs.Class)
-            .Include(s => s.ClassSchedule)
-            .ThenInclude(cs => cs.Teacher)
+            .Include(s => s.ClassSchedule.Class)
+            .Include(s => s.ClassSchedule.Teacher)
             .ThenInclude(t => t.User)
             .Where(s => s.ClassSchedule.TeacherId == teacherId && s.ClassSchedule.ClassId == classId &&
                         s.LearningDate.Date < DateTime.Now.Date && s.SessionTypeId != 3 && s.SessionTypeId != 4)
