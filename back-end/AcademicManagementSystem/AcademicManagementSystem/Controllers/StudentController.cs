@@ -830,15 +830,15 @@ public class StudentController : ControllerBase
                 },
                 OldClass = u.Student.StudentsClasses
                     .Where(sc => !sc.IsActive && sc.StudentId == u.Student.UserId)
-                    .Select(sc => new ClassNameResponse()
+                    .Select(sc => new LearningClassResponse()
                     {
-                        ClassId = sc.Class.Id, ClassName = sc.Class.Name
+                        ClassId = sc.Class.Id, ClassName = sc.Class.Name, StartDate = sc.Class.StartDate
                     }).ToList(),
                 CurrentClass = u.Student.StudentsClasses
                     .Where(sc => sc.IsActive && sc.StudentId == u.Student.UserId)
-                    .Select(sc => new ClassNameResponse()
+                    .Select(sc => new LearningClassResponse()
                     {
-                        ClassId = sc.Class.Id, ClassName = sc.Class.Name
+                        ClassId = sc.Class.Id, ClassName = sc.Class.Name, StartDate = sc.Class.StartDate
                     }).FirstOrDefault()
             })
             .Where(u => u.CenterId == _user.CenterId)
@@ -918,15 +918,15 @@ public class StudentController : ControllerBase
                 },
                 OldClass = u.Student.StudentsClasses
                     .Where(sc => !sc.IsActive && sc.StudentId == u.Student.UserId)
-                    .Select(sc => new ClassNameResponse()
+                    .Select(sc => new LearningClassResponse()
                     {
-                        ClassId = sc.Class.Id, ClassName = sc.Class.Name
+                        ClassId = sc.Class.Id, ClassName = sc.Class.Name, StartDate = sc.Class.StartDate
                     }).ToList(),
                 CurrentClass = u.Student.StudentsClasses
                     .Where(sc => sc.IsActive && sc.StudentId == u.Student.UserId)
-                    .Select(sc => new ClassNameResponse()
+                    .Select(sc => new LearningClassResponse()
                     {
-                        ClassId = sc.Class.Id, ClassName = sc.Class.Name
+                        ClassId = sc.Class.Id, ClassName = sc.Class.Name, StartDate = sc.Class.StartDate
                     }).FirstOrDefault(),
                 IsActive = u.IsActive
             })
