@@ -8,6 +8,7 @@ using AcademicManagementSystem.Models.ClassController;
 using AcademicManagementSystem.Models.ClassDaysController;
 using AcademicManagementSystem.Models.ClassScheduleController.ClassScheduleModel;
 using AcademicManagementSystem.Models.ClassScheduleController.ProgressModel;
+using AcademicManagementSystem.Models.ClassScheduleController.StatisticTeachingHours;
 using AcademicManagementSystem.Models.ClassStatusController;
 using AcademicManagementSystem.Models.RoomController.RoomModel;
 using AcademicManagementSystem.Models.RoomController.RoomTypeModel;
@@ -1345,6 +1346,30 @@ public class ClassScheduleController : ControllerBase
             .ToList();
 
         return Ok(CustomResponse.Ok("Get sessions duplicate teacher successfully", sessionsDuplicate));
+    }
+
+    // statistics teaching hours of teacher in a class
+    [HttpGet]
+    [Route("api/classes-schedules/teachers/{teacherId:int}/classes/{classId:int}/statistics-teaching-hours")]
+    [Authorize(Roles = "admin, sro")]
+    public IActionResult GetStatisticsTeachingHours(int teacherId, int classId)
+    {
+        var sessions = _context.Sessions
+            .Include(s => s.ClassSchedule)
+            .ThenInclude(cs => cs.Class)
+            .Include(s => s.ClassSchedule)
+            .ThenInclude(cs => cs.Teacher)
+            .ThenInclude(t => t.User)
+            .Where(s => s.ClassSchedule.TeacherId == teacherId && s.ClassSchedule.ClassId == classId &&
+                        s.LearningDate.Date < DateTime.Now.Date && s.SessionTypeId != 3 && s.SessionTypeId != 4)
+            .ToList();
+
+        var statistics = new StatisticsTeachingHoursResponse()
+        {
+            TotalTeachingHours = sessions.Sum(s => s.EndTime.Subtract(s.StartTime).TotalMinutes / 60),
+        };
+
+        return Ok(CustomResponse.Ok("Get statistics teaching hours successfully", statistics));
     }
 
     private bool CheckTeacherBusy(ClassSchedule classScheduleToCreate, bool isUpdate)
