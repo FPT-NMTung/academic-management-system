@@ -575,7 +575,7 @@ public class GpaController : ControllerBase
 
     // sro view gpa teacher by teacherId, classId and moduleId
     [HttpGet]
-    [Route("api/gpa/teachers/{teacherId:int}/classes/{classId:int}/modules/{moduleId:int}")]
+    [Route("api/gpa/teachers/{teacherId:int}/modules/{moduleId:int}/classes/{classId:int}")]
     [Authorize(Roles = "sro")]
     public IActionResult ViewGpaTeacherByTeacherIdAndClassIdAndModuleId(int teacherId, int classId, int moduleId)
     {
@@ -661,7 +661,7 @@ public class GpaController : ControllerBase
 
     // sro view gpa teacher by teacherId, classId, moduleId and sessionId
     [HttpGet]
-    [Route("api/gpa/teachers/{teacherId:int}/classes/{classId:int}/modules/{moduleId:int}/sessions/{sessionId:int}")]
+    [Route("api/gpa/teachers/{teacherId:int}/modules/{moduleId:int}/classes/{classId:int}/sessions/{sessionId:int}")]
     [Authorize(Roles = "sro")]
     public IActionResult ViewGpaTeacherByTeacherIdAndClassIdAndModuleIdAndSessionId(int teacherId, int classId,
         int moduleId, int sessionId)
