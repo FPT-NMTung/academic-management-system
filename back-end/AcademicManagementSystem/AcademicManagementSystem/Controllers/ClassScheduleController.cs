@@ -1354,6 +1354,24 @@ public class ClassScheduleController : ControllerBase
     [Authorize(Roles = "admin, sro")]
     public IActionResult GetStatisticsTeachingHours(int teacherId, int classId)
     {
+        if (!IsClassExisted(classId))
+        {
+            var error = ErrorDescription.Error["E1155"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsTeacherExisted(teacherId))
+        {
+            var error = ErrorDescription.Error["E1156"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsTeacherInClass(classId, teacherId))
+        {
+            var error = ErrorDescription.Error["E1157"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         var sessions = _context.Sessions
             .Include(s => s.ClassSchedule)
             .ThenInclude(cs => cs.Class)
@@ -1366,7 +1384,7 @@ public class ClassScheduleController : ControllerBase
 
         var statistics = new StatisticsTeachingHoursResponse()
         {
-            TotalTeachingHours = sessions.Sum(s => s.EndTime.Subtract(s.StartTime).TotalMinutes / 60),
+            TotalTeachingHours = sessions.Sum(s => s.EndTime.Subtract(s.StartTime).TotalHours),
         };
 
         return Ok(CustomResponse.Ok("Get statistics teaching hours successfully", statistics));
@@ -1831,5 +1849,32 @@ public class ClassScheduleController : ControllerBase
     private bool IsTimeInRange(TimeSpan startHour, TimeSpan endHour, TimeSpan timeToCheck)
     {
         return timeToCheck <= endHour && timeToCheck >= startHour;
+    }
+
+    // is class existed
+    private bool IsClassExisted(int classId)
+    {
+        var centerId = _context.Users
+            .FirstOrDefault(u => u.Id == int.Parse(_userService.GetUserId()))?.CenterId;
+        return _context.Classes.Any(c => c.Id == classId && c.CenterId == centerId);
+    }
+
+    // is teacher existed
+    private bool IsTeacherExisted(int teacherId)
+    {
+        var centerId = _context.Users
+            .FirstOrDefault(u => u.Id == int.Parse(_userService.GetUserId()))?.CenterId;
+        return _context.Teachers
+            .Include(t => t.User)
+            .Any(t => t.UserId == teacherId && t.User.CenterId == centerId);
+    }
+
+    // is teacher is taught this class
+    private bool IsTeacherInClass(int classId, int teacherId)
+    {
+        return _context.ClassSchedules
+            .Include(cs => cs.Teacher)
+            .Include(cs => cs.Class)
+            .Any(cs => cs.ClassId == classId && cs.TeacherId == teacherId);
     }
 }
