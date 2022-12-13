@@ -317,6 +317,12 @@ public class GpaController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
+        if (request.Comment != null && request.Comment.Length > 1000)
+        {
+            var error = ErrorDescription.Error["E1158"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         var gpaRecord = new GpaRecord()
         {
             StudentId = _user.Id,
