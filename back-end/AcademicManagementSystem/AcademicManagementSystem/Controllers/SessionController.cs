@@ -57,7 +57,8 @@ public class SessionController : ControllerBase
 
         if (classSchedule.TeacherId != userId)
         {
-            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
+            var error = ErrorDescription.Error["E0600"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         var sessions = classSchedule.Sessions
