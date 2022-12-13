@@ -315,6 +315,9 @@ public static class ErrorDescription
         { "E2068", new ErrorModel() { Message = "class schedule does not exist", Type = "class-schedule-error-0028" } },
         { "E2069", new ErrorModel() { Message = "Error when delete class schedule", Type = "class-schedule-error-0029" } },
         { "E2070", new ErrorModel() { Message = "Only one module can be studied in a period of time", Type = "class-schedule-error-0030" } },
+        { "E1155", new ErrorModel() { Message = "Class is not exists in center", Type = "class-schedule-error-1001" } },
+        { "E1156", new ErrorModel() { Message = "Teacher is not exists in center", Type = "class-schedule-error-1002" } },
+        { "E1157", new ErrorModel() { Message = "Teacher is not teach this class", Type = "class-schedule-error-1003" } },
 
         // attendance
         { "E0200", new ErrorModel() { Message = "Invalid data", Type = "attendance-error-0000" } },
@@ -367,6 +370,9 @@ public static class ErrorDescription
         { "E1148", new ErrorModel() { Message = "This class is not learning this module", Type = "gpa-error-10" } },
         { "E1149", new ErrorModel() { Message = "This class is not learning this module session", Type = "gpa-error-11" } },
         { "E1150", new ErrorModel() { Message = "Teacher is not teaching this module session in class", Type = "gpa-error-12" } },
+        { "E1158", new ErrorModel() { Message = "Comment must less or equal than 1000 words", Type = "gpa-error-13" } },
+        { "E1159", new ErrorModel() { Message = "Teacher is not teach this module", Type = "gpa-error-14" } },
+        { "E1160", new ErrorModel() { Message = "Teacher is not teach this module in this class", Type = "gpa-error-15" } },
     };
 }
 

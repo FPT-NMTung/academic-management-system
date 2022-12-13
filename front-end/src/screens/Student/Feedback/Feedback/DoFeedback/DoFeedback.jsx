@@ -95,7 +95,7 @@ const DoFeedback = () => {
       teacher_id : scheduleInformation.teacher.id,
       module_id : scheduleInformation.module.id,
       session_id : id,
-      comment: data.comment,
+      comment: data.comment.trim(),
       answer_id: listanswer,
     };
     console.log(body);
@@ -287,7 +287,9 @@ const DoFeedback = () => {
                       display: "block",
                       height: "180px",
                     }}
-                    placeholder="Các góp ý khác của bạn về việc giảng dậy của giáo viên..."
+                    maxLength = {1000}
+                    showCount
+                    placeholder="Các góp ý khác của bạn về việc giảng dạy của giáo viên..."
                   ></Input.TextArea>
 
                   {/* <Card.Divider css={{ marginTop: "20px" }} /> */}

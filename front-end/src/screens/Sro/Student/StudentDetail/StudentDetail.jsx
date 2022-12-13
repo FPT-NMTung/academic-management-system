@@ -22,6 +22,7 @@ import {
   Form,
   Input,
   Menu,
+  Timeline,
 } from "antd";
 import { useState, useEffect } from "react";
 import { AiFillPhone } from "react-icons/ai";
@@ -37,6 +38,7 @@ import { Fragment } from "react";
 import toast from "react-hot-toast";
 import { MdMenuBook } from "react-icons/md";
 import { ImLibrary } from "react-icons/im";
+import moment from "moment";
 
 const gender = {
   1: "Nam",
@@ -58,6 +60,9 @@ const StudentDetail = () => {
   const [listGradeFinal, setListGradeFinal] = useState([]);
   const [informationModule, setInformationModule] = useState(undefined);
   const [averagePracticeGrade, setAveragePracticeGrade] = useState(undefined);
+  const [isShowAveragePracticeGrade, setIsShowAveragePracticeGrade] =
+    useState(false);
+
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -105,13 +110,19 @@ const StudentDetail = () => {
 
     setListGrade(listGradePractice);
     setListGradeFinal(listGradeTheory);
+    setIsShowAveragePracticeGrade(
+      listGradePractice.find(
+        (item) => item.grade_category_id === 5 && item.grade_item.grade !== null
+      ) !== undefined
+    );
 
     console.clear();
 
     let avgPracticeGrade = 0;
     const hasResitPractice =
-      listGradePractice.find((item) => item.grade_category_id === 7) !==
-      undefined;
+      listGradePractice.find(
+        (item) => item.grade_category_id === 7 && item.grade_item.grade !== null
+      ) !== undefined;
 
     const clone = [...listGradePractice].filter((item) => {
       if (hasResitPractice) {
@@ -123,20 +134,26 @@ const StudentDetail = () => {
 
     for (let i = 0; i < clone.length; i++) {
       const gradeItem = clone[i];
+      console.log(gradeItem.grade_item.grade);
+
       if (
         gradeItem.grade_category_id === 5 ||
         gradeItem.grade_category_id === 7
       ) {
-        // console.log(true, gradeItem);
         avgPracticeGrade +=
           clone[i].grade_item.grade *
           (10 / info?.max_practical_grade) *
           (gradeItem.total_weight / clone[i].quantity_grade_item);
       } else {
-        // console.log(false, gradeItem);
-        avgPracticeGrade +=
-          clone[i].grade_item.grade *
-          (gradeItem.total_weight / clone[i].quantity_grade_item);
+        console.log(false, gradeItem);
+        if (gradeItem.grade_item.grade === null) {
+          avgPracticeGrade = 0;
+          break;
+        } else {
+          avgPracticeGrade +=
+            clone[i].grade_item.grade *
+            (gradeItem.total_weight / clone[i].quantity_grade_item);
+        }
       }
     }
     setAveragePracticeGrade(avgPracticeGrade / 100);
@@ -894,7 +911,7 @@ const StudentDetail = () => {
 
                   <items className="" tab="Điểm số học viên" key="222222">
                     <Grid.Container gap={1} justify={"space-between"}>
-                      <Grid xs={4}>
+                      <Grid xs={5}>
                         <Card
                           variant="bordered"
                           css={{
@@ -965,7 +982,7 @@ const StudentDetail = () => {
                           </Card.Body>
                         </Card>
                       </Grid>
-                      <Grid xs={8}>
+                      <Grid xs={7}>
                         <Card variant="bordered">
                           <Card.Header>
                             <Text
@@ -1079,7 +1096,8 @@ const StudentDetail = () => {
                                   </Table>
                                 </Fragment>
                               )}
-                              {listGrade.length > 0 &&
+                              {isShowAveragePracticeGrade &&
+                                listGrade.length > 0 &&
                                 averagePracticeGrade !== 0 && (
                                   <div>
                                     <Text
@@ -1101,9 +1119,19 @@ const StudentDetail = () => {
                                           : "/ 10"}
                                       </Badge>
                                     </Text>
-                                    <Text p i size={12}>
+                                    <Text
+                                      p
+                                      i
+                                      size={12}
+                                      css={{ marginRight: "46px" }}
+                                    >
                                       (Đã quy về hệ số 10)
                                     </Text>
+                                    {/* {averagePracticeGrade >= 5 ? (
+                                      <Badge size="lg" color="success">Đạt</Badge>
+                                    ) : (
+                                      <Badge size="lg" color="error">Không đạt</Badge>
+                                    )} */}
                                   </div>
                                 )}
                               {listGradeFinal.length > 0 && (
@@ -1175,30 +1203,30 @@ const StudentDetail = () => {
                   </items>
                   <items tab="Thông tin khác " key="333333">
                     <Card variant="bordered" css={{ marginBottom: "20px" }}>
+                      <Card.Header>
+                        <Text css={{ fontWeight: "700" }} size={16}>
+                          Các lớp đã học
+                        </Text>
+                      </Card.Header>
                       <Card.Body>
-                        <Descriptions
-                          bordered
-                          title="Các lớp đã học"
-                          column={{ md: 2, lg: 2, xl: 2, xxl: 2 }}
-                          // extra={
-
-                          // }
-                        >
+                        <Timeline>
                           {dataStudent.old_class.map((item, index) => {
                             return (
-                              <Descriptions.Item
-                                label={dataStudent.course_code}
-                                // labelStyle={{ width: "100%" }}
-                                // style={{ width: "100%" }}
+                              <Timeline.Item
+                                color="green"
+
                               >
-                                {item.class_name}
-                              </Descriptions.Item>
+                                {item.class_name} {"("}
+                                {moment(item.start_date).format("DD-MM-YYYY")}
+                                {")"}
+                              </Timeline.Item>
                             );
                           })}
-                          {/* // <Descriptions.Item >
+                        </Timeline>
+
+                        {/* // <Descriptions.Item >
                           //   {dataStudent.old_class[0].class_name}
                           // </Descriptions.Item> */}
-                        </Descriptions>
                       </Card.Body>
                     </Card>
                   </items>

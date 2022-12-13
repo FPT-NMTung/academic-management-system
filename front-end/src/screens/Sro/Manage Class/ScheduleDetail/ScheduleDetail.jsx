@@ -204,7 +204,7 @@ const ScheduleDetail = () => {
                   : 'Thông tin lịch học'}
               </Text>
             </Grid>
-            <Grid xs={4}></Grid>
+            <Grid xs={4} justify={'flex-end'}></Grid>
           </Grid.Container>
         </Card.Header>
         <Card.Body>
