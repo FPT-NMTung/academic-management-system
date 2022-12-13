@@ -22,6 +22,7 @@ import {
   Form,
   Input,
   Menu,
+  Timeline,
 } from "antd";
 import { useState, useEffect } from "react";
 import { AiFillPhone } from "react-icons/ai";
@@ -37,6 +38,7 @@ import { Fragment } from "react";
 import toast from "react-hot-toast";
 import { MdMenuBook } from "react-icons/md";
 import { ImLibrary } from "react-icons/im";
+import moment from "moment";
 
 const gender = {
   1: "Nam",
@@ -1201,30 +1203,30 @@ const StudentDetail = () => {
                   </items>
                   <items tab="Thông tin khác " key="333333">
                     <Card variant="bordered" css={{ marginBottom: "20px" }}>
+                      <Card.Header>
+                        <Text css={{ fontWeight: "700" }} size={16}>
+                          Các lớp đã học
+                        </Text>
+                      </Card.Header>
                       <Card.Body>
-                        <Descriptions
-                          bordered
-                          title="Các lớp đã học"
-                          column={{ md: 2, lg: 2, xl: 2, xxl: 2 }}
-                          // extra={
-
-                          // }
-                        >
+                        <Timeline>
                           {dataStudent.old_class.map((item, index) => {
                             return (
-                              <Descriptions.Item
-                                label={dataStudent.course_code}
-                                // labelStyle={{ width: "100%" }}
-                                // style={{ width: "100%" }}
+                              <Timeline.Item
+                                color="green"
+
                               >
-                                {item.class_name}
-                              </Descriptions.Item>
+                                {item.class_name} {"("}
+                                {moment(item.start_date).format("DD-MM-YYYY")}
+                                {")"}
+                              </Timeline.Item>
                             );
                           })}
-                          {/* // <Descriptions.Item >
+                        </Timeline>
+
+                        {/* // <Descriptions.Item >
                           //   {dataStudent.old_class[0].class_name}
                           // </Descriptions.Item> */}
-                        </Descriptions>
                       </Card.Body>
                     </Card>
                   </items>

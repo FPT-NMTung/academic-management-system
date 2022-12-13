@@ -458,7 +458,7 @@ const TeacherInfo = () => {
                     </Card>
                   </items>
 
-                  <items className="" tab="GPA giáo viên" key="2">
+                  <items className="" tab="Thống kê giáo viên" key="2">
                     <Card variant="bordered" css={{ marginBottom: "20px" }}>
                       <Card.Body>
                         <Text
