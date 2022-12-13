@@ -45,13 +45,15 @@ public class AttendanceController : ControllerBase
 
         if (schedule.Class.CenterId != user.CenterId)
         {
-            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
+            var error = ErrorDescription.Error["E0600"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         // if teacher logged in, check if he is the teacher of this class
         if (user.RoleId == RoleTeacher && schedule.TeacherId != user.Id)
         {
-            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
+            var error = ErrorDescription.Error["E0600"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         var attendances = GetAllSessionsWithAttendances(user.CenterId, id);
@@ -79,13 +81,15 @@ public class AttendanceController : ControllerBase
         // not same center
         if (schedule.Class.CenterId != user.CenterId)
         {
-            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
+            var error = ErrorDescription.Error["E0600"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         // if teacher logged in, check if he is the teacher of this class
         if (user.RoleId == RoleTeacher && schedule.TeacherId != user.Id)
         {
-            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
+            var error = ErrorDescription.Error["E0600"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         if (schedule.Sessions.All(s => s.Id != sessionId))
@@ -214,7 +218,8 @@ public class AttendanceController : ControllerBase
         {
             if (user.CenterId != schedule.Class.CenterId)
             {
-                return Unauthorized(CustomResponse.Unauthorized("Access denied, center not match"));
+                var error = ErrorDescription.Error["E0600"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
             }
 
             var session = schedule.Sessions.FirstOrDefault(s => s.Id == sessionId);
@@ -311,13 +316,15 @@ public class AttendanceController : ControllerBase
             // schedule not equal logged in user
             if (user.CenterId != schedule.Class.CenterId)
             {
-                return Unauthorized(CustomResponse.Unauthorized("Access denied, center not match"));
+                var error = ErrorDescription.Error["E0600"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
             }
 
             // teacher not teach this class schedule
             if (user.Id != schedule.TeacherId)
             {
-                return Unauthorized(CustomResponse.Unauthorized("Access denied, schedule not for this teacher"));
+                var error = ErrorDescription.Error["E0600"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
             }
 
             var session = schedule.Sessions.FirstOrDefault(s => s.Id == sessionId);
