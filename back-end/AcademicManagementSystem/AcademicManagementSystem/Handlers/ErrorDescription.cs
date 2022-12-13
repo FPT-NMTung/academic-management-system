@@ -348,6 +348,9 @@ public static class ErrorDescription
         { "E0401", new ErrorModel() { Message = "This class have been merge", Type = "class-status-error-0001" } },
         { "E0402", new ErrorModel() { Message = "This class have been complete", Type = "class-status-error-0002" } },
 
+        // statistic
+        { "E0500", new ErrorModel() { Message = "FromDate must before ToDate", Type = "statistic-error-0000" } },
+
         //gpa
         { "E1139", new ErrorModel() { Message = "Class is not exists in center", Type = "gpa-error-1" } },
         { "E1140", new ErrorModel() { Message = "Teacher is not exists in center", Type = "gpa-error-2" } },
