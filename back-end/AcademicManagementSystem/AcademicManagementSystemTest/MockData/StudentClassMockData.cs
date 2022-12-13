@@ -37,6 +37,38 @@ public static class StudentClassMockData
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             IsActive = true
-        }
+        },
+        new StudentClass()
+        {
+            StudentId = 100,
+            ClassId = 100,
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+            IsActive = true
+        },
+        new StudentClass()
+        {
+            StudentId = 101,
+            ClassId = 100,
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+            IsActive = false
+        },
+        new StudentClass()
+        {
+            StudentId = 102,
+            ClassId = 100,
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+            IsActive = true
+        },
+        new StudentClass()
+        {
+            StudentId = 103,
+            ClassId = 100,
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+            IsActive = true
+        },
     };
 }

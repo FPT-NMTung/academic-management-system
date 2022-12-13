@@ -143,20 +143,23 @@ public class StudentResponse
     public CourseResponse? Course { get; set; }
     
     [JsonPropertyName("old_class")]
-    public List<ClassNameResponse>? OldClass { get; set; }
+    public List<LearningClassResponse>? OldClass { get; set; }
 
     [JsonPropertyName("current_class")]
-    public ClassNameResponse? CurrentClass { get; set; }
+    public LearningClassResponse? CurrentClass { get; set; }
     
     [JsonPropertyName("is_active")]
     public bool IsActive { get; set; }
 }
 
-public class ClassNameResponse
+public class LearningClassResponse
 {
     [JsonPropertyName("class_id")] 
     public int? ClassId { get; set; }
     
     [JsonPropertyName("class_name")] 
     public string? ClassName { get; set; }
+    
+    [JsonPropertyName("start_date")]
+    public DateTime? StartDate { get; set; }
 }

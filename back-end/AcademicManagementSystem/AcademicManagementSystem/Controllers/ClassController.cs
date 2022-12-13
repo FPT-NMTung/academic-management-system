@@ -1273,9 +1273,11 @@ public class ClassController : ControllerBase
     public IActionResult AddStudentToClass(int id, [FromBody] AddStudentToClassRequest request)
     {
         //is class exists
+        var userId = Int32.Parse(_userService.GetUserId());
+        var centerId = _context.Users.FirstOrDefault(u => u.Id == userId)!.CenterId;
         var existedClassInCenter = _context.Classes
             .Include(c => c.Center)
-            .Any(c => c.Id == id && c.CenterId == _user.CenterId);
+            .Any(c => c.Id == id && c.CenterId == centerId);
         if (!existedClassInCenter)
         {
             var error = ErrorDescription.Error["E1073"];
@@ -1607,7 +1609,7 @@ public class ClassController : ControllerBase
             CitizenIdentityCardPublishedDate = request.CitizenIdentityCardPublishedDate,
             CitizenIdentityCardPublishedPlace = request.CitizenIdentityCardPublishedPlace,
             RoleId = RoleIdStudent,
-            CenterId = _user.CenterId,
+            CenterId = centerId,
             GenderId = request.GenderId,
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
