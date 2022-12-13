@@ -315,6 +315,9 @@ public static class ErrorDescription
         { "E2068", new ErrorModel() { Message = "class schedule does not exist", Type = "class-schedule-error-0028" } },
         { "E2069", new ErrorModel() { Message = "Error when delete class schedule", Type = "class-schedule-error-0029" } },
         { "E2070", new ErrorModel() { Message = "Only one module can be studied in a period of time", Type = "class-schedule-error-0030" } },
+        { "E1155", new ErrorModel() { Message = "Class is not exists in center", Type = "class-schedule-error-1001" } },
+        { "E1156", new ErrorModel() { Message = "Teacher is not exists in center", Type = "class-schedule-error-1002" } },
+        { "E1157", new ErrorModel() { Message = "Teacher is not teach this class", Type = "class-schedule-error-1003" } },
 
         // attendance
         { "E0200", new ErrorModel() { Message = "Invalid data", Type = "attendance-error-0000" } },
@@ -347,6 +350,9 @@ public static class ErrorDescription
         // class status
         { "E0401", new ErrorModel() { Message = "This class have been merge", Type = "class-status-error-0001" } },
         { "E0402", new ErrorModel() { Message = "This class have been complete", Type = "class-status-error-0002" } },
+
+        // statistic
+        { "E0500", new ErrorModel() { Message = "FromDate must before ToDate", Type = "statistic-error-0000" } },
 
         //gpa
         { "E1139", new ErrorModel() { Message = "Class is not exists in center", Type = "gpa-error-1" } },

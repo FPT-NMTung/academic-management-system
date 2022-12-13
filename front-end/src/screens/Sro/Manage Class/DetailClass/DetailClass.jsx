@@ -28,6 +28,7 @@ import { MdDelete, MdPersonAdd, MdSave } from 'react-icons/md';
 import { TiWarning } from 'react-icons/ti';
 import { AiFillSchedule } from 'react-icons/ai';
 import { TiFlowMerge } from 'react-icons/ti';
+import { TbDatabaseExport } from 'react-icons/tb';
 
 const renderGender = (id) => {
   if (id === 1) {
@@ -248,6 +249,30 @@ const DetailClass = () => {
       }
     );
   };
+
+  const handleExport = () => {
+    toast.promise(
+      FetchApi(ManageClassApis.exportStudent, null, undefined, [String(id)]),
+      {
+        loading: 'Đang xuất...',
+        success: (blob) => {
+          const url = window.URL.createObjectURL(new Blob([blob]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', 'export.xlsx');
+          document.body.appendChild(link);
+          link.click();
+          link.parentNode.removeChild(link);
+
+          return 'Xuất thành công';
+        },
+        error: (err) => {
+          console.log(err);
+        }
+      }
+    );
+  };
+
   const handleOpenModalMerge = () => {
     setIsOpenModalMerge(true);
     getAllClassToMerge();
@@ -275,6 +300,9 @@ const DetailClass = () => {
         break;
       case 'merge':
         handleOpenModalMerge();
+        break;
+      case 'export':
+        handleExport();
         break;
       default:
         break;
@@ -322,10 +350,10 @@ const DetailClass = () => {
     }
 
     return false;
-  }
+  };
 
   const hasMerge = () => {
-    return dataClass?.class_status?.id === 6
+    return dataClass?.class_status?.id === 6;
   };
 
   return (
@@ -587,14 +615,16 @@ const DetailClass = () => {
                       css={{ $$dropdownMenuWidth: '340px' }}
                     >
                       <Dropdown.Section title="Cơ bản">
-                        {!hasMerge() && <Dropdown.Item
-                          key="add"
-                          description="Thêm học viên thủ công"
-                          icon={<MdPersonAdd />}
-                          color={'success'}
-                        >
-                          Thêm học viên
-                        </Dropdown.Item>}
+                        {!hasMerge() && (
+                          <Dropdown.Item
+                            key="add"
+                            description="Thêm học viên thủ công"
+                            icon={<MdPersonAdd />}
+                            color={'success'}
+                          >
+                            Thêm học viên
+                          </Dropdown.Item>
+                        )}
                         {listStudent?.length === 0 && !hasMerge() && (
                           <Dropdown.Item
                             key="import"
@@ -643,6 +673,16 @@ const DetailClass = () => {
                             color={'secondary'}
                           >
                             Gộp lớp học
+                          </Dropdown.Item>
+                        )}
+                        {listStudent?.length > 0 && (
+                          <Dropdown.Item
+                            key="export"
+                            description="Xuất danh sách học viên"
+                            icon={<TbDatabaseExport />}
+                            color={'warning'}
+                          >
+                            Export học viên
                           </Dropdown.Item>
                         )}
                       </Dropdown.Section>
