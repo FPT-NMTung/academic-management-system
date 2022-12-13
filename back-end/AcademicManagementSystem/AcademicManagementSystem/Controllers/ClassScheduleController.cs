@@ -1432,7 +1432,11 @@ public class ClassScheduleController : ControllerBase
         // total number of attendance
         var totalNumberAttendance = totalAttendance + totalAbsence;
         // average attendance
-        var averageAttendance = (double)totalAttendance / totalNumberAttendance * 100;
+        double averageAttendance = 0;
+        if (totalNumberAttendance != 0)
+        {
+            averageAttendance = (double)totalAttendance / totalNumberAttendance * 100;
+        }
         var statistics = new StatisticsAttendanceResponse()
         {
             TotalAttendance = totalAttendance,
