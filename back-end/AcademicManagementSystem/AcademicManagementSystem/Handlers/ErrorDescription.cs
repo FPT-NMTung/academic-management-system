@@ -370,6 +370,9 @@ public static class ErrorDescription
         { "E1148", new ErrorModel() { Message = "This class is not learning this module", Type = "gpa-error-10" } },
         { "E1149", new ErrorModel() { Message = "This class is not learning this module session", Type = "gpa-error-11" } },
         { "E1150", new ErrorModel() { Message = "Teacher is not teaching this module session in class", Type = "gpa-error-12" } },
+        { "E1158", new ErrorModel() { Message = "Comment must less or equal than 1000 words", Type = "gpa-error-13" } },
+        { "E1159", new ErrorModel() { Message = "Teacher is not teach this module", Type = "gpa-error-14" } },
+        { "E1160", new ErrorModel() { Message = "Teacher is not teach this module in this class", Type = "gpa-error-15" } },
     };
 }
 
