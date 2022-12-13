@@ -2609,4 +2609,1381 @@ public class TestClassController
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
+
+    [Fact]
+    public void AddStudentManual_EmailIsExisted_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0373625172",
+            Email = "nguyenht_student@fpt.personal.edu.vn",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222432",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void AddStudentManual_EmailBelongToAnotherEmailOrganization_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0373625172",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenht_student@fpt.personal.edu.vn",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222111",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void AddStudentManual_EmailOrganizationIsExisted_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0373625172",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenht_student@fpt.org.edu.vn",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222432",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void AddStudentManual_EmailOrganizationBelongToAnotherEmail_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0373625172",
+            Email = "nguyenht_student@fpt.org.edu.vn",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222111",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void AddStudentManual_EmailIsNotMatchWithFormat_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0373625172",
+            Email = "nguyenht_student@fp",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222432",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void AddStudentManual_EmailOrganizationIsNotMatchWithFormat_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0373625172",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenht_student@fpt.o",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222432",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void AddStudentManual_EmailSameAsEmailOrganization_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0373625172",
+            Email = "nguyenvana3_organization@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222432",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void AddStudentManual_IdentityCardIsExisted_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0973248236",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "022200004321",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void AddStudentManual_IdentityCardPublishedPlaceIsNotMatchWithFormat_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0973248436",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội$#@%%^",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void AddStudentManual_IdentityCardContainsText_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0973248436",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272av",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void AddStudentManual_IdentityCardHasMoreNumber_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0973248436",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "09996462827256456456",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void AddStudentManual_IdentityCardHasLessNumber_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0973248436",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "09996",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void AddStudentManual_ProvinceNotExists_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0973248436",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 99,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void AddStudentManual_ProvinceIdIsNegative_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0973248436",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = -2,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void AddStudentManual_DistrictNotExists_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0973248436",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 99,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void AddStudentManual_DistrictIdIsNegative_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0973248436",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = -1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void AddStudentManual_WardNotExists_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0973248436",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 99,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void AddStudentManual_WardIdIsNegative_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0973248436",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = -1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    
+    [Fact]
+    public void AddStudentManual_AddressNotExists_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0973248436",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 327,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    
+    [Fact]
+    public void AddStudentManual_GenderIsNotExist_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0973248436",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 10,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    
+    [Fact]
+    public void AddStudentManual_StatusIdIsLessThan1_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0973248436",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = -5,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    
+    [Fact]
+    public void AddStudentManual_StatusIdIsMoreThan7_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0973248436",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 8,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    
+    [Fact]
+    public void AddStudentManual_FeePlanIsNegative_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0973248436",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = -5,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    
+    [Fact]
+    public void AddStudentManual_PromotionIsNegative_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0973248436",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = -5, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    
+    [Fact]
+    public void AddStudentManual_CompanySalaryIsNegative_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0973248436",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = -7,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 5, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    
+    [Fact]
+    public void AddStudentManual_BirthdateIsLargerThanNow_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0973248436",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2030, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    
+    [Fact]
+    public void AddStudentManual_IdentityCardPublishedDateIsLargerThanNow_ReturnBadRequest()
+    {
+        // arrange
+        var classId = 100;
+        var request = new AddStudentToClassRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0973248436",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2030, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
+            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.AddStudentToClass(classId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
 }
