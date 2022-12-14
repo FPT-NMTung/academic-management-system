@@ -67,6 +67,7 @@ const App = () => {
           <Route index element={<AttendanceDetailEmpty />} />
           <Route path="/teacher/class/:id/module/:moduleId/schedule/:scheduleId" element={<AttendanceDetail />} />
         </Route>
+        <Route path="/teacher/student/:id" element={<StudentDetail role={'teacher'}/>} />
         <Route path="/teacher/schedule" element={<ScheduleTeacherScreen /> } />
       </Route>
 
@@ -83,7 +84,7 @@ const App = () => {
           <Route path="/sro/manage-class/:id/schedule/module/:moduleId" element={<ScheduleDetail />} />
         </Route>
         <Route path="/sro/manage/student" element={<StudentScreen />} />
-        <Route path="/sro/manage/student/:id" element={<StudentDetail />} />
+        <Route path="/sro/manage/student/:id" element={<StudentDetail role={'sro'}/>} />
         <Route path="/sro/manage/student/:id/update" element={<StudentUpdate />} />
         <Route path="/sro/manage-class/:id/add" element={<AddStudentToClass />} />
         {/* <Route path="/sro/manage/student/:id/update" element={<p>grade</p>} /> */}
