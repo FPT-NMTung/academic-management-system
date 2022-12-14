@@ -46,6 +46,7 @@ public class TestClassController
 
     private void Init()
     {
+        _context.CourseFamilies.AddRange(CourseFamilyMockData.CourseFamilies);
         _context.Provinces.AddRange(ProvinceMockData.Provinces);
         _context.Districts.AddRange(DistrictMockData.Districts);
         _context.Wards.AddRange(WardMockData.Wards);
@@ -53,9 +54,12 @@ public class TestClassController
         _context.Genders.AddRange(GenderMockData.Genders);
         _context.Centers.AddRange(CenterMockData.Centers);
         _context.Courses.AddRange(CourseMockData.Courses);
+        _context.Sros.AddRange(SroMockData.Sros);
         _context.Users.AddRange(UserMockData.Users);
         _context.Students.AddRange(StudentMockData.Students);
         _context.Classes.AddRange(ClassMockData.Classes);
+        _context.ClassDays.AddRange(ClassDayMockData.ClassDays);
+        _context.ClassSchedules.AddRange(ClassScheduleMockData.ClassSchedules);
         _context.StudentsClasses.AddRange(StudentClassMockData.StudentsClasses);
         _context.SaveChanges();
     }
@@ -4021,5 +4025,16 @@ public class TestClassController
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void GetAllClass_ValidRequest_ReturnOK()
+    {
+        // act 
+        var result = _controller.GetClassesByCurrentSroCenter();
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<OkObjectResult>(result);
     }
 }
