@@ -144,6 +144,7 @@ const TeacherInfo = () => {
     const moduleid = form.getFieldValue("subjectteach");
     form.resetFields(["classteach"]);
     setClassTeachSelected("");
+    setListClassTeach([]);
     FetchApi(
       ManageTeacherApis.getListClassOfATeacherTeachByModule,
       null,
@@ -526,6 +527,7 @@ const TeacherInfo = () => {
                     setModuleTeachSelected("");
                     setTotalHours("");
                     setAverageAttendanceRate(0);
+                    setListClassTeach([]);
                   }}
 
                   // closable={false}
@@ -964,10 +966,12 @@ const TeacherInfo = () => {
                           size={18}
                           css={{ textAlign: "center", marginBottom: "20px" }}
                         >
-                          Tỷ lệ qua môn:{"   "}
+                          Tỷ lệ học viên qua môn:{"   "}
                           <Badge
                             variant="bordered"
-                            color="success"
+                            color={
+                              passRateAllModule >= 0.5 ? "success" : "warning"
+                            }
                             shape="circle"
                             size="md"
                           >
@@ -994,8 +998,8 @@ const TeacherInfo = () => {
                               //   padding: '0',
                             }}
                           >
-                            Xem tỷ lệ qua môn trung bình của giáo viên theo môn
-                            và lớp
+                            Xem tỷ lệ học viên qua môn trung bình của giáo viên
+                            theo môn và lớp
                           </Text>
                         </Divider>
 
@@ -1079,7 +1083,7 @@ const TeacherInfo = () => {
                                   //   padding: '0',
                                 }}
                               >
-                                Tỷ lệ qua môn trung bình của môn{" "}
+                                Tỷ lệ học viên qua môn trung bình của môn{" "}
                                 {listModuleTeach.length == 0
                                   ? ""
                                   : listModuleTeach.map((item) => {
@@ -1100,7 +1104,14 @@ const TeacherInfo = () => {
                               >
                                 {" "}
                                 {passRateByModule === 0 ? (
-                                  <Badge variant="bordered" color="success">
+                                  <Badge
+                                    variant="bordered"
+                                    color={
+                                      passRateByModule >= 0.5
+                                        ? "success"
+                                        : "warning"
+                                    }
+                                  >
                                     Chưa có dữ liệu
                                   </Badge>
                                 ) : (
@@ -1134,7 +1145,7 @@ const TeacherInfo = () => {
                                     //   padding: '0',
                                   }}
                                 >
-                                  Tỷ lệ qua môn trung bình môn{" "}
+                                  Tỷ lệ học viên qua môn trung bình môn{" "}
                                   {listModuleTeach.length == 0
                                     ? ""
                                     : listModuleTeach.map((item) => {
@@ -1159,7 +1170,14 @@ const TeacherInfo = () => {
                               <div>
                                 {" "}
                                 {passRateByClass == 0 ? (
-                                  <Badge variant="bordered" color="success">
+                                  <Badge
+                                    variant="bordered"
+                                    color={
+                                      passRateByClass >= 0.5
+                                        ? "success"
+                                        : "warning"
+                                    }
+                                  >
                                     Chưa có dữ liệu
                                   </Badge>
                                 ) : (
@@ -1185,7 +1203,7 @@ const TeacherInfo = () => {
                           css={{ textAlign: "center", marginBottom: "20px" }}
                         >
                           Tổng số giờ dạy của giáo viên theo lớp và tỷ lệ học
-                          viên lên lớp:{"   "}
+                          viên đến lớp:{"   "}
                         </Text>
 
                         <Form
@@ -1219,7 +1237,6 @@ const TeacherInfo = () => {
                                   {Math.round(totalHours * 10) / 10} {" tiếng"}
                                 </Badge>
                               )}
-                              
                             </Form.Item>
                           </div>
                           <Card
@@ -1257,14 +1274,16 @@ const TeacherInfo = () => {
                                     //   padding: '0',
                                   }}
                                 >
-                                  Tỷ lệ học viên lên lớp:{" "}
+                                  Tỷ lệ học viên đến lớp:{" "}
                                 </Text>
                               </div>
-                              {averageAttendanceRate === 0 ?
-                              <Badge variant="bordered" color="success">
-                                Chưa có dữ liệu
-                              </Badge>
-                              : (
+                              {averageAttendanceRate === 0 ? (
+                                <Badge variant="bordered"
+                                 color={averageAttendanceRate >= 0.5 ? "success" : "warning"}
+                                 >
+                                  Chưa có dữ liệu
+                                </Badge>
+                              ) : (
                                 <RingProgress
                                   height={100}
                                   width={100}
