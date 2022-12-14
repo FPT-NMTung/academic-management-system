@@ -1,6 +1,6 @@
-import { Text } from '@nextui-org/react';
+import { Loading, Spacer, Text } from '@nextui-org/react';
 import { Form, Table, InputNumber, Input } from 'antd';
-import React, { useEffect } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { useRef } from 'react';
 import { useState, useContext } from 'react';
 import toast from 'react-hot-toast';
@@ -13,6 +13,10 @@ const ViewGrade = ({ role, dataModule, dataSchedule, onSuccess }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [columns, setColumns] = useState([]);
+  const [isSave, setIsSave] = useState(undefined);
+  // 0: loading
+  // 1: success
+  // 2: error
 
   console.log(dataModule);
 
@@ -22,6 +26,31 @@ const ViewGrade = ({ role, dataModule, dataSchedule, onSuccess }) => {
     setData([]);
     setColumns([]);
   }, [id, moduleId]);
+
+  const onSave = (api, body, id, moduleId) => {
+    setIsSave(0);
+    FetchApi(api, body, null, [String(id), String(moduleId)])
+      .then((res) => {
+        setIsSave(1);
+      })
+      .catch((err) => {
+        setIsSave(2);
+      });
+  };
+
+  useEffect(() => {
+    const time = setTimeout(() => {
+      if (isSave === 1) {
+        setIsSave(undefined);
+      } else if (isSave === 2) {
+        
+      }
+    }, 1000);
+    
+    return () => {
+      clearTimeout(time);
+    };
+  }, [isSave]);
 
   useEffect(() => {
     setLoading(true);
@@ -54,6 +83,7 @@ const ViewGrade = ({ role, dataModule, dataSchedule, onSuccess }) => {
                         ? dataModule.max_theory_grade
                         : 10
                     }
+                    onSave={onSave}
                     type={item.id}
                     min={0}
                     data={t}
@@ -85,6 +115,7 @@ const ViewGrade = ({ role, dataModule, dataSchedule, onSuccess }) => {
                           ? dataModule.max_theory_grade
                           : 10
                       }
+                      onSave={onSave}
                       type={item.id}
                       min={0}
                       data={t}
@@ -155,19 +186,28 @@ const ViewGrade = ({ role, dataModule, dataSchedule, onSuccess }) => {
   }, []);
 
   return (
-    <Table
-      bordered
-      size="small"
-      scroll={{
-        x: 'max-content',
-        y: 600,
-      }}
-      rowClassName={() => 'editable-row'}
-      columns={columns}
-      dataSource={data}
-      loading={loading}
-      pagination={false}
-    />
+    <Fragment>
+      <div>
+        {isSave === undefined && <Text p i size={14} color={'gray'}>Đang chờ ...</Text>}
+        {isSave === 0 && <Loading size={'xs'} />}
+        {isSave === 1 && <Text p b size={14} color={'success'}>Lưu thành công</Text>}
+        {isSave === 2 && <Text p b size={14} color={'error'}>Lưu không thành công</Text>}
+        <Spacer y={0.5} />
+      </div>
+      <Table
+        bordered
+        size="small"
+        scroll={{
+          x: 'max-content',
+          y: 600,
+        }}
+        rowClassName={() => 'editable-row'}
+        columns={columns}
+        dataSource={data}
+        loading={loading}
+        pagination={false}
+      />
+    </Fragment>
   );
 };
 
