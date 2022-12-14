@@ -759,6 +759,8 @@ public class StudentController : ControllerBase
 
     private List<StudentResponse> GetStudentsInThisCenterByContext()
     {
+        var userId = Int32.Parse(_userService.GetUserId());
+        var centerId = _context.Users.FirstOrDefault(u => u.Id == userId)!.CenterId;
         var students = _context.Users
             .Include(u => u.Student)
             .Include(u => u.Student.Course)
@@ -841,13 +843,15 @@ public class StudentController : ControllerBase
                         ClassId = sc.Class.Id, ClassName = sc.Class.Name, StartDate = sc.Class.StartDate
                     }).FirstOrDefault()
             })
-            .Where(u => u.CenterId == _user.CenterId)
+            .Where(u => u.CenterId == centerId)
             .ToList();
         return students;
     }
 
     private List<StudentResponse> GetAllStudentsInThisCenterByContext()
     {
+        var userId = Int32.Parse(_userService.GetUserId());
+        var centerId = _context.Users.FirstOrDefault(u => u.Id == userId)!.CenterId;
         var students = _context.Users.Include(u => u.Student)
             .Include(u => u.Student.Course)
             .Include(u => u.Student.Course.CourseFamily)
@@ -930,16 +934,18 @@ public class StudentController : ControllerBase
                     }).FirstOrDefault(),
                 IsActive = u.IsActive
             })
-            .Where(u => u.CenterId == _user.CenterId)
+            .Where(u => u.CenterId == centerId)
             .ToList();
         return students;
     }
 
     private bool IsClassExists(int classId)
     {
+        var userId = Int32.Parse(_userService.GetUserId());
+        var centerId = _context.Users.FirstOrDefault(u => u.Id == userId)!.CenterId;
         return _context.Classes
             .Include(c => c.Center)
-            .Any(c => c.Id == classId && c.Center.Id == _user.CenterId);
+            .Any(c => c.Id == classId && c.Center.Id == centerId);
     }
 
     private bool IsMobilePhoneExists(string mobilePhone, bool isUpdate, int userId)
@@ -1003,6 +1009,8 @@ public class StudentController : ControllerBase
 
     private IQueryable<ClassResponse> GetAllClassesInThisCenterByContext()
     {
+        var userId = Int32.Parse(_userService.GetUserId());
+        var centerId = _context.Users.FirstOrDefault(u => u.Id == userId)!.CenterId;
         return _context.Classes.Include(c => c.Center)
             .Include(c => c.ClassDays)
             .Include(c => c.ClassStatus)
@@ -1075,7 +1083,7 @@ public class StudentController : ControllerBase
                 SroId = c.Sro.UserId,
                 SroFirstName = c.Sro.User.FirstName,
                 SroLastName = c.Sro.User.LastName
-            }).Where(c => c.CenterId == _user.CenterId);
+            }).Where(c => c.CenterId == centerId);
     }
 
     private static string RemoveDiacritics(string text)
