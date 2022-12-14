@@ -816,10 +816,17 @@ public class GpaController : ControllerBase
 
     // get list class of module
     [HttpGet]
-    [Route("api/gpa/modules/{moduleId:int}/classes")]
+    [Route("api/gpa/teachers/{teacherId:int}/modules/{moduleId:int}/classes")]
     [Authorize(Roles = "sro")]
-    public IActionResult GetListClassOfModule(int moduleId)
+    public IActionResult GetListClassOfModuleAndTeacher(int teacherId, int moduleId)
     {
+        // check if teacher exists or not
+        if (!IsTeacherExisted(teacherId))
+        {
+            var error = ErrorDescription.Error["E1140"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         // check if module exists or not
         if (!IsModuleExisted(moduleId))
         {
@@ -827,14 +834,14 @@ public class GpaController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var classes = _context.Classes
-            .Include(c => c.GpaRecords)
-            .ThenInclude(gr => gr.Module)
-            .Where(c => c.GpaRecords.Select(gr => gr.ModuleId).Contains(moduleId))
-            .Select(c => new ClassGpaResponse()
+        var classes = _context.ClassSchedules
+            .Include(gr => gr.Class)
+            .Include(gr => gr.Module)
+            .Where(gr => gr.TeacherId == teacherId && gr.ModuleId == moduleId)
+            .Select(gr => new ClassGpaResponse()
             {
-                Id = c.GpaRecords.Select(gr => gr.ModuleId).Contains(moduleId) ? c.Id : 0,
-                Name = c.GpaRecords.Select(gr => gr.ModuleId).Contains(moduleId) ? c.Name : null
+                Id = gr.Class.Id,
+                Name = gr.Class.Name
             })
             .ToList();
 

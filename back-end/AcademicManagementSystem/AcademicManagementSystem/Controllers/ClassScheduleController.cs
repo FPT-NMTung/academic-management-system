@@ -1353,7 +1353,7 @@ public class ClassScheduleController : ControllerBase
     // statistics teaching hours of teacher in a class
     [HttpGet]
     [Route("api/classes-schedules/teachers/{teacherId:int}/classes/{classId:int}/statistics-teaching-hours")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult GetStatisticsTeachingHours(int teacherId, int classId)
     {
         if (!IsClassExisted(classId))
@@ -1394,7 +1394,7 @@ public class ClassScheduleController : ControllerBase
     // statistics attendance of teacher in a class
     [HttpGet]
     [Route("api/classes-schedules/teachers/{teacherId:int}/classes/{classId:int}/statistics-attendance")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult GetStatisticsAttendance(int teacherId, int classId)
     {
         if (!IsClassExisted(classId))
