@@ -1026,7 +1026,7 @@ public class StudentGradeController : ControllerBase
             var modules = _context.ClassSchedules
                 .Include(cs => cs.Module)
                 .Include(cs => cs.Class)
-                .Where(cs => cs.TeacherId == teacher.UserId)
+                .Where(cs => cs.TeacherId == teacher.UserId && cs.EndDate < DateTime.Today)
                 .Select(cs => cs.Module).Distinct().ToList();
 
             var numberOfStudentInAllModule = 0;
@@ -1118,7 +1118,7 @@ public class StudentGradeController : ControllerBase
                 .Include(cs => cs.Module)
                 .Include(cs => cs.Class)
                 // select all schedules in range from date to to date base on start date and end date of schedule
-                .Where(cs => cs.TeacherId == teacher.UserId && cs.Class.ClassStatusId != ClassStatusMerged &&
+                .Where(cs => cs.TeacherId == teacher.UserId && cs.EndDate < DateTime.Today &&
                              //check overlap two date range
                              ((cs.StartDate.Date <= fromDate && fromDate <= cs.EndDate.Date) ||
                               (cs.StartDate.Date <= toDate && toDate <= cs.EndDate.Date) ||
