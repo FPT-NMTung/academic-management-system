@@ -405,6 +405,31 @@ export const ManageTeacherApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  getTotalTeachingHoursOfATeacher: {
+    url: 'api/classes-schedules/teachers/{0}/classes/{1}/statistics-teaching-hours',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getListClassHoursByTeacherId : {
+    url: 'api/statistics/teachers/{0}/classes',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getAttenanceRateofClass : {
+    url: 'api/classes-schedules/teachers/{0}/classes/{1}/statistics-attendance',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getPassRateAllTeacherInAllTime : {
+    url: '/api/statistics/teachers/pass-rate-all-time',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getPassRateAllTeacherOnPeriodTime:{
+    url: '/api/statistics/teachers/pass-rate-period-time/get',
+    method: 'POST',
+    contextType: 'application/json',
+  }
 };
 
 export const UserApis = {
