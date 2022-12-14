@@ -776,11 +776,12 @@ public class GpaController : ControllerBase
         var classes = _context.Classes
             .Include(c => c.GpaRecords)
             .ThenInclude(gr => gr.Teacher)
-            .Where(c => c.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId))
-            .Select(c => new ClassGpaResponse()
+            .ThenInclude(t => t.User)
+            .Where(c => c.GpaRecords.Any(cs => cs.TeacherId == teacherId))
+            .Select(c => new BasicClassResponse()
             {
-                Id = c.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId) ? c.Id : 0,
-                Name = c.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId) ? c.Name : null
+                Id = c.Id,
+                Name = c.Name
             })
             .ToList();
 
@@ -803,11 +804,12 @@ public class GpaController : ControllerBase
         var modules = _context.Modules
             .Include(m => m.GpaRecords)
             .ThenInclude(gr => gr.Teacher)
-            .Where(m => m.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId))
+            .ThenInclude(t => t.User)
+            .Where(m => m.GpaRecords.Any(cs => cs.TeacherId == teacherId))
             .Select(m => new ModuleGpaResponse()
             {
-                Id = m.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId) ? m.Id : 0,
-                ModuleName = m.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId) ? m.ModuleName : null
+                Id = m.Id,
+                ModuleName = m.ModuleName
             })
             .ToList();
 
@@ -834,14 +836,17 @@ public class GpaController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        var classes = _context.ClassSchedules
-            .Include(gr => gr.Class)
-            .Include(gr => gr.Module)
-            .Where(gr => gr.TeacherId == teacherId && gr.ModuleId == moduleId)
-            .Select(gr => new ClassGpaResponse()
+        var classes = _context.Classes
+            .Include(c => c.GpaRecords)
+            .ThenInclude(gr => gr.Module)
+            .Include(c => c.GpaRecords)
+            .ThenInclude(gr => gr.Teacher)
+            .ThenInclude(t => t.User)
+            .Where(c => c.GpaRecords.Any(cs => cs.TeacherId == teacherId && cs.ModuleId == moduleId))
+            .Select(c => new ClassGpaResponse()
             {
-                Id = gr.Class.Id,
-                Name = gr.Class.Name
+                Id = c.Id,
+                Name = c.Name
             })
             .ToList();
 
