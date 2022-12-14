@@ -1434,9 +1434,11 @@ public class ClassScheduleController : ControllerBase
         var totalStudentsInLearningSession = totalAttendance + totalAbsence;
         // average attendance
         double averageAttendance = 0;
+        double averageAbsence = 0;
         if (totalStudentsInLearningSession != 0)
         {
             averageAttendance = (double)totalAttendance / totalStudentsInLearningSession * 100;
+            averageAbsence = (double)totalAbsence / totalStudentsInLearningSession * 100;
         }
 
         var statistics = new StatisticsAttendanceResponse()
@@ -1444,7 +1446,8 @@ public class ClassScheduleController : ControllerBase
             TotalAttendance = totalAttendance,
             TotalAbsence = totalAbsence,
             TotalStudentsInLearningSession = totalStudentsInLearningSession,
-            AverageAttendance = averageAttendance
+            AverageAttendance = averageAttendance,
+            AverageAbsence = averageAbsence
         };
 
         return Ok(CustomResponse.Ok("Get statistics attendance successfully", statistics));
