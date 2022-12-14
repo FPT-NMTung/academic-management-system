@@ -1438,6 +1438,7 @@ public class ClassScheduleController : ControllerBase
         {
             averageAttendance = (double)totalAttendance / totalStudentsInLearningSession * 100;
         }
+
         var statistics = new StatisticsAttendanceResponse()
         {
             TotalAttendance = totalAttendance,
@@ -1447,6 +1448,34 @@ public class ClassScheduleController : ControllerBase
         };
 
         return Ok(CustomResponse.Ok("Get statistics attendance successfully", statistics));
+    }
+
+    // get list class of teacher
+    [HttpGet]
+    [Route("api/statistics/teachers/{teacherId:int}/classes")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetListClassOfTeacher(int teacherId)
+    {
+        // check if teacher exists or not
+        if (!IsTeacherExisted(teacherId))
+        {
+            var error = ErrorDescription.Error["E1156"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var classes = _context.Classes
+            .Include(c => c.ClassSchedules)
+            .ThenInclude(cs => cs.Teacher)
+            .ThenInclude(t => t.User)
+            .Where(c => c.ClassSchedules.Any(cs => cs.TeacherId == teacherId))
+            .Select(c => new BasicClassResponse()
+            {
+                Id = c.Id,
+                Name = c.Name
+            })
+            .ToList();
+
+        return Ok(CustomResponse.Ok("List classes of teacher has been retrieved successfully", classes));
     }
 
     private bool CheckTeacherBusy(ClassSchedule classScheduleToCreate, bool isUpdate)
