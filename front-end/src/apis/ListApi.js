@@ -420,6 +420,16 @@ export const ManageTeacherApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  getPassRateAllTeacherInAllTime : {
+    url: '/api/statistics/teachers/pass-rate-all-time',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getPassRateAllTeacherOnPeriodTime:{
+    url: '/api/statistics/teachers/pass-rate-period-time/get',
+    method: 'POST',
+    contextType: 'application/json',
+  }
 };
 
 export const UserApis = {
