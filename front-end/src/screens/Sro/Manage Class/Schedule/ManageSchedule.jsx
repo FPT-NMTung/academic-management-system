@@ -32,9 +32,16 @@ const renderStatus = (id) => {
         Hủy
       </Badge>
     );
+  }
+  else if (id === 6) {
+    return (
+      <Badge variant="flat" color="success">
+        Đã ghép
+      </Badge>
+    );
   } else {
     return (
-      <Badge variant="flat" color="primary">
+      <Badge variant="flat" color="default">
         Chưa lên lịch
       </Badge>
     );
