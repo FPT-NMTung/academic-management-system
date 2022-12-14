@@ -37,8 +37,8 @@ const navItem = [
     role: 'teacher',
   },
   // {
-  //   name: 'Ý kiến về việc giảng dậy',
-  //   description: 'Đánh giá về việc giảng dậy của giáo viên',
+  //   name: 'Ý kiến về việc giảng dạy',
+  //   description: 'Đánh giá về việc giảng dạy của giáo viên',
   //   path: '/student/feedback',
   //   icon: <MdFeedback size={30} color={'#fff'} />,
   //   role: 'student',

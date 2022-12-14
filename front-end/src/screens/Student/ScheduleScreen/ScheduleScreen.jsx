@@ -484,7 +484,7 @@ const Schedule = () => {
                       right: "10px",
                     }}
                   >
-                    Đánh giá việc giảng dậy
+                    Đánh giá việc giảng dạy
                   </Button>
                 </Grid>
               )}
