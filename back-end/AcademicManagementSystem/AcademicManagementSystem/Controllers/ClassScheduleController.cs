@@ -1431,17 +1431,18 @@ public class ClassScheduleController : ControllerBase
         // total absence where attendance status = 2
         var totalAbsence = sessions.Sum(s => s.Attendances.Count(a => a.AttendanceStatusId == 2));
         // total number of attendance
-        var totalNumberAttendance = totalAttendance + totalAbsence;
+        var totalStudentsInLearningSession = totalAttendance + totalAbsence;
         // average attendance
         double averageAttendance = 0;
-        if (totalNumberAttendance != 0)
+        if (totalStudentsInLearningSession != 0)
         {
-            averageAttendance = (double)totalAttendance / totalNumberAttendance * 100;
+            averageAttendance = (double)totalAttendance / totalStudentsInLearningSession * 100;
         }
         var statistics = new StatisticsAttendanceResponse()
         {
             TotalAttendance = totalAttendance,
             TotalAbsence = totalAbsence,
+            TotalStudentsInLearningSession = totalStudentsInLearningSession,
             AverageAttendance = averageAttendance
         };
 
