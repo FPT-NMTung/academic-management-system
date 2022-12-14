@@ -776,11 +776,12 @@ public class GpaController : ControllerBase
         var classes = _context.Classes
             .Include(c => c.GpaRecords)
             .ThenInclude(gr => gr.Teacher)
-            .Where(c => c.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId))
-            .Select(c => new ClassGpaResponse()
+            .ThenInclude(t => t.User)
+            .Where(c => c.GpaRecords.Any(cs => cs.TeacherId == teacherId))
+            .Select(c => new BasicClassResponse()
             {
-                Id = c.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId) ? c.Id : 0,
-                Name = c.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId) ? c.Name : null
+                Id = c.Id,
+                Name = c.Name
             })
             .ToList();
 
@@ -803,11 +804,12 @@ public class GpaController : ControllerBase
         var modules = _context.Modules
             .Include(m => m.GpaRecords)
             .ThenInclude(gr => gr.Teacher)
-            .Where(m => m.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId))
+            .ThenInclude(t => t.User)
+            .Where(m => m.GpaRecords.Any(cs => cs.TeacherId == teacherId))
             .Select(m => new ModuleGpaResponse()
             {
-                Id = m.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId) ? m.Id : 0,
-                ModuleName = m.GpaRecords.Select(gr => gr.TeacherId).Contains(teacherId) ? m.ModuleName : null
+                Id = m.Id,
+                ModuleName = m.ModuleName
             })
             .ToList();
 
@@ -816,10 +818,17 @@ public class GpaController : ControllerBase
 
     // get list class of module
     [HttpGet]
-    [Route("api/gpa/modules/{moduleId:int}/classes")]
+    [Route("api/gpa/teachers/{teacherId:int}/modules/{moduleId:int}/classes")]
     [Authorize(Roles = "sro")]
-    public IActionResult GetListClassOfModule(int moduleId)
+    public IActionResult GetListClassOfModuleAndTeacher(int teacherId, int moduleId)
     {
+        // check if teacher exists or not
+        if (!IsTeacherExisted(teacherId))
+        {
+            var error = ErrorDescription.Error["E1140"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         // check if module exists or not
         if (!IsModuleExisted(moduleId))
         {
@@ -830,11 +839,14 @@ public class GpaController : ControllerBase
         var classes = _context.Classes
             .Include(c => c.GpaRecords)
             .ThenInclude(gr => gr.Module)
-            .Where(c => c.GpaRecords.Select(gr => gr.ModuleId).Contains(moduleId))
+            .Include(c => c.GpaRecords)
+            .ThenInclude(gr => gr.Teacher)
+            .ThenInclude(t => t.User)
+            .Where(c => c.GpaRecords.Any(cs => cs.TeacherId == teacherId && cs.ModuleId == moduleId))
             .Select(c => new ClassGpaResponse()
             {
-                Id = c.GpaRecords.Select(gr => gr.ModuleId).Contains(moduleId) ? c.Id : 0,
-                Name = c.GpaRecords.Select(gr => gr.ModuleId).Contains(moduleId) ? c.Name : null
+                Id = c.Id,
+                Name = c.Name
             })
             .ToList();
 
