@@ -15,4 +15,7 @@ public class StatisticsAttendanceResponse
 
     [JsonPropertyName("average_attendance")]
     public double AverageAttendance { get; set; }
+    
+    [JsonPropertyName("average_absence")]
+    public double AverageAbsence { get; set; }
 }
