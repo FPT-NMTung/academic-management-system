@@ -8,6 +8,7 @@ using AcademicManagementSystem.Models.ClassController;
 using AcademicManagementSystem.Models.ClassDaysController;
 using AcademicManagementSystem.Models.ClassScheduleController.ClassScheduleModel;
 using AcademicManagementSystem.Models.ClassScheduleController.ProgressModel;
+using AcademicManagementSystem.Models.ClassScheduleController.StatisticsAttendance;
 using AcademicManagementSystem.Models.ClassScheduleController.StatisticTeachingHours;
 using AcademicManagementSystem.Models.ClassStatusController;
 using AcademicManagementSystem.Models.RoomController.RoomModel;
@@ -1352,7 +1353,7 @@ public class ClassScheduleController : ControllerBase
     // statistics teaching hours of teacher in a class
     [HttpGet]
     [Route("api/classes-schedules/teachers/{teacherId:int}/classes/{classId:int}/statistics-teaching-hours")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult GetStatisticsTeachingHours(int teacherId, int classId)
     {
         if (!IsClassExisted(classId))
@@ -1375,9 +1376,8 @@ public class ClassScheduleController : ControllerBase
 
         var sessions = _context.Sessions
             .Include(s => s.ClassSchedule)
-            .ThenInclude(cs => cs.Class)
-            .Include(s => s.ClassSchedule)
-            .ThenInclude(cs => cs.Teacher)
+            .Include(s => s.ClassSchedule.Class)
+            .Include(s => s.ClassSchedule.Teacher)
             .ThenInclude(t => t.User)
             .Where(s => s.ClassSchedule.TeacherId == teacherId && s.ClassSchedule.ClassId == classId &&
                         s.LearningDate.Date < DateTime.Now.Date && s.SessionTypeId != 3 && s.SessionTypeId != 4)
@@ -1389,6 +1389,64 @@ public class ClassScheduleController : ControllerBase
         };
 
         return Ok(CustomResponse.Ok("Get statistics teaching hours successfully", statistics));
+    }
+
+    // statistics attendance of teacher in a class
+    [HttpGet]
+    [Route("api/classes-schedules/teachers/{teacherId:int}/classes/{classId:int}/statistics-attendance")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetStatisticsAttendance(int teacherId, int classId)
+    {
+        if (!IsClassExisted(classId))
+        {
+            var error = ErrorDescription.Error["E1155"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsTeacherExisted(teacherId))
+        {
+            var error = ErrorDescription.Error["E1156"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsTeacherInClass(classId, teacherId))
+        {
+            var error = ErrorDescription.Error["E1157"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var sessions = _context.Sessions
+            .Include(s => s.Attendances)
+            .ThenInclude(a => a.AttendanceStatus)
+            .Include(s => s.ClassSchedule)
+            .Include(s => s.ClassSchedule.Class)
+            .Include(s => s.ClassSchedule.Teacher)
+            .ThenInclude(t => t.User)
+            .Where(s => s.ClassSchedule.TeacherId == teacherId && s.ClassSchedule.ClassId == classId &&
+                        s.LearningDate.Date < DateTime.Now.Date && s.SessionTypeId != 3 && s.SessionTypeId != 4)
+            .ToList();
+
+        // total attendance where attendance status = 3
+        var totalAttendance = sessions.Sum(s => s.Attendances.Count(a => a.AttendanceStatusId == 3));
+        // total absence where attendance status = 2
+        var totalAbsence = sessions.Sum(s => s.Attendances.Count(a => a.AttendanceStatusId == 2));
+        // total number of attendance
+        var totalStudentsInLearningSession = totalAttendance + totalAbsence;
+        // average attendance
+        double averageAttendance = 0;
+        if (totalStudentsInLearningSession != 0)
+        {
+            averageAttendance = (double)totalAttendance / totalStudentsInLearningSession * 100;
+        }
+        var statistics = new StatisticsAttendanceResponse()
+        {
+            TotalAttendance = totalAttendance,
+            TotalAbsence = totalAbsence,
+            TotalStudentsInLearningSession = totalStudentsInLearningSession,
+            AverageAttendance = averageAttendance
+        };
+
+        return Ok(CustomResponse.Ok("Get statistics attendance successfully", statistics));
     }
 
     private bool CheckTeacherBusy(ClassSchedule classScheduleToCreate, bool isUpdate)

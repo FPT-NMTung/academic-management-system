@@ -137,7 +137,7 @@ const menu = {
     },
     // {
     //   key: '15',
-    //   label:'Ý kiến về việc giảng dậy',
+    //   label:'Ý kiến về việc giảng dạy',
     //   icon: <MdFeedback size={18}/>,
     //   url: '/student/feedback',
     // }

@@ -50,7 +50,7 @@ const FeedbackScreen = () => {
                 height:"fit-content"
       }}>
               <Table.Header>
-                <Table.Column width={150}>Ý kiến về việc giảng dậy</Table.Column>
+                <Table.Column width={150}>Ý kiến về việc giảng dạy</Table.Column>
                 <Table.Column width={300}>Mô tả</Table.Column>
                 <Table.Column width={150}>Đánh giá</Table.Column>
              

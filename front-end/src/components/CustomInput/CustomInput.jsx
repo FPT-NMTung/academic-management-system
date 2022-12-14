@@ -1,6 +1,6 @@
 import { Text } from '@nextui-org/react';
 import { Form, Input } from 'antd';
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import FetchApi from '../../apis/FetchApi';
@@ -13,16 +13,27 @@ const CustomInput = ({
   min,
   type,
   role,
+  onSave,
 }) => {
   const [form] = Form.useForm();
   const { id, moduleId } = useParams();
+  const [isChange, setIsChange] = useState(false);
 
   const handleBlur = () => {
+    if (!isChange) {
+      return;
+    }
+    
     const regex = new RegExp(/^[0-9]+(\.[0-9]{1,2})?$/);
-
     const d = form.getFieldValue('grade');
 
     if (d !== null && d !== undefined && d?.trim() !== '' && !regex.test(d)) {
+      return;
+    }
+
+    const value = Number.parseFloat(form.getFieldValue('grade'));
+
+    if (value > max || value < min) {
       return;
     }
 
@@ -40,11 +51,8 @@ const CustomInput = ({
         ? GradeStudentApis.updateGradeStudentByTeacher
         : GradeStudentApis.updateGradeStudentBySro;
 
-    FetchApi(api, body, null, [String(id), String(moduleId)])
-      .then((res) => {})
-      .catch((err) => {
-        toast.error('Cập nhật không thành công');
-      });
+    onSave(api, body, id, moduleId);
+    setIsChange(false);
   };
 
   const disabled = role === 'teacher' && type >= 5 && type <= 8;
@@ -86,7 +94,7 @@ const CustomInput = ({
               },
             ]}
           >
-            <Input onBlur={handleBlur} defaultValue={defaultGrade} />
+            <Input onBlur={handleBlur} onChange={() => {setIsChange(true)}} defaultValue={defaultGrade} />
           </Form.Item>
         </Form>
       )}
