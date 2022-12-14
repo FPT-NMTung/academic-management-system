@@ -9,9 +9,9 @@ import {
   Modal,
   Table,
   Loading,
-} from "@nextui-org/react";
-import classes from "./StudentDetail.module.css";
-import { useParams, useNavigate } from "react-router-dom";
+} from '@nextui-org/react';
+import classes from './StudentDetail.module.css';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   Descriptions,
   Spin,
@@ -23,30 +23,30 @@ import {
   Input,
   Menu,
   Timeline,
-} from "antd";
-import { useState, useEffect } from "react";
-import { AiFillPhone } from "react-icons/ai";
-import { MdDelete, MdPersonAdd, MdSave } from "react-icons/md";
-import { HiHome } from "react-icons/hi";
-import FetchApi from "../../../../apis/FetchApi";
-import { ManageStudentApis, ModulesApis } from "../../../../apis/ListApi";
-import ManImage from "../../../../images/3d-fluency-businessman-1.png";
-import WomanImage from "../../../../images/3d-fluency-businesswoman-1.png";
-import { FaCloudDownloadAlt, FaSyncAlt } from "react-icons/fa";
-import { RiEyeFill, RiPencilFill } from "react-icons/ri";
-import { Fragment } from "react";
-import toast from "react-hot-toast";
-import { MdMenuBook } from "react-icons/md";
-import { ImLibrary } from "react-icons/im";
-import moment from "moment";
+} from 'antd';
+import { useState, useEffect } from 'react';
+import { AiFillPhone } from 'react-icons/ai';
+import { MdDelete, MdPersonAdd, MdSave } from 'react-icons/md';
+import { HiHome } from 'react-icons/hi';
+import FetchApi from '../../../../apis/FetchApi';
+import { ManageStudentApis, ModulesApis } from '../../../../apis/ListApi';
+import ManImage from '../../../../images/3d-fluency-businessman-1.png';
+import WomanImage from '../../../../images/3d-fluency-businesswoman-1.png';
+import { FaCloudDownloadAlt, FaSyncAlt } from 'react-icons/fa';
+import { RiEyeFill, RiPencilFill } from 'react-icons/ri';
+import { Fragment } from 'react';
+import toast from 'react-hot-toast';
+import { MdMenuBook } from 'react-icons/md';
+import { ImLibrary } from 'react-icons/im';
+import moment from 'moment';
 
 const gender = {
-  1: "Nam",
-  2: "Nữ",
-  3: "Khác",
-  4: "Không xác định",
+  1: 'Nam',
+  2: 'Nữ',
+  3: 'Khác',
+  4: 'Không xác định',
 };
-const StudentDetail = () => {
+const StudentDetail = ({ role }) => {
   const [dataStudent, setDataStudent] = useState({});
   const [listAvailableClassToChange, setListAvailableClassToChange] = useState(
     []
@@ -75,12 +75,12 @@ const StudentDetail = () => {
       [`${id}`]
     )
       .then((res) => {
-        const data = res.data === null ? "" : res.data;
+        const data = res.data === null ? '' : res.data;
         setListModuleSemester(data);
         // setIsLoading(false);
       })
       .catch((err) => {
-        toast.error("Lỗi khi tải dữ liệu");
+        toast.error('Lỗi khi tải dữ liệu');
       });
   };
 
@@ -168,7 +168,7 @@ const StudentDetail = () => {
         setIsLoading(false);
       })
       .catch(() => {
-        navigate("/404");
+        navigate('/404');
       });
   };
   const getCurrentClass = () => {
@@ -179,7 +179,7 @@ const StudentDetail = () => {
         setIsLoading(false);
       })
       .catch(() => {
-        navigate("/404");
+        navigate('/404');
       });
   };
   const getAvailableClassToChange = () => {
@@ -191,7 +191,7 @@ const StudentDetail = () => {
         // console.log(res.data);
       })
       .catch(() => {
-        navigate("/404");
+        navigate('/404');
       });
   };
 
@@ -251,10 +251,10 @@ const StudentDetail = () => {
   };
   const handleSelectOption = (key) => {
     switch (key) {
-      case "edit":
+      case 'edit':
         navigate(`/sro/manage/student/${id}/update`);
         break;
-      case "change":
+      case 'change':
         handleOpenModal();
         break;
       default:
@@ -271,15 +271,15 @@ const StudentDetail = () => {
     toast.promise(
       FetchApi(ManageStudentApis.changeClass, body, null, [`${id}`]),
       {
-        loading: "Đang cập nhật...",
+        loading: 'Đang cập nhật...',
         success: (res) => {
           setIsOpenModal(false);
           getDataStudent();
 
-          return "Cập nhật thành công";
+          return 'Cập nhật thành công';
         },
         error: (err) => {
-          return "Cập nhật thất bại";
+          return 'Cập nhật thất bại';
         },
       }
     );
@@ -308,16 +308,16 @@ const StudentDetail = () => {
             onFinish={handleSubmitForm}
             form={form}
           >
-            <Form.Item name={"current_class"} label={"Lớp hiện tại"}>
+            <Form.Item name={'current_class'} label={'Lớp hiện tại'}>
               <Input disabled={true} placeholder={currentClass}></Input>
             </Form.Item>
             <Form.Item
-              name={"new_class"}
-              label={"Lớp chuyển tới"}
+              name={'new_class'}
+              label={'Lớp chuyển tới'}
               rules={[
                 {
                   required: true,
-                  message: "Hãy chọn lớp chuyển tới",
+                  message: 'Hãy chọn lớp chuyển tới',
                 },
               ]}
             >
@@ -335,15 +335,15 @@ const StudentDetail = () => {
             <Form.Item wrapperCol={{ offset: 9, span: 99 }}>
               <div
                 style={{
-                  display: "flex",
-                  gap: "10px",
+                  display: 'flex',
+                  gap: '10px',
                 }}
               >
                 <Button
                   flat
                   auto
                   css={{
-                    width: "120px",
+                    width: '120px',
                   }}
                   type="primary"
                   htmlType="submit"
@@ -367,20 +367,20 @@ const StudentDetail = () => {
             <Grid.Container
               gap={2}
               css={{
-                position: "relative",
+                position: 'relative',
               }}
             >
               <Grid
                 sm={3.5}
                 css={{
-                  display: "flex",
-                  flexDirection: "column",
-                  width: "100%",
-                  height: "fit-content",
+                  display: 'flex',
+                  flexDirection: 'column',
+                  width: '100%',
+                  height: 'fit-content',
                   // marginTop: "1rem",
                 }}
               >
-                <Card variant="bordered" css={{ marginBottom: "20px" }}>
+                <Card variant="bordered" css={{ marginBottom: '20px' }}>
                   <Card.Body>
                     <div className={classes.contantLogo}>
                       <div className={classes.logo}>
@@ -399,7 +399,7 @@ const StudentDetail = () => {
                                 ? ManImage
                                 : dataStudent.gender.id === 2
                                 ? WomanImage
-                                : ""
+                                : ''
                             }
                           />
                         )}
@@ -451,7 +451,7 @@ const StudentDetail = () => {
                   </Card.Body>
                 </Card>
 
-                <Card variant="bordered" css={{ marginBottom: "20px" }}>
+                <Card variant="bordered" css={{ marginBottom: '20px' }}>
                   <Card.Header>
                     <Grid.Container alignItems="center">
                       {/* <Grid sm={6}>
@@ -482,9 +482,9 @@ const StudentDetail = () => {
                       >
                         <Descriptions.Item
                           contentStyle={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
                           }}
                         >
                           <Text size={14} b>
@@ -494,9 +494,9 @@ const StudentDetail = () => {
                         </Descriptions.Item>
                         <Descriptions.Item
                           contentStyle={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
                           }}
                         >
                           <Text size={14} b>
@@ -507,9 +507,9 @@ const StudentDetail = () => {
 
                         <Descriptions.Item
                           contentStyle={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
                           }}
                         >
                           <Text size={14} b>
@@ -572,10 +572,10 @@ const StudentDetail = () => {
 
                         <Descriptions.Item
                           contentStyle={{
-                            display: "flex",
+                            display: 'flex',
                             // flex: 1,
-                            flexDirection: "row",
-                            justifyContent: "space-between",
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
                           }}
                         >
                           <Text
@@ -584,18 +584,18 @@ const StudentDetail = () => {
                             b
                           >
                             Địa chỉ
-                          </Text>{" "}
-                          {dataStudent.ward.prefix} {dataStudent.ward.name},{" "}
-                          {dataStudent.district.prefix}{" "}
-                          {dataStudent.district.name},{" "}
+                          </Text>{' '}
+                          {dataStudent.ward.prefix} {dataStudent.ward.name},{' '}
+                          {dataStudent.district.prefix}{' '}
+                          {dataStudent.district.name},{' '}
                           {dataStudent.province.name}
                         </Descriptions.Item>
                         <Descriptions.Item
                           contentStyle={{
-                            display: "flex",
+                            display: 'flex',
                             // flex: 1,
-                            flexDirection: "row",
-                            justifyContent: "space-between",
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
                           }}
                         >
                           <Text size={14} b>
@@ -606,9 +606,9 @@ const StudentDetail = () => {
                         </Descriptions.Item>
                         <Descriptions.Item
                           contentStyle={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
                           }}
                         >
                           <Text
@@ -637,9 +637,9 @@ const StudentDetail = () => {
                       >
                         <Descriptions.Item
                           contentStyle={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
                           }}
                         >
                           <Text size={14} b>
@@ -649,9 +649,9 @@ const StudentDetail = () => {
                         </Descriptions.Item>
                         <Descriptions.Item
                           contentStyle={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
                           }}
                         >
                           <Text size={14} b>
@@ -660,13 +660,13 @@ const StudentDetail = () => {
 
                           {new Date(
                             dataStudent.citizen_identity_card_published_date
-                          ).toLocaleDateString("vi-VN")}
+                          ).toLocaleDateString('vi-VN')}
                         </Descriptions.Item>
                         <Descriptions.Item
                           contentStyle={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
                           }}
                         >
                           <Text size={14} b>
@@ -720,27 +720,525 @@ const StudentDetail = () => {
               </Grid>
 
               <Grid sm={8.5} direction="column" css={{ rowGap: 20 }}>
-                <Tabs
-                  defaultActiveKey="1"
-                  tabBarStyle={{
-                    display: "flex",
-                    fontStyle: "15px",
-                    justifycontent: "space-between",
-                    border: "solid 1px #e8e8e8",
-                    background: "#fff",
-                    borderRadius: "15px",
-                    padding: "2px 14px",
-                  }}
-                  type="line"
-                  size="large"
-                  // onChange={() => {
-                  //   getModuleSemester();
-                  // }}
+                {role === 'sro' && (
+                  <Tabs
+                    defaultActiveKey="1"
+                    tabBarStyle={{
+                      display: 'flex',
+                      fontStyle: '15px',
+                      justifycontent: 'space-between',
+                      border: 'solid 1px #e8e8e8',
+                      background: '#fff',
+                      borderRadius: '15px',
+                      padding: '2px 14px',
+                    }}
+                    type="line"
+                    size="large"
+                    // onChange={() => {
+                    //   getModuleSemester();
+                    // }}
 
-                  // closable={false}
-                >
+                    // closable={false}
+                  >
+                    <items tab="Chi tiết học viên" key="1">
+                      <Card variant="bordered" css={{ marginBottom: '20px' }}>
+                        <Card.Body>
+                          {/* <Button
+                        css={{ position: "absolute", top: 10, right: 12 }}
+                        flat
+                        auto
+                        type="primary"
+                        onPress={() => {
+                          navigate(`/sro/manage/student/${id}/update`);
+                        }}
+                      >
+                        Chỉnh sửa thông tin
+                      </Button> */}
+                          <Descriptions
+                            bordered
+                            title="Thông tin bổ sung"
+                            column={{ md: 2, lg: 2, xl: 2, xxl: 2 }}
+                            // extra={
+
+                            // }
+                          >
+                            {/* <Descriptions.Item label="Họ và tên đệm" labelStyle={{width:"190px"}}>
+                              {dataStudent.first_name}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Tên">
+                              {dataStudent.last_name}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Mã số học viên">
+                              {dataStudent.enroll_number}
+                            </Descriptions.Item> */}
+                            <Descriptions.Item label="Số điện thoại">
+                              {dataStudent.mobile_phone}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Giới tính">
+                              {gender[dataStudent.gender.id]}
+                            </Descriptions.Item>
+                            <Descriptions.Item
+                              label="Địa chỉ thường trú"
+                              span={2}
+                            >
+                              {dataStudent.ward.prefix} {dataStudent.ward.name},{' '}
+                              {dataStudent.district.prefix}{' '}
+                              {dataStudent.district.name},{' '}
+                              {dataStudent.province.name}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Địa chỉ cụ thể" span={2}>
+                              {dataStudent.contact_address},{' '}
+                              {dataStudent.ward.prefix} {dataStudent.ward.name},{' '}
+                              {dataStudent.district.prefix}{' '}
+                              {dataStudent.district.name},{' '}
+                              {dataStudent.province.name}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Trạng thái">
+                              {renderStatusStudent(dataStudent.status)}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Ngày sinh">
+                              {new Date(
+                                dataStudent.birthday
+                              ).toLocaleDateString('vi-VN')}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Email cá nhân" span={1}>
+                              {dataStudent.email}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Email tổ chức" span={1}>
+                              {dataStudent.email_organization}
+                            </Descriptions.Item>
+                          </Descriptions>
+                        </Card.Body>
+                      </Card>
+
+                      <Card variant="bordered" css={{ marginBottom: '20px' }}>
+                        <Card.Body>
+                          <Descriptions
+                            bordered
+                            title="Thông tin phụ huynh"
+                            column={{ md: 2, lg: 2, xl: 2, xxl: 2 }}
+                            // extra={
+
+                            // }
+                          >
+                            <Descriptions.Item
+                              label="Họ và tên phụ huynh"
+                              labelStyle={{ width: '190px' }}
+                            >
+                              {dataStudent.parental_name}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Số điện thoại">
+                              {dataStudent.parental_phone}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Quan hệ">
+                              {dataStudent.parental_relationship}
+                            </Descriptions.Item>
+                          </Descriptions>
+                        </Card.Body>
+                      </Card>
+                      <Card variant="bordered" css={{ marginBottom: '20px' }}>
+                        <Card.Body>
+                          <Descriptions
+                            bordered
+                            title="Thông tin liên quan đến học viện"
+                            column={{ md: 2, lg: 2, xl: 2, xxl: 2 }}
+                            // extra={
+
+                            // }
+                          >
+                            <Descriptions.Item
+                              label="Học bổng"
+                              labelStyle={{ width: '190px' }}
+                            >
+                              {dataStudent.promotion}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Kế hoạch phí">
+                              {dataStudent.fee_plan}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Hồ Sơ">
+                              <a href={dataStudent.application_document}>
+                                Link hồ sơ
+                              </a>
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Ngày nộp">
+                              {new Date(
+                                dataStudent.application_date
+                              ).toLocaleDateString('vi-VN')}
+                            </Descriptions.Item>
+                          </Descriptions>
+                        </Card.Body>
+                      </Card>
+                      <Card variant="bordered" css={{ marginBottom: '20px' }}>
+                        <Card.Body>
+                          <Descriptions
+                            bordered
+                            title="Học vấn và công việc"
+                            column={{ md: 2, lg: 2, xl: 2, xxl: 2 }}
+                            // extra={
+
+                            // }
+                          >
+                            <Descriptions.Item
+                              label="Trường cấp 3"
+                              labelStyle={{ width: '190px' }}
+                            >
+                              {dataStudent.high_school}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Trường đại học">
+                              {dataStudent.university}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Công ty">
+                              {dataStudent.working_company}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Địa chỉ công ty">
+                              {dataStudent.company_address}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Chức vụ">
+                              {dataStudent.company_position}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Mức lương">
+                              {dataStudent.company_salary
+                                ? String(dataStudent.company_salary).replace(
+                                    /\B(?=(\d{3})+(?!\d))/g,
+                                    ','
+                                  )
+                                : 0}{' '}
+                              VNĐ
+                            </Descriptions.Item>
+                          </Descriptions>
+                        </Card.Body>
+                      </Card>
+                    </items>
+
+                    <items className="" tab="Điểm số học viên" key="222222">
+                      <Grid.Container gap={1} justify={'space-between'}>
+                        <Grid xs={5}>
+                          <Card
+                            variant="bordered"
+                            css={{
+                              height: 'fit-content',
+                            }}
+                          >
+                            <Card.Header>
+                              <Text
+                                p
+                                b
+                                size={14}
+                                css={{
+                                  width: '100%',
+                                  textAlign: 'center',
+                                  marginBottom: '12px',
+                                }}
+                              >
+                                Chọn môn học
+                              </Text>
+                            </Card.Header>
+                            <Card.Divider />
+                            <Card.Body>
+                              {isLoading ? (
+                                <Loading />
+                              ) : (
+                                <div style={{ color: 'black !important' }}>
+                                  <Menu
+                                    mode="inline"
+                                    // defaultOpenKeys={["1"]}
+                                    style={{ width: '100%' }}
+                                  >
+                                    {listModuleSemester.map((item, index) => (
+                                      <Fragment key={index}>
+                                        <Menu.SubMenu
+                                          style={{ color: 'black!important' }}
+                                          title={item.name}
+                                          key={item.id}
+                                          rootStyle={{ width: '100%' }}
+                                          icon={<ImLibrary />}
+                                        >
+                                          {item.modules.map(
+                                            (modules, index) => (
+                                              <Menu.Item
+                                                key={
+                                                  modules.id + modules.class.id
+                                                }
+                                                rootStyle={{ width: '100%' }}
+                                                onClick={() => {
+                                                  onSelectTree(
+                                                    modules.id,
+                                                    modules.class.id
+                                                  );
+                                                  getInformationModule(
+                                                    modules.id
+                                                  );
+                                                }}
+                                                icon={<MdMenuBook />}
+                                              >
+                                                <span>
+                                                  {modules.name +
+                                                    ' ( ' +
+                                                    modules.class.name +
+                                                    ' )'}
+                                                </span>
+                                              </Menu.Item>
+                                            )
+                                          )}
+                                        </Menu.SubMenu>
+                                      </Fragment>
+                                    ))}
+                                  </Menu>
+                                </div>
+                              )}
+                            </Card.Body>
+                          </Card>
+                        </Grid>
+                        <Grid xs={7}>
+                          <Card variant="bordered">
+                            <Card.Header>
+                              <Text
+                                p
+                                b
+                                size={14}
+                                css={{
+                                  width: '100%',
+                                  textAlign: 'center',
+                                }}
+                              >
+                                Bảng điểm
+                              </Text>
+                            </Card.Header>
+                            <Spacer y={0.6} />
+                            <Card.Divider />
+                            {
+                              <Card.Body>
+                                {informationModule?.max_practical_grade && (
+                                  <Text
+                                    p
+                                    i
+                                    size={12}
+                                    css={{
+                                      paddingLeft: '10px',
+                                    }}
+                                  >
+                                    * Điểm tối đa của Practical exam:{' '}
+                                    {informationModule?.max_practical_grade}
+                                  </Text>
+                                )}
+                                {informationModule?.max_theory_grade && (
+                                  <Text
+                                    p
+                                    i
+                                    size={12}
+                                    css={{
+                                      paddingLeft: '10px',
+                                    }}
+                                  >
+                                    * Điểm tối đa của Theory exam:{' '}
+                                    {informationModule?.max_theory_grade}
+                                  </Text>
+                                )}
+                                {listGrade.length > 0 && (
+                                  <Fragment>
+                                    {/* {" "}
+                  <Text
+                    b
+                    
+                    size={18}
+                    css={{
+                      paddingLeft: "10px",
+                      marginTop: "10px",
+                    }}
+                  >
+                    {" "}
+                    <Badge color="success">Thực hành</Badge> 
+                  </Text> */}
+                                    <Table
+                                      aria-label=""
+                                      css={{
+                                        height: 'auto',
+                                        minWidth: '100%',
+                                      }}
+                                      lined
+                                      headerLined
+                                      shadow={false}
+                                    >
+                                      <Table.Header>
+                                        <Table.Column width={200}>
+                                          Loại điểm thành phần
+                                        </Table.Column>
+                                        <Table.Column width={100}>
+                                          Trọng số
+                                        </Table.Column>
+                                        <Table.Column width={50}>
+                                          Điểm
+                                        </Table.Column>
+                                      </Table.Header>
+                                      <Table.Body>
+                                        {listGrade.map((item, index) => (
+                                          <Table.Row key={index}>
+                                            <Table.Cell>
+                                              {item.grade_item.name}
+                                            </Table.Cell>
+                                            <Table.Cell>
+                                              {item.total_weight ? (
+                                                <Badge color="warning">
+                                                  {Math.round(
+                                                    (item.total_weight /
+                                                      item.quantity_grade_item) *
+                                                      100
+                                                  ) / 100}
+                                                  %
+                                                </Badge>
+                                              ) : (
+                                                ''
+                                              )}
+                                            </Table.Cell>
+                                            <Table.Cell b>
+                                              {item.grade_item.grade !== null
+                                                ? Math.round(
+                                                    item.grade_item?.grade * 100
+                                                  ) / 100
+                                                : ' '}
+                                            </Table.Cell>
+                                          </Table.Row>
+                                        ))}
+                                      </Table.Body>
+                                    </Table>
+                                  </Fragment>
+                                )}
+                                {isShowAveragePracticeGrade &&
+                                  listGrade.length > 0 &&
+                                  averagePracticeGrade !== 0 && (
+                                    <div>
+                                      <Text
+                                        b
+                                        i
+                                        size={18}
+                                        css={{
+                                          paddingLeft: '10px',
+                                        }}
+                                      >
+                                        Tổng điểm thực hành:{' '}
+                                        <Badge color="success">
+                                          {Math.round(
+                                            averagePracticeGrade * 100
+                                          ) / 100}{' '}
+                                          {informationModule?.max_practical_grade ===
+                                          null
+                                            ? ''
+                                            : '/ 10'}
+                                        </Badge>
+                                      </Text>
+                                      <Text
+                                        p
+                                        i
+                                        size={12}
+                                        css={{ marginRight: '46px' }}
+                                      >
+                                        (Đã quy về hệ số 10)
+                                      </Text>
+                                      {/* {averagePracticeGrade >= 5 ? (
+                                      <Badge size="lg" color="success">Đạt</Badge>
+                                    ) : (
+                                      <Badge size="lg" color="error">Không đạt</Badge>
+                                    )} */}
+                                    </div>
+                                  )}
+                                {listGradeFinal.length > 0 && (
+                                  <Card
+                                    variant="bordered"
+                                    css={{
+                                      minHeight: '140px',
+                                      borderStyle: 'dashed',
+                                      marginTop: '12px',
+                                      borderColor: '#17c964',
+                                    }}
+                                  >
+                                    <Table
+                                      aria-label=""
+                                      css={{
+                                        height: 'auto',
+                                        minWidth: '100%',
+                                      }}
+                                      lined
+                                      headerLined
+                                      shadow={false}
+                                    >
+                                      <Table.Header>
+                                        <Table.Column width={200}>
+                                          Điểm cuối kỳ lý thuyết
+                                        </Table.Column>
+                                        <Table.Column width={50}>
+                                          Điểm
+                                        </Table.Column>
+                                      </Table.Header>
+                                      <Table.Body>
+                                        {listGradeFinal.map((item, index) => (
+                                          <Table.Row key={index}>
+                                            <Table.Cell>
+                                              {item.grade_item.name}
+                                            </Table.Cell>
+                                            {/* <Table.Cell>
+                            {item.total_weight !== null ? (
+                              <Badge color="warning">
+                                {Math.round(
+                                  (item.total_weight /
+                                    item.quantity_grade_item) *
+                                    10
+                                ) / 10}
+                                %
+                              </Badge>
+                            ) : (
+                              ''
+                            )}
+                          </Table.Cell> */}
+                                            <Table.Cell b>
+                                              {item.grade_item.grade
+                                                ? Math.round(
+                                                    item.grade_item?.grade * 100
+                                                  ) / 100
+                                                : ' '}
+                                            </Table.Cell>
+                                          </Table.Row>
+                                        ))}
+                                      </Table.Body>
+                                    </Table>
+                                  </Card>
+                                )}
+                              </Card.Body>
+                            }
+                          </Card>
+                        </Grid>
+                      </Grid.Container>
+                    </items>
+                    <items tab="Thông tin khác " key="333333">
+                      <Card variant="bordered" css={{ marginBottom: '20px' }}>
+                        <Card.Header>
+                          <Text css={{ fontWeight: '700' }} size={16}>
+                            Các lớp đã học
+                          </Text>
+                        </Card.Header>
+                        <Card.Body>
+                          <Timeline>
+                            {dataStudent.old_class.map((item, index) => {
+                              return (
+                                <Timeline.Item color="green">
+                                  {item.class_name} {'('}
+                                  {moment(item.start_date).format('DD-MM-YYYY')}
+                                  {')'}
+                                </Timeline.Item>
+                              );
+                            })}
+                          </Timeline>
+
+                          {/* // <Descriptions.Item >
+                          //   {dataStudent.old_class[0].class_name}
+                          // </Descriptions.Item> */}
+                        </Card.Body>
+                      </Card>
+                    </items>
+                  </Tabs>
+                )}
+                {role === 'teacher' && (
                   <items tab="Chi tiết học viên" key="1">
-                    <Card variant="bordered" css={{ marginBottom: "20px" }}>
+                    <Card variant="bordered" css={{ marginBottom: '20px' }}>
                       <Card.Body>
                         {/* <Button
                         css={{ position: "absolute", top: 10, right: 12 }}
@@ -780,16 +1278,16 @@ const StudentDetail = () => {
                             label="Địa chỉ thường trú"
                             span={2}
                           >
-                            {dataStudent.ward.prefix} {dataStudent.ward.name},{" "}
-                            {dataStudent.district.prefix}{" "}
-                            {dataStudent.district.name},{" "}
+                            {dataStudent.ward.prefix} {dataStudent.ward.name},{' '}
+                            {dataStudent.district.prefix}{' '}
+                            {dataStudent.district.name},{' '}
                             {dataStudent.province.name}
                           </Descriptions.Item>
                           <Descriptions.Item label="Địa chỉ cụ thể" span={2}>
-                            {dataStudent.contact_address},{" "}
-                            {dataStudent.ward.prefix} {dataStudent.ward.name},{" "}
-                            {dataStudent.district.prefix}{" "}
-                            {dataStudent.district.name},{" "}
+                            {dataStudent.contact_address},{' '}
+                            {dataStudent.ward.prefix} {dataStudent.ward.name},{' '}
+                            {dataStudent.district.prefix}{' '}
+                            {dataStudent.district.name},{' '}
                             {dataStudent.province.name}
                           </Descriptions.Item>
                           <Descriptions.Item label="Trạng thái">
@@ -797,7 +1295,7 @@ const StudentDetail = () => {
                           </Descriptions.Item>
                           <Descriptions.Item label="Ngày sinh">
                             {new Date(dataStudent.birthday).toLocaleDateString(
-                              "vi-VN"
+                              'vi-VN'
                             )}
                           </Descriptions.Item>
                           <Descriptions.Item label="Email cá nhân" span={1}>
@@ -810,7 +1308,7 @@ const StudentDetail = () => {
                       </Card.Body>
                     </Card>
 
-                    <Card variant="bordered" css={{ marginBottom: "20px" }}>
+                    <Card variant="bordered" css={{ marginBottom: '20px' }}>
                       <Card.Body>
                         <Descriptions
                           bordered
@@ -822,7 +1320,7 @@ const StudentDetail = () => {
                         >
                           <Descriptions.Item
                             label="Họ và tên phụ huynh"
-                            labelStyle={{ width: "190px" }}
+                            labelStyle={{ width: '190px' }}
                           >
                             {dataStudent.parental_name}
                           </Descriptions.Item>
@@ -835,7 +1333,7 @@ const StudentDetail = () => {
                         </Descriptions>
                       </Card.Body>
                     </Card>
-                    <Card variant="bordered" css={{ marginBottom: "20px" }}>
+                    <Card variant="bordered" css={{ marginBottom: '20px' }}>
                       <Card.Body>
                         <Descriptions
                           bordered
@@ -847,7 +1345,7 @@ const StudentDetail = () => {
                         >
                           <Descriptions.Item
                             label="Học bổng"
-                            labelStyle={{ width: "190px" }}
+                            labelStyle={{ width: '190px' }}
                           >
                             {dataStudent.promotion}
                           </Descriptions.Item>
@@ -862,12 +1360,12 @@ const StudentDetail = () => {
                           <Descriptions.Item label="Ngày nộp">
                             {new Date(
                               dataStudent.application_date
-                            ).toLocaleDateString("vi-VN")}
+                            ).toLocaleDateString('vi-VN')}
                           </Descriptions.Item>
                         </Descriptions>
                       </Card.Body>
                     </Card>
-                    <Card variant="bordered" css={{ marginBottom: "20px" }}>
+                    <Card variant="bordered" css={{ marginBottom: '20px' }}>
                       <Card.Body>
                         <Descriptions
                           bordered
@@ -879,7 +1377,7 @@ const StudentDetail = () => {
                         >
                           <Descriptions.Item
                             label="Trường cấp 3"
-                            labelStyle={{ width: "190px" }}
+                            labelStyle={{ width: '190px' }}
                           >
                             {dataStudent.high_school}
                           </Descriptions.Item>
@@ -899,341 +1397,19 @@ const StudentDetail = () => {
                             {dataStudent.company_salary
                               ? String(dataStudent.company_salary).replace(
                                   /\B(?=(\d{3})+(?!\d))/g,
-                                  ","
+                                  ','
                                 )
-                              : 0}{" "}
+                              : 0}{' '}
                             VNĐ
                           </Descriptions.Item>
                         </Descriptions>
                       </Card.Body>
                     </Card>
                   </items>
-
-                  <items className="" tab="Điểm số học viên" key="222222">
-                    <Grid.Container gap={1} justify={"space-between"}>
-                      <Grid xs={5}>
-                        <Card
-                          variant="bordered"
-                          css={{
-                            height: "fit-content",
-                          }}
-                        >
-                          <Card.Header>
-                            <Text
-                              p
-                              b
-                              size={14}
-                              css={{
-                                width: "100%",
-                                textAlign: "center",
-                                marginBottom: "12px",
-                              }}
-                            >
-                              Chọn môn học
-                            </Text>
-                          </Card.Header>
-                          <Card.Divider />
-                          <Card.Body>
-                            {isLoading ? (
-                              <Loading />
-                            ) : (
-                              <div style={{ color: "black !important" }}>
-                                <Menu
-                                  mode="inline"
-                                  // defaultOpenKeys={["1"]}
-                                  style={{ width: "100%" }}
-                                >
-                                  {listModuleSemester.map((item, index) => (
-                                    <Fragment key={index}>
-                                      <Menu.SubMenu
-                                        style={{ color: "black!important" }}
-                                        title={item.name}
-                                        key={item.id}
-                                        rootStyle={{ width: "100%" }}
-                                        icon={<ImLibrary />}
-                                      >
-                                        {item.modules.map((modules, index) => (
-                                          <Menu.Item
-                                            key={modules.id + modules.class.id}
-                                            rootStyle={{ width: "100%" }}
-                                            onClick={() => {
-                                              onSelectTree(
-                                                modules.id,
-                                                modules.class.id
-                                              );
-                                              getInformationModule(modules.id);
-                                            }}
-                                            icon={<MdMenuBook />}
-                                          >
-                                            <span>
-                                              {modules.name +
-                                                " ( " +
-                                                modules.class.name +
-                                                " )"}
-                                            </span>
-                                          </Menu.Item>
-                                        ))}
-                                      </Menu.SubMenu>
-                                    </Fragment>
-                                  ))}
-                                </Menu>
-                              </div>
-                            )}
-                          </Card.Body>
-                        </Card>
-                      </Grid>
-                      <Grid xs={7}>
-                        <Card variant="bordered">
-                          <Card.Header>
-                            <Text
-                              p
-                              b
-                              size={14}
-                              css={{
-                                width: "100%",
-                                textAlign: "center",
-                              }}
-                            >
-                              Bảng điểm
-                            </Text>
-                          </Card.Header>
-                          <Spacer y={0.6} />
-                          <Card.Divider />
-                          {
-                            <Card.Body>
-                              {informationModule?.max_practical_grade && (
-                                <Text
-                                  p
-                                  i
-                                  size={12}
-                                  css={{
-                                    paddingLeft: "10px",
-                                  }}
-                                >
-                                  * Điểm tối đa của Practical exam:{" "}
-                                  {informationModule?.max_practical_grade}
-                                </Text>
-                              )}
-                              {informationModule?.max_theory_grade && (
-                                <Text
-                                  p
-                                  i
-                                  size={12}
-                                  css={{
-                                    paddingLeft: "10px",
-                                  }}
-                                >
-                                  * Điểm tối đa của Theory exam:{" "}
-                                  {informationModule?.max_theory_grade}
-                                </Text>
-                              )}
-                              {listGrade.length > 0 && (
-                                <Fragment>
-                                  {/* {" "}
-                  <Text
-                    b
-                    
-                    size={18}
-                    css={{
-                      paddingLeft: "10px",
-                      marginTop: "10px",
-                    }}
-                  >
-                    {" "}
-                    <Badge color="success">Thực hành</Badge> 
-                  </Text> */}
-                                  <Table
-                                    aria-label=""
-                                    css={{
-                                      height: "auto",
-                                      minWidth: "100%",
-                                    }}
-                                    lined
-                                    headerLined
-                                    shadow={false}
-                                  >
-                                    <Table.Header>
-                                      <Table.Column width={200}>
-                                        Loại điểm thành phần
-                                      </Table.Column>
-                                      <Table.Column width={100}>
-                                        Trọng số
-                                      </Table.Column>
-                                      <Table.Column width={50}>
-                                        Điểm
-                                      </Table.Column>
-                                    </Table.Header>
-                                    <Table.Body>
-                                      {listGrade.map((item, index) => (
-                                        <Table.Row key={index}>
-                                          <Table.Cell>
-                                            {item.grade_item.name}
-                                          </Table.Cell>
-                                          <Table.Cell>
-                                            {item.total_weight ? (
-                                              <Badge color="warning">
-                                                {Math.round(
-                                                  (item.total_weight /
-                                                    item.quantity_grade_item) *
-                                                    100
-                                                ) / 100}
-                                                %
-                                              </Badge>
-                                            ) : (
-                                              ""
-                                            )}
-                                          </Table.Cell>
-                                          <Table.Cell b>
-                                            {item.grade_item.grade !== null
-                                              ? Math.round(
-                                                  item.grade_item?.grade * 100
-                                                ) / 100
-                                              : " "}
-                                          </Table.Cell>
-                                        </Table.Row>
-                                      ))}
-                                    </Table.Body>
-                                  </Table>
-                                </Fragment>
-                              )}
-                              {isShowAveragePracticeGrade &&
-                                listGrade.length > 0 &&
-                                averagePracticeGrade !== 0 && (
-                                  <div>
-                                    <Text
-                                      b
-                                      i
-                                      size={18}
-                                      css={{
-                                        paddingLeft: "10px",
-                                      }}
-                                    >
-                                      Tổng điểm thực hành:{" "}
-                                      <Badge color="success">
-                                        {Math.round(
-                                          averagePracticeGrade * 100
-                                        ) / 100}{" "}
-                                        {informationModule?.max_practical_grade ===
-                                        null
-                                          ? ""
-                                          : "/ 10"}
-                                      </Badge>
-                                    </Text>
-                                    <Text
-                                      p
-                                      i
-                                      size={12}
-                                      css={{ marginRight: "46px" }}
-                                    >
-                                      (Đã quy về hệ số 10)
-                                    </Text>
-                                    {/* {averagePracticeGrade >= 5 ? (
-                                      <Badge size="lg" color="success">Đạt</Badge>
-                                    ) : (
-                                      <Badge size="lg" color="error">Không đạt</Badge>
-                                    )} */}
-                                  </div>
-                                )}
-                              {listGradeFinal.length > 0 && (
-                                <Card
-                                  variant="bordered"
-                                  css={{
-                                    minHeight: "140px",
-                                    borderStyle: "dashed",
-                                    marginTop: "12px",
-                                    borderColor: "#17c964",
-                                  }}
-                                >
-                                  <Table
-                                    aria-label=""
-                                    css={{
-                                      height: "auto",
-                                      minWidth: "100%",
-                                    }}
-                                    lined
-                                    headerLined
-                                    shadow={false}
-                                  >
-                                    <Table.Header>
-                                      <Table.Column width={200}>
-                                        Điểm cuối kỳ lý thuyết
-                                      </Table.Column>
-                                      <Table.Column width={50}>
-                                        Điểm
-                                      </Table.Column>
-                                    </Table.Header>
-                                    <Table.Body>
-                                      {listGradeFinal.map((item, index) => (
-                                        <Table.Row key={index}>
-                                          <Table.Cell>
-                                            {item.grade_item.name}
-                                          </Table.Cell>
-                                          {/* <Table.Cell>
-                            {item.total_weight !== null ? (
-                              <Badge color="warning">
-                                {Math.round(
-                                  (item.total_weight /
-                                    item.quantity_grade_item) *
-                                    10
-                                ) / 10}
-                                %
-                              </Badge>
-                            ) : (
-                              ''
-                            )}
-                          </Table.Cell> */}
-                                          <Table.Cell b>
-                                            {item.grade_item.grade
-                                              ? Math.round(
-                                                  item.grade_item?.grade * 100
-                                                ) / 100
-                                              : " "}
-                                          </Table.Cell>
-                                        </Table.Row>
-                                      ))}
-                                    </Table.Body>
-                                  </Table>
-                                </Card>
-                              )}
-                            </Card.Body>
-                          }
-                        </Card>
-                      </Grid>
-                    </Grid.Container>
-                  </items>
-                  <items tab="Thông tin khác " key="333333">
-                    <Card variant="bordered" css={{ marginBottom: "20px" }}>
-                      <Card.Header>
-                        <Text css={{ fontWeight: "700" }} size={16}>
-                          Các lớp đã học
-                        </Text>
-                      </Card.Header>
-                      <Card.Body>
-                        <Timeline>
-                          {dataStudent.old_class.map((item, index) => {
-                            return (
-                              <Timeline.Item
-                                color="green"
-
-                              >
-                                {item.class_name} {"("}
-                                {moment(item.start_date).format("DD-MM-YYYY")}
-                                {")"}
-                              </Timeline.Item>
-                            );
-                          })}
-                        </Timeline>
-
-                        {/* // <Descriptions.Item >
-                          //   {dataStudent.old_class[0].class_name}
-                          // </Descriptions.Item> */}
-                      </Card.Body>
-                    </Card>
-                  </items>
-                </Tabs>
+                )}
               </Grid>
-              <Grid xs={4} css={{ position: "absolute", right: 24, top: 24 }}>
-                <Dropdown>
+              <Grid xs={4} css={{ position: 'absolute', right: 24, top: 24 }}>
+                {role === 'sro' && <Dropdown>
                   <Dropdown.Button flat color="secondary">
                     Chức năng
                   </Dropdown.Button>
@@ -1241,14 +1417,14 @@ const StudentDetail = () => {
                     onAction={handleSelectOption}
                     color="secondary"
                     aria-label="Actions"
-                    css={{ $$dropdownMenuWidth: "340px" }}
+                    css={{ $$dropdownMenuWidth: '340px' }}
                   >
                     <Dropdown.Section title="Cơ bản">
                       <Dropdown.Item
                         key="edit"
                         description="Chỉnh sửa thông tin học viên"
                         icon={<RiPencilFill />}
-                        color={"primary"}
+                        color={'primary'}
                       >
                         Chỉnh sửa
                       </Dropdown.Item>
@@ -1258,26 +1434,24 @@ const StudentDetail = () => {
                             key="change"
                             description="Chuyển lớp học viên"
                             icon={<FaSyncAlt />}
-                            color={"warning"}
+                            color={'warning'}
                           >
                             Chuyển lớp
                           </Dropdown.Item>
                         )}
                     </Dropdown.Section>
-
                     {/* <Dropdown.Section title="Nguy hiểm">
-                          <Dropdown.Item
-                            key="clear"
-                            color={'error'}
-                            description="Xóa học viên"
-                            icon={<MdDelete />}
-                          >
-                            Xoá
-                          </Dropdown.Item>
-                        </Dropdown.Section>
-              */}
+                      <Dropdown.Item
+                        key="clear"
+                        color={'error'}
+                        description="Xóa học viên"
+                        icon={<MdDelete />}
+                      >
+                        Xoá
+                      </Dropdown.Item>
+                    </Dropdown.Section> */}
                   </Dropdown.Menu>
-                </Dropdown>
+                </Dropdown>}
               </Grid>
             </Grid.Container>
           )}
