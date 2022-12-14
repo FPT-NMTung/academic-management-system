@@ -42,7 +42,7 @@ public class StudentController : ControllerBase
     // get all students
     [HttpGet]
     [Route("api/students")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult GetStudents()
     {
         var students = GetStudentsInThisCenterByContext();
@@ -54,7 +54,7 @@ public class StudentController : ControllerBase
     // search all students
     [HttpGet]
     [Route("api/students/search")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult SearchAllStudents([FromQuery] string? courseCode, [FromQuery] string? studentName,
         [FromQuery] string? enrollNumber, [FromQuery] string? className, [FromQuery] string? email,
         [FromQuery] string? emailOrganization)
@@ -121,7 +121,7 @@ public class StudentController : ControllerBase
     // get students by id
     [HttpGet]
     [Route("api/students/{id:int}")]
-    [Authorize(Roles = "admin, sro, teacher")]
+    [Authorize(Roles = "sro, teacher")]
     public IActionResult GetStudentById(int id)
     {
         var student = GetAllStudentsInThisCenterByContext().FirstOrDefault(s => s.UserId == id);
@@ -137,7 +137,7 @@ public class StudentController : ControllerBase
     // update student information
     [HttpPut]
     [Route("api/students/{id:int}")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult UpdateStudent(int id, [FromBody] UpdateStudentRequest request)
     {
         var user = _context.Users
@@ -500,7 +500,7 @@ public class StudentController : ControllerBase
     // get class of student
     [HttpGet]
     [Route("api/students/{id:int}/classes")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult GetStudentCurrentClasses(int id)
     {
         var student = GetStudentsInThisCenterByContext().FirstOrDefault(s => s.UserId == id);
@@ -523,7 +523,7 @@ public class StudentController : ControllerBase
     // get list class that student can move to
     [HttpGet]
     [Route("api/students/{id:int}/classes/available-to-change")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult GetStudentAvailableClasses(int id)
     {
         var student = GetStudentsInThisCenterByContext().FirstOrDefault(s => s.UserId == id);
@@ -626,7 +626,7 @@ public class StudentController : ControllerBase
     // move student to other class
     [HttpPut]
     [Route("api/students/{id:int}/change-class")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult ChangeClass(int id, [FromBody] ChangeClassStudentRequest request)
     {
         var student = _context.Students
@@ -731,7 +731,7 @@ public class StudentController : ControllerBase
     // change active student
     [HttpPatch]
     [Route("api/students/{id:int}/change-active")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult ChangeActivateStudent(int id)
     {
         var student = _context.Students

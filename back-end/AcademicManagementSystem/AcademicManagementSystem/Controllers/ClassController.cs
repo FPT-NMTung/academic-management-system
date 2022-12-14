@@ -451,7 +451,7 @@ public class ClassController : ControllerBase
     // import student from excel file
     [HttpPost]
     [Route("api/classes/{id:int}/students-from-excel")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public ActionResult ImportStudentFromExcel(int id)
     {
         //is class exists
@@ -1091,7 +1091,7 @@ public class ClassController : ControllerBase
     // export students in class
     [HttpGet]
     [Route("api/classes/{id:int}/export-students")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult DownloadStudents(int id)
     {
         // get class by id
@@ -1271,7 +1271,7 @@ public class ClassController : ControllerBase
     // add new student to class
     [HttpPost]
     [Route("api/classes/{id:int}/students")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult AddStudentToClass(int id, [FromBody] AddStudentToClassRequest request)
     {
         //is class exists
@@ -1673,7 +1673,7 @@ public class ClassController : ControllerBase
     // save student from draft
     [HttpPatch]
     [Route("api/classes/{id:int}/students")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult SaveStudentsToClassFromDraft(int id)
     {
         var existedClass = _context.Classes.Any(c => c.Id == id);
@@ -1709,7 +1709,7 @@ public class ClassController : ControllerBase
     // delete draft student
     [HttpDelete]
     [Route("api/classes/{id:int}/students-draft")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult DeleteDraftStudents(int id)
     {
         var existedClass = _context.Classes.Any(c => c.Id == id);
@@ -1754,7 +1754,7 @@ public class ClassController : ControllerBase
     // get students in class
     [HttpGet]
     [Route("api/classes/{id:int}/students")]
-    [Authorize(Roles = "admin, sro, teacher")]
+    [Authorize(Roles = "sro, teacher")]
     public IActionResult GetStudentsInClass(int id)
     {
         // is class exist
@@ -1772,7 +1772,7 @@ public class ClassController : ControllerBase
     // get undraft students in class
     [HttpGet]
     [Route("api/classes/{id:int}/un-draft-students")]
-    [Authorize(Roles = "admin, teacher")]
+    [Authorize(Roles = "teacher")]
     public IActionResult GetUnDraftStudentsInClass(int id)
     {
         // is class exist
@@ -1884,7 +1884,7 @@ public class ClassController : ControllerBase
 
     [HttpGet]
     [Route("api/classes/{id:int}/number-of-students")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult GetNumberOfStudentsInClass(int id)
     {
         var existedClass = _context.Classes
@@ -1903,7 +1903,7 @@ public class ClassController : ControllerBase
     // get list class can merge
     [HttpGet]
     [Route("api/classes/{id:int}/available-to-merge")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult GetAvailableClassesToMerge(int id)
     {
         var currentClass = GetAllClassesInThisCenterByContext()
@@ -1921,7 +1921,7 @@ public class ClassController : ControllerBase
     // merge 1 class in to this class
     [HttpPut]
     [Route("api/classes/{id:int}/merge")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult MergeClass(int id, [FromBody] MergeClassRequest request)
     {
         var firstClass = _context.Classes
@@ -2041,7 +2041,7 @@ public class ClassController : ControllerBase
     // merge class 2
     [HttpPut]
     [Route("api/classes/merge")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult MergeClass2([FromBody] MergeClassRequest2 request)
     {
         var userId = Int32.Parse(_userService.GetUserId());
@@ -2396,7 +2396,7 @@ public class ClassController : ControllerBase
     // download template
     [HttpGet]
     [Route("api/classes/download-template-import-students")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult DownloadTemplateStudents()
     {
         // get location of file Template1.xlsx
