@@ -72,6 +72,8 @@ const TeacherInfo = () => {
   const [passRateAllModule, setPassRateAllModule] = useState(0);
   const [passRateByModule, setPassRateByModule] = useState(0);
   const [passRateByClass, setPassRateByClass] = useState(0);
+  const [listClassHours, setListClassHours] = useState([]);
+  const [totalHours, setTotalHours] = useState(0);
 
   const [form] = Form.useForm();
 
@@ -242,7 +244,7 @@ const TeacherInfo = () => {
           passRateAllModule === "Infinity" ||
           passRateAllModule === "undefined" ||
           passRateAllModule === "null" ||
-          isNaN(passRateAllModule) 
+          isNaN(passRateAllModule)
         ) {
           setPassRateAllModule(0);
         } else {
@@ -294,12 +296,43 @@ const TeacherInfo = () => {
         toast.error("Lỗi lấy tỉ lệ qua môn giáo viên theo môn học và lớp học");
       });
   };
+  const getListClassHoursByTeacherId = () => {
+    FetchApi(ManageTeacherApis.getListClassHoursByTeacherId, null, null, [
+      `${id}`,
+    ])
+      .then((res) => {
+        const data = res.data === null ? "" : res.data;
+        setListClassHours(data);
+      })
+      .catch(() => {
+        toast.error("Lỗi lấy danh sách lớp học theo giáo viên");
+      });
+  };
+  const getTotalTeachingHoursOfATeacher = () => {
+    const classid = form.getFieldValue("classhours");
+    FetchApi(ManageTeacherApis.getTotalTeachingHoursOfATeacher, null, null, [
+      `${id}`,
+      `${classid}`,
+    ])
+      .then((res) => {
+        const data =
+          res.data.total_teaching_hours === null
+            ? ""
+            : res.data.total_teaching_hours;
+        setTotalHours(data);
+        // form.setFieldValue("totalhours", data);
+      })
+      .catch(() => {
+        toast.error("Lỗi lấy tổng số giờ dạy của giáo viên");
+      });
+  };
 
   useEffect(() => {
     getdataUser();
     getListSkill();
     getAverageGPA();
     getPasseRateAllModule();
+    getListClassHoursByTeacherId();
   }, []);
 
   return (
@@ -476,6 +509,7 @@ const TeacherInfo = () => {
                     setListComment("");
                     setClassTeachSelected("");
                     setModuleTeachSelected("");
+                    setTotalHours("");
                   }}
 
                   // closable={false}
@@ -987,10 +1021,21 @@ const TeacherInfo = () => {
                             marginBottom: "24px",
                           }}
                         >
-                          <div className={classes.layout}>
-                            <Divider
-                              orientation="left"
-                              style={{ marginTop: 10, marginBottom: 24 }}
+                          <div
+                            style={{
+                              textAlign: "center",
+                              display: "block",
+                              marginTop: "24px",
+                              marginBottom: "24px",
+                            }}
+                          >
+                            <div
+                              style={{
+                                marginBottom: "24px",
+                                display: "flex",
+                                width: "100%",
+                                alignItems: "center",
+                              }}
                             >
                               <Text
                                 b
@@ -1013,45 +1058,38 @@ const TeacherInfo = () => {
                                       }
                                     })}
                               </Text>
-                              {moduleTeachSelected.length == 0 ? (
-                                ""
-                              ) : (
-                                <div>
-                                  {passRateByModule === 0 ? (
-                                    <Badge variant="bordered" color="success">
-                                      Chưa có dữ liệu
-                                    </Badge>
-                                  ) : (
-                                    <RingProgress
-                                      height={100}
-                                      width={100}
-                                      color={["#1891ff", "#E8EDF3"]}
-                                      percent={passRateByModule}
-                                    />
-                                  )}
-                                </div>
-                              )}
-                              {/* {gpaByModule.length == 0 ? (
-                                ""
-                              ) : (
-                                <RingProgress
-                                  height={100}
-                                  width={100}
-                                  color={["#1891ff", "#E8EDF3"]}
-                                  percent={
-                                    gpaByModule === ""
-                                      ? 0
-                                      : Math.round(
-                                          gpaByModule.average_gpa * 10
-                                        ) / 40
-                                  }
-                                ></RingProgress>
-                              )} */}
-                            </Divider>
-
-                            <Divider
-                              orientation="left"
-                              style={{ marginTop: 10, marginBottom: 24 }}
+                            </div>
+                            {moduleTeachSelected.length == 0 ? (
+                              ""
+                            ) : (
+                              <div
+                                style={{
+                                  textAlign: "center",
+                                  display: "block",
+                                }}
+                              >
+                                {" "}
+                                {passRateByModule === 0 ? (
+                                  <Badge variant="bordered" color="success">
+                                    Chưa có dữ liệu
+                                  </Badge>
+                                ) : (
+                                  <RingProgress
+                                    height={100}
+                                    width={100}
+                                    color={["#1891ff", "#E8EDF3"]}
+                                    percent={passRateByModule}
+                                  />
+                                )}
+                              </div>
+                            )}
+                            <div
+                              style={{
+                                display: "flex",
+                                width: "100%",
+                                alignItems: "center",
+                                marginTop: "24px",
+                              }}
                             >
                               <Text
                                 b
@@ -1082,44 +1120,74 @@ const TeacherInfo = () => {
                                       }
                                     })}
                               </Text>
-                              {classTeachSelected.length == 0 ? (
-                                ""
-                              ) : (
-                                <div>
-                                  {" "}
-                                  {passRateByClass == 0 ? (
-                                    <Badge variant="bordered" color="success">
-                                      Chưa có dữ liệu
-                                    </Badge>
-                                  ) : (
-                                    <RingProgress
-                                      height={100}
-                                      width={100}
-                                      color={["#1891ff", "#E8EDF3"]}
-                                      percent={passRateByClass}
-                                    />
-                                  )}
-                                </div>
-                              )}
-                              {/* {gpaByClass.length == 0 ? (
-                                ""
-                              ) : (
-                                <RingProgress
-                                  height={100}
-                                  width={100}
-                                  color={["#1891ff", "#E8EDF3"]}
-                                  percent={
-                                    gpaByClass === ""
-                                      ? 0
-                                      : Math.round(
-                                          gpaByClass.average_gpa * 10
-                                        ) / 40
-                                  }
-                                />
-                              )} */}
-                            </Divider>
+                            </div>
+                            {classTeachSelected.length == 0 ? (
+                              ""
+                            ) : (
+                              <div>
+                                {" "}
+                                {passRateByClass == 0 ? (
+                                  <Badge variant="bordered" color="success">
+                                    Chưa có dữ liệu
+                                  </Badge>
+                                ) : (
+                                  <RingProgress
+                                    height={100}
+                                    width={100}
+                                    color={["#1891ff", "#E8EDF3"]}
+                                    percent={passRateByClass}
+                                  />
+                                )}
+                              </div>
+                            )}
                           </div>
                         </Card>
+                      </Card.Body>
+                      <Grid></Grid>
+                    </Card>
+                    <Card variant="bordered" css={{ marginBottom: "20px" }}>
+                      <Card.Body>
+                        <Text
+                          b
+                          size={18}
+                          css={{ textAlign: "center", marginBottom: "20px" }}
+                        >
+                          Tổng số giờ dạy của giáo viên theo lớp:{"   "}
+                        </Text>
+
+                        <Form
+                          labelCol={{ span: 7 }}
+                          wrapperCol={{ span: 15 }}
+                          form={form}
+                          // disabled={modeUpdate && isGettingInformationStudent}
+                        >
+                          <div className={classes.layout}>
+                            <Form.Item label="Chọn lớp học" name="classhours">
+                              <Select
+                                placeholder="Chọn lớp học"
+                                onChange={() => {
+                                  getTotalTeachingHoursOfATeacher();
+                                }}
+                                // value={moduleTeachSelected}
+                                // onSelect={setModuleTeachSelected}
+                                // disabled={listModuleTeach.length === 0}
+                              >
+                                {listClassHours.map((item, index) => (
+                                  <Select.Option value={item.id} key={index}>
+                                    {item.name}
+                                  </Select.Option>
+                                ))}
+                              </Select>
+                            </Form.Item>
+                            <Form.Item label="Số giờ dạy" name="totalhours">
+                              {totalHours !== "" && (
+                                <Badge variant="bordered" color="success">
+                                  {totalHours} {" tiếng"}
+                                </Badge>
+                              )}
+                            </Form.Item>
+                          </div>
+                        </Form>
                       </Card.Body>
                       <Grid></Grid>
                     </Card>

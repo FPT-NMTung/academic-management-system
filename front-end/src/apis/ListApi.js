@@ -405,6 +405,16 @@ export const ManageTeacherApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  getTotalTeachingHoursOfATeacher: {
+    url: 'api/classes-schedules/teachers/{0}/classes/{1}/statistics-teaching-hours',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getListClassHoursByTeacherId : {
+    url: 'api/statistics/teachers/{0}/classes',
+    method: 'GET',
+    contextType: 'application/json',
+  },
 };
 
 export const UserApis = {
