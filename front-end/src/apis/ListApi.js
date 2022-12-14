@@ -415,6 +415,11 @@ export const ManageTeacherApis = {
     method: 'GET',
     contextType: 'application/json',
   },
+  getAttenanceRateofClass : {
+    url: 'api/classes-schedules/teachers/{0}/classes/{1}/statistics-attendance',
+    method: 'GET',
+    contextType: 'application/json',
+  },
 };
 
 export const UserApis = {

@@ -25,7 +25,7 @@ import {
   Comment,
   Avatar,
 } from "antd";
-import { RingProgress } from "@ant-design/plots";
+import { RingProgress, Pie } from "@ant-design/plots";
 import { useState, useEffect } from "react";
 import { AiFillPhone } from "react-icons/ai";
 import { MdDelete, MdPersonAdd, MdSave } from "react-icons/md";
@@ -74,6 +74,7 @@ const TeacherInfo = () => {
   const [passRateByClass, setPassRateByClass] = useState(0);
   const [listClassHours, setListClassHours] = useState([]);
   const [totalHours, setTotalHours] = useState(0);
+  const [averageAttendanceRate, setAverageAttendanceRate] = useState(0);
 
   const [form] = Form.useForm();
 
@@ -326,6 +327,20 @@ const TeacherInfo = () => {
         toast.error("Lỗi lấy tổng số giờ dạy của giáo viên");
       });
   };
+  const getAttenanceRateofClass = () => {
+    const classid = form.getFieldValue("classhours");
+    FetchApi(ManageTeacherApis.getAttenanceRateofClass, null, null, [
+      `${id}`,
+      `${classid}`,
+    ])
+      .then((res) => {
+        const data = res.data === null ? "" : res.data;
+        setAverageAttendanceRate(data.average_attendance / 100);
+      })
+      .catch(() => {
+        toast.error("Lỗi lấy tỉ lệ điểm danh của giáo viên");
+      });
+  };
 
   useEffect(() => {
     getdataUser();
@@ -510,6 +525,7 @@ const TeacherInfo = () => {
                     setClassTeachSelected("");
                     setModuleTeachSelected("");
                     setTotalHours("");
+                    setAverageAttendanceRate(0);
                   }}
 
                   // closable={false}
@@ -634,7 +650,11 @@ const TeacherInfo = () => {
                           GPA Trung bình giáo viên:{"   "}
                           <Badge
                             variant="bordered"
-                            color="success"
+                            color={
+                              Math.round(gpa.average_gpa * 10) / 10 >= 3.2
+                                ? "success"
+                                : "warning"
+                            }
                             shape="circle"
                             size="md"
                           >
@@ -760,7 +780,12 @@ const TeacherInfo = () => {
                                   ) : (
                                     <Badge
                                       variant="bordered"
-                                      color="success"
+                                      color={
+                                        Math.round(gpa.average_gpa * 10) / 10 >=
+                                        3.2
+                                          ? "success"
+                                          : "warning"
+                                      }
                                       shape="circle"
                                       size="md"
                                       css={{ margin: "10px 0" }}
@@ -842,7 +867,12 @@ const TeacherInfo = () => {
                                   ) : (
                                     <Badge
                                       variant="bordered"
-                                      color="success"
+                                      color={
+                                        Math.round(gpa.average_gpa * 10) / 10 >=
+                                        3.2
+                                          ? "success"
+                                          : "warning"
+                                      }
                                       shape="circle"
                                       size="md"
                                       css={{ margin: "10px 0" }}
@@ -1091,35 +1121,37 @@ const TeacherInfo = () => {
                                 marginTop: "24px",
                               }}
                             >
-                              <Text
-                                b
-                                p
-                                size={15}
-                                css={{
-                                  width: "100%",
-                                  textAlign: "center",
-                                  marginBottom: "24px",
-                                  //   margin: '0',
-                                  //   padding: '0',
-                                }}
-                              >
-                                Tỷ lệ qua môn trung bình môn{" "}
-                                {listModuleTeach.length == 0
-                                  ? ""
-                                  : listModuleTeach.map((item) => {
-                                      if (item.id === moduleTeachSelected) {
-                                        return item.name + " ";
-                                      }
-                                    })}
-                                của lớp{" "}
-                                {listClassTeach.length == 0
-                                  ? ""
-                                  : listClassTeach.map((item) => {
-                                      if (item.id === classTeachSelected) {
-                                        return item.name + " " + "là:  ";
-                                      }
-                                    })}
-                              </Text>
+                              {moduleTeachSelected.length !== 0 && (
+                                <Text
+                                  b
+                                  p
+                                  size={15}
+                                  css={{
+                                    width: "100%",
+                                    textAlign: "center",
+                                    marginBottom: "24px",
+                                    //   margin: '0',
+                                    //   padding: '0',
+                                  }}
+                                >
+                                  Tỷ lệ qua môn trung bình môn{" "}
+                                  {listModuleTeach.length == 0
+                                    ? ""
+                                    : listModuleTeach.map((item) => {
+                                        if (item.id === moduleTeachSelected) {
+                                          return item.name + " ";
+                                        }
+                                      })}
+                                  của lớp{" "}
+                                  {listClassTeach.length == 0
+                                    ? ""
+                                    : listClassTeach.map((item) => {
+                                        if (item.id === classTeachSelected) {
+                                          return item.name + " " + "là:  ";
+                                        }
+                                      })}
+                                </Text>
+                              )}
                             </div>
                             {classTeachSelected.length == 0 ? (
                               ""
@@ -1152,7 +1184,8 @@ const TeacherInfo = () => {
                           size={18}
                           css={{ textAlign: "center", marginBottom: "20px" }}
                         >
-                          Tổng số giờ dạy của giáo viên theo lớp:{"   "}
+                          Tổng số giờ dạy của giáo viên theo lớp và tỷ lệ học
+                          viên lên lớp:{"   "}
                         </Text>
 
                         <Form
@@ -1167,6 +1200,7 @@ const TeacherInfo = () => {
                                 placeholder="Chọn lớp học"
                                 onChange={() => {
                                   getTotalTeachingHoursOfATeacher();
+                                  getAttenanceRateofClass();
                                 }}
                                 // value={moduleTeachSelected}
                                 // onSelect={setModuleTeachSelected}
@@ -1180,13 +1214,66 @@ const TeacherInfo = () => {
                               </Select>
                             </Form.Item>
                             <Form.Item label="Số giờ dạy" name="totalhours">
-                              {totalHours !== "" && (
+                              {totalHours !== 0 && totalHours !== "" && (
                                 <Badge variant="bordered" color="success">
-                                  {totalHours} {" tiếng"}
+                                  {Math.round(totalHours * 10) / 10} {" tiếng"}
                                 </Badge>
                               )}
+                              
                             </Form.Item>
                           </div>
+                          <Card
+                            variant="bordered"
+                            css={{
+                              marginBottom: "20px",
+                              marginTop: "20px",
+                              borderStyle: "dashed",
+                            }}
+                          >
+                            <div
+                              style={{
+                                textAlign: "center",
+                                display: "block",
+                                marginTop: "24px",
+                                marginBottom: "24px",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  marginBottom: "24px",
+                                  display: "flex",
+                                  width: "100%",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Text
+                                  b
+                                  p
+                                  size={15}
+                                  css={{
+                                    width: "100%",
+                                    textAlign: "center",
+                                    //   margin: '0',
+                                    //   padding: '0',
+                                  }}
+                                >
+                                  Tỷ lệ học viên lên lớp:{" "}
+                                </Text>
+                              </div>
+                              {averageAttendanceRate === 0 ?
+                              <Badge variant="bordered" color="success">
+                                Chưa có dữ liệu
+                              </Badge>
+                              : (
+                                <RingProgress
+                                  height={100}
+                                  width={100}
+                                  color={["#1891ff", "#E8EDF3"]}
+                                  percent={averageAttendanceRate}
+                                ></RingProgress>
+                              )}
+                            </div>
+                          </Card>
                         </Form>
                       </Card.Body>
                       <Grid></Grid>
