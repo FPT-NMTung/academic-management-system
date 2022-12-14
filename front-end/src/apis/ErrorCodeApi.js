@@ -345,4 +345,8 @@ export const ErrorCodeApi = {
   "gpa-error-10": "Lớp học đang không học môn học này",
   "gpa-error-11": "Lớp học đang không học tiết học này",
   "gpa-error-12": "Giáo viên đang không dạy tiết này trong lớp",
+  "gpa-error-13": "Comment phải ít hơn 1000 ký tự",
+  "gpa-error-14": "Giáo viên không dạy môn này",
+  "gpa-error-15": "Giáo viên không dạy môn này trong lớp này",
+
 };

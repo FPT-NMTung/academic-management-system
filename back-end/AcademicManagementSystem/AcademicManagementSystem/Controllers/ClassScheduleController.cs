@@ -8,6 +8,7 @@ using AcademicManagementSystem.Models.ClassController;
 using AcademicManagementSystem.Models.ClassDaysController;
 using AcademicManagementSystem.Models.ClassScheduleController.ClassScheduleModel;
 using AcademicManagementSystem.Models.ClassScheduleController.ProgressModel;
+using AcademicManagementSystem.Models.ClassScheduleController.StatisticsAttendance;
 using AcademicManagementSystem.Models.ClassScheduleController.StatisticTeachingHours;
 using AcademicManagementSystem.Models.ClassStatusController;
 using AcademicManagementSystem.Models.RoomController.RoomModel;
@@ -55,7 +56,8 @@ public class ClassScheduleController : ControllerBase
 
         if (classContext.CenterId != user.CenterId)
         {
-            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
+            var error = ErrorDescription.Error["E0600"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         var classSchedule = GetClassSchedulesResponse(classId).OrderBy(response => response.StartDate);
@@ -1351,14 +1353,31 @@ public class ClassScheduleController : ControllerBase
     // statistics teaching hours of teacher in a class
     [HttpGet]
     [Route("api/classes-schedules/teachers/{teacherId:int}/classes/{classId:int}/statistics-teaching-hours")]
-    [Authorize(Roles = "admin, sro")]
+    [Authorize(Roles = "sro")]
     public IActionResult GetStatisticsTeachingHours(int teacherId, int classId)
     {
+        if (!IsClassExisted(classId))
+        {
+            var error = ErrorDescription.Error["E1155"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsTeacherExisted(teacherId))
+        {
+            var error = ErrorDescription.Error["E1156"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsTeacherInClass(classId, teacherId))
+        {
+            var error = ErrorDescription.Error["E1157"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
         var sessions = _context.Sessions
             .Include(s => s.ClassSchedule)
-            .ThenInclude(cs => cs.Class)
-            .Include(s => s.ClassSchedule)
-            .ThenInclude(cs => cs.Teacher)
+            .Include(s => s.ClassSchedule.Class)
+            .Include(s => s.ClassSchedule.Teacher)
             .ThenInclude(t => t.User)
             .Where(s => s.ClassSchedule.TeacherId == teacherId && s.ClassSchedule.ClassId == classId &&
                         s.LearningDate.Date < DateTime.Now.Date && s.SessionTypeId != 3 && s.SessionTypeId != 4)
@@ -1366,10 +1385,100 @@ public class ClassScheduleController : ControllerBase
 
         var statistics = new StatisticsTeachingHoursResponse()
         {
-            TotalTeachingHours = sessions.Sum(s => s.EndTime.Subtract(s.StartTime).TotalMinutes / 60),
+            TotalTeachingHours = sessions.Sum(s => s.EndTime.Subtract(s.StartTime).TotalHours),
         };
 
         return Ok(CustomResponse.Ok("Get statistics teaching hours successfully", statistics));
+    }
+
+    // statistics attendance of teacher in a class
+    [HttpGet]
+    [Route("api/classes-schedules/teachers/{teacherId:int}/classes/{classId:int}/statistics-attendance")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetStatisticsAttendance(int teacherId, int classId)
+    {
+        if (!IsClassExisted(classId))
+        {
+            var error = ErrorDescription.Error["E1155"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsTeacherExisted(teacherId))
+        {
+            var error = ErrorDescription.Error["E1156"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (!IsTeacherInClass(classId, teacherId))
+        {
+            var error = ErrorDescription.Error["E1157"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var sessions = _context.Sessions
+            .Include(s => s.Attendances)
+            .ThenInclude(a => a.AttendanceStatus)
+            .Include(s => s.ClassSchedule)
+            .Include(s => s.ClassSchedule.Class)
+            .Include(s => s.ClassSchedule.Teacher)
+            .ThenInclude(t => t.User)
+            .Where(s => s.ClassSchedule.TeacherId == teacherId && s.ClassSchedule.ClassId == classId &&
+                        s.LearningDate.Date < DateTime.Now.Date && s.SessionTypeId != 3 && s.SessionTypeId != 4)
+            .ToList();
+
+        // total attendance where attendance status = 3
+        var totalAttendance = sessions.Sum(s => s.Attendances.Count(a => a.AttendanceStatusId == 3));
+        // total absence where attendance status = 2
+        var totalAbsence = sessions.Sum(s => s.Attendances.Count(a => a.AttendanceStatusId == 2));
+        // total number of attendance
+        var totalStudentsInLearningSession = totalAttendance + totalAbsence;
+        // average attendance
+        double averageAttendance = 0;
+        double averageAbsence = 0;
+        if (totalStudentsInLearningSession != 0)
+        {
+            averageAttendance = (double)totalAttendance / totalStudentsInLearningSession * 100;
+            averageAbsence = (double)totalAbsence / totalStudentsInLearningSession * 100;
+        }
+
+        var statistics = new StatisticsAttendanceResponse()
+        {
+            TotalAttendance = totalAttendance,
+            TotalAbsence = totalAbsence,
+            TotalStudentsInLearningSession = totalStudentsInLearningSession,
+            AverageAttendance = averageAttendance,
+            AverageAbsence = averageAbsence
+        };
+
+        return Ok(CustomResponse.Ok("Get statistics attendance successfully", statistics));
+    }
+
+    // get list class of teacher
+    [HttpGet]
+    [Route("api/statistics/teachers/{teacherId:int}/classes")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetListClassOfTeacher(int teacherId)
+    {
+        // check if teacher exists or not
+        if (!IsTeacherExisted(teacherId))
+        {
+            var error = ErrorDescription.Error["E1156"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        var classes = _context.Classes
+            .Include(c => c.ClassSchedules)
+            .ThenInclude(cs => cs.Teacher)
+            .ThenInclude(t => t.User)
+            .Where(c => c.ClassSchedules.Any(cs => cs.TeacherId == teacherId))
+            .Select(c => new BasicClassResponse()
+            {
+                Id = c.Id,
+                Name = c.Name
+            })
+            .ToList();
+
+        return Ok(CustomResponse.Ok("List classes of teacher has been retrieved successfully", classes));
     }
 
     private bool CheckTeacherBusy(ClassSchedule classScheduleToCreate, bool isUpdate)
@@ -1831,5 +1940,32 @@ public class ClassScheduleController : ControllerBase
     private bool IsTimeInRange(TimeSpan startHour, TimeSpan endHour, TimeSpan timeToCheck)
     {
         return timeToCheck <= endHour && timeToCheck >= startHour;
+    }
+
+    // is class existed
+    private bool IsClassExisted(int classId)
+    {
+        var centerId = _context.Users
+            .FirstOrDefault(u => u.Id == int.Parse(_userService.GetUserId()))?.CenterId;
+        return _context.Classes.Any(c => c.Id == classId && c.CenterId == centerId);
+    }
+
+    // is teacher existed
+    private bool IsTeacherExisted(int teacherId)
+    {
+        var centerId = _context.Users
+            .FirstOrDefault(u => u.Id == int.Parse(_userService.GetUserId()))?.CenterId;
+        return _context.Teachers
+            .Include(t => t.User)
+            .Any(t => t.UserId == teacherId && t.User.CenterId == centerId);
+    }
+
+    // is teacher is taught this class
+    private bool IsTeacherInClass(int classId, int teacherId)
+    {
+        return _context.ClassSchedules
+            .Include(cs => cs.Teacher)
+            .Include(cs => cs.Class)
+            .Any(cs => cs.ClassId == classId && cs.TeacherId == teacherId);
     }
 }

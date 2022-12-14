@@ -129,7 +129,8 @@ public class StudentGradeController : ControllerBase
 
         if (sro.User.Center.Id != clazz.Center.Id)
         {
-            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
+            var error = ErrorDescription.Error["E0600"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         if (clazz.ClassStatusId == ClassStatusMerged)
@@ -213,7 +214,8 @@ public class StudentGradeController : ControllerBase
 
         if (sro.User.Center.Id != clazz.Center.Id)
         {
-            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
+            var error = ErrorDescription.Error["E0600"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         var isModuleForThisClass = clazz.CourseFamily.Courses
@@ -257,7 +259,8 @@ public class StudentGradeController : ControllerBase
         // check teacher is teach this schedule (class and module)
         if (!isTeacherTeachThisClass)
         {
-            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
+            var error = ErrorDescription.Error["E0600"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         var isModuleForThisClass = clazz.CourseFamily.Courses
@@ -395,8 +398,6 @@ public class StudentGradeController : ControllerBase
         var classContext = _context.Classes
             .Include(c => c.ClassSchedules)
             .ThenInclude(cs => cs.Module)
-            .Include(c => c.ClassSchedules)
-            .ThenInclude(cs => cs.Sessions)
             .Include(c => c.Center)
             .Include(c => c.StudentsClasses)
             .ThenInclude(sc => sc.Student)
@@ -417,7 +418,8 @@ public class StudentGradeController : ControllerBase
         // check user center is same center of class
         if (classContext.CenterId != user.CenterId)
         {
-            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
+            var error = ErrorDescription.Error["E0600"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         var canUpdateGrade =
@@ -558,8 +560,6 @@ public class StudentGradeController : ControllerBase
         var classContext = _context.Classes
             .Include(c => c.ClassSchedules)
             .ThenInclude(cs => cs.Module)
-            .Include(c => c.ClassSchedules)
-            .ThenInclude(cs => cs.Sessions)
             .Include(c => c.Center)
             .Include(c => c.StudentsClasses)
             .ThenInclude(sc => sc.Student)
@@ -583,13 +583,15 @@ public class StudentGradeController : ControllerBase
         {
             // teacher can't update grades if module exam type is theory (just sro)
             case ExamTypeTe:
-                return Unauthorized(CustomResponse.Unauthorized("You are not able to update grades for this module"));
+                var error = ErrorDescription.Error["E0600"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         // check user center is same center of class
         if (classContext.CenterId != user.CenterId)
         {
-            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
+            var error = ErrorDescription.Error["E0600"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
         var isTeacherTeachThisClass = classContext.ClassSchedules.Any(cs =>
@@ -598,24 +600,15 @@ public class StudentGradeController : ControllerBase
         // check teacher is teach this schedule (class and module)
         if (!isTeacherTeachThisClass)
         {
-            return Unauthorized(CustomResponse.Unauthorized("You are not authorized to access this resource"));
+            var error = ErrorDescription.Error["E0600"];
+            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
-
-        // first session in class schedule
-        var firstSession = classContext.ClassSchedules
-            .First(cs => cs.ModuleId == moduleId)
-            .Sessions.OrderBy(s => s.LearningDate).First();
-
-        // last session in class schedule
-        var lastSession = classContext.ClassSchedules
-            .First(cs => cs.ModuleId == moduleId)
-            .Sessions.OrderBy(s => s.LearningDate).Last();
 
         // check module is start learning and no more than 3 days after last session
         var canUpdateModule = classContext.ClassSchedules
             .Any(cs => cs.ModuleId == moduleId &&
-                       firstSession.LearningDate.Date <= DateTime.Today &&
-                       DateTime.Today <= lastSession.LearningDate.Date);
+                       cs.StartDate.Date <= DateTime.Today &&
+                       DateTime.Today <= cs.EndDate.Date);
 
         if (!canUpdateModule)
         {
@@ -669,6 +662,15 @@ public class StudentGradeController : ControllerBase
 
         foreach (var r in distinctRequest)
         {
+            // if grade item is exams -> error (teacher can't update these grade items)
+            var gradeItem = gradeItemsOfModule.First(gi => gi.Id == r.GradeItemId);
+            if (gradeItem.GradeCategoryModule.GradeCategoryId
+                is PracticeExam or TheoryExam or PracticeExamResit or TheoryExamResit)
+            {
+                var error = ErrorDescription.Error["E0306"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+
             if (r.Grade is < 0 or > 10)
             {
                 var error = ErrorDescription.Error["E0304"];
@@ -694,15 +696,6 @@ public class StudentGradeController : ControllerBase
             else
             {
                 _context.StudentGrades.Update(studentGrade);
-            }
-
-            // if grade item is exams -> error (teacher can't update these grade items)
-            var gradeItem = gradeItemsOfModule.First(gi => gi.Id == r.GradeItemId);
-            if (gradeItem.GradeCategoryModule.GradeCategoryId
-                is PracticeExam or TheoryExam or PracticeExamResit or TheoryExamResit)
-            {
-                var error = ErrorDescription.Error["E0306"];
-                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
             }
         }
 
@@ -739,13 +732,15 @@ public class StudentGradeController : ControllerBase
             return NotFound(CustomResponse.NotFound("Class not found"));
         }
 
-        if (clazz.ClassStatusId == ClassStatusMerged)
-        {
-            var error = ErrorDescription.Error["E0401"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
+        // if (clazz.ClassStatusId == ClassStatusMerged)
+        // {
+        //     var error = ErrorDescription.Error["E0401"];
+        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        // }
 
-        var moduleProgressScores = GetGradesOfStudentsInClass(clazz);
+        var moduleProgressScores = clazz.ClassStatusId == ClassStatusMerged
+            ? GetAlsoGradesOfNotActiveStudentsInClass(clazz)
+            : GetGradesOfStudentsInClass(clazz);
 
         var responses = new List<PassRateOfClassAndModuleResponse>();
 
@@ -819,11 +814,11 @@ public class StudentGradeController : ControllerBase
             return NotFound(CustomResponse.NotFound("Class not found"));
         }
 
-        if (clazz.ClassStatusId == ClassStatusMerged)
-        {
-            var error = ErrorDescription.Error["E0401"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
+        // if (clazz.ClassStatusId == ClassStatusMerged)
+        // {
+        //     var error = ErrorDescription.Error["E0401"];
+        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        // }
 
         var isModuleForThisClass = clazz.CourseFamily.Courses
             .Select(c => c.CoursesModulesSemesters)
@@ -841,14 +836,15 @@ public class StudentGradeController : ControllerBase
             .Select(cms => cms.Module)
             .FirstOrDefault(m => m.Id == moduleId);
 
-        var moduleProgressScores = GetGradesOfStudentsInClass(clazz)
-            .Where(m => m.Module.Id == moduleId);
+        var moduleProgressScores = clazz.ClassStatusId == ClassStatusMerged
+            ? GetAlsoGradesOfNotActiveStudentsInClass(clazz).Where(m => m.Module.Id == moduleId)
+            : GetGradesOfStudentsInClass(clazz).Where(m => m.Module.Id == moduleId);
 
         var progressScore = moduleProgressScores.FirstOrDefault();
 
         if (progressScore == null)
         {
-            return Ok(CustomResponse.Ok("Get pass rate of class and module successfully", null!));
+            return Ok(CustomResponse.Ok("Module may not have in this class schedule", null!));
         }
 
         var students = progressScore.Students;
@@ -910,11 +906,8 @@ public class StudentGradeController : ControllerBase
             return NotFound(CustomResponse.NotFound("Teacher not found"));
         }
 
-        var modules = _context.ClassSchedules
-            .Include(cs => cs.Module)
-            .Include(cs => cs.Class)
-            .Where(cs => cs.TeacherId == teacherId && cs.Class.ClassStatusId != ClassStatusMerged)
-            .Select(cs => cs.Module).Distinct();
+        // module completed learning in schedule
+        var modules = GetModulesTeachedByTeacher(teacherId).ToList();
 
         var response = modules.Select(m => new BasicModuleResponse()
         {
@@ -937,6 +930,7 @@ public class StudentGradeController : ControllerBase
             return NotFound(CustomResponse.NotFound("Teacher not found"));
         }
 
+        // class completed learning in schedule
         var classes = GetClassesTeachByTeacherByModuleId(teacherId, moduleId);
 
         return Ok(CustomResponse.Ok("Get classes of teacher by module successfully", classes));
@@ -948,11 +942,7 @@ public class StudentGradeController : ControllerBase
     public IActionResult GetPassRateAllModuleOfTeacher(int teacherId)
     {
         // modules that teach by this teacher
-        var modules = _context.ClassSchedules
-            .Include(cs => cs.Module)
-            .Include(cs => cs.Class)
-            .Where(cs => cs.TeacherId == teacherId && cs.Class.ClassStatusId != ClassStatusMerged)
-            .Select(cs => cs.Module).Distinct().ToList();
+        var modules = GetModulesTeachedByTeacher(teacherId).ToList();
 
         var responses = new List<PassRateOfTeacherAndModuleResponse>();
 
@@ -969,7 +959,7 @@ public class StudentGradeController : ControllerBase
                     Name = c.Name,
                 };
 
-                var progressScores = GetGradesOfStudentsInClass(clazz)
+                var progressScores = GetAlsoGradesOfNotActiveStudentsInClass(clazz)
                     .FirstOrDefault(m => m.Module.Id == module.Id);
 
                 if (progressScores == null)
@@ -1036,8 +1026,9 @@ public class StudentGradeController : ControllerBase
             var modules = _context.ClassSchedules
                 .Include(cs => cs.Module)
                 .Include(cs => cs.Class)
-                .Where(cs => cs.TeacherId == teacher.UserId && cs.Class.ClassStatusId != ClassStatusMerged)
+                .Where(cs => cs.TeacherId == teacher.UserId && cs.EndDate < DateTime.Today)
                 .Select(cs => cs.Module).Distinct().ToList();
+
             var numberOfStudentInAllModule = 0;
             var passedCount = 0;
             foreach (var module in modules)
@@ -1051,7 +1042,7 @@ public class StudentGradeController : ControllerBase
                         Name = c.Name,
                     };
 
-                    var progressScores = GetGradesOfStudentsInClass(clazz)
+                    var progressScores = GetAlsoGradesOfNotActiveStudentsInClass(clazz)
                         .FirstOrDefault(m => m.Module.Id == module.Id);
 
                     if (progressScores == null)
@@ -1127,7 +1118,7 @@ public class StudentGradeController : ControllerBase
                 .Include(cs => cs.Module)
                 .Include(cs => cs.Class)
                 // select all schedules in range from date to to date base on start date and end date of schedule
-                .Where(cs => cs.TeacherId == teacher.UserId && cs.Class.ClassStatusId != ClassStatusMerged &&
+                .Where(cs => cs.TeacherId == teacher.UserId && cs.EndDate < DateTime.Today &&
                              //check overlap two date range
                              ((cs.StartDate.Date <= fromDate && fromDate <= cs.EndDate.Date) ||
                               (cs.StartDate.Date <= toDate && toDate <= cs.EndDate.Date) ||
@@ -1136,26 +1127,29 @@ public class StudentGradeController : ControllerBase
             var passedCount = 0;
             foreach (var schedule in schedules)
             {
-                var progressScores = GetGradesOfStudentsInClass(schedule.Class, schedule.ModuleId);
+                var progressScores = GetAlsoGradesOfNotActiveStudentsInClass(schedule.Class)
+                    .FirstOrDefault(m => m.Module.Id == schedule.ModuleId);
 
-                var students = progressScores.FirstOrDefault()?.Students;
-
-                if (students != null)
+                if (progressScores == null)
                 {
-                    numberOfStudentInAllModule += students.Count;
+                    continue;
+                }
 
-                    foreach (var student in students)
+                var students = progressScores.Students;
+
+                numberOfStudentInAllModule += students.Count;
+
+                foreach (var student in students)
+                {
+                    var totalScore = CalculateAverageScore(student, schedule.Module);
+                    Console.WriteLine("student: " + student.UserId + " total score: " + totalScore);
+                    if (totalScore != null)
                     {
-                        var totalScore = CalculateAverageScore(student, schedule.Module);
-                        Console.WriteLine("student: " + student.UserId + " total score: " + totalScore);
-                        if (totalScore != null)
-                        {
-                            var roundedScore = Math.Round((double)totalScore, 2); // round to 2 decimal places
+                        var roundedScore = Math.Round((double)totalScore, 2); // round to 2 decimal places
 
-                            if (roundedScore >= GradeToPass)
-                            {
-                                passedCount++;
-                            }
+                        if (roundedScore >= GradeToPass)
+                        {
+                            passedCount++;
                         }
                     }
                 }
@@ -1214,7 +1208,7 @@ public class StudentGradeController : ControllerBase
                 Name = c.Name
             };
 
-            var progressScores = GetGradesOfStudentsInClass(clazz)
+            var progressScores = GetAlsoGradesOfNotActiveStudentsInClass(clazz)
                 .FirstOrDefault(m => m.Module.Id == moduleId);
 
             if (progressScores == null)
@@ -1269,8 +1263,9 @@ public class StudentGradeController : ControllerBase
         }
 
         var schedule = _context.ClassSchedules
+            .Include(cs => cs.Class)
             .Include(cs => cs.Module)
-            .FirstOrDefault(cs => cs.TeacherId == teacherId && cs.ModuleId == moduleId);
+            .FirstOrDefault(cs => cs.TeacherId == teacherId && cs.ModuleId == moduleId && cs.EndDate < DateTime.Today);
 
         if (schedule == null)
         {
@@ -1296,12 +1291,12 @@ public class StudentGradeController : ControllerBase
             Name = classResponse.Name
         };
 
-        var progressScores = GetGradesOfStudentsInClass(clazz)
+        var progressScores = GetAlsoGradesOfNotActiveStudentsInClass(clazz)
             .FirstOrDefault(m => m.Module.Id == moduleId);
 
         if (progressScores == null)
         {
-            return Ok(CustomResponse.Ok("Get pass rate of teacher by class and module successfully", null!));
+            return Ok(CustomResponse.Ok("Module may not have in this class schedule", null!));
         }
 
         var students = progressScores.Students;
@@ -1526,12 +1521,23 @@ public class StudentGradeController : ControllerBase
         return _context.ClassSchedules
             .Include(cs => cs.Class)
             .Where(cs =>
-                cs.TeacherId == teacherId && cs.ModuleId == moduleId && cs.Class.ClassStatusId != ClassStatusMerged)
+                cs.TeacherId == teacherId && cs.ModuleId == moduleId && cs.EndDate < DateTime.Today)
+            //&& cs.Class.ClassStatusId != ClassStatusMerged)
             .Select(cs => new BasicClassResponse()
             {
                 Id = cs.Class.Id,
                 Name = cs.Class.Name,
             });
+    }
+
+    private IQueryable<Module> GetModulesTeachedByTeacher(int teacherId)
+    {
+        return _context.ClassSchedules
+            .Include(cs => cs.Module)
+            .Include(cs => cs.Class)
+            .Where(cs => cs.TeacherId == teacherId && cs.EndDate < DateTime.Today)
+            //&& cs.Class.ClassStatusId != ClassStatusMerged)
+            .Select(cs => cs.Module).Distinct();
     }
 
     private IQueryable<ListStudentGradeResponse> GetGradesOfStudentsInClass(Class clazz)
@@ -1623,6 +1629,66 @@ public class StudentGradeController : ControllerBase
 
                 Students = m.ClassSchedules.SelectMany(cs => cs.Class.StudentsClasses)
                     .Where(cs => cs.ClassId == clazz.Id && cs.IsActive && !cs.Student.IsDraft)
+                    .Select(sc => new StudentInfoAndGradeResponse()
+                    {
+                        UserId = sc.Student.UserId,
+                        EnrollNumber = sc.Student.EnrollNumber,
+                        EmailOrganization = sc.Student.User.EmailOrganization,
+                        FirstName = sc.Student.User.FirstName,
+                        LastName = sc.Student.User.LastName,
+                        Avatar = sc.Student.User.Avatar,
+                        GradeCategories = m.GradeCategoryModule
+                            .Select(gcm => new GradeCategoryWithItemsResponse()
+                            {
+                                Id = gcm.GradeCategory.Id,
+                                Name = gcm.GradeCategory.Name,
+                                TotalWeight = gcm.TotalWeight,
+                                QuantityGradeItem = gcm.QuantityGradeItem,
+                                GradeItems = gcm.GradeItems
+                                    .Select(gi => new GradeItemWithStudentScoreResponse()
+                                    {
+                                        Id = gi.Id,
+                                        Name = gi.Name,
+                                        Grade = gi.StudentGrades.FirstOrDefault(sg =>
+                                            sg.StudentId == sc.Student.UserId && sg.ClassId == clazz.Id)!.Grade,
+                                        Comment = gi.StudentGrades.FirstOrDefault(sg =>
+                                            sg.StudentId == sc.Student.UserId && sg.ClassId == clazz.Id)!.Comment
+                                    })
+                                    .ToList()
+                            }).ToList()
+                    }).ToList()
+            });
+    }
+
+    private IQueryable<ListStudentGradeResponse> GetAlsoGradesOfNotActiveStudentsInClass(Class clazz)
+    {
+        return _context.Modules
+            .Include(m => m.ClassSchedules)
+            .ThenInclude(cs => cs.Class)
+            .ThenInclude(c => c.StudentsClasses)
+            .Include(m => m.GradeCategoryModule)
+            .ThenInclude(gcm => gcm.GradeCategory)
+            .Include(m => m.GradeCategoryModule)
+            .ThenInclude(gcm => gcm.GradeItems)
+            .ThenInclude(gi => gi.StudentGrades)
+            .Where(m => m.ClassSchedules.Any(cs =>
+                cs.ClassId == clazz.Id && cs.ModuleId == m.Id)) // && cs.EndDate <= DateTime.Today))
+            .Select(m => new ListStudentGradeResponse()
+            {
+                Class = new BasicClassResponse()
+                {
+                    Id = clazz.Id,
+                    Name = clazz.Name
+                },
+
+                Module = new BasicModuleResponse()
+                {
+                    Id = m.Id,
+                    Name = m.ModuleName
+                },
+
+                Students = m.ClassSchedules.SelectMany(cs => cs.Class.StudentsClasses)
+                    .Where(cs => cs.ClassId == clazz.Id && !cs.Student.IsDraft) //&& cs.IsActive)
                     .Select(sc => new StudentInfoAndGradeResponse()
                     {
                         UserId = sc.Student.UserId,

@@ -25,7 +25,7 @@ import {
   Comment,
   Avatar,
 } from "antd";
-import { RingProgress } from "@ant-design/plots";
+import { RingProgress, Pie } from "@ant-design/plots";
 import { useState, useEffect } from "react";
 import { AiFillPhone } from "react-icons/ai";
 import { MdDelete, MdPersonAdd, MdSave } from "react-icons/md";
@@ -41,26 +41,40 @@ import toast from "react-hot-toast";
 import React from "react";
 import ReactDOM from "react-dom";
 import DefaultAvatar from "../../../../images/3d-fluency-manager.png";
+import { ErrorCodeApi } from "../../../../apis/ErrorCodeApi";
+
 const gender = {
   1: "Nam",
   2: "Nữ",
   3: "Khác",
   4: "Không xác định",
 };
+
 const TeacherInfo = () => {
   const [dataUser, setdataUser] = useState({});
   const [listSkill, setListSkill] = useState(undefined);
   const [listModule, setListModule] = useState([]);
   const [listClass, setListClass] = useState([]);
+  const [listClassTeach, setListClassTeach] = useState([]);
+  const [listModuleTeach, setListModuleTeach] = useState([]);
   const [cloneListSkill, setCloneListSkill] = useState(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [gpa, setGpa] = useState([]);
   const [moduleSelected, setModuleSelected] = React.useState("");
   const [classSelected, setClassSelected] = React.useState("");
+  const [moduleTeachSelected, setModuleTeachSelected] = React.useState("");
+  const [classTeachSelected, setClassTeachSelected] = React.useState("");
   const [gpaByModule, setGpaByModule] = useState([]);
   const [gpaByClass, setGpaByClass] = useState([]);
   const [listComment, setListComment] = useState([]);
   const { setVisible, bindings } = useModal();
+  const [messageFailed, setMessageFailed] = useState(undefined);
+  const [passRateAllModule, setPassRateAllModule] = useState(0);
+  const [passRateByModule, setPassRateByModule] = useState(0);
+  const [passRateByClass, setPassRateByClass] = useState(0);
+  const [listClassHours, setListClassHours] = useState([]);
+  const [totalHours, setTotalHours] = useState(0);
+  const [averageAttendanceRate, setAverageAttendanceRate] = useState(0);
 
   const [form] = Form.useForm();
 
@@ -98,6 +112,17 @@ const TeacherInfo = () => {
         toast.error("Lỗi lấy danh sách môn học");
       });
   };
+  const getListModuleTeach = () => {
+    FetchApi(ManageTeacherApis.getListModulesOfATeacherTeach, null, null, [
+      `${id}`,
+    ])
+      .then((res) => {
+        setListModuleTeach(res.data);
+      })
+      .catch(() => {
+        toast.error("Lỗi lấy danh sách môn học");
+      });
+  };
   const getListClass = () => {
     const moduleid = form.getFieldValue("subject");
     form.resetFields(["class"]);
@@ -105,6 +130,7 @@ const TeacherInfo = () => {
     setGpaByClass("");
     setListComment("");
     FetchApi(ManageTeacherApis.getListClassOfATeacherByModule, null, null, [
+      `${id}`,
       `${moduleid}`,
     ])
       .then((res) => {
@@ -114,6 +140,25 @@ const TeacherInfo = () => {
         toast.error("Lỗi lấy danh sách lớp học");
       });
   };
+  const getListClassOfATeacherTeachByModule = () => {
+    const moduleid = form.getFieldValue("subjectteach");
+    form.resetFields(["classteach"]);
+    setClassTeachSelected("");
+    setListClassTeach([]);
+    FetchApi(
+      ManageTeacherApis.getListClassOfATeacherTeachByModule,
+      null,
+      null,
+      [`${id}`, `${moduleid}`]
+    )
+      .then((res) => {
+        setListClassTeach(res.data);
+      })
+      .catch(() => {
+        toast.error("Lỗi lấy danh sách lớp học");
+      });
+  };
+
   const getAverageGPA = () => {
     FetchApi(ManageTeacherApis.getAverageGPAOfATeacher, null, null, [`${id}`])
       .then((res) => {
@@ -137,7 +182,10 @@ const TeacherInfo = () => {
         setGpaByModule(data);
         console.log(gpaByModule);
       })
-      .catch(() => {
+      .catch((err) => {
+        if (err?.type_error) {
+          return toast.error(ErrorCodeApi[err.type_error]);
+        }
         toast.error("Lỗi lấy GPA giáo viên theo môn học");
       });
   };
@@ -151,7 +199,7 @@ const TeacherInfo = () => {
       ManageTeacherApis.getAverageGPAOfATeacherByModuleAndClass,
       null,
       null,
-      [`${id}`, `${classid}`, `${moduleid}`]
+      [`${id}`, `${moduleid}`, `${classid}`]
     )
       .then((res) => {
         const data = res.data === null ? "" : res.data;
@@ -164,14 +212,159 @@ const TeacherInfo = () => {
 
         // setListComment(comment);
       })
-      .catch(() => {
+      .catch((err) => {
+        setListComment("");
+        setGpaByClass("");
+        setMessageFailed(ErrorCodeApi[err.type_error]);
+        // setIsCreatingOrUpdating(false);
+        if (err?.type_error) {
+          return toast.error(ErrorCodeApi[err.type_error]);
+        }
         toast.error("Lỗi lấy GPA giáo viên theo môn học và lớp học");
       });
   };
+  const getPasseRateAllModule = () => {
+    FetchApi(ManageTeacherApis.getPassRateOfATeacher, null, null, [`${id}`])
+      .then((res) => {
+        const data = res.data === null ? "" : res.data;
+        let passStudent = 0;
+        let totalStudent = 0;
+
+        for (let i = 0; i < data.length; i++) {
+          passStudent += data[i].number_of_passed_students;
+          totalStudent += data[i].number_of_student_in_all_class;
+        }
+        let passRateAllModule = 0;
+        if (totalStudent === 0) {
+          setPassRateAllModule(0);
+        } else {
+          passRateAllModule = passStudent / totalStudent;
+        }
+        console.log("ti le qua tat ca mon:" + passRateAllModule);
+        if (
+          passRateAllModule === NaN ||
+          passRateAllModule === Infinity ||
+          passRateAllModule === undefined ||
+          passRateAllModule === null ||
+          passRateAllModule === 0 ||
+          passRateAllModule === "NaN" ||
+          passRateAllModule === "Infinity" ||
+          passRateAllModule === "undefined" ||
+          passRateAllModule === "null" ||
+          isNaN(passRateAllModule)
+        ) {
+          setPassRateAllModule(0);
+        } else {
+          setPassRateAllModule(passRateAllModule);
+        }
+
+        console.log("ti le qua tat ca mon:" + passRateAllModule);
+      })
+      .catch(() => {
+        toast.error("Lỗi tỉ lệ qua môn giáo viên");
+      });
+  };
+  const getPassRateOfATeacherByModule = () => {
+    const moduleid = form.getFieldValue("subjectteach");
+    FetchApi(ManageTeacherApis.getPassRateOfATeacherByModule, null, null, [
+      `${id}`,
+      `${moduleid}`,
+    ])
+      .then((res) => {
+        const data = res.data === null ? "" : res.data;
+        let passRate = 0;
+        if (data.number_of_student_in_all_class === 0) {
+          setPassRateByModule(0);
+        } else {
+          passRate =
+            data.number_of_passed_students /
+            data.number_of_student_in_all_class;
+        }
+        setPassRateByModule(passRate);
+      })
+      .catch(() => {
+        toast.error("Lỗi lấy tỉ lệ qua môn giáo viên theo môn học");
+      });
+  };
+  const getPassRateOfAClassAndModule = () => {
+    const moduleid = form.getFieldValue("subjectteach");
+    const classid = form.getFieldValue("classteach");
+    console.log("sssssMon hoc id " + moduleid + "class id " + classid);
+    FetchApi(ManageTeacherApis.getPassRateOfAClassAndModule, null, null, [
+      `${classid}`,
+      `${moduleid}`,
+    ])
+      .then((res) => {
+        const data = res.data === null ? "" : res.data;
+        let passRate = 0;
+        if (data.number_of_students === 0) {
+          setPassRateByClass(0);
+        } else {
+          passRate = data.number_of_passed_students / data.number_of_students;
+        }
+
+        console.log("ti le qua mon hoc theo lop:" + passRate);
+        if (passRate !== NaN) {
+          setPassRateByClass(passRate);
+        } else {
+          setPassRateByClass(0);
+        }
+      })
+      .catch(() => {
+        toast.error("Lỗi lấy tỉ lệ qua môn giáo viên theo môn học và lớp học");
+      });
+  };
+  const getListClassHoursByTeacherId = () => {
+    FetchApi(ManageTeacherApis.getListClassHoursByTeacherId, null, null, [
+      `${id}`,
+    ])
+      .then((res) => {
+        const data = res.data === null ? "" : res.data;
+        setListClassHours(data);
+      })
+      .catch(() => {
+        toast.error("Lỗi lấy danh sách lớp học theo giáo viên");
+      });
+  };
+  const getTotalTeachingHoursOfATeacher = () => {
+    const classid = form.getFieldValue("classhours");
+    FetchApi(ManageTeacherApis.getTotalTeachingHoursOfATeacher, null, null, [
+      `${id}`,
+      `${classid}`,
+    ])
+      .then((res) => {
+        const data =
+          res.data.total_teaching_hours === null
+            ? ""
+            : res.data.total_teaching_hours;
+        setTotalHours(data);
+        // form.setFieldValue("totalhours", data);
+      })
+      .catch(() => {
+        toast.error("Lỗi lấy tổng số giờ dạy của giáo viên");
+      });
+  };
+  const getAttenanceRateofClass = () => {
+    const classid = form.getFieldValue("classhours");
+    FetchApi(ManageTeacherApis.getAttenanceRateofClass, null, null, [
+      `${id}`,
+      `${classid}`,
+    ])
+      .then((res) => {
+        const data = res.data === null ? "" : res.data;
+        setAverageAttendanceRate(data.average_attendance / 100);
+      })
+      .catch(() => {
+        toast.error("Lỗi lấy tỉ lệ điểm danh của giáo viên");
+      });
+  };
+
   useEffect(() => {
     getdataUser();
     getListSkill();
     getAverageGPA();
+    getPasseRateAllModule();
+    getListClassHoursByTeacherId();
   }, []);
 
   return (
@@ -338,6 +531,7 @@ const TeacherInfo = () => {
                   size="large"
                   onChange={() => {
                     getListModule();
+                    getListModuleTeach();
                     form.resetFields();
                     setListClass([]);
                     setModuleSelected("");
@@ -345,6 +539,11 @@ const TeacherInfo = () => {
                     setClassSelected("");
                     setGpaByClass("");
                     setListComment("");
+                    setClassTeachSelected("");
+                    setModuleTeachSelected("");
+                    setTotalHours("");
+                    setAverageAttendanceRate(0);
+                    setListClassTeach([]);
                   }}
 
                   // closable={false}
@@ -458,7 +657,7 @@ const TeacherInfo = () => {
                     </Card>
                   </items>
 
-                  <items className="" tab="GPA giáo viên" key="2">
+                  <items className="" tab="Thống kê giáo viên" key="2">
                     <Card variant="bordered" css={{ marginBottom: "20px" }}>
                       <Card.Body>
                         <Text
@@ -469,7 +668,11 @@ const TeacherInfo = () => {
                           GPA Trung bình giáo viên:{"   "}
                           <Badge
                             variant="bordered"
-                            color="success"
+                            color={
+                              Math.round(gpa.average_gpa * 10) / 10 >= 3.2
+                                ? "success"
+                                : "warning"
+                            }
                             shape="circle"
                             size="md"
                           >
@@ -516,6 +719,7 @@ const TeacherInfo = () => {
                                 }}
                                 value={moduleSelected}
                                 onSelect={setModuleSelected}
+                                // disabled={listModule.length === 0}
                               >
                                 {listModule.map((item, index) => (
                                   <Select.Option value={item.id} key={index}>
@@ -551,48 +755,55 @@ const TeacherInfo = () => {
                             marginBottom: "24px",
                           }}
                         >
-                          <div className={classes.layout}>
-                            <Divider
-                              orientation="left"
-                              style={{ marginTop: 10, marginBottom: 24 }}
+                          <div
+                            style={{
+                              textAlign: "center",
+                              display: "block",
+                              marginTop: "24px",
+                              marginBottom: "24px",
+                            }}
+                          >
+                            <div
+                              style={{
+                                marginBottom: "24px",
+                                display: "flex",
+                                width: "100%",
+                                alignItems: "center",
+                              }}
                             >
-                              <Text
-                                b
-                                p
-                                size={15}
-                                css={{
-                                  width: "100%",
-                                  textAlign: "center",
-                                  marginBottom: "24px",
-                                  //   margin: '0',
-                                  //   padding: '0',
-                                }}
-                              >
-                                GPA trung bình của môn{" "}
-                                {listModule.length == 0 ? (
-                                  <div>
-                                    <Badge
-                                      variant="bordered"
-                                      color="success"
-                                      shape="circle"
-                                      size="md"
-                                      css={{ margin: "10px 0" }}
-                                    >
-                                      Chưa có dữ liệu
-                                    </Badge>
-                                  </div>
-                                ) : (
-                                  listModule.map((item) => {
+                         
+                            <Text
+                              b
+                              p
+                              size={15}
+                              css={{
+                                width: "100%",
+                                textAlign: "center",
+                                //   margin: '0',
+                                //   padding: '0',
+                              }}
+                            >
+                              GPA trung bình của môn{" "}
+                              {listModule.length == 0
+                                ? ""
+                                : listModule.map((item) => {
                                     if (item.id === moduleSelected) {
-                                      return item.module_name + " " + "là:  ";
+                                      return (
+                                        '" ' +
+                                        `${item.module_name}` +
+                                        ' "' +
+                                        " " +
+                                        "là:  "
+                                      );
                                     }
-                                  })
-                                )}
-                              </Text>
-                              {gpaByModule.length == 0 ? (
-                                ""
-                              ) : (
-                                <div>
+                                  })}
+                            </Text>
+                            </div>
+                            {moduleSelected.length == 0 ? (
+                              ""
+                            ) : (
+                              <div>
+                                {gpaByModule === "" ? (
                                   <Badge
                                     variant="bordered"
                                     color="success"
@@ -600,71 +811,82 @@ const TeacherInfo = () => {
                                     size="md"
                                     css={{ margin: "10px 0" }}
                                   >
-                                    {" "}
-                                    {gpaByModule === ""
-                                      ? "Chưa có dữ liệu"
-                                      : Math.round(
-                                          gpaByModule.average_gpa * 10
-                                        ) / 10}
+                                    Chưa có dữ liệu
+                                  </Badge>
+                                ) : (
+                                  <Badge
+                                    variant="bordered"
+                                    color={
+                                      Math.round(gpa.average_gpa * 10) / 10 >=
+                                      3.2
+                                        ? "success"
+                                        : "warning"
+                                    }
+                                    shape="circle"
+                                    size="md"
+                                    css={{ margin: "10px 0" }}
+                                  >
+                                    {Math.round(gpaByModule.average_gpa * 10) /
+                                      10}
                                     {gpaByModule === "" ? "" : " / 4"}
                                   </Badge>
-                                </div>
-                              )}
-                              {/* {gpaByModule.length == 0 ? (
-                                ""
-                              ) : (
-                                <RingProgress
-                                  height={100}
-                                  width={100}
-                                  color={["#1891ff", "#E8EDF3"]}
-                                  percent={
-                                    gpaByModule === ""
-                                      ? 0
-                                      : Math.round(
-                                          gpaByModule.average_gpa * 10
-                                        ) / 40
-                                  }
-                                ></RingProgress>
-                              )} */}
-                            </Divider>
-
-                            <Divider
-                              orientation="left"
-                              style={{ marginTop: 10, marginBottom: 24 }}
+                                )}
+                              </div>
+                            )}
+                            <div
+                              style={{                              
+                                width: "100%",
+                                alignItems: "center",
+                                marginTop: "24px",
+                              }}
                             >
-                              <Text
-                                b
-                                p
-                                size={15}
-                                css={{
-                                  width: "100%",
-                                  textAlign: "center",
-                                  marginBottom: "24px",
-                                  //   margin: '0',
-                                  //   padding: '0',
-                                }}
-                              >
-                                GPA trung bình môn{" "}
-                                {listModule.length == 0
-                                  ? ""
-                                  : listModule.map((item) => {
-                                      if (item.id === moduleSelected) {
-                                        return item.module_name + " ";
-                                      }
-                                    })}
-                                của lớp{" "}
-                                {listClass.length == 0
-                                  ? ""
-                                  : listClass.map((item) => {
-                                      if (item.id === classSelected) {
-                                        return item.name + " " + "là:  ";
-                                      }
-                                    })}
-                              </Text>
-                              {listClass.length == 0 ? (
-                                ""
-                              ) : (
-                                <div>
+                              {moduleSelected.length !== 0 && (
+                            <Text
+                              b
+                              p
+                              size={15}
+                              css={{
+                                width: "100px",
+                                textAlign: "center",
+                  
+                              }}
+                            >
+                              GPA trung bình môn{" "}
+                              {listModule.length == 0
+                                ? ""
+                                : listModule.map((item) => {
+                                    if (item.id === moduleSelected) {
+                                      return (
+                                        '" ' +
+                                        `${item.module_name}` +
+                                        ' "' +
+                                        " "
+                                      );
+                                    }
+                                  })}
+                              của lớp{" "}
+                              {listClass.length == 0
+                                ? ""
+                                : listClass.map((item) => {
+                                    if (item.id === classSelected) {
+                                      return (
+                                        '" ' +
+                                        `${item.name}` +
+                                        ' "' +
+                                        " " +
+                                        "là:  "
+                                      );
+                                    }
+                                  })}
+                            </Text>
+                              )}
+                            </div>
+                            {classSelected.length == 0 ? (
+                              ""
+                            ) : (
+                              <div style={{marginTop:"24px"}}>
+                                {" "}
+                                {gpaByClass === "" ? (
                                   <Badge
                                     variant="bordered"
                                     color="success"
@@ -672,17 +894,29 @@ const TeacherInfo = () => {
                                     size="md"
                                     css={{ margin: "10px 0" }}
                                   >
-                                    {" "}
-                                    {gpaByClass === ""
-                                      ? "Chưa có dữ liệu"
-                                      : Math.round(
-                                          gpaByClass.average_gpa * 10
-                                        ) / 10}
+                                    Chưa có dữ liệu
+                                  </Badge>
+                                ) : (
+                                  <Badge
+                                    variant="bordered"
+                                    color={
+                                      Math.round(gpa.average_gpa * 10) / 10 >=
+                                      3.2
+                                        ? "success"
+                                        : "warning"
+                                    }
+                                    shape="circle"
+                                    size="md"
+                                    css={{ margin: "10px 0" }}
+                                  >
+                                    {Math.round(gpaByClass.average_gpa * 10) /
+                                      10}
                                     {gpaByClass === "" ? "" : " / 4"}
                                   </Badge>
-                                </div>
-                              )}
-                              {/* {gpaByClass.length == 0 ? (
+                                )}
+                              </div>
+                            )}
+                            {/* {gpaByClass.length == 0 ? (
                                 ""
                               ) : (
                                 <RingProgress
@@ -698,64 +932,416 @@ const TeacherInfo = () => {
                                   }
                                 />
                               )} */}
-                                 {listComment.length == 0 ? (
-                                ""
-                              ) : (
-                                <div>
-                                  <Button
-                                    color="success"
-                                    css={{
-                                      position: "absolute",
-                                      right: "12px",
-                                      bottom: "12px",
-                                      fontStyle: "bold",
-                                    }}
-                                    auto
-                                    flat
-                                    onClick={() => setVisible(true)}
-                                  >
-                                    Xem bình luận của lớp
-                                  </Button>
-                                  <Modal
-                                    scroll
-                                    width="700px"
-                                    closeButton
-                                    aria-labelledby="modal-title"
-                                    aria-describedby="modal-description"
-                                    {...bindings}
-                                  >
-                                    <Modal.Header>
-                                      <Text b id="modal-title" size={18}>
-                                        Bình luận của học viên trong lớp về
-                                        giảng viên
-                                      </Text>
-                                    </Modal.Header>
-                                    <Card.Divider />
-                                    <Modal.Body>
-                                      {listComment.map((item, index) => (
-                                        <Comment
-                                          avatar={
-                                            <Avatar src={DefaultAvatar} />
-                                          }
-                                          author={
-                                            <Text b>
-                                              {"Học viên " + (index + 1)}
-                                            </Text>
-                                          }
-                                          content={<Text>{item}</Text>}
-                                        ></Comment>
-                                      ))}
-                                    </Modal.Body>
-                                    
-                                  </Modal>
-                                </div>
-                              )}
-                            </Divider>
+                            {listComment.length == 0 ? (
+                              ""
+                            ) : (
+                              <div style={{marginTop:"24px"}}>
+                                <Button
+                                  color="success"
+                                  css={{
+                                    position: "absolute",
+                                    right: "12px",
+                                    bottom: "12px",
+                                    fontStyle: "bold",
+                                  }}
+                                  auto
+                                  flat
+                                  onClick={() => setVisible(true)}
+                                >
+                                  Xem bình luận của lớp
+                                </Button>
+                                <Modal
+                                  scroll
+                                  width="700px"
+                                  closeButton
+                                  aria-labelledby="modal-title"
+                                  aria-describedby="modal-description"
+                                  {...bindings}
+                                >
+                                  <Modal.Header>
+                                    <Text b id="modal-title" size={18}>
+                                      Bình luận của học viên trong lớp về giảng
+                                      viên
+                                    </Text>
+                                  </Modal.Header>
+                                  <Card.Divider />
+                                  <Modal.Body>
+                                    {listComment.map((item, index) => (
+                                      <Comment
+                                        avatar={<Avatar src={DefaultAvatar} />}
+                                        author={
+                                          <Text b>
+                                            {"Học viên " + (index + 1)}
+                                          </Text>
+                                        }
+                                        content={<Text>{item}</Text>}
+                                      ></Comment>
+                                    ))}
+                                  </Modal.Body>
+                                </Modal>
+                              </div>
+                            )}
                           </div>
                         </Card>
                       </Card.Body>
                       <Grid></Grid>
-                  
+                    </Card>
+                    <Card variant="bordered" css={{ marginBottom: "20px" }}>
+                      <Card.Body>
+                        <Text
+                          b
+                          size={18}
+                          css={{ textAlign: "center", marginBottom: "20px" }}
+                        >
+                          Tỷ lệ học viên qua môn:{"   "}
+                          <Badge
+                            variant="bordered"
+                            color={
+                              passRateAllModule >= 0.5 ? "success" : "warning"
+                            }
+                            shape="circle"
+                            size="md"
+                          >
+                            {" "}
+                            {passRateAllModule === 0
+                              ? "Chưa có dữ liệu"
+                              : Math.round(passRateAllModule * 10000) / 100 +
+                                "%"}
+                          </Badge>
+                        </Text>
+                        <Divider
+                          orientation="left"
+                          style={{ marginTop: 0, marginBottom: 24 }}
+                        >
+                          <Text
+                            b
+                            p
+                            size={15}
+                            css={{
+                              width: "100%",
+                              textAlign: "center",
+                              marginBottom: "24px",
+                              //   margin: '0',
+                              //   padding: '0',
+                            }}
+                          >
+                            Xem tỷ lệ học viên qua môn trung bình của giáo viên
+                            theo môn và lớp
+                          </Text>
+                        </Divider>
+
+                        <Form
+                          labelCol={{ span: 7 }}
+                          wrapperCol={{ span: 15 }}
+                          form={form}
+                          // disabled={modeUpdate && isGettingInformationStudent}
+                        >
+                          <div className={classes.layout}>
+                            <Form.Item label="Chọn môn học" name="subjectteach">
+                              <Select
+                                placeholder="Chọn môn học"
+                                onChange={() => {
+                                  getListClassOfATeacherTeachByModule();
+                                  getPassRateOfATeacherByModule();
+                                }}
+                                value={moduleTeachSelected}
+                                onSelect={setModuleTeachSelected}
+                                // disabled={listModuleTeach.length === 0}
+                              >
+                                {listModuleTeach.map((item, index) => (
+                                  <Select.Option value={item.id} key={index}>
+                                    {item.name}
+                                  </Select.Option>
+                                ))}
+                              </Select>
+                            </Form.Item>
+                            <Form.Item label="Chọn lớp học" name="classteach">
+                              <Select
+                                placeholder="Chọn lớp học theo môn học"
+                                disabled={listClassTeach.length === 0}
+                                value={classTeachSelected}
+                                onSelect={setClassTeachSelected}
+                                onChange={() => {
+                                  getPassRateOfAClassAndModule();
+                                }}
+                              >
+                                {listClassTeach.map((item, index) => (
+                                  <Select.Option key={item.id} value={item.id}>
+                                    {item.name}
+                                  </Select.Option>
+                                ))}
+                              </Select>
+                            </Form.Item>
+                          </div>
+                        </Form>
+                        <Card
+                          variant="bordered"
+                          css={{
+                            minHeight: "140px",
+                            borderStyle: "dashed",
+                            marginBottom: "24px",
+                          }}
+                        >
+                          <div
+                            style={{
+                              textAlign: "center",
+                              display: "block",
+                              marginTop: "24px",
+                              marginBottom: "24px",
+                            }}
+                          >
+                            <div
+                              style={{
+                                marginBottom: "24px",
+                                display: "flex",
+                                width: "100%",
+                                alignItems: "center",
+                              }}
+                            >
+                              <Text
+                                b
+                                p
+                                size={15}
+                                css={{
+                                  width: "100%",
+                                  textAlign: "center",
+                                  marginBottom: "24px",
+                                  //   margin: '0',
+                                  //   padding: '0',
+                                }}
+                              >
+                                Tỷ lệ học viên qua môn trung bình của môn{" "}
+                                {listModuleTeach.length == 0
+                                  ? ""
+                                  : listModuleTeach.map((item) => {
+                                      if (item.id === moduleTeachSelected) {
+                                        return (
+                                          '" ' +
+                                          `${item.name}` +
+                                          ' "' +
+                                          " " +
+                                          "là:  "
+                                        );
+                                      }
+                                    })}
+                              </Text>
+                            </div>
+                            {moduleTeachSelected.length == 0 ? (
+                              ""
+                            ) : (
+                              <div
+                                style={{
+                                  textAlign: "center",
+                                  display: "block",
+                                }}
+                              >
+                                {" "}
+                                {passRateByModule === 0 ? (
+                                  <Badge
+                                    variant="bordered"
+                                    color={
+                                      passRateByModule >= 0.5
+                                        ? "success"
+                                        : "warning"
+                                    }
+                                  >
+                                    Chưa có dữ liệu
+                                  </Badge>
+                                ) : (
+                                  <RingProgress
+                                    height={100}
+                                    width={100}
+                                    color={["#1891ff", "#E8EDF3"]}
+                                    percent={passRateByModule}
+                                  />
+                                )}
+                              </div>
+                            )}
+                            <div
+                              style={{
+                                display: "flex",
+                                width: "100%",
+                                alignItems: "center",
+                                marginTop: "24px",
+                              }}
+                            >
+                              {moduleTeachSelected.length !== 0 && (
+                                <Text
+                                  b
+                                  p
+                                  size={15}
+                                  css={{
+                                    width: "100%",
+                                    textAlign: "center",
+                                    marginBottom: "24px",
+                                    //   margin: '0',
+                                    //   padding: '0',
+                                  }}
+                                >
+                                  Tỷ lệ học viên qua môn trung bình môn{" "}
+                                  {listModuleTeach.length == 0
+                                    ? ""
+                                    : listModuleTeach.map((item) => {
+                                        if (item.id === moduleTeachSelected) {
+                                          return (
+                                            '" ' + `${item.name}` + ' "' + " "
+                                          );
+                                        }
+                                      })}
+                                  của lớp{" "}
+                                  {listClassTeach.length == 0
+                                    ? ""
+                                    : listClassTeach.map((item) => {
+                                        if (item.id === classTeachSelected) {
+                                          return (
+                                            '" ' +
+                                            `${item.name}` +
+                                            ' "' +
+                                            " " +
+                                            "là:  "
+                                          );
+                                        }
+                                      })}
+                                </Text>
+                              )}
+                            </div>
+                            {classTeachSelected.length == 0 ? (
+                              ""
+                            ) : (
+                              <div>
+                                {" "}
+                                {passRateByClass == 0 ? (
+                                  <Badge
+                                    variant="bordered"
+                                    color={
+                                      passRateByClass >= 0.5
+                                        ? "success"
+                                        : "warning"
+                                    }
+                                  >
+                                    Chưa có dữ liệu
+                                  </Badge>
+                                ) : (
+                                  <RingProgress
+                                    height={100}
+                                    width={100}
+                                    color={["#1891ff", "#E8EDF3"]}
+                                    percent={passRateByClass}
+                                  />
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </Card>
+                      </Card.Body>
+                      <Grid></Grid>
+                    </Card>
+                    <Card variant="bordered" css={{ marginBottom: "20px" }}>
+                      <Card.Body>
+                        <Text
+                          b
+                          size={18}
+                          css={{ textAlign: "center", marginBottom: "20px" }}
+                        >
+                          Tổng số giờ dạy của giáo viên theo lớp và tỷ lệ học
+                          viên đến lớp:{"   "}
+                        </Text>
+
+                        <Form
+                          labelCol={{ span: 7 }}
+                          wrapperCol={{ span: 15 }}
+                          form={form}
+                          // disabled={modeUpdate && isGettingInformationStudent}
+                        >
+                          <div className={classes.layout}>
+                            <Form.Item label="Chọn lớp học" name="classhours">
+                              <Select
+                                placeholder="Chọn lớp học"
+                                onChange={() => {
+                                  getTotalTeachingHoursOfATeacher();
+                                  getAttenanceRateofClass();
+                                }}
+                                // value={moduleTeachSelected}
+                                // onSelect={setModuleTeachSelected}
+                                // disabled={listModuleTeach.length === 0}
+                              >
+                                {listClassHours.map((item, index) => (
+                                  <Select.Option value={item.id} key={index}>
+                                    {item.name}
+                                  </Select.Option>
+                                ))}
+                              </Select>
+                            </Form.Item>
+                            <Form.Item label="Số giờ dạy" name="totalhours">
+                              {totalHours !== 0 && totalHours !== "" && (
+                                <Badge variant="bordered" color="success">
+                                  {Math.round(totalHours * 10) / 10} {" tiếng"}
+                                </Badge>
+                              )}
+                            </Form.Item>
+                          </div>
+                          <Card
+                            variant="bordered"
+                            css={{
+                              marginBottom: "20px",
+                              marginTop: "20px",
+                              borderStyle: "dashed",
+                            }}
+                          >
+                            <div
+                              style={{
+                                textAlign: "center",
+                                display: "block",
+                                marginTop: "24px",
+                                marginBottom: "24px",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  marginBottom: "24px",
+                                  display: "flex",
+                                  width: "100%",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Text
+                                  b
+                                  p
+                                  size={15}
+                                  css={{
+                                    width: "100%",
+                                    textAlign: "center",
+                                    //   margin: '0',
+                                    //   padding: '0',
+                                  }}
+                                >
+                                  Tỷ lệ học viên đến lớp:{" "}
+                                </Text>
+                              </div>
+                              {averageAttendanceRate === 0 ? (
+                                <Badge
+                                  variant="bordered"
+                                  color={
+                                    averageAttendanceRate >= 0.5
+                                      ? "success"
+                                      : "warning"
+                                  }
+                                >
+                                  Chưa có dữ liệu
+                                </Badge>
+                              ) : (
+                                <RingProgress
+                                  height={100}
+                                  width={100}
+                                  color={["#1891ff", "#E8EDF3"]}
+                                  percent={averageAttendanceRate}
+                                ></RingProgress>
+                              )}
+                            </div>
+                          </Card>
+                        </Form>
+                      </Card.Body>
+                      <Grid></Grid>
                     </Card>
                   </items>
                 </Tabs>

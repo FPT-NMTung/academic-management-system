@@ -361,7 +361,7 @@ export const ManageTeacherApis = {
     contextType: 'application/json',
   },
   getListClassOfATeacherByModule: {
-    url: 'api/gpa/modules/{0}/classes',
+    url: 'api/gpa/teachers/{0}/modules/{1}/classes',
     method: 'GET',
     contextType: 'application/json',
   },
@@ -376,10 +376,60 @@ export const ManageTeacherApis = {
     contextType: 'application/json',
   },
   getAverageGPAOfATeacherByModuleAndClass: {
-    url: 'api/gpa/teachers/{0}/classes/{1}/modules/{2}',
+    url: 'api/gpa/teachers/{0}/modules/{1}/classes/{2}',
     method: 'GET',
     contextType: 'application/json',
   },
+  getPassRateOfATeacher: {
+    url: '/api/statistics/teachers/{0}/pass-rate-all-module',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getListModulesOfATeacherTeach: {
+    url: 'api/statistics/teachers/{0}/modules',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getListClassOfATeacherTeachByModule: {
+    url: 'api/statistics/teachers/{0}/modules/{1}/classes',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getPassRateOfATeacherByModule: {
+    url: '/api/statistics/teachers/{0}/modules/{1}/pass-rate-all-class',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getPassRateOfAClassAndModule : {
+    url: '/api/statistics/classes/{0}/modules/{1}/pass-rate',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getTotalTeachingHoursOfATeacher: {
+    url: 'api/classes-schedules/teachers/{0}/classes/{1}/statistics-teaching-hours',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getListClassHoursByTeacherId : {
+    url: 'api/statistics/teachers/{0}/classes',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getAttenanceRateofClass : {
+    url: 'api/classes-schedules/teachers/{0}/classes/{1}/statistics-attendance',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getPassRateAllTeacherInAllTime : {
+    url: '/api/statistics/teachers/pass-rate-all-time',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+  getPassRateAllTeacherOnPeriodTime:{
+    url: '/api/statistics/teachers/pass-rate-period-time/get',
+    method: 'POST',
+    contextType: 'application/json',
+  }
 };
 
 export const UserApis = {
