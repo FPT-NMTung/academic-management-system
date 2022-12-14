@@ -657,7 +657,7 @@ public class ModuleController : ControllerBase
 
             var s3 = m.ModuleType!.ToString()!;
             var s4 = m.ExamType!.ToString()!;
-            var s5 = m.Id.ToString();
+            var s5 = m.Semester.Id.ToString()!;
 
             sModuleType ??= "";
 
