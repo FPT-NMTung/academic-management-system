@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using AcademicManagementSystem.Context;
 using AcademicManagementSystem.Controllers;
-using AcademicManagementSystem.Models.ClassController;
+using AcademicManagementSystem.Models.UserController.StudentController;
 using AcademicManagementSystem.Services;
 using AcademicManagementSystemTest.Helper;
 using AcademicManagementSystemTest.MockData;
@@ -12,13 +12,13 @@ using Xunit.Abstractions;
 
 namespace AcademicManagementSystemTest.System.Controller;
 
-public class TestClassController
+public class TestStudentController
 {
     private readonly TestOutputHelper _testOutputHelper;
     private readonly AmsContext _context;
-    private readonly ClassController _controller;
+    private readonly StudentController _controller;
 
-    public TestClassController(ITestOutputHelper output)
+    public TestStudentController(ITestOutputHelper output)
     {
         _testOutputHelper = new TestOutputHelper(output);
 
@@ -40,7 +40,7 @@ public class TestClassController
             }
         });
 
-        _controller = new ClassController(_context, userService);
+        _controller = new StudentController(_context, userService);
         Init();
     }
 
@@ -61,11 +61,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_ClassIsNotExisted_ReturnBadRequest()
+    public void UpdateStudent_UserNotExists_ReturnNotFound()
     {
         // arrange
-        var classId = 1000;
-        var request = new AddStudentToClassRequest()
+        var userId = 10000;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyễn",
             LastName = "Văn A",
@@ -80,7 +80,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -104,70 +103,19 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
-        Assert.IsType<BadRequestObjectResult>(result);
+        Assert.IsType<NotFoundObjectResult>(result);
     }
 
     [Fact]
-    public void AddStudentManual_ClassIsNotExistedInCenter_ReturnBadRequest()
+    public void UpdateStudent_FirstNameIsEmpty_ReturnBadRequest()
     {
         // arrange
-        var classId = 4;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0972222222",
-            Email = "nguyenvana@gmail.com",
-            EmailOrganization = "nguyenvana_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099922228272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_FirstNameIsEmpty_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "",
             LastName = "Văn A",
@@ -182,7 +130,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -206,7 +153,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -214,11 +161,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_FirstNameIsOnlySpace_ReturnBadRequest()
+    public void UpdateStudent_FirstNameIsOnlySpace_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "    ",
             LastName = "Văn A",
@@ -233,7 +180,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -257,7 +203,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -265,11 +211,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_LastNameIsEmpty_ReturnBadRequest()
+    public void UpdateStudent_LastNameIsEmpty_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "  Nguyễn  ",
             LastName = "",
@@ -284,7 +230,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -308,7 +253,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -316,11 +261,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_LastNameIsOnlySpace_ReturnBadRequest()
+    public void UpdateStudent_LastNameIsOnlySpace_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "  Nguyễn  ",
             LastName = "     ",
@@ -335,7 +280,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -359,7 +303,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -367,11 +311,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_EmailIsEmpty_ReturnBadRequest()
+    public void UpdateStudent_EmailIsEmpty_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "  Nguyễn  ",
             LastName = "   Văn A  ",
@@ -386,7 +330,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -410,7 +353,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -418,11 +361,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_EmailIsOnlySpace_ReturnBadRequest()
+    public void UpdateStudent_EmailIsOnlySpace_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "  Nguyễn  ",
             LastName = "   Văn A  ",
@@ -437,7 +380,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -461,7 +403,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -469,11 +411,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_EmailOrganizationIsEmpty_ReturnBadRequest()
+    public void UpdateStudent_EmailOrganizationIsEmpty_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "  Nguyễn  ",
             LastName = "   Văn A  ",
@@ -488,7 +430,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -512,7 +453,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -520,11 +461,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_EmailOrganizationIsOnlySpace_ReturnBadRequest()
+    public void UpdateStudent_EmailOrganizationIsOnlySpace_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "  Nguyễn  ",
             LastName = "   Văn A  ",
@@ -539,7 +480,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -563,7 +503,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -571,11 +511,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_CourseCodeIsEmpty_ReturnBadRequest()
+    public void UpdateStudent_CourseCodeIsEmpty_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "  Nguyễn  ",
             LastName = "Van A",
@@ -590,7 +530,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA",
             CourseCode = "",
             Status = 1,
             HomePhone = "0242222222",
@@ -614,7 +553,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -622,11 +561,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_CourseCodeIsOnlySpace_ReturnBadRequest()
+    public void UpdateStudent_CourseCodeIsOnlySpace_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "  Nguyễn  ",
             LastName = "   Van A  ",
@@ -641,7 +580,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA",
             CourseCode = "      ",
             Status = 1,
             HomePhone = "0242222222",
@@ -665,7 +603,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -673,11 +611,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_ParentalNameIsEmpty_ReturnBadRequest()
+    public void UpdateStudent_ParentalNameIsEmpty_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyen",
             LastName = "Văn A",
@@ -692,7 +630,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -716,7 +653,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -724,11 +661,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_ParentalNameIsOnlySpace_ReturnBadRequest()
+    public void UpdateStudent_ParentalNameIsOnlySpace_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "    ",
             LastName = "Văn A",
@@ -743,7 +680,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -767,7 +703,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -775,11 +711,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_ParentalRelationshipIsEmpty_ReturnBadRequest()
+    public void UpdateStudent_ParentalRelationshipIsEmpty_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyen",
             LastName = "Văn A",
@@ -794,7 +730,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -818,7 +753,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -826,11 +761,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_ParentalRelationshipIsOnlySpace_ReturnBadRequest()
+    public void UpdateStudent_ParentalRelationshipIsOnlySpace_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = " Nguyen   ",
             LastName = "Văn A",
@@ -845,7 +780,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -869,7 +803,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -877,11 +811,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_ContactAddressIsEmpty_ReturnBadRequest()
+    public void UpdateStudent_ContactAddressIsEmpty_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyen",
             LastName = "Văn A",
@@ -896,7 +830,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -920,7 +853,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -928,11 +861,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_ContactAddressIsOnlySpace_ReturnBadRequest()
+    public void UpdateStudent_ContactAddressIsOnlySpace_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "  Nguyen  ",
             LastName = "Văn A",
@@ -947,7 +880,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -971,7 +903,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -979,11 +911,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_CitizenIdentityCardPublishedPlaceIsEmpty_ReturnBadRequest()
+    public void UpdateStudent_CitizenIdentityCardPublishedPlaceIsEmpty_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyen",
             LastName = "Văn A",
@@ -998,7 +930,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "",
-            EnrollNumber = "HENguyenVanA",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -1022,7 +953,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -1030,11 +961,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_CitizenIdentityCardPublishedPlaceIsOnlySpace_ReturnBadRequest()
+    public void UpdateStudent_CitizenIdentityCardPublishedPlaceIsOnlySpace_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = " Nguyen   ",
             LastName = "Văn A",
@@ -1049,7 +980,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "          ",
-            EnrollNumber = "HENguyenVanA",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -1073,7 +1003,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -1081,62 +1011,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_EnrollNumberIsEmpty_ReturnBadRequest()
+    public void UpdateStudent_CourseCodeIsNotExist_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyen",
-            LastName = "Văn A",
-            MobilePhone = "0972222222",
-            Email = "nguyenvana@gmail.com",
-            EmailOrganization = "nguyenvana_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099922228272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_EnrollNumberIsOnlySpace_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "  Nguyen  ",
             LastName = "Văn A",
@@ -1151,58 +1030,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "        ",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_CourseCodeIsNotExist_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "  Nguyen  ",
-            LastName = "Văn A",
-            MobilePhone = "0972222222",
-            Email = "nguyenvana@gmail.com",
-            EmailOrganization = "nguyenvana_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099922228272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = " HENguyenVanA1 ",
             CourseCode = "COURSE CODE 10000",
             Status = 1,
             HomePhone = "0242222222",
@@ -1226,7 +1053,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -1234,11 +1061,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_CourseCodeIsNotActive_ReturnBadRequest()
+    public void UpdateStudent_CourseCodeIsNotActive_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "  Nguyen  ",
             LastName = "Văn A",
@@ -1253,7 +1080,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = " HENguyenVanA1 ",
             CourseCode = "COURSE CODE 555",
             Status = 1,
             HomePhone = "0242222222",
@@ -1277,7 +1103,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -1285,62 +1111,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_EnrollNumberIsExisted_ReturnBadRequest()
+    public void UpdateStudent_FirstNameIsNotMatchWithFormat_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "  Nguyen  ",
-            LastName = "Văn A",
-            MobilePhone = "0972244222",
-            Email = "nguyenvana12@gmail.com",
-            EmailOrganization = "nguyenvana12_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099944228272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HE103",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_FirstNameIsNotMatchWithFormat_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "  Nguyen@,&^  ",
             LastName = "Văn A",
@@ -1355,7 +1130,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = " HENguyenVanA1 ",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -1379,7 +1153,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -1387,11 +1161,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_LastNameIsNotMatchWithFormat_ReturnBadRequest()
+    public void UpdateStudent_LastNameIsNotMatchWithFormat_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "  Nguyen  ",
             LastName = "Văn A@,&^#",
@@ -1406,7 +1180,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = " HENguyenVanA1 ",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -1430,7 +1203,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -1438,11 +1211,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_ParentalRelationshipIsNotMatchWithFormat_ReturnBadRequest()
+    public void UpdateStudent_ParentalNameIsNotMatchWithFormat_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "  Nguyen  ",
             LastName = "Văn A",
@@ -1457,58 +1230,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = " HENguyenVanA1 ",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố @,&^#",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_ParentalNameIsNotMatchWithFormat_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "  Nguyen  ",
-            LastName = "Văn A",
-            MobilePhone = "0972222222",
-            Email = "nguyenvana@gmail.com",
-            EmailOrganization = "nguyenvana_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099922228272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = " HENguyenVanA1 ",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -1532,7 +1253,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -1540,11 +1261,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_ContactAddressIsNotMatchWithFormat_ReturnBadRequest()
+    public void UpdateStudent_ParentalRelationshipIsNotMatchWithFormat_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "  Nguyen  ",
             LastName = "Văn A",
@@ -1559,7 +1280,56 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = " HENguyenVanA1 ",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "0972222222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố @,&^#",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.UpdateStudent(userId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void UpdateStudent_ContactAddressIsNotMatchWithFormat_ReturnBadRequest()
+    {
+        // arrange
+        var userId = 100;
+        var request = new UpdateStudentRequest()
+        {
+            FirstName = "  Nguyen  ",
+            LastName = "Văn A",
+            MobilePhone = "0972222222",
+            Email = "nguyenvana@gmail.com",
+            EmailOrganization = "nguyenvana_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099922228272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -1583,7 +1353,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -1591,11 +1361,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_HighSchoolIsNotMatchWithFormat_ReturnBadRequest()
+    public void UpdateStudent_HighSchoolIsNotMatchWithFormat_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "  Nguyen  ",
             LastName = "Văn A",
@@ -1610,7 +1380,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = " HENguyenVanA1 ",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -1634,7 +1403,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -1642,11 +1411,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_UniversityIsNotMatchWithFormat_ReturnBadRequest()
+    public void UpdateStudent_UniversityIsNotMatchWithFormat_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "  Nguyen  ",
             LastName = "Văn A",
@@ -1661,7 +1430,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = " HENguyenVanA1 ",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -1685,7 +1453,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -1693,11 +1461,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_WorkingCompanyIsNotMatchWithFormat_ReturnBadRequest()
+    public void UpdateStudent_WorkingCompanyIsNotMatchWithFormat_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "  Nguyen  ",
             LastName = "Văn A",
@@ -1712,7 +1480,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = " HENguyenVanA1 ",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -1736,7 +1503,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
@@ -1744,11 +1511,11 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_CompanyPositionIsNotMatchWithFormat_ReturnBadRequest()
+    public void UpdateStudent_CompanyPositionIsNotMatchWithFormat_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "  Nguyen  ",
             LastName = "Văn A",
@@ -1763,7 +1530,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = " HENguyenVanA1 ",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -1787,19 +1553,19 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-
+    
     [Fact]
-    public void AddStudentManual_CompanyAddressIsNotMatchWithFormat_ReturnBadRequest()
+    public void UpdateStudent_CompanyAddressIsNotMatchWithFormat_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "  Nguyen  ",
             LastName = "Văn A",
@@ -1814,7 +1580,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099922228272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = " HENguyenVanA1 ",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -1838,19 +1603,19 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-
+    
     [Fact]
-    public void AddStudentManual_MobilePhoneIsExisted_ReturnBadRequest()
+    public void UpdateStudent_MobilePhoneIsExisted_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 101;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyễn",
             LastName = "Văn A",
@@ -1865,7 +1630,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099964628272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -1889,19 +1653,19 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-
+    
     [Fact]
-    public void AddStudentManual_MobilePhoneContainsText_ReturnBadRequest()
+    public void UpdateStudent_MobilePhoneContainsText_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 101;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyễn",
             LastName = "Văn A",
@@ -1916,7 +1680,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099964628272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -1940,19 +1703,19 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-
+    
     [Fact]
-    public void AddStudentManual_MobilePhoneHasMoreNumber_ReturnBadRequest()
+    public void UpdateStudent_MobilePhoneHasMoreNumber_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyễn",
             LastName = "Văn A",
@@ -1967,7 +1730,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099964628272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -1991,23 +1753,23 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-
+    
     [Fact]
-    public void AddStudentManual_MobilePhoneHasLessNumber_ReturnBadRequest()
+    public void UpdateStudent_MobilePhoneHasLessNumber_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyễn",
             LastName = "Văn A",
-            MobilePhone = "09732",
+            MobilePhone = "0973",
             Email = "nguyenvana3@gmail.com",
             EmailOrganization = "nguyenvana3_organization@gmail.com",
             ProvinceId = 1,
@@ -2018,7 +1780,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099964628272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -2042,19 +1803,19 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-
+    
     [Fact]
-    public void AddStudentManual_ContactPhoneContainsText_ReturnBadRequest()
+    public void UpdateStudent_ContactPhoneContainsText_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyễn",
             LastName = "Văn A",
@@ -2069,7 +1830,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099964628272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -2093,19 +1853,19 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-
+    
     [Fact]
-    public void AddStudentManual_ContactPhoneHasLessNumber_ReturnBadRequest()
+    public void UpdateStudent_ContactPhoneHasMoreNumber_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyễn",
             LastName = "Văn A",
@@ -2120,58 +1880,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099964628272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "09722222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_ContactPhoneHasMoreNumber_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0373625172",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099964628272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -2195,19 +1903,19 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-
+    
     [Fact]
-    public void AddStudentManual_HomePhoneContainsText_ReturnBadRequest()
+    public void UpdateStudent_ContactPhoneHasLessNumber_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyễn",
             LastName = "Văn A",
@@ -2222,7 +1930,56 @@ public class TestClassController
             CitizenIdentityCardNo = "099964628272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
+            CourseCode = "COURSE CODE 1",
+            Status = 1,
+            HomePhone = "0242222222",
+            ContactPhone = "09722222",
+            ParentalName = "Nguyễn Văn Toàn",
+            ParentalRelationship = "Bố",
+            ContactAddress = "Hà Nội",
+            ParentalPhone = "0974222222",
+            ApplicationDate = new DateTime(2021, 01, 01),
+            ApplicationDocument = null,
+            HighSchool = null,
+            University = null,
+            FacebookUrl = null,
+            PortfolioUrl = null,
+            WorkingCompany = null,
+            CompanySalary = null,
+            CompanyPosition = null,
+            CompanyAddress = null,
+            FeePlan = 5000,
+            Promotion = 20, // %
+        };
+
+        // act 
+        var result = _controller.UpdateStudent(userId, request);
+        _testOutputHelper.PrintMessage(result);
+
+        // assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    
+    [Fact]
+    public void UpdateStudent_HomePhoneContainsText_ReturnBadRequest()
+    {
+        // arrange
+        var userId = 100;
+        var request = new UpdateStudentRequest()
+        {
+            FirstName = "Nguyễn",
+            LastName = "Văn A",
+            MobilePhone = "0373625172",
+            Email = "nguyenvana3@gmail.com",
+            EmailOrganization = "nguyenvana3_organization@gmail.com",
+            ProvinceId = 1,
+            DistrictId = 1,
+            WardId = 1,
+            GenderId = 1,
+            Birthday = new DateTime(2000, 01, 01),
+            CitizenIdentityCardNo = "099964628272",
+            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
+            CitizenIdentityCardPublishedPlace = "Hà Nội",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222c",
@@ -2246,19 +2003,19 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-
+    
     [Fact]
-    public void AddStudentManual_HomePhoneHasMoreNumber_ReturnBadRequest()
+    public void UpdateStudent_HomePhoneHasMoreNumber_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyễn",
             LastName = "Văn A",
@@ -2273,7 +2030,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099964628272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "024222222232",
@@ -2297,19 +2053,19 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-
+    
     [Fact]
-    public void AddStudentManual_HomePhoneHasLessNumber_ReturnBadRequest()
+    public void UpdateStudent_HomePhoneHasLessNumber_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyễn",
             LastName = "Văn A",
@@ -2324,7 +2080,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099964628272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "02422222",
@@ -2348,19 +2103,19 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-
+    
     [Fact]
-    public void AddStudentManual_ParentalPhoneContainsText_ReturnBadRequest()
+    public void UpdateStudent_ParentalPhoneContainsText_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyễn",
             LastName = "Văn A",
@@ -2375,7 +2130,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099964628272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -2399,19 +2153,19 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-
+    
     [Fact]
-    public void AddStudentManual_ParentalPhoneHasMoreNumber_ReturnBadRequest()
+    public void UpdateStudent_ParentalPhoneHasMoreNumber_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyễn",
             LastName = "Văn A",
@@ -2426,7 +2180,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099964628272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -2450,19 +2203,19 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-
+    
     [Fact]
-    public void AddStudentManual_ParentalPhoneHasLessNumber_ReturnBadRequest()
+    public void UpdateStudent_ParentalPhoneHasLessNumber_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyễn",
             LastName = "Văn A",
@@ -2477,7 +2230,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099964628272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -2501,19 +2253,19 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-
+    
     [Fact]
-    public void AddStudentManual_EmailIsExisted_ReturnBadRequest()
+    public void UpdateStudent_EmailIsExisted_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 101;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyễn",
             LastName = "Văn A",
@@ -2528,7 +2280,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099964628272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -2552,19 +2303,19 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-
+    
     [Fact]
-    public void AddStudentManual_EmailBelongToAnotherEmailOrganization_ReturnBadRequest()
+    public void UpdateStudent_EmailBelongToAnotherEmailOrganization_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 101;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyễn",
             LastName = "Văn A",
@@ -2579,7 +2330,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099964628272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -2603,19 +2353,19 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-
+    
     [Fact]
-    public void AddStudentManual_EmailOrganizationIsExisted_ReturnBadRequest()
+    public void UpdateStudent_EmailOrganizationIsExisted_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 101;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyễn",
             LastName = "Văn A",
@@ -2630,7 +2380,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099964628272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -2654,19 +2403,19 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-
+    
     [Fact]
-    public void AddStudentManual_EmailOrganizationBelongToAnotherEmail_ReturnBadRequest()
+    public void UpdateStudent_EmailOrganizationBelongToAnotherEmail_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 101;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyễn",
             LastName = "Văn A",
@@ -2681,7 +2430,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099964628272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -2705,19 +2453,19 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-
+    
     [Fact]
-    public void AddStudentManual_EmailIsNotMatchWithFormat_ReturnBadRequest()
+    public void UpdateStudent_EmailIsNotMatchWithFormat_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyễn",
             LastName = "Văn A",
@@ -2732,7 +2480,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099964628272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -2756,19 +2503,19 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-
+    
     [Fact]
-    public void AddStudentManual_EmailOrganizationIsNotMatchWithFormat_ReturnBadRequest()
+    public void UpdateStudent_EmailOrganizationIsNotMatchWithFormat_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyễn",
             LastName = "Văn A",
@@ -2783,7 +2530,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099964628272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -2807,19 +2553,19 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
-
+    
     [Fact]
     public void AddStudentManual_EmailSameAsEmailOrganization_ReturnBadRequest()
     {
         // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
+        var userId = 100;
+        var request = new UpdateStudentRequest()
         {
             FirstName = "Nguyễn",
             LastName = "Văn A",
@@ -2834,7 +2580,6 @@ public class TestClassController
             CitizenIdentityCardNo = "099964628272",
             CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
             CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
             CourseCode = "COURSE CODE 1",
             Status = 1,
             HomePhone = "0242222222",
@@ -2858,1165 +2603,7 @@ public class TestClassController
         };
 
         // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_IdentityCardIsExisted_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248236",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "022200004321",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_IdentityCardPublishedPlaceIsNotMatchWithFormat_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248436",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099964628272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội$#@%%^",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_IdentityCardContainsText_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248436",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099964628272av",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_IdentityCardHasMoreNumber_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248436",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "09996462827256456456",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_IdentityCardHasLessNumber_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248436",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "09996",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_ProvinceNotExists_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248436",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 99,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099964628272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_ProvinceIdIsNegative_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248436",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = -2,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099964628272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_DistrictNotExists_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248436",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 99,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099964628272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_DistrictIdIsNegative_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248436",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = -1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099964628272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_WardNotExists_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248436",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 99,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099964628272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_WardIdIsNegative_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248436",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = -1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099964628272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_AddressNotExists_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248436",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 327,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099964628272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_GenderIsNotExist_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248436",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 10,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099964628272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_StatusIdIsLessThan1_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248436",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099964628272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = -5,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_StatusIdIsMoreThan7_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248436",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099964628272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = 8,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_FeePlanIsNegative_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248436",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099964628272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = -5,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_PromotionIsNegative_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248436",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099964628272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = -5, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_CompanySalaryIsNegative_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248436",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099964628272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = -7,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 5, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_BirthdateIsLargerThanNow_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248436",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2030, 01, 01),
-            CitizenIdentityCardNo = "099964628272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_IdentityCardPublishedDateIsLargerThanNow_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248436",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099964628272",
-            CitizenIdentityCardPublishedDate = new DateTime(2030, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_ValidRequest_ReturnOK()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0972222222",
-            Email = "nguyenvana@gmail.com",
-            EmailOrganization = "nguyenvana_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099922228272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<OkObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_FirstNameRemoveUnUsedSpace_ReturnOk()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "   Trần   ",
-            LastName = "Văn A",
-            MobilePhone = "0972222223",
-            Email = "tranvana1@gmail.com",
-            EmailOrganization = "tranvana2_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099922428273",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HETranVanA",
-            CourseCode = "COURSE CODE 1",
-            Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222224",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<OkObjectResult>(result);
-    }
-
-    [Fact]
-    public void MergeClass_FirstClassNotExists_ReturnBadRequest()
-    {
-        // arrange
-        var request = new MergeClassRequest2()
-        {
-            FirstClassId = 1000,
-            SecondClassId = 2,
-        };
-
-        // act 
-        var result = _controller.MergeClass2(request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void MergeClass_SecondClassNotExists_ReturnBadRequest()
-    {
-        // arrange
-        var request = new MergeClassRequest2()
-        {
-            FirstClassId = 100,
-            SecondClassId = 1000,
-        };
-
-        // act 
-        var result = _controller.MergeClass2(request);
+        var result = _controller.UpdateStudent(userId, request);
         _testOutputHelper.PrintMessage(result);
 
         // assert
