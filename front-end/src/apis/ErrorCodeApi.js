@@ -143,6 +143,7 @@ export const ErrorCodeApi = {
   "teacher-error-0052-1": "Email tổ chức đã được sử dụng",
   "teacher-error-0052-2": "Email cá nhân và email tổ chức không được trùng nhau",
   "teacher-error-0052-3": "Ngày sinh phải nhỏ hơn ngày hiện tại",
+  "teacher-error-0052-4": "Mức lương phải lớn hơn 0",
   "teacher-error-0052-5": "Ngày cấp thẻ phải nhỏ hơn ngày hiện tại",
   "teacher-error-2056": "Thay đổi trạng thái không thành công",
   "teacher-error-1001": "Xóa giáo viên không thành công",
@@ -199,9 +200,6 @@ export const ErrorCodeApi = {
   "class-error-0085": "TỈnh thành không hợp lệ",
   "class-error-0086": "Quận huyện không hợp lệ",
   "class-error-0087": "Phường xã không hợp lệ",
-
-  "class-status-error-0001":"Lớp học đã được ghép",
-  "class-status-error-0002":"Lớp học đã được kết thúc",
 
   "student-class-error-0001": "Hệ thống đã xảy ra lỗi, vui lòng thử lại",
   "student-class-error-0002": "Mã số sinh viên đã tồn tại",
@@ -306,6 +304,9 @@ export const ErrorCodeApi = {
   "class-schedule-error-0028": "Lịch học không tồn tại",
   "class-schedule-error-0029": "Không thể xoá lịch học này",
   "class-schedule-error-0030": "Không thể bắt đầu lịch học mới khi lịch học trước đó chưa kết thúc",
+  "class-schedule-error-1001": "Lớp học không có trong cơ sở",
+  "class-schedule-error-1002": "Giáo viên không có trong cơ sở",
+  "class-schedule-error-1003": "Giáo viên không dạy lớp học này",
 
   "attendance-error-0000":"Lỗi dữ liệu",
   "attendance-error-0001":"Điểm danh đã được thực hiện trong tiết này",
@@ -332,6 +333,13 @@ export const ErrorCodeApi = {
   "student-grade-error-0007": "Không thể cập nhật, môn học không có bài thi",
   "student-grade-error-0008": "Điểm không nằm trong mức cho phép",
   "student-grade-error-0009": "Điểm không nằm trong mức cho phép",
+
+  "class-status-error-0001":"Lớp học đã được ghép",
+  "class-status-error-0002":"Lớp học đã được kết thúc",
+
+  "statistic-error-0000": "Ngày bắt đầu phải trước ngày kết thúc",
+
+  "authorize-error-0000": "Không có quyền truy cập",
 
   "gpa-error-1": "Lớp học không có trong cơ sở",
   "gpa-error-2": "Giáo viên không có trong cơ sở",
