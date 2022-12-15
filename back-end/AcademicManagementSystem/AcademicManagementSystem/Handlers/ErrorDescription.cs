@@ -252,7 +252,7 @@ public static class ErrorDescription
         { "E1091", new ErrorModel() { Message = "Address is not exists", Type = "student-error-00017" } },
         { "E1092", new ErrorModel() { Message = "Gender is not exists", Type = "student-error-00018" } },
         { "E1093", new ErrorModel() { Message = "Required input cannot be empty", Type = "student-error-00019" } },
-        { "E1094", new ErrorModel() { Message = "Status must be between 1-7", Type = "student-error-00020" } },
+        { "E1094", new ErrorModel() { Message = "Status must be between 1-4", Type = "student-error-00020" } },
         { "E1095", new ErrorModel() { Message = "Student response is null", Type = "student-error-00021" } },
         { "E1096", new ErrorModel() { Message = "Email is not match with email format", Type = "student-error-00022" } },
         { "E1097", new ErrorModel() { Message = "EmailOrganization is not match with email format", Type = "student-error-00023" } },
@@ -279,6 +279,8 @@ public static class ErrorDescription
         { "E1129", new ErrorModel() { Message = "Birthday must less than Now", Type = "student-error-0044" } },
         { "E1136", new ErrorModel() { Message = "Identity card must less than Now", Type = "student-error-0045" } },
         { "E1151", new ErrorModel() { Message = "SaveChanges fails when change active student", Type = "student-error-0046" } },
+        { "E1151_1", new ErrorModel() { Message = "Course code not available to course family of class which student want to join", Type = "student-error-0046-1" } },
+        { "E1151_2", new ErrorModel() { Message = "This class to join not available", Type = "student-error-0046-2" } },
 
         // class schedule
         { "E0077", new ErrorModel() { Message = "Module Not For This Class", Type = "class-schedule-error-0001" } },
