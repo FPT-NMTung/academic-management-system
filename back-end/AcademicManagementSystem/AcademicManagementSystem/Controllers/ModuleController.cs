@@ -403,6 +403,8 @@ public class ModuleController : ControllerBase
             return NotFound(CustomResponse.NotFound("Module not found"));
         }
 
+        var isChangeExamType = request.ExamType != module.ExamType;
+
         var canUpdate = CanDeleteUpdate(id);
         if (!canUpdate)
         {
@@ -466,7 +468,10 @@ public class ModuleController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        AddDataToGradeCategoryModule(module.Id, request.ExamType);
+        if (isChangeExamType)
+        {
+            AddDataToGradeCategoryModule(module.Id, request.ExamType);
+        }
 
         return Ok(CustomResponse.Ok("Module updated successfully", updatedModule));
     }
@@ -657,7 +662,7 @@ public class ModuleController : ControllerBase
 
             var s3 = m.ModuleType!.ToString()!;
             var s4 = m.ExamType!.ToString()!;
-            var s5 = m.Id.ToString();
+            var s5 = m.Semester.Id.ToString()!;
 
             sModuleType ??= "";
 

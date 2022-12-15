@@ -98,14 +98,7 @@ const CourseUpdate = ({ data, onUpdateSuccess }) => {
           return "Cập nhật thất bại !";
         },
       }
-      // .then((res) => {
-      //   message.success('Cập nhật khóa học thành công');
-      //   onUpdateSuccess();
-      // })
-      // .catch((err) => {
-      //   setIsUpdating(false);
-      //   setIsFailed(true);
-      // }
+
     );
   };
 
