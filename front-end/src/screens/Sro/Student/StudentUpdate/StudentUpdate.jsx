@@ -1520,7 +1520,7 @@ const StudentUpdate = () => {
                 width: '100%',
                 //   textAlign: "center",
               }}
-            >
+            >              
               <div
                 style={{
                   display: 'flex',
@@ -1544,7 +1544,7 @@ const StudentUpdate = () => {
                   {dataUser && <Switch
                     color={'success'}
                     size={'sm'}
-                    checked={dataUser?.is_active === 1}
+                    checked={dataUser.is_active}
                     onChange={(checked) => {
                       handleChangeStatus(checked);
                     }}
