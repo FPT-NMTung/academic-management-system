@@ -218,24 +218,6 @@ const StudentDetail = ({ role }) => {
           Dropout
         </Badge>
       );
-    } else if (id === 4) {
-      return (
-        <Badge variant="flat" color="secondary">
-          ClassQueue
-        </Badge>
-      );
-    } else if (id === 5) {
-      return (
-        <Badge variant="flat" color="default">
-          Transfer
-        </Badge>
-      );
-    } else if (id === 6) {
-      return (
-        <Badge variant="flat" color="error">
-          Upgrade
-        </Badge>
-      );
     } else {
       return (
         <Badge variant="flat" color="success">

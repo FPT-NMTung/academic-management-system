@@ -43,20 +43,8 @@ const translateStatusStudent = {
   1: 'Studying',
   2: 'Delay',
   3: 'Dropout',
-  4: 'ClassQueue',
-  5: 'Transfer',
-  6: 'Upgrade',
-  7: 'Finished',
+  4: 'Finished',
 };
-// const translateStatusId = {
-//      "Studying": 1,
-//      "Delay" :2,
-//      "Dropout":3,
-//      "ClassQueue":4,
-//      "Transfer":5,
-//      "Upgrade":6,
-//      "Finished":7,
-//   };
 
 const AddStudentToClass = () => {
   const [listGender, setListGender] = useState([]);
@@ -229,7 +217,7 @@ const AddStudentToClass = () => {
       onFinish={handleSubmitForm}
       // disabled={modeUpdate && isGettingInformationStudent}
       initialValues={{
-        status: 4,
+        status: 1,
       }}
     >
       <Grid.Container justify="center" gap={2}>
@@ -1317,6 +1305,8 @@ const AddStudentToClass = () => {
                   filterOption={(input, option) =>
                     option.children.toLowerCase().includes(input.toLowerCase())
                   }
+                  defaultValue={1}
+                  disabled={true}
                 >
                   <Select.Option key={100} value={1}>
                     Studying
@@ -1327,16 +1317,7 @@ const AddStudentToClass = () => {
                   <Select.Option key={102} value={3}>
                     Dropout
                   </Select.Option>
-                  <Select.Option key={103} value={4}>
-                    ClassQueue
-                  </Select.Option>
-                  <Select.Option key={104} value={5}>
-                    Transfer
-                  </Select.Option>
-                  <Select.Option key={105} value={6}>
-                    Upgrade
-                  </Select.Option>
-                  <Select.Option key={106} value={7}>
+                  <Select.Option key={106} value={4}>
                     Finished
                   </Select.Option>
                 </Select>
