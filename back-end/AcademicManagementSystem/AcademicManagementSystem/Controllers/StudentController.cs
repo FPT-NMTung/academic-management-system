@@ -29,6 +29,7 @@ public class StudentController : ControllerBase
     private readonly User _user;
     private const int RoleIdStudent = 4;
     private const int MaxNumberStudentInClass = 100;
+    private const int StatusMerged = 6;
     private readonly IUserService _userService;
 
     public StudentController(AmsContext context, IUserService userService)
@@ -555,7 +556,8 @@ public class StudentController : ControllerBase
             .Include(c => c.StudentsClasses)
             .ThenInclude(sc => sc.Student)
             .Where(c => c.Center.Id == _user.CenterId &&
-                        c.Id != currentClass.Id &&
+                        c.Id != currentClass.Id && c.CourseFamilyCode == currentClass.CourseFamilyCode &&
+                        c.ClassStatusId != StatusMerged &&
                         c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < MaxNumberStudentInClass)
             .Select(c => new ClassResponse()
             {
@@ -727,7 +729,7 @@ public class StudentController : ControllerBase
 
         return Ok(CustomResponse.Ok("Student changed class successfully", studentResponse));
     }
-    
+
     // change active student
     [HttpPatch]
     [Route("api/students/{id:int}/change-active")]
