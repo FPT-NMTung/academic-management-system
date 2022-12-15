@@ -555,7 +555,7 @@ public class StudentController : ControllerBase
             .Include(c => c.StudentsClasses)
             .ThenInclude(sc => sc.Student)
             .Where(c => c.Center.Id == _user.CenterId &&
-                        c.Id != currentClass.Id &&
+                        c.Id != currentClass.Id && c.CourseFamilyCode == currentClass.CourseFamilyCode &&
                         c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < MaxNumberStudentInClass)
             .Select(c => new ClassResponse()
             {
