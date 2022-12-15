@@ -55,7 +55,7 @@ public class AuthController : ControllerBase
         if (selectUser.RoleId == 4)
         {
             var selectStudent = _context.Students.FirstOrDefault(x => x.UserId == selectUser.Id);
-            if (selectStudent?.IsDraft == false)
+            if (selectStudent?.IsDraft == true)
                 return Unauthorized(CustomResponse.Unauthorized("Unauthorized"));
         }
 
@@ -101,7 +101,7 @@ public class AuthController : ControllerBase
         if (selectUser.RoleId == 4)
         {
             var selectStudent = _context.Students.FirstOrDefault(x => x.UserId == selectUser.Id);
-            if (selectStudent?.IsDraft == false)
+            if (selectStudent?.IsDraft == true)
                 return Unauthorized(CustomResponse.Unauthorized("Unauthorized"));
         }
 
