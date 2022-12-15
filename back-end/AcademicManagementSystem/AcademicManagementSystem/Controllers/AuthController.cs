@@ -51,6 +51,13 @@ public class AuthController : ControllerBase
         {
             return BadRequest(CustomResponse.BadRequest("User is not active", "auth-error-000002"));
         }
+        
+        if (selectUser.RoleId == 4)
+        {
+            var selectStudent = _context.Students.FirstOrDefault(x => x.UserId == selectUser.Id);
+            if (selectStudent?.IsDraft == false)
+                return Unauthorized(CustomResponse.Unauthorized("Unauthorized"));
+        }
 
         var accessToken = GenerateToken(selectUser.Id, selectUser.Role.Value);
         var refreshToken = GenerateRefreshToken(selectUser.Id);
@@ -89,6 +96,13 @@ public class AuthController : ControllerBase
         if (!selectUser.IsActive)
         {
             return Unauthorized(CustomResponse.Unauthorized("Unauthorized"));
+        }
+
+        if (selectUser.RoleId == 4)
+        {
+            var selectStudent = _context.Students.FirstOrDefault(x => x.UserId == selectUser.Id);
+            if (selectStudent?.IsDraft == false)
+                return Unauthorized(CustomResponse.Unauthorized("Unauthorized"));
         }
 
         // Generate the JWT token
