@@ -907,7 +907,7 @@ public class StudentGradeController : ControllerBase
         }
 
         // module completed learning in schedule
-        var modules = GetModulesTeachedByTeacher(teacherId).ToList();
+        var modules = GetModulesTaughtByTeacher(teacherId).ToList();
 
         var response = modules.Select(m => new BasicModuleResponse()
         {
@@ -931,7 +931,7 @@ public class StudentGradeController : ControllerBase
         }
 
         // class completed learning in schedule
-        var classes = GetClassesTeachByTeacherByModuleId(teacherId, moduleId);
+        var classes = GetClassesTaughtByTeacherByModuleId(teacherId, moduleId);
 
         return Ok(CustomResponse.Ok("Get classes of teacher by module successfully", classes));
     }
@@ -942,7 +942,7 @@ public class StudentGradeController : ControllerBase
     public IActionResult GetPassRateAllModuleOfTeacher(int teacherId)
     {
         // modules that teach by this teacher
-        var modules = GetModulesTeachedByTeacher(teacherId).ToList();
+        var modules = GetModulesTaughtByTeacher(teacherId).ToList();
 
         var responses = new List<PassRateOfTeacherAndModuleResponse>();
 
@@ -950,7 +950,7 @@ public class StudentGradeController : ControllerBase
         {
             var numberOfStudentInAllModule = 0;
             var passedCount = 0;
-            var classes = GetClassesTeachByTeacherByModuleId(teacherId, module.Id).ToList();
+            var classes = GetClassesTaughtByTeacherByModuleId(teacherId, module.Id).ToList();
             foreach (var c in classes)
             {
                 var clazz = new Class()
@@ -1033,7 +1033,7 @@ public class StudentGradeController : ControllerBase
             var passedCount = 0;
             foreach (var module in modules)
             {
-                var classes = GetClassesTeachByTeacherByModuleId(teacher.UserId, module.Id).ToList();
+                var classes = GetClassesTaughtByTeacherByModuleId(teacher.UserId, module.Id).ToList();
                 foreach (var c in classes)
                 {
                     var clazz = new Class()
@@ -1195,7 +1195,7 @@ public class StudentGradeController : ControllerBase
 
         var module = schedule.Module;
 
-        var classes = GetClassesTeachByTeacherByModuleId(teacherId, moduleId).ToList();
+        var classes = GetClassesTaughtByTeacherByModuleId(teacherId, moduleId).ToList();
 
         var numberOfStudentInAllClass = 0;
         var passedCount = 0;
@@ -1274,7 +1274,7 @@ public class StudentGradeController : ControllerBase
 
         var module = schedule.Module;
 
-        var classResponse = GetClassesTeachByTeacherByModuleId(teacherId, moduleId)
+        var classResponse = GetClassesTaughtByTeacherByModuleId(teacherId, moduleId)
             .FirstOrDefault(c => c.Id == classId);
 
         if (classResponse == null)
@@ -1516,7 +1516,7 @@ public class StudentGradeController : ControllerBase
         return totalScore;
     }
 
-    private IQueryable<BasicClassResponse> GetClassesTeachByTeacherByModuleId(int teacherId, int moduleId)
+    private IQueryable<BasicClassResponse> GetClassesTaughtByTeacherByModuleId(int teacherId, int moduleId)
     {
         return _context.ClassSchedules
             .Include(cs => cs.Class)
@@ -1530,7 +1530,7 @@ public class StudentGradeController : ControllerBase
             });
     }
 
-    private IQueryable<Module> GetModulesTeachedByTeacher(int teacherId)
+    private IQueryable<Module> GetModulesTaughtByTeacher(int teacherId)
     {
         return _context.ClassSchedules
             .Include(cs => cs.Module)
