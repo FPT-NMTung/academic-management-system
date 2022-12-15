@@ -87,8 +87,13 @@ const TeacherInfo = () => {
         setdataUser(res.data);
         setIsLoading(false);
       })
-      .catch(() => {
+      .catch((err) => {
+        if (err?.type_error) {
+          return toast.error(ErrorCodeApi[err.type_error]);
+        } else {
         toast.error("Lỗi lấy chi tiết giáo viên");
+        }
+
       });
   };
   const getListSkill = () => {
@@ -97,8 +102,13 @@ const TeacherInfo = () => {
         console.log(res.data[0].skills);
         setListSkill(res.data[0].skills);
       })
-      .catch(() => {
+      .catch((err) => {
+        if (err?.type_error) {
+          return toast.error(ErrorCodeApi[err.type_error]);
+        }
+        else {
         toast.error("Lỗi lấy danh sách kỹ năng");
+        }
       });
   };
 
@@ -108,8 +118,13 @@ const TeacherInfo = () => {
         setListModule(res.data);
         console.log("mon hoc " + res.data);
       })
-      .catch(() => {
+      .catch((err) => {
+        if (err?.type_error) {
+          return toast.error(ErrorCodeApi[err.type_error]);
+        }
+        else {
         toast.error("Lỗi lấy danh sách môn học");
+        }
       });
   };
   const getListModuleTeach = () => {
@@ -119,8 +134,13 @@ const TeacherInfo = () => {
       .then((res) => {
         setListModuleTeach(res.data);
       })
-      .catch(() => {
+      .catch((err) => {
+        if (err?.type_error) {
+          return toast.error(ErrorCodeApi[err.type_error]);
+        }
+        else {
         toast.error("Lỗi lấy danh sách môn học");
+        }
       });
   };
   const getListClass = () => {
@@ -136,8 +156,12 @@ const TeacherInfo = () => {
       .then((res) => {
         setListClass(res.data);
       })
-      .catch(() => {
+      .catch((err) => {
+        if (err?.type_error) {
+          return toast.error(ErrorCodeApi[err.type_error]);
+        } else {
         toast.error("Lỗi lấy danh sách lớp học");
+        }
       });
   };
   const getListClassOfATeacherTeachByModule = () => {
@@ -154,8 +178,13 @@ const TeacherInfo = () => {
       .then((res) => {
         setListClassTeach(res.data);
       })
-      .catch(() => {
+      .catch((err) => {
+        if (err?.type_error) {
+          return toast.error(ErrorCodeApi[err.type_error]);
+        }
+        else {
         toast.error("Lỗi lấy danh sách lớp học");
+        }
       });
   };
 
@@ -165,8 +194,12 @@ const TeacherInfo = () => {
         const data = res.data === null ? "" : res.data;
         setGpa(data);
       })
-      .catch(() => {
+      .catch((err) => {
+        if (err?.type_error) {
+          return toast.error(ErrorCodeApi[err.type_error]);
+        } else {
         toast.error("Lỗi lấy GPA giáo viên");
+        }
       });
   };
   const getGPAByModule = () => {
@@ -185,8 +218,9 @@ const TeacherInfo = () => {
       .catch((err) => {
         if (err?.type_error) {
           return toast.error(ErrorCodeApi[err.type_error]);
-        }
+        } else {
         toast.error("Lỗi lấy GPA giáo viên theo môn học");
+        }
       });
   };
   const getGPAByModuleAndClass = () => {
@@ -220,7 +254,9 @@ const TeacherInfo = () => {
         if (err?.type_error) {
           return toast.error(ErrorCodeApi[err.type_error]);
         }
+        else {
         toast.error("Lỗi lấy GPA giáo viên theo môn học và lớp học");
+        }
       });
   };
   const getPasseRateAllModule = () => {
@@ -260,8 +296,14 @@ const TeacherInfo = () => {
 
         console.log("ti le qua tat ca mon:" + passRateAllModule);
       })
-      .catch(() => {
+      .catch((err) => {
+        if (err?.type_error) {
+          return toast.error(ErrorCodeApi[err.type_error]);
+        }
+        else {
+
         toast.error("Lỗi tỉ lệ qua môn giáo viên");
+        }
       });
   };
   const getPassRateOfATeacherByModule = () => {
@@ -282,8 +324,13 @@ const TeacherInfo = () => {
         }
         setPassRateByModule(passRate);
       })
-      .catch(() => {
+      .catch((err) => {
+        if (err?.type_error) {
+          return toast.error(ErrorCodeApi[err.type_error]);
+        }
+        else {
         toast.error("Lỗi lấy tỉ lệ qua môn giáo viên theo môn học");
+        }
       });
   };
   const getPassRateOfAClassAndModule = () => {
@@ -310,8 +357,13 @@ const TeacherInfo = () => {
           setPassRateByClass(0);
         }
       })
-      .catch(() => {
+      .catch((err) => {
+        if (err?.type_error) {
+          return toast.error(ErrorCodeApi[err.type_error]);
+        }
+        else {
         toast.error("Lỗi lấy tỉ lệ qua môn giáo viên theo môn học và lớp học");
+        }
       });
   };
   const getListClassHoursByTeacherId = () => {
@@ -322,8 +374,13 @@ const TeacherInfo = () => {
         const data = res.data === null ? "" : res.data;
         setListClassHours(data);
       })
-      .catch(() => {
+      .catch((err) => {
+        if (err?.type_error) {
+          return toast.error(ErrorCodeApi[err.type_error]);
+        }
+        else {
         toast.error("Lỗi lấy danh sách lớp học theo giáo viên");
+        }
       });
   };
   const getTotalTeachingHoursOfATeacher = () => {
@@ -340,8 +397,13 @@ const TeacherInfo = () => {
         setTotalHours(data);
         // form.setFieldValue("totalhours", data);
       })
-      .catch(() => {
+      .catch((err) => {
+        if (err?.type_error) {
+          return toast.error(ErrorCodeApi[err.type_error]);
+        }
+        else {
         toast.error("Lỗi lấy tổng số giờ dạy của giáo viên");
+        }
       });
   };
   const getAttenanceRateofClass = () => {
@@ -354,8 +416,13 @@ const TeacherInfo = () => {
         const data = res.data === null ? "" : res.data;
         setAverageAttendanceRate(data.average_attendance / 100);
       })
-      .catch(() => {
+      .catch((err) => {
+        if (err?.type_error) {
+          return toast.error(ErrorCodeApi[err.type_error]);
+        }
+        else {
         toast.error("Lỗi lấy tỉ lệ điểm danh của giáo viên");
+        }
       });
   };
 
@@ -789,9 +856,9 @@ const TeacherInfo = () => {
                                 : listModule.map((item) => {
                                     if (item.id === moduleSelected) {
                                       return (
-                                        '" ' +
+                                        '"' +
                                         `${item.module_name}` +
-                                        ' "' +
+                                        '"' +
                                         " " +
                                         "là:  "
                                       );
@@ -857,9 +924,9 @@ const TeacherInfo = () => {
                                 : listModule.map((item) => {
                                     if (item.id === moduleSelected) {
                                       return (
-                                        '" ' +
+                                        '"' +
                                         `${item.module_name}` +
-                                        ' "' +
+                                        '"' +
                                         " "
                                       );
                                     }
@@ -870,9 +937,9 @@ const TeacherInfo = () => {
                                 : listClass.map((item) => {
                                     if (item.id === classSelected) {
                                       return (
-                                        '" ' +
+                                        '"' +
                                         `${item.name}` +
-                                        ' "' +
+                                        '"' +
                                         " " +
                                         "là:  "
                                       );
@@ -1116,9 +1183,9 @@ const TeacherInfo = () => {
                                   : listModuleTeach.map((item) => {
                                       if (item.id === moduleTeachSelected) {
                                         return (
-                                          '" ' +
+                                          '"' +
                                           `${item.name}` +
-                                          ' "' +
+                                          '"' +
                                           " " +
                                           "là:  "
                                         );
@@ -1184,7 +1251,7 @@ const TeacherInfo = () => {
                                     : listModuleTeach.map((item) => {
                                         if (item.id === moduleTeachSelected) {
                                           return (
-                                            '" ' + `${item.name}` + ' "' + " "
+                                            '"' + `${item.name}` + '"' + " "
                                           );
                                         }
                                       })}
@@ -1194,9 +1261,9 @@ const TeacherInfo = () => {
                                     : listClassTeach.map((item) => {
                                         if (item.id === classTeachSelected) {
                                           return (
-                                            '" ' +
+                                            '"' +
                                             `${item.name}` +
-                                            ' "' +
+                                            '"' +
                                             " " +
                                             "là:  "
                                           );
@@ -1273,9 +1340,13 @@ const TeacherInfo = () => {
                               </Select>
                             </Form.Item>
                             <Form.Item label="Số giờ dạy" name="totalhours">
-                              {totalHours !== 0 && totalHours !== "" && (
+                              {totalHours !== 0 && totalHours !== "" ? (
                                 <Badge variant="bordered" color="success">
                                   {Math.round(totalHours * 10) / 10} {" tiếng"}
+                                </Badge>
+                              ) : (
+                                <Badge variant="bordered" color="warning">
+                                  Chưa có dữ liệu
                                 </Badge>
                               )}
                             </Form.Item>
