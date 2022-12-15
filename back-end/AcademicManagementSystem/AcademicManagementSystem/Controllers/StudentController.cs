@@ -570,44 +570,6 @@ public class StudentController : ControllerBase
         return Ok(CustomResponse.Ok("Student updated successfully", studentResponse));
     }
 
-    private bool IsCourseCodeAvailableToCourseFamilyOfClass(string requestCourseCode, int? requestClassId)
-    {
-        // if classId is null -> assign to 0
-        requestClassId ??= 0;
-
-        return _context.Classes
-            .Include(c => c.CourseFamily)
-            .ThenInclude(cf => cf.Courses)
-            .Any(c => c.Id == requestClassId && c.CourseFamily.Courses.Any(course => course.Code == requestCourseCode));
-    }
-
-    [HttpGet]
-    [Route("api/students/available-classes")]
-    [Authorize(Roles = "sro")]
-    public IActionResult GetAvailableClassesWhenUpdateLearningStatusOfStudent()
-    {
-        var availableClasses = GetAvailableClassesToUpdateLearningStatusStudent();
-        return Ok(CustomResponse.Ok("Get available classes to update learning status successfully", availableClasses));
-    }
-
-    // all class not in status(merged, finished, canceled) and not full student
-    private IQueryable<BasicClassResponse> GetAvailableClassesToUpdateLearningStatusStudent()
-    {
-        return _context.Classes
-            .Include(c => c.StudentsClasses)
-            .ThenInclude(sc => sc.Student)
-            .Where(c => c.Center.Id == _user.CenterId &&
-                        c.ClassStatusId != ClassStatusMerged &&
-                        c.ClassStatusId != ClassStatusCanceled &&
-                        c.ClassStatusId != ClassStatusCompleted &&
-                        c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < MaxNumberStudentInClass)
-            .Select(c => new BasicClassResponse()
-            {
-                Id = c.Id,
-                Name = c.Name
-            });
-    }
-
     // get class of student
     [HttpGet]
     [Route("api/students/{id:int}/classes")]
@@ -655,6 +617,15 @@ public class StudentController : ControllerBase
         var availableClasses = GetAvailableClasses(currentClass);
         return Ok(CustomResponse.Ok("Get available classes for student successfully", availableClasses));
     }
+    
+    [HttpGet]
+    [Route("api/students/available-classes")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetAvailableClassesWhenUpdateLearningStatusOfStudent()
+    {
+        var availableClasses = GetAvailableClassesToUpdateLearningStatusStudent();
+        return Ok(CustomResponse.Ok("Get available classes to update learning status successfully", availableClasses));
+    }
 
     private IQueryable<ClassResponse> GetAvailableClasses(ClassResponse currentClass)
     {
@@ -666,8 +637,7 @@ public class StudentController : ControllerBase
             .Include(c => c.StudentsClasses)
             .ThenInclude(sc => sc.Student)
             .Where(c => c.Center.Id == _user.CenterId &&
-                        c.Id != currentClass.Id && c.CourseFamilyCode == currentClass.CourseFamilyCode &&
-                        c.ClassStatusId != ClassStatusMerged &&
+                        c.Id != currentClass.Id && c.ClassStatusId != ClassStatusMerged &&
                         c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < MaxNumberStudentInClass)
             .Select(c => new ClassResponse()
             {
@@ -1196,6 +1166,35 @@ public class StudentController : ControllerBase
                 SroFirstName = c.Sro.User.FirstName,
                 SroLastName = c.Sro.User.LastName
             }).Where(c => c.CenterId == centerId);
+    }
+
+    // all class not in status(merged, finished, canceled) and not full student
+    private IQueryable<BasicClassResponse> GetAvailableClassesToUpdateLearningStatusStudent()
+    {
+        return _context.Classes
+            .Include(c => c.StudentsClasses)
+            .ThenInclude(sc => sc.Student)
+            .Where(c => c.Center.Id == _user.CenterId &&
+                        c.ClassStatusId != ClassStatusMerged &&
+                        c.ClassStatusId != ClassStatusCanceled &&
+                        c.ClassStatusId != ClassStatusCompleted &&
+                        c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < MaxNumberStudentInClass)
+            .Select(c => new BasicClassResponse()
+            {
+                Id = c.Id,
+                Name = c.Name
+            });
+    }
+
+    private bool IsCourseCodeAvailableToCourseFamilyOfClass(string requestCourseCode, int? requestClassId)
+    {
+        // if classId is null -> assign to 0
+        requestClassId ??= 0;
+
+        return _context.Classes
+            .Include(c => c.CourseFamily)
+            .ThenInclude(cf => cf.Courses)
+            .Any(c => c.Id == requestClassId && c.CourseFamily.Courses.Any(course => course.Code == requestCourseCode));
     }
 
     private static string RemoveDiacritics(string text)
