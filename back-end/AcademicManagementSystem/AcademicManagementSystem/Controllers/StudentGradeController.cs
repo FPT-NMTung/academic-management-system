@@ -330,7 +330,7 @@ public class StudentGradeController : ControllerBase
 
     [HttpGet]
     [Route("api/students/{studentId:int}/semesters/modules")]
-    [Authorize(Roles = "sro")]
+    [Authorize(Roles = "sro,teacher")]
     public IActionResult GetLearningModulesInSemestersOfStudent(int studentId)
     {
         var userId = Convert.ToInt32(_userService.GetUserId());
