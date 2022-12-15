@@ -2146,7 +2146,7 @@ public class ClassController : ControllerBase
             .Include(c => c.StudentsClasses)
             .ThenInclude(sc => sc.Student)
             .Where(c => c.Center.Id == _user.CenterId &&
-                        c.Id != currentClass.Id &&
+                        c.Id != currentClass.Id && c.ClassStatusId != StatusMerged &&
                         c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < MaxNumberStudentInClass &&
                         c.StudentsClasses.Any(sc => sc.ClassId == c.Id && sc.IsActive && !sc.Student.IsDraft))
             .Select(c => new ClassResponse()
