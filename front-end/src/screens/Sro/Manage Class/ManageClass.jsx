@@ -326,7 +326,7 @@ const ManageClass = () => {
             </div>
           )}
           {!isGetData && (
-            <Table aria-label="" disabledKeys={['4']}>
+            <Table aria-label="">
               <Table.Header>
                 <Table.Column width={60}>STT</Table.Column>
                 <Table.Column width={200}>Tên lớp học</Table.Column>
