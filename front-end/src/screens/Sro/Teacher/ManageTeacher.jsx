@@ -21,12 +21,14 @@ import classes from "../../Admin/Sro/SroScreen.module.css";
 import { RiEyeFill } from "react-icons/ri";
 import moment from "moment";
 import { toast } from "react-hot-toast";
+import { ErrorCodeApi } from "../../../apis/ErrorCodeApi";
 
 const ManageTeacher = () => {
   const [dataSource, setDataSource] = useState([]);
   const [isGetData, setIsGetData] = useState(true);
   const [passRate, setPassRate] = useState(0);
-  const [passRateAll, setPassRateAll] = useState(0);
+  const [passRateAll, setPassRateAll] = useState(0)
+  const [messageFailed, setMessageFailed] = useState(undefined);
 
   const [form1] = Form.useForm();
   const [form2] = Form.useForm();
@@ -48,9 +50,12 @@ const ManageTeacher = () => {
         console.log(res.data);
         setIsGetData(false);
       })
-      .catch(() => {
+      .catch((err) => {
         setIsGetData(false);
-        message.error("Có điều gì đó không đúng 😥");
+        if (err?.type_error) {
+          return toast.error(ErrorCodeApi[err.type_error]);
+        }
+        toast.error("Lỗi lấy danh sách giáo viên");
       });
   };
   const getPassRateAllTeacherInAllTime = () => {
@@ -71,8 +76,11 @@ const ManageTeacher = () => {
           setPassRateAll(passStudent / totalStudent);
         }
       })
-      .catch(() => {
-        message.error("Không lấy ra được tỷ lệ học viên qua môn 😥");
+      .catch((err) => {
+        if (err?.type_error) {
+          return toast.error(ErrorCodeApi[err.type_error]);
+        }
+        toast.error("Lỗi lấy tỷ lệ học viên qua môn");
       });
   };
 
@@ -118,8 +126,11 @@ const ManageTeacher = () => {
           setPassRate(passStudent / totalStudent);
         }
       })
-      .catch(() => {
-        message.error("Không có dữ liệu trong khoảng thời gian này");
+      .catch((err) => {
+        if (err?.type_error) {
+          return toast.error(ErrorCodeApi[err.type_error]);
+        }
+        toast.error("Lỗi lấy tỷ lệ học viên qua môn trong khoảng thời gian này");
       });
   };
 
