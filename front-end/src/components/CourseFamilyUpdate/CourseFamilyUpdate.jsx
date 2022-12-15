@@ -100,15 +100,7 @@ const CourseFamilyUpdate = ({ data, onUpdateSuccess }) => {
       }
     );
   };
-  //     .then((res) => {
-  //       message.success("Cập nhật chương trình học thành công");
-  //       onUpdateSuccess();
-  //     })
-  //     .catch((err) => {
-  //       setIsUpdating(false);
-  //       setIsFailed(true);
-  //     });
-  // };
+
   return (
     <Fragment>
       {IsLoading && (
