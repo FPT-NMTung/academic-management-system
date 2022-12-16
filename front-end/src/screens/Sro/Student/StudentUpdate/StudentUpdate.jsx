@@ -349,14 +349,13 @@ const StudentUpdate = () => {
             onFinish={handleSubmitForm}
             form={form}
           >
-
             <Form.Item
-              name={'joinclass_id'}
-              label={'Tên lớp'}
+              name={"joinclass_id"}
+              label={"Tên lớp"}
               rules={[
                 {
                   required: true,
-                  message: 'Hãy chọn lớp cho học viên',
+                  message: "Hãy chọn lớp cho học viên",
                 },
               ]}
             >
@@ -375,20 +374,31 @@ const StudentUpdate = () => {
             <Form.Item wrapperCol={{ offset: 9, span: 99 }}>
               <div
                 style={{
-                  display: 'flex',
-                  gap: '10px',
+                  display: "flex",
+                  gap: "10px",
                 }}
               >
                 <Button
                   flat
                   auto
                   css={{
-                    width: '120px',
+                    width: "120px",
                   }}
                   type="primary"
                   htmlType="submit"
                 >
                   Cập nhật
+                </Button>
+                <Button
+                  auto
+                  flat
+                  color="error"
+                  onClick={() => {setIsOpenModal(false);
+                    form.setFieldValue("status", currentStatus);
+                  }
+                  }
+                >
+                  Hủy
                 </Button>
               </div>
             </Form.Item>
@@ -1418,6 +1428,7 @@ const StudentUpdate = () => {
                     onChange={(value) => {
                       console.log("Ban dang chon" + value);
                       handleOpenModal(value);
+
                     }}
                   >
                     <Select.Option key={100} value={1}>
