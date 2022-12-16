@@ -6,6 +6,7 @@ using AcademicManagementSystem.Handlers;
 using AcademicManagementSystem.Models.AddressController.DistrictModel;
 using AcademicManagementSystem.Models.AddressController.ProvinceModel;
 using AcademicManagementSystem.Models.AddressController.WardModel;
+using AcademicManagementSystem.Models.BasicResponse;
 using AcademicManagementSystem.Models.CenterController;
 using AcademicManagementSystem.Models.ClassController;
 using AcademicManagementSystem.Models.ClassDaysController;
@@ -29,8 +30,14 @@ public class StudentController : ControllerBase
     private readonly User _user;
     private const int RoleIdStudent = 4;
     private const int MaxNumberStudentInClass = 100;
-    private const int StatusMerged = 6;
     private readonly IUserService _userService;
+    private const int ClassStatusMerged = 6;
+    private const int ClassStatusCanceled = 4;
+    private const int ClassStatusCompleted = 3;
+    private const int LearningStatusStudying = 1;
+    private const int LearningStatusDelay = 2;
+    private const int LearningStatusDropout = 3;
+    private const int LearningStatusFinished = 4;
 
     public StudentController(AmsContext context, IUserService userService)
     {
@@ -150,6 +157,8 @@ public class StudentController : ControllerBase
         {
             return NotFound(CustomResponse.NotFound("Not found user with id: " + id));
         }
+
+        var learningStatusBeforeUpdate = user.Student.Status;
 
         request.FirstName = request.FirstName.Trim();
         request.LastName = request.LastName.Trim();
@@ -401,7 +410,7 @@ public class StudentController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (request.Status is < 1 or > 7)
+        if (request.Status is < 1 or > 4)
         {
             var error = ErrorDescription.Error["E1094"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -435,6 +444,69 @@ public class StudentController : ControllerBase
         {
             var error = ErrorDescription.Error["E1136"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        }
+
+        if (request.Status is LearningStatusDelay or LearningStatusDropout or LearningStatusFinished)
+        {
+            var currentLearningClass = _context.StudentsClasses
+                .Include(sc => sc.Class)
+                .FirstOrDefault(sc => sc.StudentId == user.Student.UserId && sc.IsActive);
+
+            if (currentLearningClass != null)
+            {
+                currentLearningClass.IsActive = false;
+                currentLearningClass.UpdatedAt = DateTime.Now;
+            }
+        }
+
+        // change from another status to studying status
+        if (learningStatusBeforeUpdate != LearningStatusStudying && request.Status == LearningStatusStudying)
+        {
+            // if classId is null -> assign to 0
+            request.ClassId ??= 0;
+
+            // var isAvailableClass = IsCourseCodeAvailableToCourseFamilyOfClass(request.CourseCode, request.ClassId);
+            // if (!isAvailableClass)
+            // {
+            //     var error = ErrorDescription.Error["E1151_1"];
+            //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            // }
+
+            var classToJoinTo = _context.Classes
+                .Include(c => c.StudentsClasses)
+                .FirstOrDefault(c => c.Id == request.ClassId);
+
+            if (classToJoinTo == null)
+            {
+                return NotFound(CustomResponse.NotFound("Class not found"));
+            }
+
+            // all class not in status(merged, finished, canceled) and not full student
+            var classesAvailable = GetAvailableClassesToUpdateLearningStatusStudent()
+                .Where(c => c.Id == classToJoinTo.Id);
+
+            if (!classesAvailable.Any())
+            {
+                var error = ErrorDescription.Error["E1151_2"];
+                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            }
+
+            var studentClass = classToJoinTo.StudentsClasses.FirstOrDefault(sc => sc.StudentId == user.Student.UserId);
+            if (studentClass == null)
+            {
+                classToJoinTo.StudentsClasses.Add(new StudentClass()
+                {
+                    StudentId = user.Student.UserId,
+                    IsActive = true,
+                    UpdatedAt = DateTime.Now
+                });
+            }
+            else
+            {
+                studentClass.StudentId = user.Student.UserId;
+                studentClass.IsActive = true;
+                studentClass.UpdatedAt = DateTime.Now;
+            }
         }
 
         user.FirstName = request.FirstName;
@@ -545,6 +617,15 @@ public class StudentController : ControllerBase
         var availableClasses = GetAvailableClasses(currentClass);
         return Ok(CustomResponse.Ok("Get available classes for student successfully", availableClasses));
     }
+    
+    [HttpGet]
+    [Route("api/students/available-classes")]
+    [Authorize(Roles = "sro")]
+    public IActionResult GetAvailableClassesWhenUpdateLearningStatusOfStudent()
+    {
+        var availableClasses = GetAvailableClassesToUpdateLearningStatusStudent();
+        return Ok(CustomResponse.Ok("Get available classes to update learning status successfully", availableClasses));
+    }
 
     private IQueryable<ClassResponse> GetAvailableClasses(ClassResponse currentClass)
     {
@@ -556,7 +637,7 @@ public class StudentController : ControllerBase
             .Include(c => c.StudentsClasses)
             .ThenInclude(sc => sc.Student)
             .Where(c => c.Center.Id == _user.CenterId &&
-                        c.Id != currentClass.Id && c.ClassStatusId != StatusMerged &&
+                        c.Id != currentClass.Id && c.ClassStatusId != ClassStatusMerged &&
                         c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < MaxNumberStudentInClass)
             .Select(c => new ClassResponse()
             {
@@ -1085,6 +1166,35 @@ public class StudentController : ControllerBase
                 SroFirstName = c.Sro.User.FirstName,
                 SroLastName = c.Sro.User.LastName
             }).Where(c => c.CenterId == centerId);
+    }
+
+    // all class not in status(merged, finished, canceled) and not full student
+    private IQueryable<BasicClassResponse> GetAvailableClassesToUpdateLearningStatusStudent()
+    {
+        return _context.Classes
+            .Include(c => c.StudentsClasses)
+            .ThenInclude(sc => sc.Student)
+            .Where(c => c.Center.Id == _user.CenterId &&
+                        c.ClassStatusId != ClassStatusMerged &&
+                        // c.ClassStatusId != ClassStatusCanceled &&
+                        // c.ClassStatusId != ClassStatusCompleted &&
+                        c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < MaxNumberStudentInClass)
+            .Select(c => new BasicClassResponse()
+            {
+                Id = c.Id,
+                Name = c.Name
+            });
+    }
+
+    private bool IsCourseCodeAvailableToCourseFamilyOfClass(string requestCourseCode, int? requestClassId)
+    {
+        // if classId is null -> assign to 0
+        requestClassId ??= 0;
+
+        return _context.Classes
+            .Include(c => c.CourseFamily)
+            .ThenInclude(cf => cf.Courses)
+            .Any(c => c.Id == requestClassId && c.CourseFamily.Courses.Any(course => course.Code == requestCourseCode));
     }
 
     private static string RemoveDiacritics(string text)

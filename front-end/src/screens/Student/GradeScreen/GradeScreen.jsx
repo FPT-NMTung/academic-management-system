@@ -364,7 +364,7 @@ const GradeScreen = () => {
                             )}
                           </Table.Cell> */}
                           <Table.Cell b>
-                            {item.grade_item.grade
+                            {item.grade_item.grade !== null
                               ? Math.round(item.grade_item?.grade * 100) / 100
                               : ' '}
                           </Table.Cell>
