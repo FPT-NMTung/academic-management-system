@@ -176,7 +176,7 @@ export const ErrorCodeApi = {
   "grade-error-0014": "Thi lý thuyết sẽ được thêm tự động",
   "grade-error-0015": "Không thể thêm điểm ",
   "grade-error-0016": "Không thể thêm cùng lúc 2 loại điểm giống nhau",
-  "grade-error-0017": "Không thể cập nhật loại điểm, môn học đã được học viên đăng ký",
+  "grade-error-0017": "Không thể cập nhật loại điểm, môn học đã được lên lịch",
 
 
   "class-error-0068": "Không thể thêm lớp học",
@@ -263,6 +263,8 @@ export const ErrorCodeApi = {
   "student-error-0044": "Ngày sinh phải nhỏ hơn ngày hiện tại",
   "student-error-0045": "Ngày cấp thẻ CMT/CCCD phải nhỏ hơn ngày hiện tại",
   "student-error-0046": "Lỗi khi lưu trạng thái học viên",
+  "student-error-0046-1": "Khoá học không có trong chương trình học của lớp học viên muốn vào",
+  "student-error-0046-2": "Lớp học không có sẵn để vào",
 
 
 
