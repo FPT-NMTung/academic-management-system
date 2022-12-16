@@ -18,10 +18,14 @@ import ColumnGroup from 'antd/lib/table/ColumnGroup';
 import { Fragment } from 'react';
 import classes from '../Sro/SroScreen.module.css';
 import { RiEyeFill } from 'react-icons/ri';
+import { ErrorCodeApi } from '../../../apis/ErrorCodeApi';
+import { toast } from "react-hot-toast";
 
 const TeacherScreen = () => {
   const [dataSource, setDataSource] = useState([]);
   const [isGetData, setIsGetData] = useState(true);
+  const [messageFailed, setMessageFailed] = useState(undefined);
+
 
   const [form] = Form.useForm();
   const navigate = useNavigate();
@@ -41,9 +45,12 @@ const TeacherScreen = () => {
         );
         setIsGetData(false);
       })
-      .catch(() => {
+      .catch((err) => {
         setIsGetData(false);
-        message.error('Có điều gì đó không đúng 😥');
+        if (err?.type_error) {
+          return toast.error(ErrorCodeApi[err.type_error]);
+        }
+        toast.error("Lỗi lấy danh sách giáo viên");
       });
   };
 

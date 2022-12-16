@@ -91,19 +91,7 @@ const ClassCreate = ({ modeUpdate }) => {
           return 'Thất bại !';
         },
       }
-      // .then((res) => {
-      //   if (modeUpdate) {
-      //     message.success("Cập nhật lớp học thành công");
-      //   } else {
-      //     message.success("Tạo lớp học thành công");
-      //   }
 
-      //   navigate(`/sro/manage-class/`);
-      // })
-      // .catch((err) => {
-      //   setisCreatingOrUpdating(false);
-      //   setMessageFailed(ErrorCodeApi[err.type_error]);
-      // });
     );
   };
   const handleChangeClassStatus = () => {
