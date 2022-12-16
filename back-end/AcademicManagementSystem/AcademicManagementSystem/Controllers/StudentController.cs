@@ -465,12 +465,12 @@ public class StudentController : ControllerBase
             // if classId is null -> assign to 0
             request.ClassId ??= 0;
 
-            var isAvailableClass = IsCourseCodeAvailableToCourseFamilyOfClass(request.CourseCode, request.ClassId);
-            if (!isAvailableClass)
-            {
-                var error = ErrorDescription.Error["E1151_1"];
-                return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-            }
+            // var isAvailableClass = IsCourseCodeAvailableToCourseFamilyOfClass(request.CourseCode, request.ClassId);
+            // if (!isAvailableClass)
+            // {
+            //     var error = ErrorDescription.Error["E1151_1"];
+            //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+            // }
 
             var classToJoinTo = _context.Classes
                 .Include(c => c.StudentsClasses)
@@ -1176,8 +1176,8 @@ public class StudentController : ControllerBase
             .ThenInclude(sc => sc.Student)
             .Where(c => c.Center.Id == _user.CenterId &&
                         c.ClassStatusId != ClassStatusMerged &&
-                        c.ClassStatusId != ClassStatusCanceled &&
-                        c.ClassStatusId != ClassStatusCompleted &&
+                        // c.ClassStatusId != ClassStatusCanceled &&
+                        // c.ClassStatusId != ClassStatusCompleted &&
                         c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < MaxNumberStudentInClass)
             .Select(c => new BasicClassResponse()
             {
