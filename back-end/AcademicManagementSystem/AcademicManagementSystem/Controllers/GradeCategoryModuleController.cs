@@ -62,11 +62,11 @@ public class GradeCategoryModuleController : ControllerBase
         }
 
         // check module is learning 
-        var isModuleLearned = _context.Modules
+        var isModuleInSchedule = _context.Modules
             .Include(m => m.ClassSchedules)
-            .Any(m => m.Id == moduleId && m.ClassSchedules.Any(cs => cs.StartDate <= DateTime.Today));
+            .Any(m => m.Id == moduleId && m.ClassSchedules.Any());
 
-        if (isModuleLearned)
+        if (isModuleInSchedule)
         {
             var error = ErrorDescription.Error["E0067_5"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));

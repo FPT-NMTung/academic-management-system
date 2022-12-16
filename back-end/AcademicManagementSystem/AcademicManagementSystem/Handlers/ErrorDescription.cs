@@ -191,7 +191,7 @@ public static class ErrorDescription
         { "E0067_2", new ErrorModel() { Message = "Theory exam will be auto add", Type = "grade-error-0014" } },
         { "E0067_3", new ErrorModel() { Message = "Can't add any progress grade", Type = "grade-error-0015" } },
         { "E0067_4", new ErrorModel() { Message = "Can't add duplicate grade category", Type = "grade-error-0016" } },
-        { "E0067_5", new ErrorModel() { Message = "Can't update progress scores, this module is learned", Type = "grade-error-0017" } },
+        { "E0067_5", new ErrorModel() { Message = "Can't update progress scores, this module already in schedules", Type = "grade-error-0017" } },
 
         //class
         { "E0068", new ErrorModel() { Message = "Class name can't be empty", Type = "class-error-0068" } },
