@@ -113,4 +113,7 @@ public class UpdateStudentRequest
     
     [JsonPropertyName("promotion")]
     public int Promotion { get; set; }
+    
+    [JsonPropertyName("class_id")]
+    public int? ClassId { get; set; }
 }

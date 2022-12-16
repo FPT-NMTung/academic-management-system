@@ -494,42 +494,41 @@ public class ClassController : ControllerBase
                         var enrollNumber = row.Cell(2).Value.ToString();
                         var firstName = row.Cell(3).Value.ToString();
                         var lastName = row.Cell(4).Value.ToString();
-                        var status = row.Cell(6).Value.ToString();
-                        var statusDate = row.Cell(7).Value.ToString();
-                        var gender = row.Cell(8).Value.ToString();
-                        var birthday = row.Cell(9).Value.ToString();
-                        var mobilePhone = row.Cell(10).Value.ToString();
-                        var homePhone = row.Cell(11).Value.ToString() == "" ? null : row.Cell(11).Value.ToString();
-                        var contactPhone = row.Cell(12).Value.ToString();
-                        var email = row.Cell(13).Value.ToString();
-                        var emailOrganization = row.Cell(14).Value.ToString();
-                        var identityCardNo = row.Cell(15).Value.ToString();
-                        var identityCardPublishedDate = row.Cell(16).Value.ToString();
-                        var identityCardPublishedPlace = row.Cell(17).Value.ToString();
-                        var contactAddress = row.Cell(18).Value.ToString();
-                        var ward = row.Cell(19).Value.ToString();
-                        var district = row.Cell(20).Value.ToString();
-                        var province = row.Cell(21).Value.ToString();
-                        var parentalName = row.Cell(22).Value.ToString();
-                        var parentalRelative = row.Cell(23).Value.ToString();
-                        var parentalPhone = row.Cell(24).Value.ToString();
-                        var applicationDate = row.Cell(25).Value.ToString();
+                        var statusDate = row.Cell(6).Value.ToString();
+                        var gender = row.Cell(7).Value.ToString();
+                        var birthday = row.Cell(8).Value.ToString();
+                        var mobilePhone = row.Cell(9).Value.ToString();
+                        var homePhone = row.Cell(10).Value.ToString() == "" ? null : row.Cell(11).Value.ToString();
+                        var contactPhone = row.Cell(11).Value.ToString();
+                        var email = row.Cell(12).Value.ToString();
+                        var emailOrganization = row.Cell(13).Value.ToString();
+                        var identityCardNo = row.Cell(14).Value.ToString();
+                        var identityCardPublishedDate = row.Cell(15).Value.ToString();
+                        var identityCardPublishedPlace = row.Cell(16).Value.ToString();
+                        var contactAddress = row.Cell(17).Value.ToString();
+                        var ward = row.Cell(18).Value.ToString();
+                        var district = row.Cell(19).Value.ToString();
+                        var province = row.Cell(20).Value.ToString();
+                        var parentalName = row.Cell(21).Value.ToString();
+                        var parentalRelative = row.Cell(22).Value.ToString();
+                        var parentalPhone = row.Cell(23).Value.ToString();
+                        var applicationDate = row.Cell(24).Value.ToString();
                         var applicationDocuments =
-                            row.Cell(26).Value.ToString() == "" ? null : row.Cell(26).Value.ToString();
-                        var courseCode = row.Cell(27).Value.ToString();
-                        var highSchool = row.Cell(29).Value.ToString() == "" ? null : row.Cell(29).Value.ToString();
-                        var university = row.Cell(30).Value.ToString() == "" ? null : row.Cell(30).Value.ToString();
-                        var facebookUrl = row.Cell(31).Value.ToString() == "" ? null : row.Cell(31).Value.ToString();
-                        var portfolio = row.Cell(32).Value.ToString() == "" ? null : row.Cell(32).Value.ToString();
-                        var workingCompany = row.Cell(33).Value.ToString() == "" ? null : row.Cell(33).Value.ToString();
-                        var companySalary = row.Cell(34).Value.ToString() == ""
+                            row.Cell(25).Value.ToString() == "" ? null : row.Cell(25).Value.ToString();
+                        var courseCode = row.Cell(26).Value.ToString();
+                        var highSchool = row.Cell(28).Value.ToString() == "" ? null : row.Cell(28).Value.ToString();
+                        var university = row.Cell(29).Value.ToString() == "" ? null : row.Cell(29).Value.ToString();
+                        var facebookUrl = row.Cell(30).Value.ToString() == "" ? null : row.Cell(30).Value.ToString();
+                        var portfolio = row.Cell(31).Value.ToString() == "" ? null : row.Cell(31).Value.ToString();
+                        var workingCompany = row.Cell(32).Value.ToString() == "" ? null : row.Cell(32).Value.ToString();
+                        var companySalary = row.Cell(33).Value.ToString() == ""
                             ? 0
-                            : Convert.ToInt32(row.Cell(34).Value.ToString());
+                            : Convert.ToInt32(row.Cell(33).Value.ToString());
                         var companyPosition =
-                            row.Cell(35).Value.ToString() == "" ? null : row.Cell(35).Value.ToString();
-                        var companyAddress = row.Cell(36).Value.ToString() == "" ? null : row.Cell(36).Value.ToString();
-                        var feePlan = row.Cell(37).Value.ToString();
-                        var promotion = row.Cell(38).Value.ToString();
+                            row.Cell(34).Value.ToString() == "" ? null : row.Cell(34).Value.ToString();
+                        var companyAddress = row.Cell(35).Value.ToString() == "" ? null : row.Cell(35).Value.ToString();
+                        var feePlan = row.Cell(36).Value.ToString();
+                        var promotion = row.Cell(37).Value.ToString();
 
                         // check if user existed => bad request
                         var existedUser = _context.Users.FirstOrDefault(u =>
@@ -643,18 +642,6 @@ public class ClassController : ControllerBase
                             "Not Known" => 3,
                             "Not Applicable" => 4,
                             _ => 4
-                        };
-
-                        var learningStatus = status switch
-                        {
-                            "Studying" => 1,
-                            "Delay" => 2,
-                            "Dropout" => 3,
-                            "ClassQueue" => 4,
-                            "Transfer" => 5,
-                            "Upgrade" => 6,
-                            "Finished" => 7,
-                            _ => 0
                         };
 
                         // check input
@@ -961,13 +948,6 @@ public class ClassController : ControllerBase
                                 error.Type));
                         }
 
-                        if (learningStatus is < 1 or > 7)
-                        {
-                            var error = ErrorDescription.Error["E1094"];
-                            return BadRequest(CustomResponse.BadRequest(error.Message + " at student no " + studentNo,
-                                error.Type));
-                        }
-
                         if (Convert.ToInt32(feePlan) < 0)
                         {
                             var error = ErrorDescription.Error["E1108"];
@@ -1027,7 +1007,7 @@ public class ClassController : ControllerBase
                             {
                                 EnrollNumber = enrollNumber!.Trim(),
                                 CourseCode = courseCode!.Trim(),
-                                Status = learningStatus,
+                                Status = 1,
                                 StatusDate = newStatusDate.Date,
                                 HomePhone = homePhone,
                                 ContactPhone = contactPhone!.Trim(),
@@ -1559,12 +1539,6 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (request.Status is < 1 or > 7)
-        {
-            var error = ErrorDescription.Error["E1094"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
         if (request.FeePlan < 0)
         {
             var error = ErrorDescription.Error["E1108"];
@@ -1620,7 +1594,7 @@ public class ClassController : ControllerBase
             {
                 EnrollNumber = request.EnrollNumber,
                 CourseCode = request.CourseCode,
-                Status = request.Status,
+                Status = 1,
                 StatusDate = DateTime.Now.Date,
                 HomePhone = request.HomePhone,
                 ContactPhone = request.ContactPhone,
@@ -2172,7 +2146,7 @@ public class ClassController : ControllerBase
             .Include(c => c.StudentsClasses)
             .ThenInclude(sc => sc.Student)
             .Where(c => c.Center.Id == _user.CenterId &&
-                        c.Id != currentClass.Id &&
+                        c.Id != currentClass.Id && c.ClassStatusId != StatusMerged &&
                         c.StudentsClasses.Count(sc => sc.IsActive && !sc.Student.IsDraft) < MaxNumberStudentInClass &&
                         c.StudentsClasses.Any(sc => sc.ClassId == c.Id && sc.IsActive && !sc.Student.IsDraft))
             .Select(c => new ClassResponse()

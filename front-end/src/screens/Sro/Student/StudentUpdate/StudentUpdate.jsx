@@ -44,20 +44,8 @@ const translateStatusStudent = {
   1: 'Studying',
   2: 'Delay',
   3: 'Dropout',
-  4: 'ClassQueue',
-  5: 'Transfer',
-  6: 'Upgrade',
-  7: 'Finished',
+  4: 'Finished',
 };
-// const translateStatusId = {
-//      "Studying": 1,
-//      "Delay" :2,
-//      "Dropout":3,
-//      "ClassQueue":4,
-//      "Transfer":5,
-//      "Upgrade":6,
-//      "Finished":7,
-//   };
 
 const StudentUpdate = () => {
   const [listGender, setListGender] = useState([]);
@@ -1321,15 +1309,6 @@ const StudentUpdate = () => {
                     Dropout
                   </Select.Option>
                   <Select.Option key={103} value={4}>
-                    ClassQueue
-                  </Select.Option>
-                  <Select.Option key={104} value={5}>
-                    Transfer
-                  </Select.Option>
-                  <Select.Option key={105} value={6}>
-                    Upgrade
-                  </Select.Option>
-                  <Select.Option key={106} value={7}>
                     Finished
                   </Select.Option>
                 </Select>
@@ -1541,7 +1520,7 @@ const StudentUpdate = () => {
                 width: '100%',
                 //   textAlign: "center",
               }}
-            >
+            >              
               <div
                 style={{
                   display: 'flex',
@@ -1565,7 +1544,7 @@ const StudentUpdate = () => {
                   {dataUser && <Switch
                     color={'success'}
                     size={'sm'}
-                    checked={dataUser?.is_active === 1}
+                    checked={dataUser.is_active}
                     onChange={(checked) => {
                       handleChangeStatus(checked);
                     }}
