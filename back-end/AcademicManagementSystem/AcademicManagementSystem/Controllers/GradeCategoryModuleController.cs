@@ -227,6 +227,8 @@ public class GradeCategoryModuleController : ControllerBase
                     break;
             }
         }
+        
+        module.UpdatedAt = DateTime.Now;
 
         try
         {
