@@ -87,7 +87,7 @@ public class ModuleController : ControllerBase
         if (CheckDayAndHourRequest(request.Days, request.Hours, out var badRequest2)) return badRequest2;
 
         // moduleName existed
-        if (IsModuleNameExisted(request.ModuleName))
+        if (IsModuleNameExisted(request.ModuleName, request.CenterId))
         {
             var error = ErrorDescription.Error["E1053"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -162,9 +162,10 @@ public class ModuleController : ControllerBase
         return Ok(CustomResponse.Ok("Module created successfully", createdModule));
     }
 
-    private bool IsModuleNameExisted(string moduleName)
+    private bool IsModuleNameExisted(string moduleName, int centerId)
     {
-        return _context.Modules.Any(m => string.Equals(m.ModuleName.ToLower(), moduleName.ToLower()));
+        return _context.Modules.Any(m =>
+            m.CenterId == centerId && string.Equals(m.ModuleName.ToLower(), moduleName.ToLower()));
     }
 
     private bool CheckCourseCenterSemesterExisted(CreateModuleRequest request, IEnumerable<string> listCourseCodes,
@@ -427,7 +428,7 @@ public class ModuleController : ControllerBase
         if (CheckStringNameRequestUpdate(request, out var actionResult)) return actionResult;
 
         // check string name
-        if (IsModuleNameWithDifferentIdExisted(request.ModuleName, id))
+        if (IsModuleNameWithDifferentIdExisted(request.ModuleName, id, request.CenterId))
         {
             var error = ErrorDescription.Error["E1054"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -477,10 +478,10 @@ public class ModuleController : ControllerBase
     }
 
     // is module name with different id existed
-    private bool IsModuleNameWithDifferentIdExisted(string moduleName, int id)
+    private bool IsModuleNameWithDifferentIdExisted(string moduleName, int id, int centerId)
     {
-        return _context.Modules.Any(m => m.Id != id
-                                         && string.Equals(m.ModuleName.ToLower(), moduleName.ToLower()));
+        return _context.Modules.Any(m =>
+            m.Id != id && m.CenterId == centerId && string.Equals(m.ModuleName.ToLower(), moduleName.ToLower()));
     }
 
     private bool CheckModuleTypeAndExamTypeRequestUpdate(UpdateModuleRequest request, out IActionResult badRequest)

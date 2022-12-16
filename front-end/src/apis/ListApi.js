@@ -663,6 +663,12 @@ export const ManageStudentApis = {
     method: 'PATCH',
     contextType: 'application/json',
   },
+  getAvailableClassToUpdateStatus: {
+    url: 'api/students/available-classes',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+
 };
 
 export const ManageDayOffApis = {
