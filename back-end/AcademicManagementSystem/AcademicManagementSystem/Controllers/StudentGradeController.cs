@@ -133,11 +133,11 @@ public class StudentGradeController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (clazz.ClassStatusId == ClassStatusMerged)
-        {
-            var error = ErrorDescription.Error["E0401"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
+        // if (clazz.ClassStatusId == ClassStatusMerged)
+        // {
+        //     var error = ErrorDescription.Error["E0401"];
+        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        // }
 
         var isModuleForThisClass = clazz.CourseFamily.Courses
             .Select(c => c.CoursesModulesSemesters)
@@ -350,7 +350,7 @@ public class StudentGradeController : ControllerBase
             .ThenInclude(cms => cms.Course)
             .Include(cs => cs.Module.CoursesModulesSemesters)
             .ThenInclude(cms => cms.Semester)
-            .Where(cs => cs.StartDate.Date <= DateTime.Today && cs.Class.ClassStatusId != ClassStatusMerged &&
+            .Where(cs => cs.StartDate.Date <= DateTime.Today &&
                          cs.Class.StudentsClasses.Any(sc => sc.StudentId == userStudent.Id));
 
         var semesters = classSchedule.Select(cs => cs.Module.CoursesModulesSemesters)
