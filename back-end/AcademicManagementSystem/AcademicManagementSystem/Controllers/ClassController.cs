@@ -850,7 +850,7 @@ public class ClassController : ControllerBase
                                     error.Type));
                             }
 
-                            if (IsEmailExists(emailOrganization))
+                            if (IsEmailOrganizationExists(email))
                             {
                                 var error = ErrorDescription.Error["E1081"];
                                 return BadRequest(CustomResponse.BadRequest(
@@ -874,7 +874,7 @@ public class ClassController : ControllerBase
                                     error.Type));
                             }
 
-                            if (IsEmailOrganizationExists(email))
+                            if (IsEmailExists(emailOrganization))
                             {
                                 var error = ErrorDescription.Error["E1081_1"];
                                 return BadRequest(CustomResponse.BadRequest(
@@ -1451,7 +1451,7 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (IsEmailExists(request.EmailOrganization))
+        if (IsEmailOrganizationExists(request.Email))
         {
             var error = ErrorDescription.Error["E1081"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -1469,7 +1469,7 @@ public class ClassController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (IsEmailOrganizationExists(request.Email))
+        if (IsEmailExists(request.EmailOrganization))
         {
             var error = ErrorDescription.Error["E1081_1"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
