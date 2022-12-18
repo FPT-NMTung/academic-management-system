@@ -2312,7 +2312,7 @@ public class TestStudentController
     }
 
     [Fact]
-    public void UpdateStudent_EmailBelongToAnotherEmailOrganization_ReturnBadRequest()
+    public void UpdateStudent_EmailOrganizationBelongToAnotherEmail_ReturnBadRequest()
     {
         // arrange
         var userId = 101;
@@ -2412,7 +2412,7 @@ public class TestStudentController
     }
 
     [Fact]
-    public void UpdateStudent_EmailOrganizationBelongToAnotherEmail_ReturnBadRequest()
+    public void UpdateStudent_EmailBelongToAnotherEmailOrganization_ReturnBadRequest()
     {
         // arrange
         var userId = 101;
