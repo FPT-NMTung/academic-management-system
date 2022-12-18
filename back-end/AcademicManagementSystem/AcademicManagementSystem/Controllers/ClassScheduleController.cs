@@ -1393,25 +1393,13 @@ public class ClassScheduleController : ControllerBase
 
     // statistics attendance of teacher in a class
     [HttpGet]
-    [Route("api/classes-schedules/teachers/{teacherId:int}/classes/{classId:int}/statistics-attendance")]
+    [Route("api/classes-schedules/classes/{classId:int}/statistics-attendance")]
     [Authorize(Roles = "sro")]
-    public IActionResult GetStatisticsAttendance(int teacherId, int classId)
+    public IActionResult GetStatisticsAttendance(int classId)
     {
         if (!IsClassExisted(classId))
         {
             var error = ErrorDescription.Error["E1155"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (!IsTeacherExisted(teacherId))
-        {
-            var error = ErrorDescription.Error["E1156"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
-
-        if (!IsTeacherInClass(classId, teacherId))
-        {
-            var error = ErrorDescription.Error["E1157"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
@@ -1420,9 +1408,7 @@ public class ClassScheduleController : ControllerBase
             .ThenInclude(a => a.AttendanceStatus)
             .Include(s => s.ClassSchedule)
             .Include(s => s.ClassSchedule.Class)
-            .Include(s => s.ClassSchedule.Teacher)
-            .ThenInclude(t => t.User)
-            .Where(s => s.ClassSchedule.TeacherId == teacherId && s.ClassSchedule.ClassId == classId &&
+            .Where(s => s.ClassSchedule.ClassId == classId &&
                         s.LearningDate.Date < DateTime.Now.Date && s.SessionTypeId != 3 && s.SessionTypeId != 4)
             .ToList();
 
