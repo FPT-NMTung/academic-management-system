@@ -2564,7 +2564,7 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_EmailBelongToAnotherEmailOrganization_ReturnBadRequest()
+    public void AddStudentManual_EmailOrganizationBelongToAnotherEmail_ReturnBadRequest()
     {
         // arrange
         var classId = 100;
@@ -2666,7 +2666,7 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_EmailOrganizationBelongToAnotherEmail_ReturnBadRequest()
+    public void AddStudentManual_EmailBelongToAnotherEmailOrganization_ReturnBadRequest()
     {
         // arrange
         var classId = 100;

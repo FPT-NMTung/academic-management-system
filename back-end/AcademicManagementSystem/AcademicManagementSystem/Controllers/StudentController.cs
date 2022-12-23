@@ -322,7 +322,7 @@ public class StudentController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (IsEmailExists(request.EmailOrganization, true, id))
+        if (IsEmailOrganizationExists(request.Email, true, id))
         {
             var error = ErrorDescription.Error["E1081"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
@@ -340,7 +340,7 @@ public class StudentController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (IsEmailOrganizationExists(request.Email, true, id))
+        if (IsEmailExists(request.EmailOrganization, true, id))
         {
             var error = ErrorDescription.Error["E1081_1"];
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
