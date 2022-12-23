@@ -1326,7 +1326,7 @@ const TeacherInfo = () => {
                                 placeholder="Chọn lớp học"
                                 onChange={() => {
                                   getTotalTeachingHoursOfATeacher();
-                                  getAttenanceRateofClass();
+                                  // getAttenanceRateofClass();
                                 }}
                                 // value={moduleTeachSelected}
                                 // onSelect={setModuleTeachSelected}
@@ -1351,7 +1351,7 @@ const TeacherInfo = () => {
                               )}
                             </Form.Item>
                           </div>
-                          <Card
+                          {/* <Card
                             variant="bordered"
                             css={{
                               marginBottom: "20px",
@@ -1409,7 +1409,7 @@ const TeacherInfo = () => {
                                 ></RingProgress>
                               )}
                             </div>
-                          </Card>
+                          </Card> */}
                         </Form>
                       </Card.Body>
                       <Grid></Grid>

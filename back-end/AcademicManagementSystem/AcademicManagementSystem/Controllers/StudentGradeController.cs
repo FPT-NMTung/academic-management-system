@@ -133,11 +133,11 @@ public class StudentGradeController : ControllerBase
             return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
         }
 
-        if (clazz.ClassStatusId == ClassStatusMerged)
-        {
-            var error = ErrorDescription.Error["E0401"];
-            return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
-        }
+        // if (clazz.ClassStatusId == ClassStatusMerged)
+        // {
+        //     var error = ErrorDescription.Error["E0401"];
+        //     return BadRequest(CustomResponse.BadRequest(error.Message, error.Type));
+        // }
 
         var isModuleForThisClass = clazz.CourseFamily.Courses
             .Select(c => c.CoursesModulesSemesters)
@@ -287,6 +287,8 @@ public class StudentGradeController : ControllerBase
         // get module that have been started in class
         var classSchedule = _context.ClassSchedules
             .Include(cs => cs.Class)
+            .Include(cs => cs.Sessions)
+            .ThenInclude(s => s.Attendances)
             .Include(cs => cs.Class.StudentsClasses)
             .Include(cs => cs.Module)
             .Include(cs => cs.Module.CoursesModulesSemesters)
@@ -304,9 +306,11 @@ public class StudentGradeController : ControllerBase
             {
                 Id = s.Id,
                 Name = s.Name,
-                Modules = classSchedule.Where(cs => cs.Module.CoursesModulesSemesters.Any(cms =>
-                        // cms.CourseCode == student.CourseCode &&
-                        cms.SemesterId == s.Id))
+                Modules = classSchedule.Where(cs =>
+                        cs.Sessions.Any(se => se.Attendances.Any(a => a.StudentId == userId)) &&
+                        cs.Module.CoursesModulesSemesters.Any(cms =>
+                            // cms.CourseCode == student.CourseCode &&
+                            cms.SemesterId == s.Id))
                     .Select(cs => new ModuleWithClassResponse()
                     {
                         Id = cs.Module.Id,
@@ -325,7 +329,16 @@ public class StudentGradeController : ControllerBase
             .Select(s => s.First())
             .ToList();
 
-        return Ok(CustomResponse.Ok("Student get semesters and modules successfully", distinctSemesters));
+        var response = new List<SemesterWithModuleResponse>();
+        foreach (var semester in distinctSemesters)
+        {
+            if (semester.Modules.Any())
+            {
+                response.Add(semester);
+            }
+        }
+
+        return Ok(CustomResponse.Ok("Student get semesters and modules successfully", response));
     }
 
     [HttpGet]
@@ -344,13 +357,15 @@ public class StudentGradeController : ControllerBase
         // get module that have been started in class, (don't get merged classes)
         var classSchedule = _context.ClassSchedules
             .Include(cs => cs.Class)
+            .Include(cs => cs.Sessions)
+            .ThenInclude(s => s.Attendances)
             .Include(cs => cs.Class.StudentsClasses)
             .Include(cs => cs.Module)
             .Include(cs => cs.Module.CoursesModulesSemesters)
             .ThenInclude(cms => cms.Course)
             .Include(cs => cs.Module.CoursesModulesSemesters)
             .ThenInclude(cms => cms.Semester)
-            .Where(cs => cs.StartDate.Date <= DateTime.Today && cs.Class.ClassStatusId != ClassStatusMerged &&
+            .Where(cs => cs.StartDate.Date <= DateTime.Today &&
                          cs.Class.StudentsClasses.Any(sc => sc.StudentId == userStudent.Id));
 
         var semesters = classSchedule.Select(cs => cs.Module.CoursesModulesSemesters)
@@ -361,9 +376,11 @@ public class StudentGradeController : ControllerBase
             {
                 Id = s.Id,
                 Name = s.Name,
-                Modules = classSchedule.Where(cs => cs.Module.CoursesModulesSemesters.Any(cms =>
-                        // cms.CourseCode == student.CourseCode &&
-                        cms.SemesterId == s.Id))
+                Modules = classSchedule.Where(cs =>
+                        cs.Sessions.Any(se => se.Attendances.Any(a => a.StudentId == studentId)) &&
+                        cs.Module.CoursesModulesSemesters.Any(cms =>
+                            // cms.CourseCode == student.CourseCode &&
+                            cms.SemesterId == s.Id))
                     .Select(cs => new ModuleWithClassResponse()
                     {
                         Id = cs.Module.Id,
@@ -382,7 +399,16 @@ public class StudentGradeController : ControllerBase
             .Select(s => s.First())
             .ToList();
 
-        return Ok(CustomResponse.Ok("Sro get semesters of student and modules successfully", distinctSemesters));
+        var response = new List<SemesterWithModuleResponse>();
+        foreach (var semester in distinctSemesters)
+        {
+            if (semester.Modules.Any())
+            {
+                response.Add(semester);
+            }
+        }
+
+        return Ok(CustomResponse.Ok("Sro get semesters of student and modules successfully", response));
     }
 
     [HttpPost]

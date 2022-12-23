@@ -2564,7 +2564,7 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_EmailBelongToAnotherEmailOrganization_ReturnBadRequest()
+    public void AddStudentManual_EmailOrganizationBelongToAnotherEmail_ReturnBadRequest()
     {
         // arrange
         var classId = 100;
@@ -2666,7 +2666,7 @@ public class TestClassController
     }
 
     [Fact]
-    public void AddStudentManual_EmailOrganizationBelongToAnotherEmail_ReturnBadRequest()
+    public void AddStudentManual_EmailBelongToAnotherEmailOrganization_ReturnBadRequest()
     {
         // arrange
         var classId = 100;
@@ -3504,108 +3504,6 @@ public class TestClassController
             EnrollNumber = "HENguyenVanA1",
             CourseCode = "COURSE CODE 1",
             Status = 1,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_StatusIdIsLessThan1_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248436",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099964628272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = -5,
-            HomePhone = "0242222222",
-            ContactPhone = "0972222222",
-            ParentalName = "Nguyễn Văn Toàn",
-            ParentalRelationship = "Bố",
-            ContactAddress = "Hà Nội",
-            ParentalPhone = "0974222222",
-            ApplicationDate = new DateTime(2021, 01, 01),
-            ApplicationDocument = null,
-            HighSchool = null,
-            University = null,
-            FacebookUrl = null,
-            PortfolioUrl = null,
-            WorkingCompany = null,
-            CompanySalary = null,
-            CompanyPosition = null,
-            CompanyAddress = null,
-            FeePlan = 5000,
-            Promotion = 20, // %
-        };
-
-        // act 
-        var result = _controller.AddStudentToClass(classId, request);
-        _testOutputHelper.PrintMessage(result);
-
-        // assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public void AddStudentManual_StatusIdIsMoreThan7_ReturnBadRequest()
-    {
-        // arrange
-        var classId = 100;
-        var request = new AddStudentToClassRequest()
-        {
-            FirstName = "Nguyễn",
-            LastName = "Văn A",
-            MobilePhone = "0973248436",
-            Email = "nguyenvana3@gmail.com",
-            EmailOrganization = "nguyenvana3_organization@gmail.com",
-            ProvinceId = 1,
-            DistrictId = 1,
-            WardId = 1,
-            GenderId = 1,
-            Birthday = new DateTime(2000, 01, 01),
-            CitizenIdentityCardNo = "099964628272",
-            CitizenIdentityCardPublishedDate = new DateTime(2010, 01, 01),
-            CitizenIdentityCardPublishedPlace = "Hà Nội",
-            EnrollNumber = "HENguyenVanA1",
-            CourseCode = "COURSE CODE 1",
-            Status = 8,
             HomePhone = "0242222222",
             ContactPhone = "0972222222",
             ParentalName = "Nguyễn Văn Toàn",

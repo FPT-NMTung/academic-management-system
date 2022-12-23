@@ -29,6 +29,7 @@ import { TiWarning } from 'react-icons/ti';
 import { AiFillSchedule } from 'react-icons/ai';
 import { TiFlowMerge } from 'react-icons/ti';
 import { TbDatabaseExport } from 'react-icons/tb';
+import { RingProgress} from "@ant-design/plots";
 
 const renderGender = (id) => {
   if (id === 1) {
@@ -68,6 +69,8 @@ const DetailClass = () => {
   const [currentClass, setCurrentClass] = useState(null);
   const [listClassToMerge, setListClassToMerge] = useState([]);
   const [messageFailed, setMessageFailed] = useState(undefined);
+  const [averageAttendanceRate, setAverageAttendanceRate] = useState(0);
+
 
   const { id } = useParams();
 
@@ -212,10 +215,29 @@ const DetailClass = () => {
       }
     );
   };
+  const getAttenanceRateofEachClass = () => {
+    const classid = form.getFieldValue("classhours");
+    FetchApi(ManageClassApis.getAttenanceRateofEachClass, null, null, [
+      `${id}`,
+    ])
+      .then((res) => {
+        const data = res.data === null ? "" : res.data;
+        setAverageAttendanceRate(data.average_attendance / 100);
+      })
+      .catch((err) => {
+        if (err?.type_error) {
+          return toast.error(ErrorCodeApi[err.type_error]);
+        }
+        else {
+        toast.error("Lỗi lấy tỉ lệ điểm danh của giáo viên");
+        }
+      });
+  };
 
   useEffect(() => {
     getData();
     getAllStudent();
+    getAttenanceRateofEachClass();
   }, []);
 
   const isDraft = () => {
@@ -580,6 +602,62 @@ const DetailClass = () => {
               )}
             </Card.Body>
           </Card>
+           <Card
+                            variant="bordered"
+                            css={{
+                              height: 'fit-content',
+                            }}
+                          >
+                            <div
+                              style={{
+                                textAlign: "center",
+                                display: "block",
+                                // marginTop: "24px",
+                                marginBottom: "24px",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  // marginBottom: "24px",
+                                  display: "flex",
+                                  width: "100%",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Card.Header>
+                                <Text
+                                  p
+                                  b
+                                  size={16}
+                                  css={{ width: '100%', textAlign: 'center' }}
+                                  color="error"
+                                  
+                                >
+                                  Tỷ lệ học viên đến lớp:{" "}
+                                </Text>
+                                </Card.Header>
+                              </div>
+                              {averageAttendanceRate === 0 ? (
+                                <Badge
+                                  variant="bordered"
+                                  color={
+                                    averageAttendanceRate >= 0.5
+                                      ? "success"
+                                      : "warning"
+                                  }
+                                >
+                                  Chưa có dữ liệu
+                                </Badge>
+                              ) : (
+                                <RingProgress
+                                  height={100}
+                                  width={100}
+                                  color={["#1891ff", "#E8EDF3"]}
+                                  percent={averageAttendanceRate}
+                                ></RingProgress>
+                              )}
+                            </div>
+                          </Card>
         </Grid>
         <Grid xs={9} direction={'column'}>
           <Card variant="bordered">

@@ -571,7 +571,13 @@ export const ManageClassApis = {
     method: 'GET',
     contextType: 'application/json',
     responseType: 'blob',
-  }
+  },
+  getAttenanceRateofEachClass: {
+    url: 'api/classes-schedules/classes/{0}/statistics-attendance',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+
 };
 
 export const ManageScheduleApis = {
@@ -663,6 +669,12 @@ export const ManageStudentApis = {
     method: 'PATCH',
     contextType: 'application/json',
   },
+  getAvailableClassToUpdateStatus: {
+    url: 'api/students/available-classes',
+    method: 'GET',
+    contextType: 'application/json',
+  },
+
 };
 
 export const ManageDayOffApis = {

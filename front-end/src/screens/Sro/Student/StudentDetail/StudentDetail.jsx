@@ -134,7 +134,7 @@ const StudentDetail = ({ role }) => {
 
     for (let i = 0; i < clone.length; i++) {
       const gradeItem = clone[i];
-      console.log(gradeItem.grade_item.grade);
+      // console.log(gradeItem.grade_item.grade);
 
       if (
         gradeItem.grade_category_id === 5 ||
@@ -145,7 +145,7 @@ const StudentDetail = ({ role }) => {
           (10 / info?.max_practical_grade) *
           (gradeItem.total_weight / clone[i].quantity_grade_item);
       } else {
-        console.log(false, gradeItem);
+        // console.log(false, gradeItem);
         if (gradeItem.grade_item.grade === null) {
           avgPracticeGrade = 0;
           break;
@@ -157,6 +157,8 @@ const StudentDetail = ({ role }) => {
       }
     }
     setAveragePracticeGrade(avgPracticeGrade / 100);
+    console.log(listGradeTheory);
+
   };
 
   const getInformationModule = (moduleId) => {};
@@ -1172,7 +1174,7 @@ const StudentDetail = ({ role }) => {
                             )}
                           </Table.Cell> */}
                                             <Table.Cell b>
-                                              {item.grade_item.grade
+                                              {item.grade_item.grade !== null
                                                 ? Math.round(
                                                     item.grade_item?.grade * 100
                                                   ) / 100
