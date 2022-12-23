@@ -173,7 +173,7 @@ const TakeAttendance = ({ session, scheduleId, onClose }) => {
       </Modal.Header>
       <Modal.Body>
         <div className={classes.buttonChangeAttendance}>
-          {localStorage.getItem('role') === 'sro' && (
+          {session?.session_type !== 3 && session?.session_type !== 4 && localStorage.getItem('role') === 'sro' && (
             <Button
               flat
               auto
