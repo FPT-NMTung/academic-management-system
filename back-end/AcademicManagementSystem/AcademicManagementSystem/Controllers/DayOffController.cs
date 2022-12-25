@@ -34,7 +34,7 @@ public class DayOffController : ControllerBase
     {
         var userId = Int32.Parse(_userService.GetUserId());
         var centerId = _context.Users.FirstOrDefault(u => u.Id == userId)?.CenterId;
-        
+
         var daysOff = _context.DaysOff.Where(d => d.CenterId == centerId).Select(d => d.Date.Date).Distinct().ToList();
         return Ok(CustomResponse.Ok("Get days off successfully", daysOff));
     }
@@ -46,7 +46,7 @@ public class DayOffController : ControllerBase
     {
         var userId = Int32.Parse(_userService.GetUserId());
         var centerId = _context.Users.FirstOrDefault(u => u.Id == userId)?.CenterId;
-        
+
         var selectDayOff = _context.DaysOff
             .Include(d => d.Teacher)
             .ThenInclude(d => d.User)
@@ -167,21 +167,37 @@ public class DayOffController : ControllerBase
             }
         }
 
-        // get list schedule affected by day off
-        var scheduleAffected = _context.Sessions
-            .Include(s => s.ClassSchedule)
-            .ThenInclude(s => s.Class)
-            .Where(s => s.LearningDate.Date == request.Date.Date)
-            .Where(s => request.WorkingTimeIds.Contains(s.ClassSchedule.WorkingTimeId))
-            .Where(s => s.ClassSchedule.Class.CenterId == centerId)
-            .Where(s => s.SessionTypeId == 1 || s.SessionTypeId == 2)
-            .Select(s => s.ClassSchedule);
-
         if (request.TeacherId != null)
+        {
+            // get list schedule affected by day off
+            var scheduleAffected = _context.Sessions
+                .Include(s => s.ClassSchedule)
+                .ThenInclude(s => s.Class)
+                .Where(s => s.LearningDate.Date == request.Date.Date)
+                .Where(s => request.WorkingTimeIds.Contains(s.ClassSchedule.WorkingTimeId))
+                .Where(s => s.ClassSchedule.Class.CenterId == centerId)
+                .Where(s => s.SessionTypeId == 1 || s.SessionTypeId == 2)
+                .Select(s => s.ClassSchedule);
+
             scheduleAffected = scheduleAffected.Where(s => s.TeacherId == request.TeacherId);
 
-        var listScheduleAffected = scheduleAffected.ToList();
-        listScheduleAffected.ForEach(schedule => { UpdateSchedule(schedule, request); });
+            var listScheduleAffected = scheduleAffected.ToList();
+            listScheduleAffected.ForEach(schedule => { UpdateSchedule(schedule, request); });
+        }
+        else
+        {
+            // get list schedule affected by day off
+            var scheduleAffected = _context.Sessions
+                .Include(s => s.ClassSchedule)
+                .ThenInclude(s => s.Class)
+                .Where(s => s.LearningDate.Date == request.Date.Date)
+                .Where(s => request.WorkingTimeIds.Contains(s.ClassSchedule.WorkingTimeId))
+                .Where(s => s.ClassSchedule.Class.CenterId == centerId)
+                .Select(s => s.ClassSchedule);
+
+            var listScheduleAffected = scheduleAffected.ToList();
+            listScheduleAffected.ForEach(schedule => { UpdateSchedule(schedule, request); });
+        }
 
         foreach (var item in request.WorkingTimeIds)
         {
@@ -244,15 +260,16 @@ public class DayOffController : ControllerBase
                 var nextDay = GetNextLearningDateValid(selectedSession.LearningDate.Date, schedule);
                 selectedSession.LearningDate = nextDay;
 
-                var sessionDub = _context.Sessions
-                    .Include(s => s.ClassSchedule)
-                    .FirstOrDefault(s =>
-                        s.ClassSchedule.ClassId == schedule.ClassId &&
-                        s.LearningDate.Date == nextDay.Date);
+                var csDub = _context.ClassSchedules
+                    .Include(cs => cs.Sessions)
+                    .Where(cs => cs.ClassId == schedule.ClassId)
+                    .Where(cs => cs.Sessions.OrderBy(s => s.LearningDate.Date).First().LearningDate.Date <= nextDay.Date)
+                    .Where(cs => cs.StartDate.Date > schedule.StartDate.Date)
+                    .ToList();
 
-                if (sessionDub != null)
+                if (csDub.Count > 0)
                 {
-                    var nextSchedule = sessionDub.ClassSchedule;
+                    var nextSchedule = csDub.First();
                     UpdateSchedule(nextSchedule, request);
                 }
 
@@ -261,13 +278,13 @@ public class DayOffController : ControllerBase
 
             selectedSession.LearningDate = nextSession.LearningDate;
         }
-        
+
         var listSession = _context.Sessions
             .Where(s => s.ClassScheduleId == schedule.Id)
             .Where(s => s.SessionTypeId == 1 || s.SessionTypeId == 2)
             .OrderBy(s => s.LearningDate.Date)
             .ToList();
-        
+
         schedule.StartDate = listSession.First().LearningDate;
         schedule.EndDate = listSession.Last().LearningDate;
     }
