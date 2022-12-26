@@ -95,7 +95,7 @@ const DoFeedback = () => {
       teacher_id : scheduleInformation.teacher.id,
       module_id : scheduleInformation.module.id,
       session_id : id,
-      comment: data.comment.trim(),
+      comment: data.comment?.trim(),
       answer_id: listanswer,
     };
     console.log(body);
