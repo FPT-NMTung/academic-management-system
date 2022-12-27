@@ -411,7 +411,7 @@ const ManageDayOff = () => {
                   </Text>
                 </Grid>
                 <Grid xs={4} justify={'flex-end'}>
-                  <Button
+                  {new Date(selectedValue) - new Date(moment()) > 0 && <Button
                     size={'sm'}
                     flat
                     auto
@@ -419,8 +419,8 @@ const ManageDayOff = () => {
                       setIsOpenCreateDayOff(true);
                     }}
                   >
-                    + Thêm lịch nghỉ
-                  </Button>
+                    + Thêm ngày nghỉ
+                  </Button>}
                 </Grid>
               </Grid.Container>
             </Card.Header>
